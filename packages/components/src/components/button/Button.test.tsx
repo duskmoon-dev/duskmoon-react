@@ -11,7 +11,7 @@ describe("Button", () => {
 
   test("is disabled when loading", () => {
     render(<Button isLoading>Loading</Button>);
-    const button = screen.getByRole('button') as HTMLButtonElement;
+    const button = screen.getByRole("button") as HTMLButtonElement;
 
     expect(button.disabled).toBe(true);
   });
