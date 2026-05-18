@@ -1,0 +1,8 @@
+{
+  "name": "@duskmoon-dev/docs",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "mkdir -p dist && echo '<h1>Duskmoon React Documentation</h1><p>Work in progress.</p>' > dist/index.html"
+  }
+}

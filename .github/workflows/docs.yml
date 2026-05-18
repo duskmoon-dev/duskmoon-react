@@ -46,10 +46,11 @@ jobs:
 
       - name: Build documentation
         run: bun run --filter "@duskmoon-dev/docs" build
-        continue-on-error: true # Allow build to fail if docs package isn't fully set up yet
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
