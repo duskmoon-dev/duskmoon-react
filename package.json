@@ -7,11 +7,16 @@
     "examples/*"
   ],
   "scripts": {
+    "build:all": "bun run build",
     "build": "bun run --filter \"@duskmoon-dev/components\" build",
     "test": "bun test",
     "lint": "bun run lint:all",
     "lint:all": "bun x eslint .",
-    "format": "bun x prettier --write ."
+    "lint:check": "bun x eslint .",
+    "format": "bun x prettier --write .",
+    "format:check": "bun x prettier --check .",
+    "typecheck": "bun run --filter \"@duskmoon-dev/components\" exec tsc --noEmit && bun run --filter \"nextjs-15-smoke\" exec tsc --noEmit",
+    "release:dry-run": "echo \"Dry run release not implemented yet\""
   },
   "devDependencies": {
     "glob": "^13.0.6",
