@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Typecheck
+        run: |
+          bun run --filter "@duskmoon-dev/components" exec tsc --noEmit
+          bun run --filter "nextjs-15-smoke" exec tsc --noEmit
+
+      - name: Build Components
+        run: bun run --filter "@duskmoon-dev/components" build
+
+      - name: Build Next.js Smoke Test
+        run: bun run --filter "nextjs-15-smoke" build
+
+      - name: Run Tests
+        run: bun test
