@@ -1,0 +1,6 @@
+[install]
+workspace = true
+production = false
+
+[run]
+workspace = true

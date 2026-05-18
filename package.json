@@ -1,0 +1,21 @@
+{
+  "name": "duskmoon-react-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "examples/*"
+  ],
+  "scripts": {
+    "build": "bun run --filter \"@duskmoon-dev/components\" build",
+    "test": "bun test",
+    "lint": "bun run lint:all",
+    "lint:all": "bun x eslint .",
+    "format": "bun x prettier --write ."
+  },
+  "devDependencies": {
+    "glob": "^13.0.6",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.2"
+  }
+}

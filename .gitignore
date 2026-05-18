@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+.bun/
+
+# Build outputs
+dist/
+dist-tsc/
+.next/
+out/
+
+# Environment
+.env*
+!.env.example
+
+# OS
+.DS_Store
+Thumbs.db
