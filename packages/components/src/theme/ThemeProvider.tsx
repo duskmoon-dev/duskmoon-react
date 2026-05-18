@@ -1,8 +1,14 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useMemo,
+} from "react";
 
-export type Theme = 'light' | 'dark' | 'system' | string;
+export type Theme = "light" | "dark" | "system" | string;
 
 interface ThemeContextValue {
   theme: Theme;
@@ -21,18 +27,18 @@ export interface ThemeProviderProps {
 
 export function ThemeProvider({
   children,
-  defaultTheme = 'system',
-  storageKey = 'duskmoon-theme',
-  attribute = 'data-theme',
+  defaultTheme = "system",
+  storageKey = "duskmoon-theme",
+  attribute = "data-theme",
 }: ThemeProviderProps) {
   const [theme, setThemeState] = useState<Theme>(() => {
-    if (typeof window === 'undefined') return defaultTheme;
+    if (typeof window === "undefined") return defaultTheme;
     return (localStorage.getItem(storageKey) as Theme) || defaultTheme;
   });
 
   const [resolvedTheme, setResolvedTheme] = useState<string>(() => {
-    if (typeof window === 'undefined') return 'light'; // Fallback for SSR
-    return document.documentElement.getAttribute(attribute) || 'light';
+    if (typeof window === "undefined") return "light"; // Fallback for SSR
+    return document.documentElement.getAttribute(attribute) || "light";
   });
 
   const setTheme = (newTheme: Theme) => {
@@ -45,8 +51,10 @@ export function ThemeProvider({
 
     const applyTheme = (t: Theme) => {
       let resolved = t;
-      if (t === 'system') {
-        resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      if (t === "system") {
+        resolved = window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light";
       }
       root.setAttribute(attribute, resolved);
       setResolvedTheme(resolved);
@@ -54,11 +62,11 @@ export function ThemeProvider({
 
     applyTheme(theme);
 
-    if (theme === 'system') {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      const listener = () => applyTheme('system');
-      mediaQuery.addEventListener('change', listener);
-      return () => mediaQuery.removeEventListener('change', listener);
+    if (theme === "system") {
+      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+      const listener = () => applyTheme("system");
+      mediaQuery.addEventListener("change", listener);
+      return () => mediaQuery.removeEventListener("change", listener);
     }
   }, [theme, attribute]);
 
@@ -69,8 +77,8 @@ export function ThemeProvider({
         setThemeState((e.newValue as Theme) || defaultTheme);
       }
     };
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, [storageKey, defaultTheme]);
 
   const value = useMemo(
@@ -79,16 +87,18 @@ export function ThemeProvider({
       setTheme,
       resolvedTheme,
     }),
-    [theme, resolvedTheme]
+    [theme, resolvedTheme],
   );
 
-  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+  return (
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
+  );
 }
 
 export function useTheme() {
   const context = useContext(ThemeContext);
   if (!context) {
-    throw new Error('useTheme must be used within a ThemeProvider');
+    throw new Error("useTheme must be used within a ThemeProvider");
   }
   return context;
 }

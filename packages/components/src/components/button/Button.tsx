@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { getButtonClasses } from './Button.classes';
-import type { ButtonProps } from './Button.types';
+import React from "react";
+import { getButtonClasses } from "./Button.classes";
+import type { ButtonProps } from "./Button.types";
 
 export function Button({
-  variant = 'primary',
-  size = 'md',
+  variant = "primary",
+  size = "md",
   isLoading,
   leftIcon,
   rightIcon,
@@ -26,9 +26,13 @@ export function Button({
       {...props}
     >
       {isLoading && <span className="btn-spinner" />}
-      {!isLoading && leftIcon && <span className="btn-icon-left">{leftIcon}</span>}
+      {!isLoading && leftIcon && (
+        <span className="btn-icon-left">{leftIcon}</span>
+      )}
       <span className="btn-content">{children}</span>
-      {!isLoading && rightIcon && <span className="btn-icon-right">{rightIcon}</span>}
+      {!isLoading && rightIcon && (
+        <span className="btn-icon-right">{rightIcon}</span>
+      )}
     </button>
   );
 }

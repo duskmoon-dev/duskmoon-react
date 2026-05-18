@@ -1,4 +1,4 @@
-import { Button } from '@duskmoon-dev/components/button';
+import { Button } from "@duskmoon-dev/components/button";
 
 export default function Home() {
   return (

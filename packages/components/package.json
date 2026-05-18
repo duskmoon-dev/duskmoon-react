@@ -33,7 +33,8 @@
     "hoist": "bun run ../../scripts/hoist-directives.ts",
     "build:types": "tsc -p tsconfig.build.json --emitDeclarationOnly",
     "test": "bun test",
-    "test:a11y": "bun test src/**/*.test.tsx"
+    "test:a11y": "bun test src/**/*.test.tsx",
+    "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
     "react": ">=19.0.0",

@@ -4,3 +4,6 @@ production = false
 
 [run]
 workspace = true
+
+[test]
+preload = ["./test/setup.ts"]

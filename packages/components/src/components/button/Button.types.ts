@@ -1,9 +1,15 @@
-import type { ComponentProps } from 'react';
+import type { ComponentProps } from "react";
 
-export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'link' | 'danger';
-export type ButtonSize = 'sm' | 'md' | 'lg';
+export type ButtonVariant =
+  | "primary"
+  | "secondary"
+  | "outline"
+  | "ghost"
+  | "link"
+  | "danger";
+export type ButtonSize = "sm" | "md" | "lg";
 
-export interface ButtonProps extends ComponentProps<'button'> {
+export interface ButtonProps extends ComponentProps<"button"> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   isLoading?: boolean;

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
-export * from './ThemeProvider';
-export * from './theme-script';
+export * from "./ThemeProvider";
+export * from "./theme-script";

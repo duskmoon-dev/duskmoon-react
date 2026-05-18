@@ -1,9 +1,9 @@
-import { cn } from '../../utils';
-import type { ButtonVariant, ButtonSize } from './Button.types';
+import { cn } from "../../utils";
+import type { ButtonVariant, ButtonSize } from "./Button.types";
 
 export function getButtonClasses({
-  variant = 'primary',
-  size = 'md',
+  variant = "primary",
+  size = "md",
   isLoading,
   className,
 }: {
@@ -13,10 +13,10 @@ export function getButtonClasses({
   className?: string;
 }) {
   return cn(
-    'btn', // Base class
+    "btn", // Base class
     `btn-${variant}`,
     `btn-${size}`,
-    isLoading && 'btn-loading',
-    className
+    isLoading && "btn-loading",
+    className,
   );
 }

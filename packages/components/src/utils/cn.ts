@@ -1,4 +1,4 @@
-import { clsx, type ClassValue } from 'clsx';
+import { clsx, type ClassValue } from "clsx";
 
 /**
  * A simple wrapper around clsx for conditional class merging.
