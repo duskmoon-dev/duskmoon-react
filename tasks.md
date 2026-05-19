@@ -19,7 +19,7 @@
   - Verify with an actual RSC harness in `nextjs-15-smoke`.
   - *Exit condition:* smoke test imports both server-safe and client components in RSC, builds clean, runtime works.
 
-- [ ] **Phase 3 — ThemeProvider, aligned with duskmoonui**
+- [x] **Phase 3 — ThemeProvider, aligned with duskmoonui**
   - Theme names come from `@duskmoon-dev/design`'s generated TS — `sunshine | moonlight | ocean | forest`.
   - Single source of truth at runtime: the `data-theme` attribute set by the inline boot script.
   - `setTheme` wrapped in `useCallback`.
