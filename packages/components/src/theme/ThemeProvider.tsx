@@ -1,19 +1,18 @@
-
-
 import React, {
   createContext,
   useContext,
   useEffect,
   useState,
   useMemo,
+  useCallback,
 } from "react";
+import { DmTheme } from "./theme-script";
 
-export type Theme = "light" | "dark" | "system" | string;
+export type Theme = DmTheme;
 
 interface ThemeContextValue {
-  theme: Theme;
+  theme: Theme | undefined;
   setTheme: (theme: Theme) => void;
-  resolvedTheme: string;
 }
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
@@ -27,67 +26,48 @@ export interface ThemeProviderProps {
 
 export function ThemeProvider({
   children,
-  defaultTheme = "system",
+  defaultTheme = "sunshine",
   storageKey = "duskmoon-theme",
   attribute = "data-theme",
 }: ThemeProviderProps) {
-  const [theme, setThemeState] = useState<Theme>(() => {
-    if (typeof window === "undefined") return defaultTheme;
-    return (localStorage.getItem(storageKey) as Theme) || defaultTheme;
-  });
-
-  const [resolvedTheme, setResolvedTheme] = useState<string>(() => {
-    if (typeof window === "undefined") return "light"; // Fallback for SSR
-    return document.documentElement.getAttribute(attribute) || "light";
-  });
-
-  const setTheme = (newTheme: Theme) => {
-    setThemeState(newTheme);
-    localStorage.setItem(storageKey, newTheme);
-  };
+  const [theme, setThemeState] = useState<Theme | undefined>(undefined);
 
   useEffect(() => {
     const root = window.document.documentElement;
+    const initialTheme = (root.getAttribute(attribute) as Theme) || defaultTheme;
+    setThemeState(initialTheme);
+  }, [attribute, defaultTheme]);
 
-    const applyTheme = (t: Theme) => {
-      let resolved = t;
-      if (t === "system") {
-        resolved = window.matchMedia("(prefers-color-scheme: dark)").matches
-          ? "dark"
-          : "light";
-      }
-      root.setAttribute(attribute, resolved);
-      setResolvedTheme(resolved);
-    };
-
-    applyTheme(theme);
-
-    if (theme === "system") {
-      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-      const listener = () => applyTheme("system");
-      mediaQuery.addEventListener("change", listener);
-      return () => mediaQuery.removeEventListener("change", listener);
-    }
-  }, [theme, attribute]);
+  const setTheme = useCallback(
+    (newTheme: Theme) => {
+      setThemeState(newTheme);
+      try {
+        localStorage.setItem(storageKey, newTheme);
+      } catch (e) {}
+      window.document.documentElement.setAttribute(attribute, newTheme);
+    },
+    [storageKey, attribute]
+  );
 
   // Handle multi-tab sync
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === storageKey) {
-        setThemeState((e.newValue as Theme) || defaultTheme);
+        const newTheme = (e.newValue as Theme) || defaultTheme;
+        setThemeState(newTheme);
+        window.document.documentElement.setAttribute(attribute, newTheme);
       }
     };
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
-  }, [storageKey, defaultTheme]);
+  }, [storageKey, defaultTheme, attribute]);
 
   const value = useMemo(
     () => ({
       theme,
       setTheme,
-      resolvedTheme,
     }),
-    [theme, resolvedTheme],
+    [theme, setTheme],
   );
 
   return (

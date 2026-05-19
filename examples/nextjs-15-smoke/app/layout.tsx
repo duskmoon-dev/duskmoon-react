@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ThemeProvider } from "@duskmoon-dev/components/theme";
+import { ThemeProvider, ThemeInitScript } from "@duskmoon-dev/components/theme";
 
 export const metadata: Metadata = {
   title: "Next.js 15 Smoke Test",
@@ -13,6 +13,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <ThemeInitScript />
+      </head>
       <body>
         <ThemeProvider>{children}</ThemeProvider>
       </body>
