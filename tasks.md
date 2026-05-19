@@ -13,7 +13,7 @@
   - Decide controlled vs. uncontrolled story.
   - *Exit condition:* every duskmoonui Button class combination is reachable from a typed React prop.
 
-- [ ] **Phase 2 — RSC correctness**
+- [x] **Phase 2 — RSC correctness**
   - Drop post-hoc directive injection in favor of per-entrypoint banners.
   - Split build into two entrypoint groups: **server-safe** and **client-only**.
   - Verify with an actual RSC harness in `nextjs-15-smoke`.
