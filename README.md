@@ -68,6 +68,18 @@ function App() {
 }
 ```
 
+## Version Contract
+
+This project adheres to a strict version contract between our React UI components and the core CSS design system:
+
+| `@duskmoon-dev/components` version | `@duskmoon-dev/core` version |
+| :--------------------------------- | :--------------------------- |
+| `0.x.x` (pre-release)              | `0.x.x` (pre-release)        |
+| `1.x.x`                            | `1.x.x`                      |
+| `2.x.x`                            | `2.x.x`                      |
+
+*Note: Minor and patch versions are compatible within the same major version. Breaking changes in the core design system will be accompanied by a major version bump in the components library to maintain sync.*
+
 ## License
 
 MIT
