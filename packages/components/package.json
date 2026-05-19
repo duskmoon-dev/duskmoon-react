@@ -29,6 +29,14 @@
       "import": "./dist/components/button/index.js",
       "types": "./dist/components/button/index.d.ts"
     },
+    "./card": {
+      "import": "./dist/components/card/index.js",
+      "types": "./dist/components/card/index.d.ts"
+    },
+    "./badge": {
+      "import": "./dist/components/badge/index.js",
+      "types": "./dist/components/badge/index.d.ts"
+    },
     "./styles.css": "./dist/styles.css"
   },
   "scripts": {

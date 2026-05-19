@@ -42,6 +42,8 @@ async function runBuild() {
       "src/index.ts",
       "src/theme/index.ts",
       "src/components/button/index.ts",
+      "src/components/card/index.ts",
+      "src/components/badge/index.ts",
     ],
     banner: "\"use client\";\n",
   });

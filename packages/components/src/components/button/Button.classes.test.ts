@@ -1,6 +1,5 @@
 import { expect, test, describe } from "bun:test";
 import { css } from "@duskmoon-dev/core/components/button";
-import { getButtonClasses } from "./Button.classes";
 import { 
   buttonBaseClass, 
   buttonColorClasses, 
@@ -8,7 +7,8 @@ import {
   buttonShapeClasses, 
   buttonSizeClasses, 
   buttonBlockClass,
-  buttonLoadingClass 
+  buttonIsLoadingClass,
+  getButtonClasses
 } from "../../classes/button";
 import type { 
   ButtonColor, 
@@ -32,7 +32,7 @@ describe("Button classes integration with @duskmoon-dev/core", () => {
   });
 
   test("loading class exists in core CSS", () => {
-    expect(coreClasses.has(buttonLoadingClass)).toBe(true);
+    expect(coreClasses.has(buttonIsLoadingClass)).toBe(true);
   });
 
   test("all color classes exist in core CSS", () => {

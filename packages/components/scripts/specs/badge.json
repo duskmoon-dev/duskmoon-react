@@ -1,0 +1,37 @@
+{
+  "name": "Badge",
+  "htmlElement": "div",
+  "baseClass": "badge",
+  "axes": {
+    "color": {
+      "values": {
+        "primary": "badge-primary",
+        "secondary": "badge-secondary",
+        "info": "badge-info",
+        "success": "badge-success",
+        "warning": "badge-warning",
+        "error": "badge-error"
+      },
+      "default": "primary"
+    },
+    "appearance": {
+      "values": {
+        "filled": "",
+        "outline": "badge-outline",
+        "tonal": "badge-tonal",
+        "ghost": "badge-ghost"
+      },
+      "default": "filled"
+    },
+    "size": {
+      "values": {
+        "sm": "badge-sm",
+        "md": "badge-md",
+        "lg": "badge-lg"
+      },
+      "default": "md"
+    }
+  },
+  "booleanModifiers": {},
+  "reactProps": []
+}

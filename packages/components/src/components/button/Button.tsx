@@ -1,7 +1,7 @@
 
 
 import React from "react";
-import { getButtonClasses } from "./Button.classes";
+import { getButtonClasses } from "../../classes/button";
 import type { ButtonProps } from "./Button.types";
 
 export function Button({

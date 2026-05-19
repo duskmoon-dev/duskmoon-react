@@ -1,6 +1,8 @@
 "use client";
 
 import { Button } from "@duskmoon-dev/components/button";
+import { Card } from "@duskmoon-dev/components/card";
+import { Badge } from "@duskmoon-dev/components/badge";
 import { cn } from "@duskmoon-dev/components/utils";
 import { useTheme } from "@duskmoon-dev/components/theme";
 
@@ -20,13 +22,37 @@ export default function Home() {
         <Button onClick={() => setTheme("forest")}>Forest</Button>
       </div>
 
-      <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-        <Button>Default</Button>
-        <Button color="secondary" appearance="outline">Secondary Outline</Button>
-        <Button color="success" shape="square">Square</Button>
-        <Button color="error" appearance="ghost">Ghost</Button>
-        <Button size="lg" block>Large Block</Button>
-      </div>
+      <section>
+        <h2>Buttons</h2>
+        <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+          <Button>Default</Button>
+          <Button color="secondary" appearance="outline">Secondary Outline</Button>
+          <Button color="success" shape="square">Square</Button>
+          <Button color="error" appearance="ghost">Ghost</Button>
+          <Button size="lg" block>Large Block</Button>
+        </div>
+      </section>
+
+      <section>
+        <h2>Badges</h2>
+        <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+          <Badge>Default</Badge>
+          <Badge color="secondary" appearance="outline">Secondary Outline</Badge>
+          <Badge color="success">Success</Badge>
+          <Badge color="error" appearance="ghost">Ghost Error</Badge>
+          <Badge size="lg">Large Badge</Badge>
+        </div>
+      </section>
+
+      <section>
+        <h2>Cards</h2>
+        <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+          <Card>Default Card</Card>
+          <Card appearance="outline" padding="lg">Outline Large Padding Card</Card>
+          <Card appearance="filled" padding="none">Filled No Padding Card</Card>
+        </div>
+      </section>
     </main>
   );
 }
+

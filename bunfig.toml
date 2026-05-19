@@ -6,4 +6,5 @@ production = false
 workspace = true
 
 [test]
+environment = "happy-dom"
 preload = ["./test/setup.ts"]
