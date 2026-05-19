@@ -32,7 +32,7 @@
   - Codegen `duskmoonMerge` conflict groups.
   - *Exit condition:* renaming a CSS class in duskmoonui triggers a typecheck failure in duskmoon-react.
 
-- [ ] **Phase 5 — Component rollout**
+- [x] **Phase 5 — Component rollout**
   - Tier 1: pure presentational (Card, Badge, Chip, Divider, Skeleton, Alert, Avatar, Progress).
   - Tier 2: controlled inputs.
   - Tier 3: popovers & overlays.
