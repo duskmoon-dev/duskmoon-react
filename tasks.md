@@ -6,7 +6,7 @@
   - Land an integration test that imports `@duskmoon-dev/core/components/button` (the CSS-as-string export) and asserts every class name emitted by `getButtonClasses` exists in the parsed CSS.
   - *Exit condition:* `bun test` fails if anyone renames `.btn-error` to `.btn-danger` in either repo.
 
-- [ ] **Phase 1 — Fix Button's API shape**
+- [x] **Phase 1 — Fix Button's API shape**
   - Redesign Button props to mirror the CSS axes: `color`, `appearance`, `shape`, `size`, `block`, `isLoading`.
   - Implement `asChild` (Radix Slot pattern) or remove it.
   - `aria-busy`, accessible loading label, focus-visible verification.
