@@ -45,8 +45,15 @@
     "build:types": "tsc -p tsconfig.build.json --emitDeclarationOnly",
     "test": "bun test",
     "test:a11y": "bun test src/**/*.test.tsx",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "size": "bundlesize"
   },
+  "bundlesize": [
+    {
+      "path": "./dist/**/*.js",
+      "maxSize": "100 kB"
+    }
+  ],
   "peerDependencies": {
     "@duskmoon-dev/core": ">=1.16.1",
     "react": ">=19.0.0",

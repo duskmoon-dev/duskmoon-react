@@ -35,6 +35,7 @@ export function ThemeProvider({
   useEffect(() => {
     const root = window.document.documentElement;
     const initialTheme = (root.getAttribute(attribute) as Theme) || defaultTheme;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setThemeState(initialTheme);
   }, [attribute, defaultTheme]);
 
@@ -43,7 +44,9 @@ export function ThemeProvider({
       setThemeState(newTheme);
       try {
         localStorage.setItem(storageKey, newTheme);
-      } catch (e) {}
+      } catch {
+        // ignore
+      }
       window.document.documentElement.setAttribute(attribute, newTheme);
     },
     [storageKey, attribute]
