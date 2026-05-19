@@ -1,6 +1,6 @@
 # Implementation Tasks
 
-- [ ] **Phase 0 — Stabilize the boundary**
+- [x] **Phase 0 — Stabilize the boundary**
   - Add `@duskmoon-dev/core` as a `peerDependency` (and `devDependency` for testing). Pin a range.
   - Move class lookup tables (`{ primary: "btn-primary", ... }`) out of components (like `Button`) and into a single `classes/` module.
   - Land an integration test that imports `@duskmoon-dev/core/components/button` (the CSS-as-string export) and asserts every class name emitted by `getButtonClasses` exists in the parsed CSS.
