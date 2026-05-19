@@ -17,6 +17,10 @@
       "import": "./dist/theme/index.js",
       "types": "./dist/theme/index.d.ts"
     },
+    "./classes": {
+      "import": "./dist/classes/index.js",
+      "types": "./dist/classes/index.d.ts"
+    },
     "./utils": {
       "import": "./dist/utils/index.js",
       "types": "./dist/utils/index.d.ts"
@@ -28,9 +32,8 @@
     "./styles.css": "./dist/styles.css"
   },
   "scripts": {
-    "build": "bun run build:js && bun run hoist && bun run build:types",
+    "build": "bun run build:js && bun run build:types",
     "build:js": "bun run build.ts",
-    "hoist": "bun run ../../scripts/hoist-directives.ts",
     "build:types": "tsc -p tsconfig.build.json --emitDeclarationOnly",
     "test": "bun test",
     "test:a11y": "bun test src/**/*.test.tsx",
