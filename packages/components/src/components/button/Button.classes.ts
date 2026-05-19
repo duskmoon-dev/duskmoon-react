@@ -1,27 +1,44 @@
 import { cn } from "../../utils";
-import type { ButtonVariant, ButtonSize } from "./Button.types";
+import type {
+  ButtonColor,
+  ButtonAppearance,
+  ButtonShape,
+  ButtonSize,
+} from "./Button.types";
 import {
   buttonBaseClass,
-  buttonVariantClasses,
+  buttonColorClasses,
+  buttonAppearanceClasses,
+  buttonShapeClasses,
   buttonSizeClasses,
+  buttonBlockClass,
   buttonLoadingClass,
 } from "../../classes/button";
 
 export function getButtonClasses({
-  variant = "primary",
+  color = "primary",
+  appearance = "filled",
+  shape = "rect",
   size = "md",
+  block,
   isLoading,
   className,
 }: {
-  variant?: ButtonVariant;
+  color?: ButtonColor;
+  appearance?: ButtonAppearance;
+  shape?: ButtonShape;
   size?: ButtonSize;
+  block?: boolean;
   isLoading?: boolean;
   className?: string;
 }) {
   return cn(
     buttonBaseClass,
-    buttonVariantClasses[variant],
+    buttonColorClasses[color],
+    buttonAppearanceClasses[appearance],
+    buttonShapeClasses[shape],
     buttonSizeClasses[size],
+    block && buttonBlockClass,
     isLoading && buttonLoadingClass,
     className,
   );

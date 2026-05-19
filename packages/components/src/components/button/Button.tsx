@@ -5,8 +5,11 @@ import { getButtonClasses } from "./Button.classes";
 import type { ButtonProps } from "./Button.types";
 
 export function Button({
-  variant = "primary",
+  color = "primary",
+  appearance = "filled",
+  shape = "rect",
   size = "md",
+  block,
   isLoading,
   leftIcon,
   rightIcon,
@@ -16,13 +19,23 @@ export function Button({
   ref,
   ...props
 }: ButtonProps) {
-  const classes = getButtonClasses({ variant, size, isLoading, className });
+  const classes = getButtonClasses({
+    color,
+    appearance,
+    shape,
+    size,
+    block,
+    isLoading,
+    className,
+  });
 
   return (
     <button
       ref={ref}
       className={classes}
       disabled={disabled || isLoading}
+      aria-busy={isLoading}
+      aria-disabled={disabled || isLoading}
       {...props}
     >
       {isLoading && <span className="btn-spinner" />}

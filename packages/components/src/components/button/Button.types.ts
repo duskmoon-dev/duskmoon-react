@@ -1,19 +1,32 @@
 import type { ComponentProps } from "react";
 
-export type ButtonVariant =
+export type ButtonColor =
   | "primary"
   | "secondary"
-  | "outline"
-  | "ghost"
-  | "text"
+  | "tertiary"
+  | "info"
+  | "success"
+  | "warning"
   | "error";
-export type ButtonSize = "sm" | "md" | "lg";
+
+export type ButtonAppearance =
+  | "filled"
+  | "outline"
+  | "tonal"
+  | "ghost"
+  | "text";
+
+export type ButtonShape = "rect" | "circle" | "square";
+
+export type ButtonSize = "xs" | "sm" | "md" | "lg";
 
 export interface ButtonProps extends ComponentProps<"button"> {
-  variant?: ButtonVariant;
+  color?: ButtonColor;
+  appearance?: ButtonAppearance;
+  shape?: ButtonShape;
   size?: ButtonSize;
+  block?: boolean;
   isLoading?: boolean;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
-  asChild?: boolean;
 }

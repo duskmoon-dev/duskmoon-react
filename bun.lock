@@ -46,6 +46,7 @@
         "happy-dom": "^15.11.7",
       },
       "peerDependencies": {
+        "@duskmoon-dev/core": ">=1.16.1",
         "react": ">=19.0.0",
         "react-dom": ">=19.0.0",
       },
