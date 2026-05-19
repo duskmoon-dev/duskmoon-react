@@ -40,7 +40,7 @@
   - Tier 5: navigational.
   - *Exit condition:* every component has spec + types + tests + smoke test page.
 
-- [ ] **Phase 6 — Docs & release engineering**
+- [x] **Phase 6 — Docs & release engineering**
   - Pick a docs tool (Astro recommended).
   - Adopt `changesets`.
   - Define version contract.
