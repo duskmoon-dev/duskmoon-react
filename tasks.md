@@ -46,7 +46,7 @@
   - Define version contract.
   - *Exit condition:* new component → PR with changeset → merge → version bumped + changelog + published.
 
-- [ ] **Phase 7 — Quality gates as code**
+- [x] **Phase 7 — Quality gates as code**
   - ESLint: `react-hooks`, `jsx-a11y`.
   - Visual regression: Playwright against the smoke test.
   - A11y: `@axe-core/playwright`.
