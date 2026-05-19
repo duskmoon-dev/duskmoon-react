@@ -26,7 +26,7 @@
   - Export the boot script as a Next.js `<Script strategy="beforeInteractive">` component.
   - *Exit condition:* `nextjs-15-smoke` switches themes with no FOUC, no hydration warnings.
 
-- [ ] **Phase 4 — Codegen pipeline (the multiplier)**
+- [x] **Phase 4 — Codegen pipeline (the multiplier)**
   - Define a component spec format in `duskmoonui` (YAML or TS).
   - Codegen target in `@duskmoon-dev/core`: emit `classes.ts` per component.
   - Codegen `duskmoonMerge` conflict groups.
