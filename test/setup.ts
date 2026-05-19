@@ -15,3 +15,5 @@ global.Node = window.Node;
 global.Event = window.Event;
 // @ts-expect-error - Happy-DOM environment setup
 global.CustomEvent = window.CustomEvent;
+// @ts-expect-error - Happy-DOM environment setup
+global.CSSStyleSheet = window.CSSStyleSheet;

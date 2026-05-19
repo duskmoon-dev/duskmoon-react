@@ -5,8 +5,8 @@ export type ButtonVariant =
   | "secondary"
   | "outline"
   | "ghost"
-  | "link"
-  | "danger";
+  | "text"
+  | "error";
 export type ButtonSize = "sm" | "md" | "lg";
 
 export interface ButtonProps extends ComponentProps<"button"> {

@@ -37,6 +37,7 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
+    "@duskmoon-dev/core": ">=1.16.1",
     "react": ">=19.0.0",
     "react-dom": ">=19.0.0"
   },
@@ -44,6 +45,7 @@
     "clsx": "^2.1.1"
   },
   "devDependencies": {
+    "@duskmoon-dev/core": "^1.16.1",
     "@testing-library/react": "^16.1.0",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.1",
