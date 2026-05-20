@@ -1,6 +1,6 @@
 # Implementation Tasks
 
-- [ ] **Task 1: Alert Component**
+- [x] **Task 1: Alert Component**
   - Create spec in `packages/components/scripts/specs/alert.json`
   - Run codegen: `cd packages/components && bun run scripts/codegen.ts`
   - Write component `packages/components/src/components/alert/Alert.tsx`
