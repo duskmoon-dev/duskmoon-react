@@ -10,7 +10,7 @@
   "scripts": {
     "build:all": "bun run --filter '*' build",
     "build": "bun run --filter \"@duskmoon-dev/components\" build",
-    "test": "bun test",
+    "test": "bun test packages/",
     "lint": "bun run lint:all",
     "lint:all": "bun x eslint .",
     "lint:check": "bun x eslint .",

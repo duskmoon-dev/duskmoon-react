@@ -18,7 +18,7 @@
   - Ensure tests pass
   - Commit
 
-- [ ] **Task 3: Package Exports and Smoke Test Update**
+- [x] **Task 3: Package Exports and Smoke Test Update**
   - Update `exports` in `packages/components/package.json` for alert and avatar
   - Update `packages/components/build.ts` to include the entrypoints
   - Update `packages/components/src/index.ts` to export the components
