@@ -3,6 +3,8 @@
 import { Button } from "@duskmoon-dev/components/button";
 import { Card } from "@duskmoon-dev/components/card";
 import { Badge } from "@duskmoon-dev/components/badge";
+import { Alert } from "@duskmoon-dev/components/alert";
+import { Avatar } from "@duskmoon-dev/components/avatar";
 import { cn } from "@duskmoon-dev/components/utils";
 import { useTheme } from "@duskmoon-dev/components/theme";
 
@@ -41,6 +43,24 @@ export default function Home() {
           <Badge color="success">Success</Badge>
           <Badge color="error" appearance="ghost">Ghost Error</Badge>
           <Badge size="lg">Large Badge</Badge>
+        </div>
+      </section>
+
+      <section>
+        <h2>Alerts</h2>
+        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+          <Alert>This is a default alert message.</Alert>
+          <Alert color="success" appearance="outline">Your action was completed successfully.</Alert>
+          <Alert color="error" appearance="filled">Something went wrong!</Alert>
+        </div>
+      </section>
+
+      <section>
+        <h2>Avatars</h2>
+        <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", alignItems: "center" }}>
+          <Avatar src="https://github.com/shadcn.png" alt="@shadcn" fallback="CN" />
+          <Avatar size="sm" fallback="SM" />
+          <Avatar size="lg" shape="square" fallback="LG" />
         </div>
       </section>
 
