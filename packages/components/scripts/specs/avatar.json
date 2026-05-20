@@ -1,0 +1,30 @@
+{
+  "name": "Avatar",
+  "htmlElement": "span",
+  "baseClass": "avatar",
+  "axes": {
+    "size": {
+      "values": {
+        "xs": "avatar-xs",
+        "sm": "avatar-sm",
+        "md": "avatar-md",
+        "lg": "avatar-lg",
+        "xl": "avatar-xl"
+      },
+      "default": "md"
+    },
+    "shape": {
+      "values": {
+        "circle": "avatar-circle",
+        "square": "avatar-square"
+      },
+      "default": "circle"
+    }
+  },
+  "booleanModifiers": {},
+  "reactProps": [
+    "src?: string",
+    "alt?: string",
+    "fallback?: React.ReactNode"
+  ]
+}
