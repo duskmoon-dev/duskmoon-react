@@ -9,7 +9,7 @@
   - Ensure tests pass
   - Commit
 
-- [ ] **Task 2: Avatar Component**
+- [x] **Task 2: Avatar Component**
   - Create spec in `packages/components/scripts/specs/avatar.json`
   - Run codegen: `cd packages/components && bun run scripts/codegen.ts`
   - Write component `packages/components/src/components/avatar/Avatar.tsx`
