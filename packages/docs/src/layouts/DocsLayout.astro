@@ -1,0 +1,70 @@
+---
+import "../styles/docs.css";
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "DuskMoon React component documentation" } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" data-theme="sunshine">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <title>{title} | DuskMoon React</title>
+    <script is:inline>
+      (() => {
+        try {
+          const stored = localStorage.getItem("duskmoon-docs-theme");
+          const theme = stored === "moonlight" ? "moonlight" : "sunshine";
+          document.documentElement.setAttribute("data-theme", theme);
+        } catch {
+          document.documentElement.setAttribute("data-theme", "sunshine");
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/">
+        <span class="brand-mark">Dm</span>
+        <span>DuskMoon React</span>
+      </a>
+      <nav class="top-nav" aria-label="Primary">
+        <a href="/components/button">Components</a>
+        <a href="/components/dm-provider">Theme</a>
+      </nav>
+      <button class="theme-toggle" type="button" data-theme-toggle>
+        <span data-theme-label>Light</span>
+      </button>
+    </header>
+    <main>
+      <slot />
+    </main>
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        const button = document.querySelector("[data-theme-toggle]");
+        const label = document.querySelector("[data-theme-label]");
+        const sync = () => {
+          const theme = root.getAttribute("data-theme") || "sunshine";
+          if (label) label.textContent = theme === "moonlight" ? "Dark" : "Light";
+        };
+        sync();
+        button?.addEventListener("click", () => {
+          const next = root.getAttribute("data-theme") === "moonlight" ? "sunshine" : "moonlight";
+          root.setAttribute("data-theme", next);
+          try {
+            localStorage.setItem("duskmoon-docs-theme", next);
+          } catch {}
+          sync();
+        });
+      })();
+    </script>
+  </body>
+</html>

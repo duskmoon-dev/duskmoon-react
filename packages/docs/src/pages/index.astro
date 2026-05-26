@@ -1,17 +1,39 @@
 ---
-// Welcome to Astro!
+import DocsLayout from "../layouts/DocsLayout.astro";
+import { getDocsByCategory } from "../lib/component-docs";
+
+const categories = Array.from(getDocsByCategory().entries());
+const total = categories.reduce((count, [, docs]) => count + docs.length, 0);
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Duskmoon React Documentation</title>
-	</head>
-	<body>
-		<h1>Duskmoon React Documentation</h1>
-		<p>Work in progress.</p>
-	</body>
-</html>
+<DocsLayout
+  title="Component Documentation"
+  description="DuskMoon React component documentation with API references and demos."
+>
+  <section class="hero">
+    <h1>DuskMoon React Components</h1>
+    <p>
+      API references, usage demos, and DuskMoon theme previews for every
+      implemented component in the package.
+    </p>
+    <div class="hero-actions">
+      <a class="button-link" href="/components/button">Start with Button</a>
+      <a class="button-link" href="/components/dm-provider">Theme Provider</a>
+    </div>
+  </section>
+
+  {categories.map(([category, docs]) => (
+    <section class="category">
+      <h2>{category}</h2>
+      <p>{docs.length} of {total} documented components.</p>
+      <div class="component-grid">
+        {docs.map((component) => (
+          <a class="component-card" href={component.route}>
+            <strong>{component.title}</strong>
+            <span>{component.id}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+  ))}
+</DocsLayout>
