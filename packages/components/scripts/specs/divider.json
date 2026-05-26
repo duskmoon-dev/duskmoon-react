@@ -1,0 +1,50 @@
+{
+  "name": "Divider",
+  "htmlElement": "div",
+  "baseClass": "divider",
+  "axes": {
+    "orientation": {
+      "values": {
+        "horizontal": "",
+        "vertical": "divider-vertical"
+      },
+      "default": "horizontal"
+    },
+    "variant": {
+      "values": {
+        "solid": "divider-solid",
+        "dashed": "divider-dashed",
+        "dotted": "divider-dotted"
+      },
+      "default": "solid"
+    },
+    "thickness": {
+      "values": {
+        "thin": "divider-thin",
+        "medium": "divider-medium",
+        "thick": "divider-thick"
+      },
+      "default": "thin"
+    },
+    "color": {
+      "values": {
+        "neutral": "",
+        "primary": "divider-primary",
+        "secondary": "divider-secondary",
+        "tertiary": "divider-tertiary"
+      },
+      "default": "neutral"
+    },
+    "spacing": {
+      "values": {
+        "normal": "",
+        "compact": "divider-compact",
+        "comfortable": "divider-comfortable",
+        "spacious": "divider-spacious"
+      },
+      "default": "normal"
+    }
+  },
+  "booleanModifiers": {},
+  "reactProps": ["labelPosition?: \"center\" | \"left\" | \"right\""]
+}

@@ -17,6 +17,7 @@
     "format": "bun x prettier --write .",
     "format:check": "bun x prettier --check .",
     "typecheck": "bun run --filter '*' typecheck",
+    "parity:components": "bun run --filter \"@duskmoon-dev/components\" parity:components",
     "release": "changeset publish",
     "release:dry-run": "echo \"Dry run release not implemented yet\""
   },
