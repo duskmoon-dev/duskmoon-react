@@ -134,9 +134,10 @@ function filterTreeData<TDataNode extends DmTreeDataNode>(
 }
 
 function parentKeys<TDataNode extends DmTreeDataNode>(
-  treeData: TDataNode[],
+  treeData: TDataNode[] | undefined,
   fieldNames?: DmTreeFieldNames<TDataNode>,
 ) {
+  if (!treeData) return [];
   const keyField = fieldName(fieldNames, "key");
   const childrenField = fieldName(fieldNames, "children");
   const keys: TreeKey[] = [];
@@ -203,7 +204,7 @@ function isActionDisabled<TDataNode extends DmTreeDataNode>(
 }
 
 function CommonDmTree<TDataNode extends DmTreeDataNode>({
-  treeData,
+  treeData = [],
   selectedKey,
   showAll = true,
   allItem = { value: 0, label: "All" },

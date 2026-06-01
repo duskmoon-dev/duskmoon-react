@@ -1,7 +1,7 @@
 export * from "./theme";
 export * from "./utils";
 export * from "./infrastructure";
-export {
+import {
   getDmDatePickerLocale,
   getDmTheme,
   getUnstableRender,
@@ -14,6 +14,35 @@ export {
   usePersistedPageSize,
   version,
 } from "./infrastructure";
+if (typeof window !== "undefined") {
+  (window as any).__duskmoon_react_version = version;
+  (window as any).__duskmoon_react_theme = theme;
+  (window as any).__duskmoon_react_helpers = {
+    getDmDatePickerLocale,
+    getDmTheme,
+    getUnstableRender,
+    onDmThemeUpdate,
+    setDmDatePickerLocale,
+    setDmPrefixCls,
+    setDmPrimaryColor,
+    unstableSetRender,
+    usePersistedPageSize,
+  };
+}
+
+export {
+  getDmDatePickerLocale,
+  getDmTheme,
+  getUnstableRender,
+  onDmThemeUpdate,
+  setDmDatePickerLocale,
+  setDmPrefixCls,
+  setDmPrimaryColor,
+  theme,
+  unstableSetRender,
+  usePersistedPageSize,
+  version,
+};
 export type { GetProp, GetProps, GetRef } from "./infrastructure";
 export type { Breakpoint } from "./components/grid";
 export * from "./components/button";

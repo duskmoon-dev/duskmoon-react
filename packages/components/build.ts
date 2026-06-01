@@ -6,6 +6,7 @@ import { glob } from "glob";
 async function runBuild() {
   const commonOptions = {
     outdir: "dist",
+    root: "./src",
     target: "browser",
     format: "esm",
     external: ["react", "react-dom"],
@@ -31,13 +32,31 @@ async function runBuild() {
     process.exit(1);
   }
 
-  // Client-only entrypoints
-  const clientResult = await build({
+  // Build main index files (index.ts, theme/index.ts, infrastructure.ts)
+  const mainResult = await build({
     ...commonOptions,
     splitting: false,
     entrypoints: [
       "src/index.ts",
       "src/theme/index.ts",
+      "src/infrastructure.ts",
+    ],
+    banner: '"use client";\n',
+  });
+
+  if (!mainResult.success) {
+    console.error("Main entrypoints build failed");
+    for (const message of mainResult.logs) {
+      console.error(message);
+    }
+    process.exit(1);
+  }
+
+  // Client-only entrypoints
+  const clientResult = await build({
+    ...commonOptions,
+    splitting: false,
+    entrypoints: [
       "src/components/button/index.ts",
       "src/components/calendar/index.ts",
       "src/components/card/index.ts",
