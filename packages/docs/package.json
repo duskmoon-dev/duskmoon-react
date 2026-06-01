@@ -9,6 +9,13 @@
     "preview": "astro preview"
   },
   "dependencies": {
-    "astro": "^5.1.1"
+    "@astrojs/react": "^5.0.5",
+    "@duskmoon-dev/components": "workspace:*",
+    "@duskmoon-dev/core": "^1.16.1",
+    "@types/react": "^19.2.15",
+    "@types/react-dom": "^19.2.3",
+    "astro": "^5.1.1",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6"
   }
 }

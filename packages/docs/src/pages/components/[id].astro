@@ -1,8 +1,10 @@
 ---
 import DocsLayout from "../../layouts/DocsLayout.astro";
+import DemoRenderer from "../../components/DemoRenderer";
 import {
   getComponentDoc,
   getComponentDocs,
+  getDocsByCategory,
   type ComponentDoc,
 } from "../../lib/component-docs";
 
@@ -14,10 +16,7 @@ export function getStaticPaths() {
 }
 
 const { component } = Astro.props as { component: ComponentDoc };
-const allComponents = getComponentDocs();
-const related = allComponents
-  .filter((item) => item.category === component.category && item.id !== component.id)
-  .slice(0, 12);
+const categories = Array.from(getDocsByCategory().entries());
 
 if (!getComponentDoc(component.id)) {
   return Astro.redirect("/");
@@ -27,11 +26,28 @@ if (!getComponentDoc(component.id)) {
 <DocsLayout title={component.title} description={component.intro}>
   <div class="doc-shell">
     <aside class="side-nav" aria-label="Component sections">
-      <a href="#intro">Intro</a>
-      <a href="#api">API</a>
-      <a href="#demos">Demos</a>
-      <a href="/">All components</a>
-      {related.map((item) => <a href={item.route}>{item.title}</a>)}
+      <div class="nav-section">
+        <a href="#intro">Intro</a>
+        <a href="#api">API</a>
+        <a href="#demos">Demos</a>
+        <a href="/">All components</a>
+      </div>
+
+      {categories.map(([category, docs]) => (
+        <div class="nav-group">
+          <div class="nav-group-title">{category}</div>
+          <div class="nav-group-items">
+            {docs.map((item) => (
+              <a
+                href={item.route}
+                class={`nav-item ${item.id === component.id ? "active" : ""}`}
+              >
+                {item.title}
+              </a>
+            ))}
+          </div>
+        </div>
+      ))}
     </aside>
 
     <article class="doc-content">
@@ -120,7 +136,13 @@ if (!getComponentDoc(component.id)) {
           {component.demos.map((demo) => (
             <div class="demo-card">
               <div class="demo-preview">
-                <div class="demo-widget">{component.title} preview</div>
+                <DemoRenderer
+                  componentId={component.id}
+                  componentName={component.title}
+                  demoTitle={demo.title}
+                  demoCode={demo.code}
+                  client:load
+                />
               </div>
               <div class="demo-body">
                 <h3>{demo.title}</h3>

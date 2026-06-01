@@ -1,29 +1,14 @@
 :root {
-  color-scheme: light;
-  --dm-bg: #f7f8fb;
-  --dm-surface: #ffffff;
-  --dm-surface-soft: #eef3ff;
-  --dm-text: #1f2433;
-  --dm-muted: #626b83;
-  --dm-border: #d9deea;
-  --dm-primary: #0065ff;
-  --dm-primary-soft: #e5efff;
-  --dm-code: #101828;
-  --dm-code-bg: #f4f6fb;
-}
-
-:root[data-theme="moonlight"] {
-  color-scheme: dark;
-  --dm-bg: #10131a;
-  --dm-surface: #171b25;
-  --dm-surface-soft: #202637;
-  --dm-text: #eef2ff;
-  --dm-muted: #aab3c7;
-  --dm-border: #30384d;
-  --dm-primary: #8bb7ff;
-  --dm-primary-soft: #172b4d;
-  --dm-code: #eef2ff;
-  --dm-code-bg: #0c1018;
+  --dm-bg: var(--color-base-100);
+  --dm-surface: var(--color-surface);
+  --dm-surface-soft: var(--color-surface-container);
+  --dm-text: var(--color-on-surface);
+  --dm-muted: var(--color-on-surface-variant);
+  --dm-border: var(--color-outline-variant);
+  --dm-primary: var(--color-primary);
+  --dm-primary-soft: var(--color-primary-container);
+  --dm-code: var(--color-on-tertiary-container);
+  --dm-code-bg: var(--color-tertiary-container);
 }
 
 * {
@@ -54,8 +39,9 @@ a {
   align-items: center;
   padding: 14px 28px;
   border-bottom: 1px solid var(--dm-border);
-  background: color-mix(in srgb, var(--dm-surface) 94%, transparent);
-  backdrop-filter: blur(12px);
+  background: var(--color-primary);
+  color: var(--color-primary-content);
+  box-shadow: var(--shadow-sm);
 }
 
 .brand,
@@ -68,6 +54,7 @@ a {
 .brand {
   font-weight: 700;
   text-decoration: none;
+  color: var(--color-primary-content);
 }
 
 .brand-mark {
@@ -76,17 +63,39 @@ a {
   height: 34px;
   place-items: center;
   border-radius: 8px;
-  background: var(--dm-primary);
-  color: white;
+  background: var(--color-primary-content);
+  color: var(--color-primary);
 }
 
 .top-nav a {
-  color: var(--dm-muted);
+  color: var(--color-primary-content);
+  opacity: 0.85;
   font-size: 14px;
   text-decoration: none;
+  font-weight: 500;
+  transition: opacity 0.2s;
 }
 
-.theme-toggle,
+.top-nav a:hover {
+  opacity: 1;
+}
+
+.theme-toggle {
+  border: 1px solid var(--color-primary-content);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-primary-content);
+  cursor: pointer;
+  font: inherit;
+  padding: 8px 12px;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.theme-toggle:hover {
+  background: color-mix(in oklch, var(--color-primary-content) 15%, transparent);
+}
+
 .button-link {
   border: 1px solid var(--dm-border);
   border-radius: 8px;
@@ -96,6 +105,12 @@ a {
   font: inherit;
   padding: 8px 12px;
   text-decoration: none;
+  transition: all 0.2s;
+}
+
+.button-link:hover {
+  background: var(--dm-surface-soft);
+  border-color: var(--color-secondary);
 }
 
 main {
@@ -184,13 +199,93 @@ main {
   align-self: start;
   position: sticky;
   top: 88px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  background: var(--color-secondary-container);
+  color: var(--color-on-secondary-container);
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--dm-border);
+}
+
+/* Custom scrollbar style for better aesthetics */
+.side-nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.side-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.side-nav::-webkit-scrollbar-thumb {
+  background: color-mix(in oklch, var(--color-on-secondary-container) 15%, transparent);
+  border-radius: 3px;
+}
+
+.side-nav::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in oklch, var(--color-on-secondary-container) 30%, transparent);
+}
+
+.nav-section {
+  border-bottom: 1px solid color-mix(in oklch, var(--color-on-secondary-container) 10%, transparent);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .side-nav a {
   display: block;
-  padding: 8px 0;
-  color: var(--dm-muted);
+  padding: 8px 12px;
+  color: var(--color-on-secondary-container);
   text-decoration: none;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.side-nav a:hover {
+  background: color-mix(in oklch, var(--color-secondary) 15%, transparent);
+  color: var(--color-secondary);
+}
+
+.nav-group {
+  margin-bottom: 16px;
+}
+
+.nav-group-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-on-secondary-container);
+  opacity: 0.65;
+  margin: 0 0 6px 0;
+  padding-left: 12px;
+}
+
+.nav-group-items {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.side-nav .nav-item {
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+}
+
+.side-nav .nav-item.active {
+  background: var(--color-secondary);
+  color: var(--color-on-secondary);
+  font-weight: 600;
+}
+
+.side-nav .nav-item.active:hover {
+  background: var(--color-secondary);
+  color: var(--color-on-secondary);
 }
 
 .doc-content {

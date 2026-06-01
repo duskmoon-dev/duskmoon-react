@@ -413,7 +413,29 @@ function demoCode(
 ) {
   const props = propsObjectFromApi(api, target);
   const scenarioComment = scenario ? `  // ${scenario}\n` : "";
-  const childText = ["input", "select", "date-picker", "table", "dm-table", "dm-query", "dm-search"].includes(target.id)
+  const noChildrenComponents = [
+    "input",
+    "input-number",
+    "select",
+    "date-picker",
+    "color-picker",
+    "cascader",
+    "switch",
+    "slider",
+    "rate",
+    "auto-complete",
+    "tree-select",
+    "segmented",
+    "table",
+    "dm-table",
+    "dm-pro-table",
+    "dm-pro-table-inner",
+    "dm-query",
+    "dm-search",
+    "pagination",
+    "dm-pagination",
+  ];
+  const childText = noChildrenComponents.includes(target.id)
     ? ""
     : `\n  DuskMoon ${titleCase(target.id)}\n`;
 
@@ -432,7 +454,14 @@ function demoCode(
 />`;
   }
 
-  if (target.id === "dm-search" || target.id === "dm-query") {
+  if (target.id === "dm-pro-table" || target.id === "dm-pro-table-inner") {
+    return `<${name}
+  columns={[{ title: "Name", dataIndex: "name", key: "name" }]}
+  rowData={[{ key: 1, name: "DuskMoon" }]}
+/>`;
+  }
+
+  if (target.id === "dm-search") {
     return `<${name}
   items={[{
     key: "name",
@@ -444,8 +473,44 @@ function demoCode(
 />`;
   }
 
+  if (target.id === "dm-query") {
+    return `<${name}
+  queryItem={[{
+    key: "name",
+    type: "input",
+    label: "Name",
+    name: "name"
+  }]}
+  onSearch={(values) => console.log(values)}
+/>`;
+  }
+
+  if (target.id === "dm-tree" || target.id === "tree") {
+    return `<${name}
+  treeData={[
+    {
+      key: "root",
+      title: "Root Node",
+      children: [
+        { key: "child-1", title: "Child Node 1" },
+        { key: "child-2", title: "Child Node 2" }
+      ]
+    }
+  ]}
+/>`;
+  }
+
   if (target.id.includes("pagination")) {
     return `<${name} total={120} current={1} pageSize={10} />`;
+  }
+
+  if (noChildrenComponents.includes(target.id)) {
+    if (props.length === 0) {
+      return `<${name} />`;
+    }
+    return `<${name}
+${scenarioComment}${props.map((prop) => `  ${prop}`).join("\n")}
+/>`;
   }
 
   if (props.length === 0) {
