@@ -1,0 +1,61 @@
+{
+  "name": "@duskmoon-dev/art-components",
+  "version": "0.1.0",
+  "description": "React components for @duskmoon-dev/css-art pure CSS illustrations",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "style": "./dist/styles.css",
+  "sideEffects": [
+    "./dist/styles.css"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "bun run build:js && bun run build:types && bun run build:css",
+    "build:js": "bun run build.ts",
+    "build:types": "tsc -p tsconfig.build.json --emitDeclarationOnly",
+    "build:css": "mkdir -p dist && cp src/styles.css dist/styles.css",
+    "test": "bun test --preload ../../test/setup.ts tests",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "duskmoon",
+    "react",
+    "css-art",
+    "pure-css",
+    "components"
+  ],
+  "author": "DuskMoon Development",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/duskmoon-dev/duskmoon-react.git",
+    "directory": "packages/art-components"
+  },
+  "peerDependencies": {
+    "@duskmoon-dev/css-art": ">=1.17.0",
+    "react": ">=19.0.0",
+    "react-dom": ">=19.0.0"
+  },
+  "devDependencies": {
+    "@duskmoon-dev/css-art": "^1.17.0",
+    "@testing-library/react": "16.3.2",
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "happy-dom": "20.10.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "name": "Button",
+  "htmlElement": "button",
+  "baseClass": "btn",
+  "axes": {
+    "color": {
+      "values": {
+        "primary": "btn-primary",
+        "secondary": "btn-secondary",
+        "tertiary": "btn-tertiary",
+        "info": "btn-info",
+        "success": "btn-success",
+        "warning": "btn-warning",
+        "error": "btn-error"
+      },
+      "default": "primary"
+    },
+    "appearance": {
+      "values": {
+        "filled": "",
+        "outline": "btn-outline",
+        "tonal": "btn-tonal",
+        "ghost": "btn-ghost",
+        "text": "btn-text"
+      },
+      "default": "filled"
+    },
+    "shape": {
+      "values": {
+        "rect": "",
+        "circle": "btn-circle",
+        "square": "btn-square"
+      },
+      "default": "rect"
+    },
+    "size": {
+      "values": {
+        "xs": "btn-xs",
+        "sm": "btn-sm",
+        "md": "btn-md",
+        "lg": "btn-lg"
+      },
+      "default": "md"
+    }
+  },
+  "booleanModifiers": {
+    "block": "btn-block",
+    "isLoading": "btn-loading"
+  },
+  "reactProps": [
+    "leftIcon?: React.ReactNode",
+    "rightIcon?: React.ReactNode"
+  ]
+}

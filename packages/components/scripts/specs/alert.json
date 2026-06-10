@@ -1,0 +1,26 @@
+{
+  "name": "Alert",
+  "htmlElement": "div",
+  "baseClass": "alert",
+  "axes": {
+    "color": {
+      "values": {
+        "info": "alert-info",
+        "success": "alert-success",
+        "warning": "alert-warning",
+        "error": "alert-error"
+      },
+      "default": "info"
+    },
+    "appearance": {
+      "values": {
+        "filled": "",
+        "outline": "alert-outline",
+        "tonal": "alert-tonal"
+      },
+      "default": "filled"
+    }
+  },
+  "booleanModifiers": {},
+  "reactProps": []
+}

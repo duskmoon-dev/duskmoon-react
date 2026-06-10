@@ -1,0 +1,36 @@
+{
+  "name": "Progress",
+  "htmlElement": "div",
+  "baseClass": "progress",
+  "axes": {
+    "color": {
+      "values": {
+        "primary": "",
+        "secondary": "progress-secondary",
+        "tertiary": "progress-tertiary",
+        "success": "progress-success",
+        "error": "progress-error",
+        "warning": "progress-warning",
+        "info": "progress-info"
+      },
+      "default": "primary"
+    },
+    "size": {
+      "values": {
+        "sm": "progress-sm",
+        "md": "progress-md",
+        "lg": "progress-lg",
+        "xl": "progress-xl"
+      },
+      "default": "md"
+    }
+  },
+  "booleanModifiers": {
+    "indeterminate": "progress-indeterminate"
+  },
+  "reactProps": [
+    "percent?: number",
+    "showInfo?: boolean",
+    "format?: (percent: number) => React.ReactNode"
+  ]
+}
