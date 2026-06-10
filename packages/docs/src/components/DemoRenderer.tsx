@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import * as ArtComponents from "@duskmoon-dev/art-components";
 import * as DmComponents from "@duskmoon-dev/components";
 
 interface DemoRendererProps {
@@ -202,6 +203,7 @@ export default function DemoRenderer({
   demoCode,
 }: DemoRendererProps) {
   // Handle special case utility/hook/types
+  const isArtComponent = componentId.startsWith("art-");
   const isHook = componentId.startsWith("use-") || componentName.startsWith("use");
   const isUtility =
     componentId.startsWith("get-") ||
@@ -292,7 +294,8 @@ export default function DemoRenderer({
   }
 
   // Handle standard React component rendering
-  const Component = (DmComponents as any)[componentName];
+  const componentPackage = isArtComponent ? ArtComponents : DmComponents;
+  const Component = (componentPackage as any)[componentName];
   if (!Component) {
     return (
       <div style={{ color: "red", fontSize: "14px" }}>
@@ -349,7 +352,13 @@ export default function DemoRenderer({
   }
 
   return (
-    <div style={{ padding: "8px 0" }}>
+    <div
+      style={
+        isArtComponent
+          ? { display: "grid", placeItems: "center", width: "100%", padding: "12px 0" }
+          : { padding: "8px 0" }
+      }
+    >
       <Component {...parsed.props}>
         {parsed.children || undefined}
       </Component>

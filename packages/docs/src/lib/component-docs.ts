@@ -9,6 +9,8 @@ type Target = {
   directory: string | null;
   packageSubpath: string | null;
   status: string;
+  packageName?: "components" | "art-components";
+  manualScenarios?: string[];
 };
 
 type Manifest = {
@@ -51,7 +53,27 @@ export type DemoSpec = {
   code: string;
 };
 
-const repoRoot = path.resolve(import.meta.dirname, "../../../..");
+function findRepoRoot() {
+  const candidates = [
+    path.resolve(import.meta.dirname, "../../../.."),
+    path.resolve(import.meta.dirname, "../../../../.."),
+    path.resolve(process.cwd(), "../.."),
+    process.cwd(),
+  ];
+
+  return (
+    candidates.find((candidate) =>
+      fs.existsSync(
+        path.join(
+          candidate,
+          "packages/components/scripts/parity/component-api.manifest.json",
+        ),
+      ),
+    ) ?? path.resolve(import.meta.dirname, "../../../..")
+  );
+}
+
+const repoRoot = findRepoRoot();
 const manifestPath = path.join(
   repoRoot,
   "packages/components/scripts/parity/component-api.manifest.json",
@@ -60,6 +82,73 @@ const componentsRoot = path.join(
   repoRoot,
   "packages/components/src/components",
 );
+const artComponentsRoot = path.join(repoRoot, "packages/art-components/src");
+const artComponentsTest = path.join(
+  repoRoot,
+  "packages/art-components/tests/art-components.test.tsx",
+);
+
+function artTarget(
+  id: string,
+  exportName: string,
+  manualScenarios: string[],
+): Target {
+  return {
+    id,
+    kind: "art-component",
+    source: "art-components",
+    exportName,
+    directory: null,
+    packageSubpath: null,
+    status: "implemented",
+    packageName: "art-components",
+    manualScenarios,
+  };
+}
+
+const artComponentTargets: Target[] = [
+  artTarget("art-moon", "ArtMoon", ["Renders crescent and glow variants"]),
+  artTarget("art-sun", "ArtSun", [
+    "Renders rays, sunset, and pulse variants",
+  ]),
+  artTarget("art-atom", "ArtAtom", ["Renders electron orbit structure"]),
+  artTarget("art-eclipse", "ArtEclipse", [
+    "Renders layered eclipse structure",
+  ]),
+  artTarget("art-mountain", "ArtMountain", [
+    "Renders mountain, tree, and borealis layers",
+  ]),
+  artTarget("art-snowflake", "ArtSnowflake", [
+    "Supports unicode and falling snowflake variants",
+  ]),
+  artTarget("art-plasma-ball", "ArtPlasmaBall", [
+    "Renders interactive plasma rays and switch state",
+  ]),
+  artTarget("art-circular-gallery", "ArtCircularGallery", [
+    "Renders targetable gallery cards",
+  ]),
+  artTarget("art-cat-stargazer", "ArtCatStargazer", [
+    "Renders the stargazing scene structure",
+  ]),
+  artTarget("art-flower-animation", "ArtFlowerAnimation", [
+    "Renders flowers, grass, and animated bubbles",
+  ]),
+  artTarget("art-color-spin", "ArtColorSpin", [
+    "Renders generated color spin segments",
+  ]),
+  artTarget("art-synthwave-starfield", "ArtSynthwaveStarfield", [
+    "Supports pausing the starfield animation",
+  ]),
+  artTarget("art-csswitch", "ArtCsswitch", [
+    "Renders the console body and joycon controls",
+  ]),
+  artTarget("art-snowball-preloader", "ArtSnowballPreloader", [
+    "Renders snowball preloader rings and track",
+  ]),
+  artTarget("art-gemini-input", "ArtGeminiInput", [
+    "Renders textarea controls and action buttons",
+  ]),
+];
 
 function readManifest(): Manifest {
   return JSON.parse(fs.readFileSync(manifestPath, "utf8")) as Manifest;
@@ -81,6 +170,7 @@ function componentName(target: Target) {
 }
 
 function categoryFor(kind: string) {
+  if (kind === "art-component") return "CSS Art";
   if (kind === "dm-workflow-component") return "DuskMoon workflow";
   if (kind === "infrastructure-export") return "Infrastructure";
   if (kind === "internal-component") return "Internal";
@@ -131,6 +221,10 @@ function introFor(
     return `${name} is a DuskMoon-prefixed workflow component exported by this React package.${featureText}${propText}`;
   }
 
+  if (target.kind === "art-component") {
+    return `${name} wraps a @duskmoon-dev/css-art illustration as a typed React component. Import the art component styles once in the application entry before rendering it.${featureText}${propText}`;
+  }
+
   if (target.kind === "internal-component") {
     return `${name} is an internal implementation target used by higher-level DuskMoon workflow components. This standalone page records the maintainer-facing API and scenarios that keep the internal surface explicit.${featureText}${propText}`;
   }
@@ -143,6 +237,10 @@ function introFor(
 }
 
 function findTypeFile(target: Target, name: string) {
+  if (target.packageName === "art-components") {
+    return path.join(artComponentsRoot, "index.tsx");
+  }
+
   if (!target.directory) return null;
 
   const componentDir = path.join(componentsRoot, target.directory);
@@ -160,6 +258,10 @@ function findTypeFile(target: Target, name: string) {
 }
 
 function findTestFile(target: Target, name: string) {
+  if (target.packageName === "art-components") {
+    return artComponentsTest;
+  }
+
   if (!target.directory) return null;
 
   const componentDir = path.join(componentsRoot, target.directory);
@@ -266,10 +368,18 @@ function parseApi(typeFile: string | null, name: string): ApiSection[] {
     source.matchAll(/export\s+type\s+([A-Za-z_$][\w$]*)\s*=\s*([^;]+);/g),
     (match) => ({ name: match[1], definition: compactType(match[2]) }),
   );
-  const orderedInterfaceNames = [
-    ...preferredNames.filter((item) => interfaceNames.includes(item)),
-    ...interfaceNames.filter((item) => !preferredNames.includes(item)),
-  ];
+  const isArtTypeFile = typeFile.startsWith(artComponentsRoot);
+  const orderedInterfaceNames = isArtTypeFile
+    ? preferredNames.filter((item) => interfaceNames.includes(item))
+    : [
+        ...preferredNames.filter((item) => interfaceNames.includes(item)),
+        ...interfaceNames.filter((item) => !preferredNames.includes(item)),
+      ];
+  const orderedTypeNames = isArtTypeFile
+    ? preferredNames.flatMap((item) =>
+        typeNames.filter((typeInfo) => typeInfo.name === item),
+      )
+    : typeNames.slice(0, 8);
 
   for (const interfaceName of orderedInterfaceNames.slice(0, 8)) {
     const parsed = splitInterfaceBody(source, interfaceName);
@@ -283,7 +393,7 @@ function parseApi(typeFile: string | null, name: string): ApiSection[] {
     });
   }
 
-  for (const typeInfo of typeNames.slice(0, 8)) {
+  for (const typeInfo of orderedTypeNames) {
     if (sections.some((section) => section.name === typeInfo.name)) continue;
     sections.push({
       name: typeInfo.name,
@@ -411,12 +521,74 @@ function propsObjectFromApi(api: ApiSection[], target: Target) {
   return Array.from(new Set(props)).slice(0, 6);
 }
 
+function artDemoCode(target: Target, name: string) {
+  switch (target.id) {
+    case "art-moon":
+      return `<${name} size="lg" crescent glow />`;
+    case "art-sun":
+      return `<${name} size="lg" rays pulse />`;
+    case "art-atom":
+      return `<${name} size="sm" />`;
+    case "art-eclipse":
+      return `<${name} size="sm" />`;
+    case "art-mountain":
+      return `<${name} size="sm" />`;
+    case "art-snowflake":
+      return `<${name}
+  unicode
+  fall
+  style={{
+    "--art-snowflake-size": "32px",
+    "--art-snowflake-color": "#76d7ff"
+  }}
+/>`;
+    case "art-plasma-ball":
+      return `<${name} size="sm" defaultChecked />`;
+    case "art-circular-gallery":
+      return `<${name}
+  title="Moons"
+  size="sm"
+  items={[
+    { title: "Crater", src: "https://picsum.photos/seed/dm-art-1/160/220" },
+    { title: "Orbit", src: "https://picsum.photos/seed/dm-art-2/160/220" },
+    { title: "Lunar", src: "https://picsum.photos/seed/dm-art-3/160/220" },
+    { title: "Night", src: "https://picsum.photos/seed/dm-art-4/160/220" }
+  ]}
+/>`;
+    case "art-cat-stargazer":
+      return `<${name} size="sm" />`;
+    case "art-flower-animation":
+      return `<${name} size="sm" />`;
+    case "art-color-spin":
+      return `<${name} size="sm" />`;
+    case "art-synthwave-starfield":
+      return `<${name} size="sm" />`;
+    case "art-csswitch":
+      return `<${name} size="sm" />`;
+    case "art-snowball-preloader":
+      return `<${name} size="sm" />`;
+    case "art-gemini-input":
+      return `<${name}
+  size="lg"
+  placeholder="Ask DuskMoon"
+  defaultValue="Pure CSS art"
+  rows={2}
+/>`;
+    default:
+      return `<${name} />`;
+  }
+}
+
 function demoCode(
   target: Target,
   name: string,
   api: ApiSection[],
   scenario?: string,
 ) {
+  if (target.kind === "art-component") {
+    return artDemoCode(target, name);
+  }
+
   const props = propsObjectFromApi(api, target);
   const scenarioComment = scenario ? `  // ${scenario}\n` : "";
   const noChildrenComponents = [
@@ -528,20 +700,39 @@ ${scenarioComment}${props.map((prop) => `  ${prop}`).join("\n")}
 >${childText}</${name}>`;
 }
 
+function importPathForTarget(target: Target) {
+  if (target.packageName === "art-components") {
+    return "@duskmoon-dev/art-components";
+  }
+
+  return target.packageSubpath
+    ? `@duskmoon-dev/components/${target.packageSubpath.slice(2)}`
+    : "@duskmoon-dev/components";
+}
+
 function demosFor(
   target: Target,
   name: string,
   api: ApiSection[],
   scenarios: string[],
 ): DemoSpec[] {
-  const importPath = target.packageSubpath
-    ? `@duskmoon-dev/components/${target.packageSubpath.slice(2)}`
-    : "@duskmoon-dev/components";
+  const importPath = importPathForTarget(target);
   const usage = demoCode(target, name, api);
   const importLine =
     target.kind === "internal-component"
       ? `// Internal component: packages/components/src/components/${target.id}`
       : `import { ${name} } from "${importPath}";`;
+
+  if (target.kind === "art-component") {
+    return [
+      {
+        title: "Basic usage",
+        description: `Import ${name} and the art component stylesheet before rendering the CSS art scene.`,
+        code: `import "@duskmoon-dev/art-components/styles.css";\n${importLine}\n\nexport function Example() {\n  return (${usage});\n}`,
+      },
+    ];
+  }
+
   const scenarioDemos = scenarios.slice(0, 3).map((scenario) => {
     const scenarioUsage = demoCode(target, name, api, scenario);
 
@@ -579,7 +770,7 @@ function toDoc(target: Target): ComponentDoc {
   const typeFile = findTypeFile(target, name);
   const testFile = findTestFile(target, name);
   const api = parseApi(typeFile, name);
-  const scenarios = scenariosFromTest(testFile);
+  const scenarios = target.manualScenarios?.map(sentenceCase) ?? scenariosFromTest(testFile);
   const keyProps = keyPropsFromApi(api);
 
   return {
@@ -588,9 +779,7 @@ function toDoc(target: Target): ComponentDoc {
     route: `/components/${target.id}`,
     category: categoryFor(target.kind),
     intro: introFor(target, name, scenarios, keyProps),
-    importPath: target.packageSubpath
-      ? `@duskmoon-dev/components/${target.packageSubpath.slice(2)}`
-      : "@duskmoon-dev/components",
+    importPath: importPathForTarget(target),
     typeFile,
     testFile,
     scenarios,
@@ -602,7 +791,7 @@ function toDoc(target: Target): ComponentDoc {
 
 export function getComponentDocs() {
   const manifest = readManifest();
-  return [...manifest.publicTargets, ...manifest.internalTargets]
+  return [...manifest.publicTargets, ...manifest.internalTargets, ...artComponentTargets]
     .filter((target) => target.status === "implemented")
     .map(toDoc)
     .sort((a, b) => a.id.localeCompare(b.id));

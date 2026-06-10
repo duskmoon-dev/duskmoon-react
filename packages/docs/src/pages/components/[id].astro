@@ -135,7 +135,9 @@ if (!getComponentDoc(component.id)) {
         <div class="demo-grid">
           {component.demos.map((demo) => (
             <div class="demo-card">
-              <div class="demo-preview">
+              <div
+                class={`demo-preview ${component.category === "CSS Art" ? "art-demo-preview" : ""}`}
+              >
                 <DemoRenderer
                   componentId={component.id}
                   componentName={component.title}

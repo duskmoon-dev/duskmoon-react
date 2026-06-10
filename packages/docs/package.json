@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@astrojs/react": "5.0.7",
+    "@duskmoon-dev/art-components": "workspace:*",
     "@duskmoon-dev/components": "workspace:*",
     "@duskmoon-dev/core": "1.17.0",
     "@types/react": "19.2.17",

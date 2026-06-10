@@ -365,6 +365,19 @@ main {
   background: var(--dm-surface-soft);
 }
 
+.art-demo-preview {
+  min-height: 360px;
+  justify-content: center;
+  overflow: auto;
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in oklch, var(--color-primary-container) 48%, transparent),
+      color-mix(in oklch, var(--color-secondary-container) 38%, transparent)
+    ),
+    var(--dm-surface-soft);
+}
+
 .demo-widget {
   border: 1px solid var(--dm-border);
   border-radius: 8px;
