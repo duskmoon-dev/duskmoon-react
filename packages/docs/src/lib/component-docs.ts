@@ -108,13 +108,9 @@ function artTarget(
 
 const artComponentTargets: Target[] = [
   artTarget("art-moon", "ArtMoon", ["Renders crescent and glow variants"]),
-  artTarget("art-sun", "ArtSun", [
-    "Renders rays, sunset, and pulse variants",
-  ]),
+  artTarget("art-sun", "ArtSun", ["Renders rays, sunset, and pulse variants"]),
   artTarget("art-atom", "ArtAtom", ["Renders electron orbit structure"]),
-  artTarget("art-eclipse", "ArtEclipse", [
-    "Renders layered eclipse structure",
-  ]),
+  artTarget("art-eclipse", "ArtEclipse", ["Renders layered eclipse structure"]),
   artTarget("art-mountain", "ArtMountain", [
     "Renders mountain, tree, and borealis layers",
   ]),
@@ -682,6 +678,24 @@ function demoCode(
     return `<${name} total={120} current={1} pageSize={10} />`;
   }
 
+  if (target.id === "anchor") {
+    return `<${name}
+  affix={false}
+  showInkInFixed
+  items={[
+    {
+      href: "#intro",
+      title: "Intro",
+      children: [{ href: "#demos", title: "Demos" }]
+    }
+  ]}
+/>`;
+  }
+
+  if (target.id === "back-top") {
+    return `<${name} visibilityHeight={0}>Back to top</${name}>`;
+  }
+
   if (target.id === "image") {
     return `<${name}
   src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100' viewBox='0 0 160 100'%3E%3Crect width='160' height='100' rx='12' fill='%23e58f00'/%3E%3Ccircle cx='118' cy='34' r='20' fill='%23fff7d6'/%3E%3Cpath d='M24 72h112' stroke='%23fff7d6' stroke-width='8' stroke-linecap='round'/%3E%3C/svg%3E"
@@ -689,6 +703,25 @@ function demoCode(
   width={160}
   height={100}
   placeholder="Loading image"
+/>`;
+  }
+
+  if (target.id === "tour") {
+    return `<${name}
+  open
+  mask={false}
+  steps={[
+    {
+      title: "Welcome",
+      description: "Review the highlighted workflow.",
+      style: {
+        position: "static",
+        left: "auto",
+        top: "auto",
+        transform: "none"
+      }
+    }
+  ]}
 />`;
   }
 
@@ -780,7 +813,8 @@ function toDoc(target: Target): ComponentDoc {
   const typeFile = findTypeFile(target, name);
   const testFile = findTestFile(target, name);
   const api = parseApi(typeFile, name);
-  const scenarios = target.manualScenarios?.map(sentenceCase) ?? scenariosFromTest(testFile);
+  const scenarios =
+    target.manualScenarios?.map(sentenceCase) ?? scenariosFromTest(testFile);
   const keyProps = keyPropsFromApi(api);
 
   return {
@@ -801,7 +835,11 @@ function toDoc(target: Target): ComponentDoc {
 
 export function getComponentDocs() {
   const manifest = readManifest();
-  return [...manifest.publicTargets, ...manifest.internalTargets, ...artComponentTargets]
+  return [
+    ...manifest.publicTargets,
+    ...manifest.internalTargets,
+    ...artComponentTargets,
+  ]
     .filter((target) => target.status === "implemented")
     .map(toDoc)
     .sort((a, b) => a.id.localeCompare(b.id));
