@@ -57,6 +57,37 @@ function GridPreview() {
   );
 }
 
+function DmSplitterPreview() {
+  const panelStyle: React.CSSProperties = {
+    display: "grid",
+    minHeight: "92px",
+    placeItems: "center",
+    padding: "12px",
+    background: "var(--dm-surface)",
+    border: "1px solid var(--dm-border)",
+    borderRadius: "6px",
+    color: "var(--dm-text)",
+    fontWeight: 600,
+  };
+
+  return (
+    <div style={{ width: "min(560px, 100%)" }}>
+      <DmComponents.DmSplitter
+        defaultSizes={[180, "1fr"]}
+        gap={8}
+        style={{ width: "100%" }}
+      >
+        <DmComponents.DmSplitter.Panel style={panelStyle}>
+          Navigation
+        </DmComponents.DmSplitter.Panel>
+        <DmComponents.DmSplitter.Panel style={panelStyle}>
+          Workspace
+        </DmComponents.DmSplitter.Panel>
+      </DmComponents.DmSplitter>
+    </div>
+  );
+}
+
 function parsePropsText(propsText: string): ParsedProps {
   const props: ParsedProps = {};
   let i = 0;
@@ -415,6 +446,10 @@ export default function DemoRenderer({
 
   if (componentId === "grid") {
     return <GridPreview />;
+  }
+
+  if (componentId === "dm-splitter") {
+    return <DmSplitterPreview />;
   }
 
   // Handle standard React component rendering

@@ -706,6 +706,17 @@ function demoCode(
 />`;
   }
 
+  if (target.id === "dm-splitter") {
+    return `<${name}
+  defaultSizes={[180, "1fr"]}
+  gap={8}
+  style={{ width: "100%" }}
+>
+  <${name}.Panel>Navigation</${name}.Panel>
+  <${name}.Panel>Workspace</${name}.Panel>
+</${name}>`;
+  }
+
   if (target.id === "skeleton") {
     return `<${name}
   active
