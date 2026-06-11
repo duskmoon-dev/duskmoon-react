@@ -1,6 +1,7 @@
 import React from "react";
-import { describe, expect, test } from "bun:test";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, test } from "bun:test";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import { message } from "../message";
 import { App } from "./App";
 
 function Action() {
@@ -28,6 +29,13 @@ function Action() {
 }
 
 describe("App", () => {
+  afterEach(() => {
+    act(() => {
+      message.destroy();
+      message.config({ duration: 3, maxCount: undefined, placement: "top" });
+    });
+  });
+
   test("provides message and notification APIs through context", () => {
     render(
       <App>
