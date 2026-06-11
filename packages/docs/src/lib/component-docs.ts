@@ -717,6 +717,16 @@ function demoCode(
 </${name}>`;
   }
 
+  if (target.id === "splitter") {
+    return `<${name}
+  defaultSizes={[180, "1fr"]}
+  style={{ width: "100%" }}
+>
+  <${name}.Panel>Navigation</${name}.Panel>
+  <${name}.Panel>Workspace</${name}.Panel>
+</${name}>`;
+  }
+
   if (target.id === "skeleton") {
     return `<${name}
   active

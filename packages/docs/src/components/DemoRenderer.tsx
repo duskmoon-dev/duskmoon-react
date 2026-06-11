@@ -88,6 +88,36 @@ function DmSplitterPreview() {
   );
 }
 
+function SplitterPreview() {
+  const panelStyle: React.CSSProperties = {
+    display: "grid",
+    minHeight: "92px",
+    placeItems: "center",
+    padding: "12px",
+    background: "var(--dm-surface)",
+    border: "1px solid var(--dm-border)",
+    borderRadius: "6px",
+    color: "var(--dm-text)",
+    fontWeight: 600,
+  };
+
+  return (
+    <div style={{ width: "min(560px, 100%)" }}>
+      <DmComponents.Splitter
+        defaultSizes={[180, "1fr"]}
+        style={{ width: "100%" }}
+      >
+        <DmComponents.Splitter.Panel style={panelStyle}>
+          Navigation
+        </DmComponents.Splitter.Panel>
+        <DmComponents.Splitter.Panel style={panelStyle}>
+          Workspace
+        </DmComponents.Splitter.Panel>
+      </DmComponents.Splitter>
+    </div>
+  );
+}
+
 function parsePropsText(propsText: string): ParsedProps {
   const props: ParsedProps = {};
   let i = 0;
@@ -450,6 +480,10 @@ export default function DemoRenderer({
 
   if (componentId === "dm-splitter") {
     return <DmSplitterPreview />;
+  }
+
+  if (componentId === "splitter") {
+    return <SplitterPreview />;
   }
 
   // Handle standard React component rendering
