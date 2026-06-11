@@ -11,6 +11,52 @@ interface DemoRendererProps {
 
 type ParsedProps = Record<string, unknown>;
 
+function GridPreview() {
+  const screens = DmComponents.Grid.useBreakpoint();
+  const active = Object.entries(screens)
+    .filter(([, matches]) => matches)
+    .map(([breakpoint]) => breakpoint);
+
+  return (
+    <div
+      style={{
+        display: "grid",
+        gap: "10px",
+        width: "min(420px, 100%)",
+        padding: "12px",
+        background: "var(--dm-surface)",
+        border: "1px solid var(--dm-border)",
+        borderRadius: "8px",
+      }}
+    >
+      <strong style={{ fontSize: "14px" }}>Current breakpoints</strong>
+      <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+        {Object.entries(screens).map(([breakpoint, matches]) => (
+          <span
+            key={breakpoint}
+            style={{
+              padding: "4px 8px",
+              borderRadius: "999px",
+              background: matches
+                ? "var(--dm-primary-soft)"
+                : "var(--dm-surface-soft)",
+              color: matches ? "var(--dm-primary)" : "var(--dm-muted)",
+              border: "1px solid var(--dm-border)",
+              fontSize: "12px",
+              fontWeight: matches ? 700 : 500,
+            }}
+          >
+            {breakpoint}
+          </span>
+        ))}
+      </div>
+      <span style={{ color: "var(--dm-muted)", fontSize: "13px" }}>
+        {active.length ? `Active: ${active.join(", ")}` : "No active matches"}
+      </span>
+    </div>
+  );
+}
+
 function DmSplitterPreview() {
   const panelStyle: React.CSSProperties = {
     display: "grid",
@@ -267,8 +313,7 @@ export default function DemoRenderer({
     componentId.startsWith("on-") ||
     componentId.startsWith("unstable-") ||
     componentId === "version" ||
-    componentId === "theme" ||
-    componentId === "grid";
+    componentId === "theme";
 
   if (isHook) {
     return (
@@ -397,6 +442,10 @@ export default function DemoRenderer({
         </DmComponents.Button>
       </div>
     );
+  }
+
+  if (componentId === "grid") {
+    return <GridPreview />;
   }
 
   if (componentId === "dm-splitter") {
