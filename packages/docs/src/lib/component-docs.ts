@@ -682,6 +682,10 @@ function demoCode(
     return `<${name} total={120} current={1} pageSize={10} />`;
   }
 
+  if (target.id === "back-top") {
+    return `<${name} visibilityHeight={0}>Back to top</${name}>`;
+  }
+
   if (noChildrenComponents.includes(target.id)) {
     if (props.length === 0) {
       return `<${name} />`;
