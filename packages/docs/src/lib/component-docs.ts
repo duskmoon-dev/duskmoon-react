@@ -682,6 +682,20 @@ function demoCode(
     return `<${name} total={120} current={1} pageSize={10} />`;
   }
 
+  if (target.id === "anchor") {
+    return `<${name}
+  affix={false}
+  showInkInFixed
+  items={[
+    {
+      href: "#intro",
+      title: "Intro",
+      children: [{ href: "#demos", title: "Demos" }]
+    }
+  ]}
+/>`;
+  }
+
   if (noChildrenComponents.includes(target.id)) {
     if (props.length === 0) {
       return `<${name} />`;
