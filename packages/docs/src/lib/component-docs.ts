@@ -682,6 +682,17 @@ function demoCode(
     return `<${name} total={120} current={1} pageSize={10} />`;
   }
 
+  if (target.id === "dm-splitter") {
+    return `<${name}
+  defaultSizes={[180, "1fr"]}
+  gap={8}
+  style={{ width: "100%" }}
+>
+  <${name}.Panel>Navigation</${name}.Panel>
+  <${name}.Panel>Workspace</${name}.Panel>
+</${name}>`;
+  }
+
   if (noChildrenComponents.includes(target.id)) {
     if (props.length === 0) {
       return `<${name} />`;
