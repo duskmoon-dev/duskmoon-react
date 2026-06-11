@@ -1,0 +1,81 @@
+name: Publish Art Components
+
+on:
+  workflow_dispatch:
+    inputs:
+      git_ref:
+        description: "Git ref to publish from"
+        required: true
+        default: "main"
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    name: Publish @duskmoon-dev/art-components
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.git_ref }}
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Setup npm registry
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Test package
+        run: bun run --filter "@duskmoon-dev/art-components" test
+
+      - name: Typecheck package
+        run: bun run --filter "@duskmoon-dev/art-components" typecheck
+
+      - name: Build package
+        run: bun run --filter "@duskmoon-dev/art-components" build
+
+      - name: Publish or ensure public access
+        working-directory: packages/art-components
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          package_name="$(node -p 'require("./package.json").name')"
+          package_version="$(node -p 'require("./package.json").version')"
+
+          if npm view "${package_name}@${package_version}" version --registry https://registry.npmjs.org >/dev/null 2>&1; then
+            echo "${package_name}@${package_version} already exists on npm."
+          else
+            npm publish --access public --provenance --registry https://registry.npmjs.org
+          fi
+
+          npm access public "${package_name}" --registry https://registry.npmjs.org || true
+
+      - name: Verify public package
+        working-directory: packages/art-components
+        run: |
+          package_name="$(node -p 'require("./package.json").name')"
+          package_version="$(node -p 'require("./package.json").version')"
+
+          for attempt in {1..12}; do
+            if env -u NODE_AUTH_TOKEN npm view "${package_name}@${package_version}" version --registry https://registry.npmjs.org; then
+              exit 0
+            fi
+
+            echo "Waiting for ${package_name}@${package_version} to become public on npm (${attempt}/12)."
+            sleep 10
+          done
+
+          exit 1
