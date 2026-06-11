@@ -108,13 +108,9 @@ function artTarget(
 
 const artComponentTargets: Target[] = [
   artTarget("art-moon", "ArtMoon", ["Renders crescent and glow variants"]),
-  artTarget("art-sun", "ArtSun", [
-    "Renders rays, sunset, and pulse variants",
-  ]),
+  artTarget("art-sun", "ArtSun", ["Renders rays, sunset, and pulse variants"]),
   artTarget("art-atom", "ArtAtom", ["Renders electron orbit structure"]),
-  artTarget("art-eclipse", "ArtEclipse", [
-    "Renders layered eclipse structure",
-  ]),
+  artTarget("art-eclipse", "ArtEclipse", ["Renders layered eclipse structure"]),
   artTarget("art-mountain", "ArtMountain", [
     "Renders mountain, tree, and borealis layers",
   ]),
@@ -696,6 +692,25 @@ function demoCode(
 />`;
   }
 
+  if (target.id === "tour") {
+    return `<${name}
+  open
+  mask={false}
+  steps={[
+    {
+      title: "Welcome",
+      description: "Review the highlighted workflow.",
+      style: {
+        position: "static",
+        left: "auto",
+        top: "auto",
+        transform: "none"
+      }
+    }
+  ]}
+/>`;
+  }
+
   if (noChildrenComponents.includes(target.id)) {
     if (props.length === 0) {
       return `<${name} />`;
@@ -784,7 +799,8 @@ function toDoc(target: Target): ComponentDoc {
   const typeFile = findTypeFile(target, name);
   const testFile = findTestFile(target, name);
   const api = parseApi(typeFile, name);
-  const scenarios = target.manualScenarios?.map(sentenceCase) ?? scenariosFromTest(testFile);
+  const scenarios =
+    target.manualScenarios?.map(sentenceCase) ?? scenariosFromTest(testFile);
   const keyProps = keyPropsFromApi(api);
 
   return {
@@ -805,7 +821,11 @@ function toDoc(target: Target): ComponentDoc {
 
 export function getComponentDocs() {
   const manifest = readManifest();
-  return [...manifest.publicTargets, ...manifest.internalTargets, ...artComponentTargets]
+  return [
+    ...manifest.publicTargets,
+    ...manifest.internalTargets,
+    ...artComponentTargets,
+  ]
     .filter((target) => target.status === "implemented")
     .map(toDoc)
     .sort((a, b) => a.id.localeCompare(b.id));
