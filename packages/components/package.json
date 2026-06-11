@@ -394,7 +394,7 @@
     "./styles.css": "./dist/styles.css"
   },
   "scripts": {
-    "build": "bun run build:js && bun run build:types",
+    "build": "rm -rf dist && bun run build:js && bun run build:types",
     "build:js": "bun run build.ts",
     "build:types": "tsc -p tsconfig.build.json --emitDeclarationOnly",
     "test": "bun test --preload ../../test/setup.ts",
