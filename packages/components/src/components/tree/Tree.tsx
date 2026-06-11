@@ -50,6 +50,13 @@ function hasNode(node: React.ReactNode) {
   return node !== undefined && node !== null && node !== false;
 }
 
+function isCurrentTreeItemEvent(event: React.SyntheticEvent<HTMLElement>) {
+  return (
+    event.target instanceof Element &&
+    event.target.closest('[role="treeitem"]') === event.currentTarget
+  );
+}
+
 function isActivationKey(key: string) {
   return key === "Enter" || key === " ";
 }
@@ -250,7 +257,9 @@ function TreeRoot<T extends TreeDataNode>(
   const allExpandableKeys = useMemo(
     () =>
       flatNodes
-        .filter((item) => item.children.length > 0 || item.node.isLeaf === false)
+        .filter(
+          (item) => item.children.length > 0 || item.node.isLeaf === false,
+        )
         .map((item) => item.keyString),
     [flatNodes],
   );
@@ -431,7 +440,40 @@ function TreeRoot<T extends TreeDataNode>(
     const title = titleRender?.(item.node) ?? item.node.title ?? item.key;
 
     return (
-      <li key={item.keyString} role="treeitem" aria-expanded={expandable ? expanded : undefined}>
+      <li
+        key={item.keyString}
+        role="treeitem"
+        aria-expanded={expandable ? expanded : undefined}
+        aria-selected={selected}
+        aria-disabled={nodeDisabled || undefined}
+        tabIndex={nodeDisabled ? undefined : 0}
+        onClick={(event) => {
+          if (isCurrentTreeItemEvent(event)) {
+            selectNode(item, event);
+          }
+        }}
+        onKeyDown={(event) => {
+          if (isActivationKey(event.key) && isCurrentTreeItemEvent(event)) {
+            event.preventDefault();
+            selectNode(item, event);
+          }
+        }}
+        onDragStart={(event) => {
+          setDragNodeKey(item.keyString);
+          onDragStart?.(dragInfo(item, event));
+        }}
+        onDragEnter={(event) => onDragEnter?.(dragInfo(item, event))}
+        onDragOver={(event) => {
+          if (onDrop) {
+            event.preventDefault();
+          }
+
+          onDragOver?.(dragInfo(item, event));
+        }}
+        onDragLeave={(event) => onDragLeave?.(dragInfo(item, event))}
+        onDragEnd={(event) => onDragEnd?.(dragInfo(item, event))}
+        onDrop={(event) => handleDrop(item, event)}
+      >
         <div
           className={getTreeNodeClasses({
             selected,
@@ -442,36 +484,15 @@ function TreeRoot<T extends TreeDataNode>(
             className: cn(item.node.className, blockNode && "tree-node-block"),
           })}
           style={{ paddingInlineStart: item.level * 16 }}
-          tabIndex={nodeDisabled ? undefined : 0}
           draggable={nodeDraggable}
-          aria-selected={selected || undefined}
-          aria-disabled={nodeDisabled || undefined}
-          onClick={(event) => selectNode(item, event)}
-          onKeyDown={(event) => {
-            if (isActivationKey(event.key)) {
-              event.preventDefault();
-              selectNode(item, event);
-            }
-          }}
-          onDragStart={(event) => {
-            setDragNodeKey(item.keyString);
-            onDragStart?.(dragInfo(item, event));
-          }}
-          onDragEnter={(event) => onDragEnter?.(dragInfo(item, event))}
-          onDragOver={(event) => {
-            if (onDrop) {
-              event.preventDefault();
-            }
-
-            onDragOver?.(dragInfo(item, event));
-          }}
-          onDragLeave={(event) => onDragLeave?.(dragInfo(item, event))}
-          onDragEnd={(event) => onDragEnd?.(dragInfo(item, event))}
-          onDrop={(event) => handleDrop(item, event)}
         >
           <button
             type="button"
-            aria-label={expanded ? `Collapse ${item.keyString}` : `Expand ${item.keyString}`}
+            aria-label={
+              expanded
+                ? `Collapse ${item.keyString}`
+                : `Expand ${item.keyString}`
+            }
             className={treeNodeSwitcherClass}
             disabled={nodeDisabled || !expandable}
             onClick={(event) => {
@@ -525,7 +546,9 @@ function TreeRoot<T extends TreeDataNode>(
   );
 }
 
-const TreeBase = forwardRef(TreeRoot) as <T extends TreeDataNode = TreeDataNode>(
+const TreeBase = forwardRef(TreeRoot) as <
+  T extends TreeDataNode = TreeDataNode,
+>(
   props: TreeProps<T> & React.RefAttributes<HTMLDivElement>,
 ) => React.ReactElement | null;
 

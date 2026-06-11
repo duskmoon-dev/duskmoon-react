@@ -1172,10 +1172,10 @@
       "id": "dm-pro-table-inner",
       "kind": "internal-component",
       "source": "duskmoon",
-      "exportName": null,
+      "exportName": "DmProTableInner",
       "directory": "dm-pro-table-inner",
-      "rootExport": null,
-      "packageSubpath": null,
+      "rootExport": "./components/dm-pro-table-inner",
+      "packageSubpath": "./dm-pro-table-inner",
       "buildEntrypoint": "src/components/dm-pro-table-inner/index.ts",
       "status": "implemented"
     }

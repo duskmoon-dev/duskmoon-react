@@ -14,26 +14,18 @@ describe("Popover", () => {
 
     const trigger = screen.getByRole("button", { name: "Target" });
 
-    expect(screen.getByRole("tooltip").className).not.toContain(
-      "popover-show",
-    );
+    expect(screen.getByRole("tooltip").className).not.toContain("popover-show");
 
-    fireEvent.mouseEnter(trigger.parentElement as HTMLElement);
+    fireEvent.mouseEnter(trigger);
     expect(screen.getByRole("tooltip").className).toContain("popover-show");
 
-    fireEvent.mouseLeave(trigger.parentElement as HTMLElement);
-    expect(screen.getByRole("tooltip").className).not.toContain(
-      "popover-show",
-    );
+    fireEvent.mouseLeave(trigger);
+    expect(screen.getByRole("tooltip").className).not.toContain("popover-show");
   });
 
   test("supports destroy-on-hide behavior", () => {
     render(
-      <Popover
-        content="hidden"
-        destroyTooltipOnHide
-        trigger="click"
-      >
+      <Popover content="hidden" destroyTooltipOnHide trigger="click">
         <button type="button">Target</button>
       </Popover>,
     );
@@ -42,10 +34,10 @@ describe("Popover", () => {
 
     expect(screen.queryByRole("tooltip")).toBeNull();
 
-    fireEvent.click(trigger.parentElement as HTMLElement);
+    fireEvent.click(trigger);
     expect(screen.getByRole("tooltip")).toBeTruthy();
 
-    fireEvent.click(trigger.parentElement as HTMLElement);
+    fireEvent.click(trigger);
     expect(screen.queryByRole("tooltip")).toBeNull();
   });
 

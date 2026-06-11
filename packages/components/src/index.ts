@@ -14,10 +14,28 @@ import {
   usePersistedPageSize,
   version,
 } from "./infrastructure";
+
+type DuskMoonReactGlobals = {
+  __duskmoon_react_version?: typeof version;
+  __duskmoon_react_theme?: typeof theme;
+  __duskmoon_react_helpers?: {
+    getDmDatePickerLocale: typeof getDmDatePickerLocale;
+    getDmTheme: typeof getDmTheme;
+    getUnstableRender: typeof getUnstableRender;
+    onDmThemeUpdate: typeof onDmThemeUpdate;
+    setDmDatePickerLocale: typeof setDmDatePickerLocale;
+    setDmPrefixCls: typeof setDmPrefixCls;
+    setDmPrimaryColor: typeof setDmPrimaryColor;
+    unstableSetRender: typeof unstableSetRender;
+    usePersistedPageSize: typeof usePersistedPageSize;
+  };
+};
+
 if (typeof window !== "undefined") {
-  (window as any).__duskmoon_react_version = version;
-  (window as any).__duskmoon_react_theme = theme;
-  (window as any).__duskmoon_react_helpers = {
+  const duskmoonWindow = window as Window & DuskMoonReactGlobals;
+  duskmoonWindow.__duskmoon_react_version = version;
+  duskmoonWindow.__duskmoon_react_theme = theme;
+  duskmoonWindow.__duskmoon_react_helpers = {
     getDmDatePickerLocale,
     getDmTheme,
     getUnstableRender,
@@ -79,6 +97,7 @@ export * from "./components/dm-infinite-scroll";
 export * from "./components/dm-page-header";
 export * from "./components/dm-pagination";
 export * from "./components/dm-pro-table";
+export * from "./components/dm-pro-table-inner";
 export * from "./components/dm-provider";
 export * from "./components/dm-query";
 export * from "./components/dm-search";

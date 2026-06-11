@@ -13,7 +13,10 @@ import {
   getDmPaginationRefreshClasses,
 } from "../../classes/dm-pagination";
 import { Pagination } from "../pagination";
-import type { DmPaginationLocale, DmPaginationProps } from "./DmPagination.types";
+import type {
+  DmPaginationLocale,
+  DmPaginationProps,
+} from "./DmPagination.types";
 
 const defaultLocale: Required<DmPaginationLocale> = {
   refresh: "Refresh",
@@ -57,7 +60,9 @@ function useElementWidth() {
     if (!element || typeof ResizeObserver === "undefined") return;
 
     const observer = new ResizeObserver(([entry]) => {
-      setWidth(entry?.contentRect.width || element.getBoundingClientRect().width);
+      setWidth(
+        entry?.contentRect.width || element.getBoundingClientRect().width,
+      );
     });
 
     observer.observe(element);
@@ -104,7 +109,10 @@ export const DmPagination = forwardRef<HTMLDivElement, DmPaginationProps>(
     ref,
   ) => {
     const [measureRef, width] = useElementWidth();
-    const mergedLocale = { ...defaultLocale, ...locale };
+    const mergedLocale = useMemo(
+      () => ({ ...defaultLocale, ...locale }),
+      [locale],
+    );
     const isRefreshVisible = showRefresh && Boolean(refresh);
     const shouldRender = showPagination || isRefreshVisible;
     const responsiveSimpleMode = responsiveSimple
@@ -131,9 +139,11 @@ export const DmPagination = forwardRef<HTMLDivElement, DmPaginationProps>(
             : mergedLocale.showTotal(nextTotal, range, selectedTotal);
 
         return (
-          <span title={`${mergedLocale.showTotal(nextTotal, range, selectedTotal)}${
-            selectedTotal ? mergedLocale.selected(selectedTotal) : ""
-          }`}>
+          <span
+            title={`${mergedLocale.showTotal(nextTotal, range, selectedTotal)}${
+              selectedTotal ? mergedLocale.selected(selectedTotal) : ""
+            }`}
+          >
             {message}
             {selected}
           </span>

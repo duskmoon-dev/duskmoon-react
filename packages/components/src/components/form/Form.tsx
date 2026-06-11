@@ -2,6 +2,7 @@ import React, {
   createContext,
   forwardRef,
   isValidElement,
+  useCallback,
   useContext,
   useEffect,
   useImperativeHandle,
@@ -166,13 +167,9 @@ function useInternalForm<T extends Record<string, unknown>>(
   form?: FormInstance<T>,
   initialValues?: Partial<T>,
 ) {
-  const ref = useRef<FormInstance<T> | undefined>(undefined);
+  const [internalForm] = useState(() => form ?? createFormStore(initialValues));
 
-  if (!ref.current) {
-    ref.current = form ?? createFormStore(initialValues);
-  }
-
-  return ref.current;
+  return internalForm;
 }
 
 function useForm<T extends Record<string, unknown> = Record<string, unknown>>(
@@ -265,32 +262,49 @@ const FormBase = forwardRef<FormInstance, FormProps>(
 
     useEffect(() => {
       (
-        formInstance as FormInstance & { __setSubmit?: (submit: () => void) => void }
+        formInstance as FormInstance & {
+          __setSubmit?: (submit: () => void) => void;
+        }
       ).__setSubmit?.(() => {
         void submit();
       });
     });
 
-    function setFieldError(fieldName: FormNamePath, fieldErrors: React.ReactNode[]) {
-      setErrors((current) => ({ ...current, [nameKey(fieldName)]: fieldErrors }));
-    }
+    const setFieldError = useCallback(
+      (fieldName: FormNamePath, fieldErrors: React.ReactNode[]) => {
+        setErrors((current) => ({
+          ...current,
+          [nameKey(fieldName)]: fieldErrors,
+        }));
+      },
+      [],
+    );
 
-    function getFieldError(fieldName: FormNamePath) {
-      return errors[nameKey(fieldName)] ?? [];
-    }
+    const getFieldError = useCallback(
+      (fieldName: FormNamePath) => {
+        return errors[nameKey(fieldName)] ?? [];
+      },
+      [errors],
+    );
 
-    function registerField(fieldName: FormNamePath, rules: FormRule[] = []) {
-      const store = (
-        formInstance as FormInstance & {
-          __getRules?: () => Map<string, { name: FormNamePath; rules: FormRule[] }>;
-        }
-      ).__getRules?.();
-      store?.set(nameKey(fieldName), { name: fieldName, rules });
+    const registerField = useCallback(
+      (fieldName: FormNamePath, rules: FormRule[] = []) => {
+        const store = (
+          formInstance as FormInstance & {
+            __getRules?: () => Map<
+              string,
+              { name: FormNamePath; rules: FormRule[] }
+            >;
+          }
+        ).__getRules?.();
+        store?.set(nameKey(fieldName), { name: fieldName, rules });
 
-      return () => {
-        store?.delete(nameKey(fieldName));
-      };
-    }
+        return () => {
+          store?.delete(nameKey(fieldName));
+        };
+      },
+      [formInstance],
+    );
 
     async function submit() {
       try {
@@ -307,7 +321,10 @@ const FormBase = forwardRef<FormInstance, FormProps>(
         }
 
         setErrors(nextErrors);
-        onFinishFailed?.({ errorFields, values: formInstance.getFieldsValue() });
+        onFinishFailed?.({
+          errorFields,
+          values: formInstance.getFieldsValue(),
+        });
       }
     }
 
@@ -324,7 +341,18 @@ const FormBase = forwardRef<FormInstance, FormProps>(
         getFieldError,
         setFieldError,
       }),
-      [colon, disabled, errors, formInstance, labelCol, layout, requiredMark, wrapperCol],
+      [
+        colon,
+        disabled,
+        formInstance,
+        getFieldError,
+        labelCol,
+        layout,
+        registerField,
+        requiredMark,
+        setFieldError,
+        wrapperCol,
+      ],
     );
 
     return (
@@ -394,14 +422,17 @@ const FormItem = forwardRef<HTMLDivElement, FormItemProps>(
         | undefined;
 
       return React.cloneElement(children, {
-        [valuePropName]: valuePropName === "checked" ? Boolean(value) : value ?? "",
+        [valuePropName]:
+          valuePropName === "checked" ? Boolean(value) : (value ?? ""),
         disabled: childProps.disabled ?? context.disabled,
         [trigger]: (...args: unknown[]) => {
-          const event = args[0] as { target?: { value?: unknown; checked?: boolean } };
+          const event = args[0] as {
+            target?: { value?: unknown; checked?: boolean };
+          };
           const nextValue =
             valuePropName === "checked"
               ? event?.target?.checked
-              : event?.target?.value ?? args[0];
+              : (event?.target?.value ?? args[0]);
 
           context.form.setFieldValue(key, nextValue);
           context.setFieldError(name, []);
@@ -429,7 +460,8 @@ const FormItem = forwardRef<HTMLDivElement, FormItemProps>(
         {extra ? <div className={formItemExtraClass}>{extra}</div> : null}
         {help || fieldErrors.length > 0 ? (
           <div className={formItemHelpClass}>
-            {help ?? fieldErrors.map((error, index) => <div key={index}>{error}</div>)}
+            {help ??
+              fieldErrors.map((error, index) => <div key={index}>{error}</div>)}
           </div>
         ) : null}
       </div>
@@ -442,7 +474,8 @@ FormItem.displayName = "Form.Item";
 function FormList({ name, initialValue = [], children }: FormListProps) {
   const form = useFormInstance();
   useFormVersion(form);
-  const list = (form.getFieldValue(name) as unknown[] | undefined) ?? initialValue;
+  const list =
+    (form.getFieldValue(name) as unknown[] | undefined) ?? initialValue;
   const fields: FormListFieldData[] = list.map((_, index) => ({
     key: index,
     name: index,
@@ -465,7 +498,9 @@ function FormList({ name, initialValue = [], children }: FormListProps) {
           },
           remove: (index) => {
             const indexes = Array.isArray(index) ? index : [index];
-            setList(list.filter((_, itemIndex) => !indexes.includes(itemIndex)));
+            setList(
+              list.filter((_, itemIndex) => !indexes.includes(itemIndex)),
+            );
           },
           move: (from, to) => {
             const next = [...list];
@@ -497,7 +532,9 @@ const ErrorList = forwardRef<HTMLDivElement, ErrorListProps>(
 ErrorList.displayName = "Form.ErrorList";
 
 function FormProvider({ children }: FormProviderProps) {
-  return <ProviderContext.Provider value={{}}>{children}</ProviderContext.Provider>;
+  return (
+    <ProviderContext.Provider value={{}}>{children}</ProviderContext.Provider>
+  );
 }
 
 export const Form = FormBase as unknown as FormComponent;

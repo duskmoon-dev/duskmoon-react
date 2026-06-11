@@ -31,7 +31,7 @@ describe("infrastructure exports", () => {
   test("exposes version, theme token helpers, and render override", () => {
     unstableSetRender(() => undefined);
 
-    expect(version).toBe("0.1.0");
+    expect(version).toBe("0.1.1");
     expect(theme.getDesignToken().colorPrimary).toBe("#0065ff");
     expect(theme.useToken().token.colorPrimary).toBe("#0065ff");
   });

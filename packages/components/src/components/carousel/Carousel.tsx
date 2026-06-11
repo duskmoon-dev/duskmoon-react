@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useImperativeHandle,
   useMemo,
+  useCallback,
   useState,
 } from "react";
 import {
@@ -17,7 +18,7 @@ import {
   getCarouselSlideClasses,
 } from "../../classes/carousel";
 import { cn } from "../../utils";
-import type { CarouselComponent, CarouselProps } from "./Carousel.types";
+import type { CarouselComponent } from "./Carousel.types";
 
 function clampIndex(index: number, count: number) {
   if (count <= 0) return 0;
@@ -56,29 +57,32 @@ export const Carousel = forwardRef(
       count,
     );
 
-    function goTo(nextIndex: number) {
-      if (count === 0) return;
+    const goTo = useCallback(
+      (nextIndex: number) => {
+        if (count === 0) return;
 
-      const normalizedNext = clampIndex(nextIndex, count);
-      if (normalizedNext === currentIndex) return;
+        const normalizedNext = clampIndex(nextIndex, count);
+        if (normalizedNext === currentIndex) return;
 
-      beforeChange?.(currentIndex, normalizedNext);
+        beforeChange?.(currentIndex, normalizedNext);
 
-      if (!controlled) {
-        setInternalIndex(normalizedNext);
-      }
+        if (!controlled) {
+          setInternalIndex(normalizedNext);
+        }
 
-      onChange?.(normalizedNext, currentIndex);
-      afterChange?.(normalizedNext);
-    }
+        onChange?.(normalizedNext, currentIndex);
+        afterChange?.(normalizedNext);
+      },
+      [afterChange, beforeChange, controlled, count, currentIndex, onChange],
+    );
 
-    function next() {
+    const next = useCallback(() => {
       goTo(currentIndex + 1);
-    }
+    }, [currentIndex, goTo]);
 
-    function prev() {
+    const prev = useCallback(() => {
       goTo(currentIndex - 1);
-    }
+    }, [currentIndex, goTo]);
 
     useImperativeHandle(ref, () => ({ goTo, next, prev }));
 
@@ -87,7 +91,7 @@ export const Carousel = forwardRef(
 
       const timer = window.setInterval(next, autoplaySpeed);
       return () => window.clearInterval(timer);
-    }, [autoplay, autoplaySpeed, count, currentIndex]);
+    }, [autoplay, autoplaySpeed, count, next]);
 
     const dotsConfig = typeof dots === "object" ? dots : {};
     const shouldRenderDots = Boolean(dots) && count > 1;
@@ -111,7 +115,9 @@ export const Carousel = forwardRef(
           {slides.map((slide, index) => (
             <div
               key={index}
-              className={getCarouselSlideClasses({ active: index === currentIndex })}
+              className={getCarouselSlideClasses({
+                active: index === currentIndex,
+              })}
               aria-hidden={index === currentIndex ? undefined : true}
               style={
                 effect === "fade"
@@ -152,7 +158,9 @@ export const Carousel = forwardRef(
               <button
                 key={index}
                 type="button"
-                className={getCarouselDotClasses({ active: index === currentIndex })}
+                className={getCarouselDotClasses({
+                  active: index === currentIndex,
+                })}
                 aria-label={`Go to slide ${index + 1}`}
                 aria-current={index === currentIndex ? "true" : undefined}
                 onClick={() => goTo(index)}

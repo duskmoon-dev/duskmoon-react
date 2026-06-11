@@ -36,7 +36,13 @@ function getInitialSizes(
     const propSize = panel.props.size;
     const defaultSize = panel.props.defaultSize;
 
-    return sizes?.[index] ?? propSize ?? defaultSizes?.[index] ?? defaultSize ?? "1fr";
+    return (
+      sizes?.[index] ??
+      propSize ??
+      defaultSizes?.[index] ??
+      defaultSize ??
+      "1fr"
+    );
   });
 }
 
@@ -57,36 +63,36 @@ function nextSize(size: SplitterSize, delta: number) {
 }
 
 const SplitterPanel = forwardRef<HTMLDivElement, SplitterPanelProps>(
-  (
-    {
-      children,
-      className,
-      collapsed,
-      collapsible,
-      defaultCollapsed,
-      defaultSize,
-      max,
-      min,
-      onCollapse,
-      resizable,
-      size,
-      style,
-      ...props
-    },
-    ref,
-  ) => (
-    <div
-      {...props}
-      ref={ref}
-      className={getSplitterPanelClasses({
-        collapsed: collapsed ?? defaultCollapsed,
-        className,
-      })}
-      style={style}
-    >
-      {children}
-    </div>
-  ),
+  (props, ref) => {
+    const { children, className, collapsed, defaultCollapsed, style } = props;
+    const domProps = { ...props };
+    delete domProps.children;
+    delete domProps.className;
+    delete domProps.collapsed;
+    delete domProps.collapsible;
+    delete domProps.defaultCollapsed;
+    delete domProps.defaultSize;
+    delete domProps.max;
+    delete domProps.min;
+    delete domProps.onCollapse;
+    delete domProps.resizable;
+    delete domProps.size;
+    delete domProps.style;
+
+    return (
+      <div
+        {...domProps}
+        ref={ref}
+        className={getSplitterPanelClasses({
+          collapsed: collapsed ?? defaultCollapsed,
+          className,
+        })}
+        style={style}
+      >
+        {children}
+      </div>
+    );
+  },
 );
 
 SplitterPanel.displayName = "Splitter.Panel";
@@ -131,7 +137,10 @@ const SplitterRoot = forwardRef<HTMLDivElement, SplitterProps>(
       const panel = panels[index];
       const nextPanel = panels[index + 1];
 
-      if (panel.props.resizable === false || nextPanel?.props.resizable === false) {
+      if (
+        panel.props.resizable === false ||
+        nextPanel?.props.resizable === false
+      ) {
         return;
       }
 
@@ -182,8 +191,13 @@ const SplitterRoot = forwardRef<HTMLDivElement, SplitterProps>(
             [isHorizontal ? "minWidth" : "minHeight"]: collapsed
               ? 0
               : toCssSize(panel.props.min),
-            [isHorizontal ? "maxWidth" : "maxHeight"]: toCssSize(panel.props.max),
-            flex: typeof size === "number" || collapsed ? `0 0 ${toCssSize(size)}` : size,
+            [isHorizontal ? "maxWidth" : "maxHeight"]: toCssSize(
+              panel.props.max,
+            ),
+            flex:
+              typeof size === "number" || collapsed
+                ? `0 0 ${toCssSize(size)}`
+                : size,
             ...panel.props.style,
           };
           const handleDisabled =
@@ -198,7 +212,11 @@ const SplitterRoot = forwardRef<HTMLDivElement, SplitterProps>(
                 style: panelStyle,
               })}
               {index < panels.length - 1 ? (
-                <span className={getSplitterHandleClasses({ disabled: handleDisabled })}>
+                <span
+                  className={getSplitterHandleClasses({
+                    disabled: handleDisabled,
+                  })}
+                >
                   <button
                     type="button"
                     aria-label="Resize previous panel smaller"

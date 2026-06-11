@@ -1,4 +1,4 @@
-import React, { forwardRef, useRef, useState } from "react";
+import React, { forwardRef, useLayoutEffect, useRef, useState } from "react";
 import {
   getUploadClasses,
   getUploadItemClasses,
@@ -59,6 +59,10 @@ function formatSize(size?: number) {
   return `${Math.round(size / 1024 / 102.4) / 10} MB`;
 }
 
+function joinClasses(...classes: Array<string | undefined>) {
+  return classes.filter(Boolean).join(" ");
+}
+
 function UploadRoot(
   {
     accept,
@@ -82,13 +86,18 @@ function UploadRoot(
 ) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragover, setDragover] = useState(false);
-  const [internalFileList, setInternalFileList] = useState<UploadFile[]>(
-    () => defaultFileList.map(ensureUid),
+  const [internalFileList, setInternalFileList] = useState<UploadFile[]>(() =>
+    defaultFileList.map(ensureUid),
   );
   const controlled = fileList !== undefined;
-  const mergedFileList = (controlled ? fileList : internalFileList).map(ensureUid);
+  const mergedFileList = (controlled ? fileList : internalFileList).map(
+    ensureUid,
+  );
   const currentFileListRef = useRef(mergedFileList);
-  currentFileListRef.current = mergedFileList;
+
+  useLayoutEffect(() => {
+    currentFileListRef.current = mergedFileList;
+  }, [mergedFileList]);
 
   function commitFileList(
     nextFileList: UploadFile[],
@@ -163,7 +172,11 @@ function UploadRoot(
         const uploadFile = fileToUploadFile(sourceFile);
 
         if (result === false) {
-          const nextFile = { ...uploadFile, status: undefined, percent: undefined };
+          const nextFile = {
+            ...uploadFile,
+            status: undefined,
+            percent: undefined,
+          };
           commitFileList([...currentFileListRef.current, nextFile], nextFile);
           continue;
         }
@@ -196,7 +209,9 @@ function UploadRoot(
 
   function commitRemove(file: UploadFile) {
     const removedFile = { ...file, status: "removed" as const };
-    const nextFileList = currentFileListRef.current.filter((item) => item.uid !== file.uid);
+    const nextFileList = currentFileListRef.current.filter(
+      (item) => item.uid !== file.uid,
+    );
     commitFileList(nextFileList, removedFile);
   }
 
@@ -258,10 +273,25 @@ function UploadRoot(
       );
     }
 
+    if (React.isValidElement<React.HTMLAttributes<HTMLElement>>(trigger)) {
+      return React.cloneElement(trigger, {
+        className: joinClasses(uploadTriggerClass, trigger.props.className),
+        onClick: (event) => {
+          trigger.props.onClick?.(event);
+          openFileDialog();
+        },
+      });
+    }
+
     return (
-      <span className={uploadTriggerClass} onClick={openFileDialog}>
+      <button
+        type="button"
+        className={uploadTriggerClass}
+        disabled={disabled}
+        onClick={openFileDialog}
+      >
         {trigger}
-      </span>
+      </button>
     );
   }
 
@@ -296,7 +326,10 @@ function UploadRoot(
             const size = formatSize(file.size);
 
             return (
-              <div key={file.uid} className={getUploadItemClasses({ status: file.status })}>
+              <div
+                key={file.uid}
+                className={getUploadItemClasses({ status: file.status })}
+              >
                 <div className={uploadItemInfoClass}>
                   <button
                     type="button"
@@ -306,7 +339,9 @@ function UploadRoot(
                   >
                     <span className={uploadItemNameClass}>{file.name}</span>
                   </button>
-                  {size ? <span className={uploadItemSizeClass}>{size}</span> : null}
+                  {size ? (
+                    <span className={uploadItemSizeClass}>{size}</span>
+                  ) : null}
                   {typeof file.percent === "number" ? (
                     <div
                       className={uploadProgressClass}
@@ -317,7 +352,9 @@ function UploadRoot(
                     >
                       <div
                         className={uploadProgressBarClass}
-                        style={{ width: `${Math.max(0, Math.min(100, file.percent))}%` }}
+                        style={{
+                          width: `${Math.max(0, Math.min(100, file.percent))}%`,
+                        }}
                       />
                     </div>
                   ) : null}
@@ -342,9 +379,10 @@ function UploadRoot(
   );
 }
 
-const UploadFrame = forwardRef<HTMLDivElement, UploadProps & { dragger?: boolean }>(
-  UploadRoot,
-);
+const UploadFrame = forwardRef<
+  HTMLDivElement,
+  UploadProps & { dragger?: boolean }
+>(UploadRoot);
 UploadFrame.displayName = "Upload";
 
 const Dragger = forwardRef<HTMLDivElement, UploadDraggerProps>((props, ref) => (

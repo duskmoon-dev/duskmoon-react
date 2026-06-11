@@ -15,7 +15,6 @@ import type {
   QRCodeErrorLevel,
   QRCodeProps,
   QRCodeStatus,
-  QRCodeType,
 } from "./QRCode.types";
 
 const moduleCountByErrorLevel: Record<QRCodeErrorLevel, number> = {
@@ -47,7 +46,8 @@ function isFinder(row: number, col: number, count: number) {
 function isFinderDark(row: number, col: number, count: number) {
   const localRow = row >= count - 7 ? row - (count - 7) : row;
   const localCol = col >= count - 7 ? col - (count - 7) : col;
-  const edge = localRow === 0 || localRow === 6 || localCol === 0 || localCol === 6;
+  const edge =
+    localRow === 0 || localRow === 6 || localCol === 0 || localCol === 6;
   const center =
     localRow >= 2 && localRow <= 4 && localCol >= 2 && localCol <= 4;
 

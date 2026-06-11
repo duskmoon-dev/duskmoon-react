@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import * as ArtComponents from "@duskmoon-dev/art-components";
 import * as DmComponents from "@duskmoon-dev/components";
 
@@ -9,8 +9,10 @@ interface DemoRendererProps {
   demoCode: string;
 }
 
-function parsePropsText(propsText: string): Record<string, any> {
-  const props: Record<string, any> = {};
+type ParsedProps = Record<string, unknown>;
+
+function parsePropsText(propsText: string): ParsedProps {
+  const props: ParsedProps = {};
   let i = 0;
   const len = propsText.length;
 
@@ -22,26 +24,43 @@ function parsePropsText(propsText: string): Record<string, any> {
         continue;
       }
       // Check for single-line comment
-      if (char === '/' && i + 1 < len && propsText[i + 1] === '/') {
+      if (char === "/" && i + 1 < len && propsText[i + 1] === "/") {
         i += 2;
-        while (i < len && propsText[i] !== '\n') {
+        while (i < len && propsText[i] !== "\n") {
           i++;
         }
         continue;
       }
       // Check for multi-line comment
-      if (char === '/' && i + 1 < len && propsText[i + 1] === '*') {
+      if (char === "/" && i + 1 < len && propsText[i + 1] === "*") {
         i += 2;
-        while (i < len && !(propsText[i] === '*' && i + 1 < len && propsText[i + 1] === '/')) {
+        while (
+          i < len &&
+          !(propsText[i] === "*" && i + 1 < len && propsText[i + 1] === "/")
+        ) {
           i++;
         }
         if (i < len) i += 2; // skip '*/'
         continue;
       }
       // Check for JSX style comment {/* ... */}
-      if (char === '{' && i + 2 < len && propsText[i + 1] === '/' && propsText[i + 2] === '*') {
+      if (
+        char === "{" &&
+        i + 2 < len &&
+        propsText[i + 1] === "/" &&
+        propsText[i + 2] === "*"
+      ) {
         i += 3;
-        while (i < len && !(propsText[i] === '*' && i + 1 < len && propsText[i + 1] === '/' && i + 2 < len && propsText[i + 2] === '}')) {
+        while (
+          i < len &&
+          !(
+            propsText[i] === "*" &&
+            i + 1 < len &&
+            propsText[i + 1] === "/" &&
+            i + 2 < len &&
+            propsText[i + 2] === "}"
+          )
+        ) {
           i++;
         }
         if (i < len) i += 3; // skip '*/}'
@@ -56,8 +75,8 @@ function parsePropsText(propsText: string): Record<string, any> {
     if (i >= len) break;
 
     // Read prop name (alphanumeric, -, etc.)
-    let nameStart = i;
-    while (i < len && /[a-zA-Z0-9_\-]/.test(propsText[i])) {
+    const nameStart = i;
+    while (i < len && /[a-zA-Z0-9_-]/.test(propsText[i])) {
       i++;
     }
     const propName = propsText.slice(nameStart, i);
@@ -69,7 +88,7 @@ function parsePropsText(propsText: string): Record<string, any> {
 
     skipWhitespaceAndComments();
 
-    if (i < len && propsText[i] === '=') {
+    if (i < len && propsText[i] === "=") {
       i++; // skip '='
       skipWhitespaceAndComments();
       if (i >= len) {
@@ -82,9 +101,9 @@ function parsePropsText(propsText: string): Record<string, any> {
         // String literal
         const quote = char;
         i++; // skip quote
-        let valStart = i;
+        const valStart = i;
         while (i < len && propsText[i] !== quote) {
-          if (propsText[i] === '\\' && i + 1 < len) {
+          if (propsText[i] === "\\" && i + 1 < len) {
             i += 2;
           } else {
             i++;
@@ -93,11 +112,11 @@ function parsePropsText(propsText: string): Record<string, any> {
         const val = propsText.slice(valStart, i);
         if (i < len) i++; // skip ending quote
         props[propName] = val;
-      } else if (char === '{') {
+      } else if (char === "{") {
         // Braced expression
         i++; // skip '{'
         let braceCount = 1;
-        let valStart = i;
+        const valStart = i;
         let inDoubleQuote = false;
         let inSingleQuote = false;
         let inBacktick = false;
@@ -105,36 +124,36 @@ function parsePropsText(propsText: string): Record<string, any> {
         while (i < len && braceCount > 0) {
           const c = propsText[i];
           if (inDoubleQuote) {
-            if (c === '\\' && i + 1 < len) i += 2;
+            if (c === "\\" && i + 1 < len) i += 2;
             else {
               if (c === '"') inDoubleQuote = false;
               i++;
             }
           } else if (inSingleQuote) {
-            if (c === '\\' && i + 1 < len) i += 2;
+            if (c === "\\" && i + 1 < len) i += 2;
             else {
               if (c === "'") inSingleQuote = false;
               i++;
             }
           } else if (inBacktick) {
-            if (c === '\\' && i + 1 < len) i += 2;
+            if (c === "\\" && i + 1 < len) i += 2;
             else {
-              if (c === '`') inBacktick = false;
+              if (c === "`") inBacktick = false;
               i++;
             }
           } else {
             if (c === '"') inDoubleQuote = true;
             else if (c === "'") inSingleQuote = true;
-            else if (c === '`') inBacktick = true;
-            else if (c === '{') braceCount++;
-            else if (c === '}') braceCount--;
+            else if (c === "`") inBacktick = true;
+            else if (c === "{") braceCount++;
+            else if (c === "}") braceCount--;
             i++;
           }
         }
-        
+
         // braceCount should be 0 here, unless malformed
         const bracesVal = propsText.slice(valStart, i - 1);
-        
+
         // Evaluate the bracesVal
         const trimmed = bracesVal.trim();
         if (trimmed === "true") props[propName] = true;
@@ -143,28 +162,32 @@ function parsePropsText(propsText: string): Record<string, any> {
         else if (trimmed.startsWith("[") || trimmed.startsWith("{")) {
           try {
             props[propName] = new Function(`return (${trimmed})`)();
-          } catch (e) {
-            console.error("Failed to parse prop value:", trimmed, e);
+          } catch (error) {
+            console.error("Failed to parse prop value:", trimmed, error);
           }
-        } else if (trimmed.startsWith("(") || trimmed.includes("=>") || trimmed.startsWith("function")) {
+        } else if (
+          trimmed.startsWith("(") ||
+          trimmed.includes("=>") ||
+          trimmed.startsWith("function")
+        ) {
           try {
             props[propName] = new Function(`return (${trimmed})`)();
-          } catch (e) {
+          } catch {
             // Fallback for callback/function
-            props[propName] = (...args: any[]) => {
+            props[propName] = (...args: unknown[]) => {
               console.log(`Triggered function for ${propName}`, args);
             };
           }
         } else {
           try {
             props[propName] = new Function(`return (${trimmed})`)();
-          } catch (e) {
+          } catch {
             props[propName] = trimmed;
           }
         }
       } else {
         // Unquoted value or something else, read until next whitespace
-        let valStart = i;
+        const valStart = i;
         while (i < len && !/\s/.test(propsText[i])) {
           i++;
         }
@@ -182,9 +205,11 @@ function parsePropsText(propsText: string): Record<string, any> {
 
 function parseJsx(code: string, componentName: string) {
   const normalizedComponentName = componentName.trim();
-  
+
   // Match <ComponentName ...>...</ComponentName> or <ComponentName ... />
-  const jsxRegex = new RegExp(`<${normalizedComponentName}\\b([\\s\\S]*?)(?:>([\\s\\S]*?)<\/${normalizedComponentName}>|\\/>)`);
+  const jsxRegex = new RegExp(
+    `<${normalizedComponentName}\\b([\\s\\S]*?)(?:>([\\s\\S]*?)</${normalizedComponentName}>|/>)`,
+  );
   const match = code.match(jsxRegex);
   if (!match) return null;
 
@@ -199,12 +224,12 @@ function parseJsx(code: string, componentName: string) {
 export default function DemoRenderer({
   componentId,
   componentName,
-  demoTitle,
   demoCode,
 }: DemoRendererProps) {
   // Handle special case utility/hook/types
   const isArtComponent = componentId.startsWith("art-");
-  const isHook = componentId.startsWith("use-") || componentName.startsWith("use");
+  const isHook =
+    componentId.startsWith("use-") || componentName.startsWith("use");
   const isUtility =
     componentId.startsWith("get-") ||
     componentId.startsWith("set-") ||
@@ -216,7 +241,16 @@ export default function DemoRenderer({
 
   if (isHook) {
     return (
-      <div style={{ padding: "8px 12px", background: "var(--dm-surface)", borderRadius: "6px", fontSize: "14px", color: "var(--dm-muted)", border: "1px dashed var(--dm-border)" }}>
+      <div
+        style={{
+          padding: "8px 12px",
+          background: "var(--dm-surface)",
+          borderRadius: "6px",
+          fontSize: "14px",
+          color: "var(--dm-muted)",
+          border: "1px dashed var(--dm-border)",
+        }}
+      >
         React Hook (no visual preview)
       </div>
     );
@@ -225,13 +259,31 @@ export default function DemoRenderer({
   if (isUtility) {
     if (componentId === "version") {
       return (
-        <div style={{ padding: "8px 12px", background: "var(--dm-surface)", borderRadius: "6px", fontSize: "14px", fontWeight: "bold", border: "1px solid var(--dm-border)" }}>
+        <div
+          style={{
+            padding: "8px 12px",
+            background: "var(--dm-surface)",
+            borderRadius: "6px",
+            fontSize: "14px",
+            fontWeight: "bold",
+            border: "1px solid var(--dm-border)",
+          }}
+        >
           DuskMoon SDK Version: {DmComponents.version}
         </div>
       );
     }
     return (
-      <div style={{ padding: "8px 12px", background: "var(--dm-surface)", borderRadius: "6px", fontSize: "14px", color: "var(--dm-muted)", border: "1px dashed var(--dm-border)" }}>
+      <div
+        style={{
+          padding: "8px 12px",
+          background: "var(--dm-surface)",
+          borderRadius: "6px",
+          fontSize: "14px",
+          color: "var(--dm-muted)",
+          border: "1px dashed var(--dm-border)",
+        }}
+      >
         Utility Function / Configuration Helper (no visual preview)
       </div>
     );
@@ -243,13 +295,27 @@ export default function DemoRenderer({
       <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
         <DmComponents.DmMessageHolder />
         <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-          <DmComponents.Button onClick={() => DmComponents.DmMessage.info("Info message triggered!")}>
+          <DmComponents.Button
+            onClick={() =>
+              DmComponents.DmMessage.info("Info message triggered!")
+            }
+          >
             Info Message
           </DmComponents.Button>
-          <DmComponents.Button color="success" onClick={() => DmComponents.DmMessage.success("Action completed successfully!")}>
+          <DmComponents.Button
+            color="success"
+            onClick={() =>
+              DmComponents.DmMessage.success("Action completed successfully!")
+            }
+          >
             Success Message
           </DmComponents.Button>
-          <DmComponents.Button color="error" onClick={() => DmComponents.DmMessage.error("An error has occurred!")}>
+          <DmComponents.Button
+            color="error"
+            onClick={() =>
+              DmComponents.DmMessage.error("An error has occurred!")
+            }
+          >
             Error Message
           </DmComponents.Button>
         </div>
@@ -262,13 +328,21 @@ export default function DemoRenderer({
       <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
         <DmComponents.MessageHolder />
         <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-          <DmComponents.Button onClick={() => DmComponents.message.info("Info notification!")}>
+          <DmComponents.Button
+            onClick={() => DmComponents.message.info("Info notification!")}
+          >
             Info
           </DmComponents.Button>
-          <DmComponents.Button color="success" onClick={() => DmComponents.message.success("Success!")}>
+          <DmComponents.Button
+            color="success"
+            onClick={() => DmComponents.message.success("Success!")}
+          >
             Success
           </DmComponents.Button>
-          <DmComponents.Button color="warning" onClick={() => DmComponents.message.warning("Warning alert!")}>
+          <DmComponents.Button
+            color="warning"
+            onClick={() => DmComponents.message.warning("Warning alert!")}
+          >
             Warning
           </DmComponents.Button>
         </div>
@@ -283,7 +357,8 @@ export default function DemoRenderer({
           onClick={() =>
             DmComponents.notification.open({
               message: "Notification",
-              description: "This is a global notification triggered dynamically.",
+              description:
+                "This is a global notification triggered dynamically.",
             })
           }
         >
@@ -295,7 +370,13 @@ export default function DemoRenderer({
 
   // Handle standard React component rendering
   const componentPackage = isArtComponent ? ArtComponents : DmComponents;
-  const Component = (componentPackage as any)[componentName];
+  const Component = (
+    componentPackage as Record<
+      string,
+      | React.ComponentType<ParsedProps & { children?: React.ReactNode }>
+      | undefined
+    >
+  )[componentName];
   if (!Component) {
     return (
       <div style={{ color: "red", fontSize: "14px" }}>
@@ -305,12 +386,17 @@ export default function DemoRenderer({
   }
 
   // Check if it's a theme-aware comparison demo
-  if (demoCode.includes('data-theme="sunshine"') || demoCode.includes('data-theme="moonlight"')) {
+  if (
+    demoCode.includes('data-theme="sunshine"') ||
+    demoCode.includes('data-theme="moonlight"')
+  ) {
     // Extract JSX code from within data-theme block to parse
-    const match = demoCode.match(/<div data-theme="sunshine">([\s\S]*?)<\/div>/);
+    const match = demoCode.match(
+      new RegExp('<div data-theme="sunshine">([\\s\\S]*?)</div>'),
+    );
     const innerCode = match ? match[1] : demoCode;
     const parsed = parseJsx(innerCode, componentName);
-    
+
     if (!parsed) {
       return (
         <div style={{ color: "red", fontSize: "14px" }}>
@@ -320,17 +406,50 @@ export default function DemoRenderer({
     }
 
     return (
-      <div style={{ display: "flex", flexDirection: "column", gap: "16px", width: "100%" }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px", border: "1px solid var(--dm-border)", borderRadius: "8px", padding: "16px", background: "#fff" }} data-theme="sunshine">
-          <div style={{ fontSize: "12px", color: "#666", marginBottom: "4px" }}>Sunshine Theme</div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "16px",
+          width: "100%",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+            border: "1px solid var(--dm-border)",
+            borderRadius: "8px",
+            padding: "16px",
+            background: "#fff",
+          }}
+          data-theme="sunshine"
+        >
+          <div style={{ fontSize: "12px", color: "#666", marginBottom: "4px" }}>
+            Sunshine Theme
+          </div>
           <div>
             <Component {...parsed.props}>
               {parsed.children || undefined}
             </Component>
           </div>
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px", border: "1px dashed #30384d", borderRadius: "8px", padding: "16px", background: "#171b25" }} data-theme="moonlight">
-          <div style={{ fontSize: "12px", color: "#aaa", marginBottom: "4px" }}>Moonlight Theme</div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+            border: "1px dashed #30384d",
+            borderRadius: "8px",
+            padding: "16px",
+            background: "#171b25",
+          }}
+          data-theme="moonlight"
+        >
+          <div style={{ fontSize: "12px", color: "#aaa", marginBottom: "4px" }}>
+            Moonlight Theme
+          </div>
           <div>
             <Component {...parsed.props}>
               {parsed.children || undefined}
@@ -355,13 +474,16 @@ export default function DemoRenderer({
     <div
       style={
         isArtComponent
-          ? { display: "grid", placeItems: "center", width: "100%", padding: "12px 0" }
+          ? {
+              display: "grid",
+              placeItems: "center",
+              width: "100%",
+              padding: "12px 0",
+            }
           : { padding: "8px 0" }
       }
     >
-      <Component {...parsed.props}>
-        {parsed.children || undefined}
-      </Component>
+      <Component {...parsed.props}>{parsed.children || undefined}</Component>
     </div>
   );
 }
