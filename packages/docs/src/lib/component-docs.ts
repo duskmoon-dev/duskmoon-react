@@ -682,6 +682,15 @@ function demoCode(
     return `<${name} total={120} current={1} pageSize={10} />`;
   }
 
+  if (target.id === "skeleton") {
+    return `<${name}
+  active
+  avatar
+  paragraph={{ rows: 3 }}
+  style={{ width: "420px", maxWidth: "100%" }}
+/>`;
+  }
+
   if (noChildrenComponents.includes(target.id)) {
     if (props.length === 0) {
       return `<${name} />`;
