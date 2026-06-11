@@ -1,0 +1,157 @@
+name: Publish Packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      git_ref:
+        description: "Git ref to publish from"
+        required: true
+        default: "main"
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    name: Publish public packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.git_ref }}
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Setup npm registry
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Resolve public packages
+        id: packages
+        run: |
+          node <<'NODE'
+          const fs = require("node:fs");
+          const path = require("node:path");
+
+          const packages = fs
+            .readdirSync("packages", { withFileTypes: true })
+            .filter((entry) => entry.isDirectory())
+            .map((entry) => {
+              const dir = path.join("packages", entry.name);
+              const manifestPath = path.join(dir, "package.json");
+
+              if (!fs.existsSync(manifestPath)) {
+                return undefined;
+              }
+
+              const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+
+              if (manifest.private) {
+                return undefined;
+              }
+
+              return {
+                dir,
+                name: manifest.name,
+                version: manifest.version,
+              };
+            })
+            .filter(Boolean);
+
+          if (packages.length === 0) {
+            throw new Error("No public packages found under packages/*.");
+          }
+
+          const versions = new Set(packages.map((pkg) => pkg.version));
+
+          if (versions.size !== 1) {
+            const packageVersions = packages
+              .map((pkg) => `${pkg.name}@${pkg.version}`)
+              .join(", ");
+            throw new Error(`Public package versions must match: ${packageVersions}`);
+          }
+
+          const output = [
+            `package_dirs=${packages.map((pkg) => pkg.dir).join(" ")}`,
+            `version=${packages[0].version}`,
+          ].join("\n");
+
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `${output}\n`);
+          console.log(`Publishing ${packages.map((pkg) => pkg.name).join(", ")} at ${packages[0].version}.`);
+          NODE
+
+      - name: Test packages
+        run: |
+          for package_dir in ${{ steps.packages.outputs.package_dirs }}; do
+            if node -e 'process.exit(require("./'"${package_dir}"'/package.json").scripts?.test ? 0 : 1)'; then
+              echo "Testing ${package_dir}"
+              (cd "${package_dir}" && bun run test)
+            fi
+          done
+
+      - name: Typecheck packages
+        run: |
+          for package_dir in ${{ steps.packages.outputs.package_dirs }}; do
+            if node -e 'process.exit(require("./'"${package_dir}"'/package.json").scripts?.typecheck ? 0 : 1)'; then
+              echo "Typechecking ${package_dir}"
+              (cd "${package_dir}" && bun run typecheck)
+            fi
+          done
+
+      - name: Build packages
+        run: |
+          for package_dir in ${{ steps.packages.outputs.package_dirs }}; do
+            if node -e 'process.exit(require("./'"${package_dir}"'/package.json").scripts?.build ? 0 : 1)'; then
+              echo "Building ${package_dir}"
+              (cd "${package_dir}" && bun run build)
+            fi
+          done
+
+      - name: Publish or ensure public access
+        run: |
+          for package_dir in ${{ steps.packages.outputs.package_dirs }}; do
+            (
+              cd "${package_dir}"
+              package_name="$(node -p 'require("./package.json").name')"
+              package_version="$(node -p 'require("./package.json").version')"
+
+              if npm view "${package_name}@${package_version}" version --registry https://registry.npmjs.org >/dev/null 2>&1; then
+                echo "${package_name}@${package_version} already exists on npm."
+              else
+                npm publish --access public --registry https://registry.npmjs.org
+              fi
+            )
+          done
+
+      - name: Verify public packages
+        run: |
+          for package_dir in ${{ steps.packages.outputs.package_dirs }}; do
+            (
+              cd "${package_dir}"
+              package_name="$(node -p 'require("./package.json").name')"
+              package_version="$(node -p 'require("./package.json").version')"
+
+              for attempt in {1..12}; do
+                if env -u NODE_AUTH_TOKEN npm view "${package_name}@${package_version}" version --registry https://registry.npmjs.org; then
+                  exit 0
+                fi
+
+                echo "Waiting for ${package_name}@${package_version} to become public on npm (${attempt}/12)."
+                sleep 10
+              done
+
+              exit 1
+            )
+          done
