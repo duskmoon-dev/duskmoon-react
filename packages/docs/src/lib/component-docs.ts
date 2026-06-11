@@ -682,6 +682,16 @@ function demoCode(
     return `<${name} total={120} current={1} pageSize={10} />`;
   }
 
+  if (target.id === "image") {
+    return `<${name}
+  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100' viewBox='0 0 160 100'%3E%3Crect width='160' height='100' rx='12' fill='%23e58f00'/%3E%3Ccircle cx='118' cy='34' r='20' fill='%23fff7d6'/%3E%3Cpath d='M24 72h112' stroke='%23fff7d6' stroke-width='8' stroke-linecap='round'/%3E%3C/svg%3E"
+  alt="DuskMoon preview"
+  width={160}
+  height={100}
+  placeholder="Loading image"
+/>`;
+  }
+
   if (noChildrenComponents.includes(target.id)) {
     if (props.length === 0) {
       return `<${name} />`;
