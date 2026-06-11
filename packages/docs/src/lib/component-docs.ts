@@ -692,6 +692,10 @@ function demoCode(
 />`;
   }
 
+  if (target.id === "back-top") {
+    return `<${name} visibilityHeight={0}>Back to top</${name}>`;
+  }
+
   if (target.id === "tour") {
     return `<${name}
   open
