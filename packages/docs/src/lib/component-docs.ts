@@ -706,6 +706,15 @@ function demoCode(
 />`;
   }
 
+  if (target.id === "skeleton") {
+    return `<${name}
+  active
+  avatar
+  paragraph={{ rows: 3 }}
+  style={{ width: "420px", maxWidth: "100%" }}
+/>`;
+  }
+
   if (target.id === "tour") {
     return `<${name}
   open
