@@ -682,6 +682,25 @@ function demoCode(
     return `<${name} total={120} current={1} pageSize={10} />`;
   }
 
+  if (target.id === "tour") {
+    return `<${name}
+  open
+  mask={false}
+  steps={[
+    {
+      title: "Welcome",
+      description: "Review the highlighted workflow.",
+      style: {
+        position: "static",
+        left: "auto",
+        top: "auto",
+        transform: "none"
+      }
+    }
+  ]}
+/>`;
+  }
+
   if (noChildrenComponents.includes(target.id)) {
     if (props.length === 0) {
       return `<${name} />`;
