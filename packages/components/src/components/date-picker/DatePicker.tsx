@@ -149,9 +149,7 @@ const DatePickerRoot = forwardRef<HTMLDivElement, DatePickerProps>(
             x
           </button>
         ) : null}
-        <span className={datePickerIconClass} aria-hidden="true">
-          calendar
-        </span>
+        <span className={datePickerIconClass} aria-hidden="true" />
         {(presetItems.length > 0 || showNow) && visible ? (
           <div className={getDatePickerDropdownClasses({ open: visible })}>
             {presetItems.map((preset, index) => (
