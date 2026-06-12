@@ -26,8 +26,9 @@ export interface TreeDataNode {
   [name: string]: unknown;
 }
 
-export interface EventDataNode<T extends TreeDataNode = TreeDataNode>
-  extends TreeDataNode {
+export interface EventDataNode<
+  T extends TreeDataNode = TreeDataNode,
+> extends TreeDataNode {
   key: TreeKey;
   pos: string;
   data: T;
@@ -42,38 +43,45 @@ export interface TreeEventInfo<T extends TreeDataNode = TreeDataNode> {
     | DragEvent<HTMLElement>;
 }
 
-export interface TreeExpandInfo<T extends TreeDataNode = TreeDataNode>
-  extends TreeEventInfo<T> {
+export interface TreeExpandInfo<
+  T extends TreeDataNode = TreeDataNode,
+> extends TreeEventInfo<T> {
   expanded: boolean;
 }
 
-export interface TreeSelectInfo<T extends TreeDataNode = TreeDataNode>
-  extends TreeEventInfo<T> {
+export interface TreeSelectInfo<
+  T extends TreeDataNode = TreeDataNode,
+> extends TreeEventInfo<T> {
   selected: boolean;
   selectedNodes: T[];
 }
 
-export interface TreeCheckInfo<T extends TreeDataNode = TreeDataNode>
-  extends TreeEventInfo<T> {
+export interface TreeCheckInfo<
+  T extends TreeDataNode = TreeDataNode,
+> extends TreeEventInfo<T> {
   checked: boolean;
   checkedNodes: T[];
 }
 
-export interface TreeDragInfo<T extends TreeDataNode = TreeDataNode>
-  extends TreeEventInfo<T> {
+export interface TreeDragInfo<
+  T extends TreeDataNode = TreeDataNode,
+> extends TreeEventInfo<T> {
   event: React.DragEvent<HTMLElement>;
 }
 
-export interface TreeDropInfo<T extends TreeDataNode = TreeDataNode>
-  extends TreeDragInfo<T> {
+export interface TreeDropInfo<
+  T extends TreeDataNode = TreeDataNode,
+> extends TreeDragInfo<T> {
   dragNode?: EventDataNode<T>;
   dragNodesKeys: TreeKey[];
   dropPosition: number;
   dropToGap: boolean;
 }
 
-export interface TreeNodeProps
-  extends Omit<ComponentProps<"div">, "title" | "onSelect"> {
+export interface TreeNodeProps extends Omit<
+  ComponentProps<"div">,
+  "title" | "onSelect"
+> {
   title?: ReactNode;
   eventKey?: TreeKey;
   children?: ReactNode;
@@ -85,18 +93,17 @@ export interface TreeNodeProps
   isLeaf?: boolean;
 }
 
-export interface TreeProps<T extends TreeDataNode = TreeDataNode>
-  extends Omit<
-    ComponentProps<"div">,
-    | "onChange"
-    | "onSelect"
-    | "onDragStart"
-    | "onDragEnter"
-    | "onDragOver"
-    | "onDragLeave"
-    | "onDragEnd"
-    | "onDrop"
-  > {
+export interface TreeProps<T extends TreeDataNode = TreeDataNode> extends Omit<
+  ComponentProps<"div">,
+  | "onChange"
+  | "onSelect"
+  | "onDragStart"
+  | "onDragEnter"
+  | "onDragOver"
+  | "onDragLeave"
+  | "onDragEnd"
+  | "onDrop"
+> {
   treeData?: T[];
   expandedKeys?: TreeKey[];
   defaultExpandedKeys?: TreeKey[];

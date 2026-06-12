@@ -26,12 +26,14 @@ function isTitleList(
   return Array.isArray(title);
 }
 
-function isToolbarProps(extra: DmPageHeaderProps["extra"]): extra is DmToolbarProps {
+function isToolbarProps(
+  extra: DmPageHeaderProps["extra"],
+): extra is DmToolbarProps {
   return Boolean(
     extra &&
-      typeof extra === "object" &&
-      !React.isValidElement(extra) &&
-      "items" in extra,
+    typeof extra === "object" &&
+    !React.isValidElement(extra) &&
+    "items" in extra,
   );
 }
 
@@ -102,7 +104,9 @@ export function DmPageHeader({
           ) : null}
         </div>
       </div>
-      {children ? <div className={dmPageHeaderBodyClass}>{children}</div> : null}
+      {children ? (
+        <div className={dmPageHeaderBodyClass}>{children}</div>
+      ) : null}
     </section>
   );
 }

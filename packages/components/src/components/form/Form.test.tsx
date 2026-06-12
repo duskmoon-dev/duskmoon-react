@@ -10,7 +10,10 @@ describe("Form", () => {
     const finishes: unknown[] = [];
 
     render(
-      <Form initialValues={{ name: "Ada" }} onFinish={(values) => finishes.push(values)}>
+      <Form
+        initialValues={{ name: "Ada" }}
+        onFinish={(values) => finishes.push(values)}
+      >
         <Form.Item name="name" label="Name">
           <Input aria-label="Name input" />
         </Form.Item>
@@ -18,7 +21,9 @@ describe("Form", () => {
       </Form>,
     );
 
-    expect((screen.getByLabelText("Name input") as HTMLInputElement).value).toBe("Ada");
+    expect(
+      (screen.getByLabelText("Name input") as HTMLInputElement).value,
+    ).toBe("Ada");
 
     fireEvent.change(screen.getByLabelText("Name input"), {
       target: { value: "Grace" },
@@ -33,7 +38,11 @@ describe("Form", () => {
 
     render(
       <Form onFinishFailed={(info) => failures.push(info.errorFields)}>
-        <Form.Item name="email" label="Email" rules={[{ required: true, message: "Email required" }]}>
+        <Form.Item
+          name="email"
+          label="Email"
+          rules={[{ required: true, message: "Email required" }]}
+        >
           <Input aria-label="Email input" />
         </Form.Item>
         <button type="submit">Submit</button>
@@ -42,7 +51,9 @@ describe("Form", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Submit" }));
 
-    await waitFor(() => expect(screen.getByText("Email required")).toBeTruthy());
+    await waitFor(() =>
+      expect(screen.getByText("Email required")).toBeTruthy(),
+    );
     expect(failures).toHaveLength(1);
   });
 

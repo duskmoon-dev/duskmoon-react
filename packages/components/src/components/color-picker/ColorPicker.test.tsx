@@ -20,6 +20,9 @@ describe("ColorPicker", () => {
     expect(root.className).toContain("custom-color");
     expect(root.className).toContain("color-picker-lg");
     expect(root.className).toContain("color-picker-format-hex");
+    expect(screen.getByLabelText("Color format").className).toContain(
+      "color-picker-format-select",
+    );
     expect(screen.getByText("#ff0000")).toBeTruthy();
   });
 
@@ -41,9 +44,9 @@ describe("ColorPicker", () => {
     });
 
     expect(changedCss).toBe("#00ff00");
-    expect((screen.getByLabelText("Color value") as HTMLInputElement).value).toBe(
-      "#00ff00",
-    );
+    expect(
+      (screen.getByLabelText("Color value") as HTMLInputElement).value,
+    ).toBe("#00ff00");
   });
 
   test("supports presets and showText render function", () => {
@@ -78,7 +81,10 @@ describe("ColorPicker", () => {
 
     const root = container.querySelector(".color-picker") as HTMLElement;
     fireEvent.mouseEnter(root);
-    expect(screen.getByLabelText("Color value")).toBeTruthy();
+    const panel = screen
+      .getByLabelText("Color value")
+      .closest(".color-picker-panel");
+    expect(panel?.className).toContain("popover-bottom");
 
     fireEvent.change(screen.getByLabelText("Color format"), {
       target: { value: "rgb" },
@@ -93,5 +99,16 @@ describe("ColorPicker", () => {
     fireEvent.click(screen.getByRole("button", { name: "Open color picker" }));
 
     expect(screen.queryByLabelText("Color value")).toBeNull();
+  });
+
+  test("has package stylesheet selectors for local color picker classes", async () => {
+    const css = await Bun.file(
+      new URL("../../styles.css", import.meta.url),
+    ).text();
+
+    expect(css).toContain(".color-picker");
+    expect(css).toContain(".color-picker-swatch");
+    expect(css).toContain(".color-picker-format-select");
+    expect(css).toContain(".color-picker .color-picker-panel");
   });
 });

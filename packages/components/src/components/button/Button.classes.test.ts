@@ -1,20 +1,20 @@
 import { expect, test, describe } from "bun:test";
 import { css } from "@duskmoon-dev/core/components/button";
-import { 
-  buttonBaseClass, 
-  buttonColorClasses, 
-  buttonAppearanceClasses, 
-  buttonShapeClasses, 
-  buttonSizeClasses, 
+import {
+  buttonBaseClass,
+  buttonColorClasses,
+  buttonAppearanceClasses,
+  buttonShapeClasses,
+  buttonSizeClasses,
   buttonBlockClass,
   buttonIsLoadingClass,
-  getButtonClasses
+  getButtonClasses,
 } from "../../classes/button";
-import type { 
-  ButtonColor, 
-  ButtonAppearance, 
-  ButtonShape, 
-  ButtonSize 
+import type {
+  ButtonColor,
+  ButtonAppearance,
+  ButtonShape,
+  ButtonSize,
 } from "./Button.types";
 
 describe("Button classes integration with @duskmoon-dev/core", () => {
@@ -43,7 +43,9 @@ describe("Button classes integration with @duskmoon-dev/core", () => {
   });
 
   test("all appearance classes exist in core CSS", () => {
-    for (const appearance of Object.keys(buttonAppearanceClasses) as ButtonAppearance[]) {
+    for (const appearance of Object.keys(
+      buttonAppearanceClasses,
+    ) as ButtonAppearance[]) {
       const className = buttonAppearanceClasses[appearance];
       if (className) expect(coreClasses.has(className)).toBe(true);
     }
@@ -68,13 +70,13 @@ describe("Button classes integration with @duskmoon-dev/core", () => {
   });
 
   test("getButtonClasses generates valid classes", () => {
-    const classes = getButtonClasses({ 
-      color: "primary", 
-      appearance: "outline", 
-      shape: "square", 
-      size: "lg", 
-      block: true, 
-      isLoading: true 
+    const classes = getButtonClasses({
+      color: "primary",
+      appearance: "outline",
+      shape: "square",
+      size: "lg",
+      block: true,
+      isLoading: true,
     });
     const classList = classes.split(" ");
     for (const cls of classList) {
@@ -84,4 +86,3 @@ describe("Button classes integration with @duskmoon-dev/core", () => {
     }
   });
 });
-

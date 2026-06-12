@@ -46,7 +46,9 @@ export const DmAuxiliary = forwardRef<HTMLDivElement, DmAuxiliaryProps>(
     },
     ref,
   ) => {
-    const [closed, setClosed] = useState(!hasRenderableContent(content, children));
+    const [closed, setClosed] = useState(
+      !hasRenderableContent(content, children),
+    );
 
     useEffect(() => {
       setClosed(!hasRenderableContent(content, children));
@@ -68,9 +70,7 @@ export const DmAuxiliary = forwardRef<HTMLDivElement, DmAuxiliaryProps>(
         <div className={dmAuxiliaryContainerClass}>
           {icon ? <span className={dmAuxiliaryIconClass}>{icon}</span> : null}
           <div className={dmAuxiliaryContentClass}>
-            {children ?? (
-              <span dangerouslySetInnerHTML={{ __html: content }} />
-            )}
+            {children ?? <span dangerouslySetInnerHTML={{ __html: content }} />}
           </div>
           {actions?.length ? (
             <div className={dmAuxiliaryActionsClass}>
@@ -107,4 +107,3 @@ export const DmAuxiliary = forwardRef<HTMLDivElement, DmAuxiliaryProps>(
 DmAuxiliary.displayName = "DmAuxiliary";
 
 export default DmAuxiliary;
-

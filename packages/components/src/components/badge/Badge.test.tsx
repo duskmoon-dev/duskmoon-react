@@ -21,7 +21,7 @@ describe("Badge", () => {
     const { container } = render(
       <Badge color="success" appearance="outline" size="lg">
         Custom
-      </Badge>
+      </Badge>,
     );
     const badge = container.firstChild as HTMLElement;
     expect(badge.className).toContain("badge-success");
@@ -30,7 +30,9 @@ describe("Badge", () => {
   });
 
   test("applies custom className", () => {
-    const { container } = render(<Badge className="my-custom-badge">Custom class</Badge>);
+    const { container } = render(
+      <Badge className="my-custom-badge">Custom class</Badge>,
+    );
     const badge = container.firstChild as HTMLElement;
     expect(badge.className).toContain("my-custom-badge");
   });

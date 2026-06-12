@@ -1,8 +1,4 @@
-import type {
-  ComponentProps,
-  MouseEventHandler,
-  ReactNode,
-} from "react";
+import type { ComponentProps, MouseEventHandler, ReactNode } from "react";
 import type {
   BreadcrumbMenuProps,
   BreadcrumbProps,
@@ -24,7 +20,8 @@ export interface DmBreadcrumbItem {
 }
 
 export interface DmBreadcrumbProps
-  extends Omit<ComponentProps<"nav">, "children" | "onClick">,
+  extends
+    Omit<ComponentProps<"nav">, "children" | "onClick">,
     Omit<BreadcrumbProps, "items" | "routes" | "onClick"> {
   items: DmBreadcrumbItem[];
   isStoragePath?: boolean;

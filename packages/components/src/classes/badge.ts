@@ -1,6 +1,10 @@
 // GENERATED FILE. DO NOT EDIT.
 import { cn } from "../utils";
-import type { BadgeColor, BadgeAppearance, BadgeSize } from "../components/badge/Badge.types";
+import type {
+  BadgeColor,
+  BadgeAppearance,
+  BadgeSize,
+} from "../components/badge/Badge.types";
 
 export const badgeBaseClass = "badge";
 
@@ -26,7 +30,6 @@ export const badgeSizeClasses: Record<BadgeSize, string> = {
   lg: "badge-lg",
 };
 
-
 export function getBadgeClasses({
   color = "primary",
   appearance = "filled",
@@ -43,6 +46,6 @@ export function getBadgeClasses({
     badgeColorClasses[color],
     badgeAppearanceClasses[appearance],
     badgeSizeClasses[size],
-    className
+    className,
   );
 }

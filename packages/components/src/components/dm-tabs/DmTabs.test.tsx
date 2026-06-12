@@ -58,7 +58,9 @@ describe("DmTabs", () => {
   });
 
   test("maps destroyOnHidden to primitive inactive pane destruction", () => {
-    const { rerender } = render(<DmTabs defaultActiveKey="overview" items={items} />);
+    const { rerender } = render(
+      <DmTabs defaultActiveKey="overview" items={items} />,
+    );
 
     fireEvent.click(screen.getByRole("tab", { name: "Settings" }));
 

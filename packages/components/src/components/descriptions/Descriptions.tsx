@@ -77,7 +77,16 @@ function toItems(
 
 const DescriptionsItem = forwardRef<HTMLDivElement, DescriptionsItemProps>(
   (
-    { children, label, span, labelStyle, contentStyle, className, style, ...props },
+    {
+      children,
+      label,
+      span,
+      labelStyle,
+      contentStyle,
+      className,
+      style,
+      ...props
+    },
     ref,
   ) => (
     <div
@@ -87,9 +96,7 @@ const DescriptionsItem = forwardRef<HTMLDivElement, DescriptionsItemProps>(
       style={{
         ...style,
         gridColumn:
-          typeof span === "number"
-            ? `span ${span} / span ${span}`
-            : undefined,
+          typeof span === "number" ? `span ${span} / span ${span}` : undefined,
       }}
     >
       {hasNode(label) ? (

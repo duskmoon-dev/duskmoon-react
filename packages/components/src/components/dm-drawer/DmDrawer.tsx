@@ -31,7 +31,8 @@ function renderFooter({
   if (footer !== undefined) return footer;
 
   const label = submitText ?? footerText;
-  if (label === undefined || label === null || label === false) return undefined;
+  if (label === undefined || label === null || label === false)
+    return undefined;
 
   return (
     <div className={getDmDrawerFooterClasses({ align: footerAlign })}>

@@ -4,7 +4,8 @@ import type { DmBreadcrumbItem } from "../dm-breadcrumb/DmBreadcrumb.types";
 import type { DmMenuProps, DmMenuSchema } from "../dm-menu/DmMenu.types";
 
 export interface DmLayoutProps
-  extends Omit<ComponentProps<"div">, "onSelect">,
+  extends
+    Omit<ComponentProps<"div">, "onSelect">,
     Omit<LayoutProps, "children"> {
   menus?: DmMenuSchema[];
   selectedKey?: string;
@@ -41,4 +42,3 @@ export interface DmLayoutSelection {
   breadcrumbItems: DmBreadcrumbItem[];
   tips?: ReactNode;
 }
-

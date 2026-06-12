@@ -86,10 +86,7 @@ describe("Cascader", () => {
     fireEvent.click(screen.getByRole("menuitem", { name: /Hangzhou/ }));
 
     expect(selections.at(-1)).toEqual(["zhejiang", "hangzhou"]);
-    expect(changes.at(-1)).toEqual([
-      ["zhejiang"],
-      ["zhejiang", "hangzhou"],
-    ]);
+    expect(changes.at(-1)).toEqual([["zhejiang"], ["zhejiang", "hangzhou"]]);
   });
 
   test("supports search, displayRender, and fieldNames", () => {
@@ -129,7 +126,11 @@ describe("Cascader", () => {
     ];
     const { container } = render(
       <>
-        <Cascader defaultOpen options={lazyOptions} loadData={(path) => loads.push(path)} />
+        <Cascader
+          defaultOpen
+          options={lazyOptions}
+          loadData={(path) => loads.push(path)}
+        />
         <Cascader disabled options={options} />
         <Cascader.Panel options={options} defaultValue={["zhejiang"]} />
       </>,

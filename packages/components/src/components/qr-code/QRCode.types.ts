@@ -4,8 +4,10 @@ export type QRCodeType = "canvas" | "svg";
 export type QRCodeStatus = "active" | "expired" | "loading" | "scanned";
 export type QRCodeErrorLevel = "L" | "M" | "Q" | "H";
 
-export interface QRCodeProps
-  extends Omit<ComponentProps<"div">, "children" | "onRefresh"> {
+export interface QRCodeProps extends Omit<
+  ComponentProps<"div">,
+  "children" | "onRefresh"
+> {
   value?: string;
   type?: QRCodeType;
   size?: number;

@@ -57,7 +57,9 @@ describe("DmInfiniteScroll", () => {
       </DmInfiniteScroll>,
     );
 
-    const container = document.getElementById("dm-scroll-container-events") as HTMLElement;
+    const container = document.getElementById(
+      "dm-scroll-container-events",
+    ) as HTMLElement;
     defineScrollState(container, {
       clientHeight: 100,
       scrollHeight: 500,
@@ -87,7 +89,9 @@ describe("DmInfiniteScroll", () => {
       </DmInfiniteScroll>,
     );
 
-    const container = document.getElementById("dm-scroll-container-paged") as HTMLElement;
+    const container = document.getElementById(
+      "dm-scroll-container-paged",
+    ) as HTMLElement;
     defineScrollState(container, {
       clientHeight: 100,
       scrollHeight: 500,
@@ -148,4 +152,3 @@ describe("DmInfiniteScroll", () => {
     expect(screen.getByRole("status").textContent).toBe("Fetching");
   });
 });
-

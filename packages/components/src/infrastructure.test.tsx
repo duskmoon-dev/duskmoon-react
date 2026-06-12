@@ -14,6 +14,10 @@ import {
   version,
 } from "./infrastructure";
 
+const componentPackage = (await Bun.file(
+  new URL("../package.json", import.meta.url),
+).json()) as { version: string };
+
 function PageSizeProbe({ storageKey }: { storageKey?: string }) {
   const [pageSize, setPageSize] = usePersistedPageSize(storageKey, 20);
 
@@ -31,7 +35,7 @@ describe("infrastructure exports", () => {
   test("exposes version, theme token helpers, and render override", () => {
     unstableSetRender(() => undefined);
 
-    expect(version).toBe("0.1.1");
+    expect(version).toBe(componentPackage.version);
     expect(theme.getDesignToken().colorPrimary).toBe("#0065ff");
     expect(theme.useToken().token.colorPrimary).toBe("#0065ff");
   });

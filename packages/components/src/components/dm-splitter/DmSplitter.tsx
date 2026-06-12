@@ -62,11 +62,12 @@ function sizesFromAdapterPayload(
 function panelDefaults(children: React.ReactNode, fallback?: SplitterSize[]) {
   return Children.toArray(children)
     .filter(isValidElement<SplitterPanelProps>)
-    .map((child, index) =>
-      fallback?.[index] ??
-      child.props.size ??
-      child.props.defaultSize ??
-      "1fr",
+    .map(
+      (child, index) =>
+        fallback?.[index] ??
+        child.props.size ??
+        child.props.defaultSize ??
+        "1fr",
     );
 }
 
@@ -113,9 +114,9 @@ const DmSplitterRoot = forwardRef<HTMLDivElement, DmSplitterProps>(
     ref,
   ) => {
     const key = persistenceKey(persistence);
-    const [persistedSizes, setPersistedSizes] = useState<SplitterSize[] | undefined>(
-      () => (key ? readLocalSizes(key) : undefined),
-    );
+    const [persistedSizes, setPersistedSizes] = useState<
+      SplitterSize[] | undefined
+    >(() => (key ? readLocalSizes(key) : undefined));
     const initialSizes = useMemo(
       () => panelDefaults(children, defaultSizes),
       [children, defaultSizes],
@@ -147,7 +148,10 @@ const DmSplitterRoot = forwardRef<HTMLDivElement, DmSplitterProps>(
 
       setPersistedSizes(nextSizes);
 
-      if (!persistence?.persistenceType || persistence.persistenceType === "localStorage") {
+      if (
+        !persistence?.persistenceType ||
+        persistence.persistenceType === "localStorage"
+      ) {
         writeLocalSizes(key, nextSizes);
         return;
       }
@@ -161,7 +165,11 @@ const DmSplitterRoot = forwardRef<HTMLDivElement, DmSplitterProps>(
     }
 
     function handleReset() {
-      if (key && (!persistence?.persistenceType || persistence.persistenceType === "localStorage")) {
+      if (
+        key &&
+        (!persistence?.persistenceType ||
+          persistence.persistenceType === "localStorage")
+      ) {
         removeLocalSizes(key);
       }
 
@@ -215,4 +223,3 @@ DmSplitterRoot.Panel = Splitter.Panel;
 
 export const DmSplitter = DmSplitterRoot;
 export default DmSplitter;
-

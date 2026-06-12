@@ -6,8 +6,10 @@ export interface DmAuxiliaryAction {
   disabled?: boolean;
 }
 
-export interface DmAuxiliaryProps
-  extends Omit<ComponentProps<"div">, "content" | "children"> {
+export interface DmAuxiliaryProps extends Omit<
+  ComponentProps<"div">,
+  "content" | "children"
+> {
   content?: string;
   children?: ReactNode;
   hideClose?: boolean;
@@ -16,4 +18,3 @@ export interface DmAuxiliaryProps
   extra?: ReactNode;
   onClose?: () => void;
 }
-

@@ -1,4 +1,7 @@
-import type { CarouselDotPosition, CarouselEffect } from "../components/carousel/Carousel.types";
+import type {
+  CarouselDotPosition,
+  CarouselEffect,
+} from "../components/carousel/Carousel.types";
 import { cn } from "../utils";
 
 export const carouselBaseClass = "carousel";

@@ -6,11 +6,7 @@ export const dmToolbarPrimaryItemClass = "dm-toolbar-primary-item";
 export const dmToolbarSecondaryItemClass = "dm-toolbar-secondary-item";
 export const dmToolbarMoreClass = "dm-toolbar-more";
 
-export function getDmToolbarClasses({
-  className,
-}: {
-  className?: string;
-}) {
+export function getDmToolbarClasses({ className }: { className?: string }) {
   return cn(dmToolbarBaseClass, className);
 }
 

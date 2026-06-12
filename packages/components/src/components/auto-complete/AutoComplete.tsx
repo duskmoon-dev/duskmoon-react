@@ -1,10 +1,4 @@
-import React, {
-  forwardRef,
-  useId,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { forwardRef, useId, useMemo, useRef, useState } from "react";
 import {
   autoCompleteClearClass,
   autoCompleteInputWrapperClass,
@@ -34,7 +28,9 @@ function optionText(option: AutoCompleteOptionType) {
     : option.value;
 }
 
-function optionsFromChildren(children: React.ReactNode): AutoCompleteOptionType[] {
+function optionsFromChildren(
+  children: React.ReactNode,
+): AutoCompleteOptionType[] {
   const result: AutoCompleteOptionType[] = [];
 
   React.Children.forEach(children, (child) => {
@@ -133,7 +129,8 @@ const AutoCompleteRoot = forwardRef<HTMLDivElement, AutoCompleteProps>(
       (option) => option.value === currentValue,
     );
     const activeIndex = focusedIndex >= 0 ? focusedIndex : selectedIndex;
-    const activeOption = activeIndex >= 0 ? visibleOptions[activeIndex] : undefined;
+    const activeOption =
+      activeIndex >= 0 ? visibleOptions[activeIndex] : undefined;
     const activeDescendant = activeOption
       ? `${listboxId}-option-${activeIndex}`
       : undefined;
@@ -334,7 +331,9 @@ const AutoCompleteRoot = forwardRef<HTMLDivElement, AutoCompleteProps>(
                 {visibleOptions.map(renderOption)}
               </div>
             ) : notFoundContent != null ? (
-              <div className={autoCompleteNoOptionsClass}>{notFoundContent}</div>
+              <div className={autoCompleteNoOptionsClass}>
+                {notFoundContent}
+              </div>
             ) : null}
           </div>
         ) : null}

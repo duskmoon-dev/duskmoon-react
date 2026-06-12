@@ -17,6 +17,7 @@ bun add @duskmoon-dev/components
 ## Usage
 
 ```tsx
+import "@duskmoon-dev/components/styles.css";
 import { Button } from "@duskmoon-dev/components/button";
 
 export default function MyComponent() {

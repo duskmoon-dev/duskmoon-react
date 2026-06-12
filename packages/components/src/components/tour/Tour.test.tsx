@@ -72,11 +72,7 @@ describe("Tour", () => {
           <span>{`${current + 1} / ${total}`}</span>
         )}
         onChange={(nextCurrent) => changes.push(nextCurrent)}
-        steps={[
-          { title: "First" },
-          { title: "Second" },
-          { title: "Third" },
-        ]}
+        steps={[{ title: "First" }, { title: "Second" }, { title: "Third" }]}
       />,
     );
 

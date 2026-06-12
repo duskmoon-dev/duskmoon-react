@@ -1,5 +1,7 @@
 import { expect, test, describe } from "bun:test";
 import { fireEvent, render, screen } from "@testing-library/react";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import React, { createRef } from "react";
 import { Checkbox } from "./Checkbox";
 
@@ -8,12 +10,13 @@ describe("Checkbox", () => {
     render(<Checkbox>Accept</Checkbox>);
     const checkbox = screen.getByRole("checkbox");
     const wrapper = checkbox.closest("label") as HTMLElement;
-    const box = wrapper.querySelector(".checkbox-box") as HTMLElement;
 
-    expect(wrapper.className).toContain("checkbox");
-    expect(box.className).toContain("checkbox-box");
-    expect(box.className).toContain("checkbox-primary");
-    expect(screen.getByText("Accept").className).toContain("checkbox-label");
+    expect(wrapper.className).toContain("checkbox-wrapper");
+    expect(wrapper.className).toContain("checkbox-label");
+    expect(checkbox.className).toContain("checkbox");
+    expect(checkbox.className).toContain("checkbox-input");
+    expect(checkbox.className).toContain("checkbox-primary");
+    expect(screen.getByText("Accept").className).toContain("checkbox-text");
   });
 
   test("applies checked and indeterminate state", () => {
@@ -47,13 +50,12 @@ describe("Checkbox", () => {
     );
     const checkbox = screen.getByRole("checkbox") as HTMLInputElement;
     const wrapper = checkbox.closest("label") as HTMLElement;
-    const box = wrapper.querySelector(".checkbox-box") as HTMLElement;
 
     expect(checkbox.disabled).toBe(true);
-    expect(wrapper.className).toContain("checkbox-lg");
-    expect(wrapper.className).toContain("checkbox-error");
     expect(wrapper.className).toContain("checkbox-loading");
-    expect(box.className).toContain("checkbox-secondary");
+    expect(checkbox.className).toContain("checkbox-lg");
+    expect(checkbox.className).toContain("checkbox-error");
+    expect(checkbox.className).toContain("checkbox-secondary");
     expect(screen.getByText("Disabled").className).toContain(
       "checkbox-label-left",
     );
@@ -64,5 +66,15 @@ describe("Checkbox", () => {
     render(<Checkbox ref={ref} />);
 
     expect(ref.current?.tagName).toBe("INPUT");
+  });
+
+  test("includes component stylesheet rules", () => {
+    const styles = readFileSync(join(import.meta.dir, "../../styles.css"), {
+      encoding: "utf8",
+    });
+
+    expect(styles).toContain(".checkbox-wrapper");
+    expect(styles).toContain(".checkbox-wrapper .checkbox-input");
+    expect(styles).toContain(".checkbox-text");
   });
 });

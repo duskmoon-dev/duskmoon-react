@@ -5,10 +5,8 @@ import React, {
   useRef,
 } from "react";
 import {
-  checkboxCheckmarkClass,
-  checkboxInputClass,
-  getCheckboxBoxClasses,
   getCheckboxClasses,
+  getCheckboxInputClasses,
   getCheckboxLabelClasses,
 } from "../../classes/checkbox";
 import type { CheckboxProps } from "./Checkbox.types";
@@ -44,8 +42,6 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
     return (
       <label
         className={getCheckboxClasses({
-          size,
-          error,
           loading,
           className,
         })}
@@ -54,15 +50,10 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           {...props}
           ref={inputRef}
           type="checkbox"
-          className={checkboxInputClass}
+          className={getCheckboxInputClasses({ color, size, error })}
           disabled={isDisabled}
           aria-checked={indeterminate ? "mixed" : ariaChecked}
         />
-        <span className={getCheckboxBoxClasses({ color })} aria-hidden="true">
-          <span className={checkboxCheckmarkClass}>
-            {indeterminate ? "-" : "✓"}
-          </span>
-        </span>
         {children ? (
           <span className={getCheckboxLabelClasses({ labelPosition })}>
             {children}

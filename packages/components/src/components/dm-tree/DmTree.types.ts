@@ -1,9 +1,5 @@
 import type { ComponentProps, ReactElement, ReactNode } from "react";
-import type {
-  TreeDataNode,
-  TreeKey,
-  TreeProps,
-} from "../tree/Tree.types";
+import type { TreeDataNode, TreeKey, TreeProps } from "../tree/Tree.types";
 import type { DmTabsItem } from "../dm-tabs/DmTabs.types";
 
 export type DmTreeDataNode = Record<string, unknown> & {
@@ -12,13 +8,17 @@ export type DmTreeDataNode = Record<string, unknown> & {
   children?: readonly DmTreeDataNode[];
 };
 
-export interface DmTreeFieldNames<TDataNode extends DmTreeDataNode = TreeDataNode> {
+export interface DmTreeFieldNames<
+  TDataNode extends DmTreeDataNode = TreeDataNode,
+> {
   title?: keyof TDataNode | string;
   key?: keyof TDataNode | string;
   children?: keyof TDataNode | string;
 }
 
-export interface DmTreeToolbarButton<TDataNode extends DmTreeDataNode = TreeDataNode> {
+export interface DmTreeToolbarButton<
+  TDataNode extends DmTreeDataNode = TreeDataNode,
+> {
   label: ReactNode;
   icon?: ReactNode;
   disabled?: boolean;
@@ -28,7 +28,9 @@ export interface DmTreeToolbarButton<TDataNode extends DmTreeDataNode = TreeData
   ) => void;
 }
 
-export interface DmTreeItemAction<TDataNode extends DmTreeDataNode = TreeDataNode> {
+export interface DmTreeItemAction<
+  TDataNode extends DmTreeDataNode = TreeDataNode,
+> {
   icon: ReactNode;
   title?: string;
   disabled?: boolean | ((item: TDataNode) => boolean);
@@ -41,11 +43,12 @@ export interface DmTreeAllItem {
   label: ReactNode;
 }
 
-export interface DmTreeCommonProps<TDataNode extends DmTreeDataNode = TreeDataNode>
-  extends Omit<
-    TreeProps<TreeDataNode>,
-    "treeData" | "children" | "onChange" | "onSelect" | "titleRender"
-  > {
+export interface DmTreeCommonProps<
+  TDataNode extends DmTreeDataNode = TreeDataNode,
+> extends Omit<
+  TreeProps<TreeDataNode>,
+  "treeData" | "children" | "onChange" | "onSelect" | "titleRender"
+> {
   treeData: TDataNode[];
   selectedKey?: TreeKey;
   showAll?: boolean;
@@ -88,14 +91,16 @@ export interface DmTreeCommonProps<TDataNode extends DmTreeDataNode = TreeDataNo
   fieldNames?: DmTreeFieldNames<TDataNode>;
 }
 
-export interface DmTreeOptionItem<TDataNode extends DmTreeDataNode = TreeDataNode>
-  extends Omit<DmTabsItem, "children"> {
+export interface DmTreeOptionItem<
+  TDataNode extends DmTreeDataNode = TreeDataNode,
+> extends Omit<DmTabsItem, "children"> {
   loading?: boolean;
   TreeSetting: DmTreeCommonProps<TDataNode>;
 }
 
-export interface DmTreeOptionProps<TDataNode extends DmTreeDataNode = TreeDataNode>
-  extends Omit<ComponentProps<"div">, "onChange"> {
+export interface DmTreeOptionProps<
+  TDataNode extends DmTreeDataNode = TreeDataNode,
+> extends Omit<ComponentProps<"div">, "onChange"> {
   isTabTree: true;
   items: DmTreeOptionItem<TDataNode>[];
   defaultActiveKey?: string;

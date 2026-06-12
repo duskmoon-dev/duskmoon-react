@@ -28,8 +28,10 @@ export interface TreeSelectDataNode {
   [name: string]: unknown;
 }
 
-export interface TreeSelectNodeProps
-  extends Omit<ComponentProps<"div">, "title" | "onSelect"> {
+export interface TreeSelectNodeProps extends Omit<
+  ComponentProps<"div">,
+  "title" | "onSelect"
+> {
   title?: ReactNode;
   value: TreeSelectValue;
   children?: ReactNode;
@@ -40,7 +42,9 @@ export interface TreeSelectNodeProps
   isLeaf?: boolean;
 }
 
-export interface TreeSelectChangeExtra<T extends TreeSelectDataNode = TreeSelectDataNode> {
+export interface TreeSelectChangeExtra<
+  T extends TreeSelectDataNode = TreeSelectDataNode,
+> {
   triggerValue?: TreeSelectValue;
   selected?: boolean;
   checked?: boolean;
@@ -48,11 +52,12 @@ export interface TreeSelectChangeExtra<T extends TreeSelectDataNode = TreeSelect
   allCheckedNodes?: T[];
 }
 
-export interface TreeSelectProps<T extends TreeSelectDataNode = TreeSelectDataNode>
-  extends Omit<
-    ComponentProps<"div">,
-    "children" | "defaultValue" | "onChange" | "onSelect"
-  > {
+export interface TreeSelectProps<
+  T extends TreeSelectDataNode = TreeSelectDataNode,
+> extends Omit<
+  ComponentProps<"div">,
+  "children" | "defaultValue" | "onChange" | "onSelect"
+> {
   allowClear?: boolean;
   children?: ReactNode;
   defaultOpen?: boolean;
@@ -92,7 +97,9 @@ export type TreeSelectNodeComponent = ForwardRefExoticComponent<
   TreeSelectNodeProps & RefAttributes<HTMLDivElement>
 >;
 
-export type TreeSelectComponent = (<T extends TreeSelectDataNode = TreeSelectDataNode>(
+export type TreeSelectComponent = (<
+  T extends TreeSelectDataNode = TreeSelectDataNode,
+>(
   props: TreeSelectProps<T> & RefAttributes<HTMLDivElement>,
 ) => ReactElement | null) & {
   TreeNode: TreeSelectNodeComponent;

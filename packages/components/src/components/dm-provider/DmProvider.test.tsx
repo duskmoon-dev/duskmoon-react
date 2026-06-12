@@ -9,7 +9,11 @@ import { DmProvider } from "./DmProvider";
 function Probe() {
   const config = ConfigProvider.useConfig();
 
-  return <span>{config.prefixCls}:{String(config.theme?.token?.colorPrimary)}</span>;
+  return (
+    <span>
+      {config.prefixCls}:{String(config.theme?.token?.colorPrimary)}
+    </span>
+  );
 }
 
 describe("DmProvider", () => {

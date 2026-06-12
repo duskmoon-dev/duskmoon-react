@@ -1,7 +1,6 @@
 import { useCallback, useState } from "react";
 import type { ComponentProps, ElementType, Ref } from "react";
-
-export const version = "0.1.1";
+export { version } from "./generated/version";
 
 export type GetProps<T extends ElementType> = ComponentProps<T>;
 export type GetProp<T, K extends keyof T> = T[K];

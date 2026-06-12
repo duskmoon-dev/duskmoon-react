@@ -12,7 +12,9 @@ import type {
 } from "../splitter/Splitter.types";
 
 export interface DmSplitterPersistenceAdapter {
-  fetch: (key: string) => Promise<SplitterSize[] | { sizes?: SplitterSize[] } | null>;
+  fetch: (
+    key: string,
+  ) => Promise<SplitterSize[] | { sizes?: SplitterSize[] } | null>;
   update: (key: string, data: { sizes: SplitterSize[] }) => Promise<unknown>;
 }
 
@@ -21,8 +23,10 @@ export interface DmSplitterPersistence {
   persistenceType?: "localStorage" | DmSplitterPersistenceAdapter;
 }
 
-export interface DmSplitterProps
-  extends Omit<SplitterProps, "sizes" | "defaultSizes" | "onResize"> {
+export interface DmSplitterProps extends Omit<
+  SplitterProps,
+  "sizes" | "defaultSizes" | "onResize"
+> {
   children: ReactNode;
   sizes?: SplitterSize[];
   defaultSizes?: SplitterSize[];
@@ -45,4 +49,3 @@ export type DmSplitterComponent = ForwardRefExoticComponent<
 };
 
 export type DmSplitterElement = ReactElement<DmSplitterProps>;
-

@@ -65,8 +65,10 @@ export interface TableColumnType<T = TableRecord> {
   onHeaderCell?: (column: TableColumnType<T>) => ComponentProps<"th">;
 }
 
-export interface TableColumnGroupType<T = TableRecord>
-  extends Omit<TableColumnType<T>, "dataIndex" | "render" | "sorter" | "filters"> {
+export interface TableColumnGroupType<T = TableRecord> extends Omit<
+  TableColumnType<T>,
+  "dataIndex" | "render" | "sorter" | "filters"
+> {
   children: TableColumnsType<T>;
 }
 
@@ -123,7 +125,12 @@ export interface TableRowSelection<T = TableRecord> {
 export interface TableExpandableConfig<T = TableRecord> {
   expandedRowKeys?: TableKey[];
   defaultExpandedRowKeys?: TableKey[];
-  expandedRowRender?: (record: T, index: number, indent: number, expanded: boolean) => ReactNode;
+  expandedRowRender?: (
+    record: T,
+    index: number,
+    indent: number,
+    expanded: boolean,
+  ) => ReactNode;
   rowExpandable?: (record: T) => boolean;
   expandRowByClick?: boolean;
   columnTitle?: ReactNode;
@@ -135,8 +142,10 @@ export interface TableLocale {
   emptyText?: ReactNode;
 }
 
-export interface TableProps<T = TableRecord>
-  extends Omit<ComponentProps<"div">, "onChange"> {
+export interface TableProps<T = TableRecord> extends Omit<
+  ComponentProps<"div">,
+  "onChange"
+> {
   columns?: TableColumnsType<T>;
   dataSource?: T[];
   rowKey?: TableRowKey<T>;
@@ -178,8 +187,12 @@ export type TableColumnGroupComponent = ForwardRefExoticComponent<
 export type TableSummaryComponent = ForwardRefExoticComponent<
   TableSummaryProps & RefAttributes<HTMLTableSectionElement>
 > & {
-  Row: ForwardRefExoticComponent<TableSummaryRowProps & RefAttributes<HTMLTableRowElement>>;
-  Cell: ForwardRefExoticComponent<TableSummaryCellProps & RefAttributes<HTMLTableCellElement>>;
+  Row: ForwardRefExoticComponent<
+    TableSummaryRowProps & RefAttributes<HTMLTableRowElement>
+  >;
+  Cell: ForwardRefExoticComponent<
+    TableSummaryCellProps & RefAttributes<HTMLTableCellElement>
+  >;
 };
 
 export type TableComponent = (<T = TableRecord>(

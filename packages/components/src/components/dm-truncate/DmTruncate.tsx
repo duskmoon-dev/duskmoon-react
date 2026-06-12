@@ -284,4 +284,3 @@ export const DmTruncate = forwardRef<HTMLDivElement, DmTruncateProps>(
 );
 
 DmTruncate.displayName = "DmTruncate";
-

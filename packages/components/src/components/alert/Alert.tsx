@@ -12,7 +12,7 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(
         {...props}
       />
     );
-  }
+  },
 );
 
 Alert.displayName = "Alert";

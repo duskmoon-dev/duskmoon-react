@@ -3,8 +3,10 @@ import type { ComponentProps, ReactNode } from "react";
 export type PopoverPlacement = "top" | "bottom" | "left" | "right";
 export type PopoverTrigger = "hover" | "focus" | "click" | "contextmenu";
 
-export interface PopoverProps
-  extends Omit<ComponentProps<"span">, "children" | "content" | "title"> {
+export interface PopoverProps extends Omit<
+  ComponentProps<"span">,
+  "children" | "content" | "title"
+> {
   title?: ReactNode;
   content?: ReactNode;
   placement?: PopoverPlacement;

@@ -45,11 +45,7 @@ export function getAutoCompleteInputClasses({
   size?: AutoCompleteSize;
   className?: string;
 }) {
-  return cn(
-    autoCompleteInputClass,
-    autoCompleteSizeClasses[size],
-    className,
-  );
+  return cn(autoCompleteInputClass, autoCompleteSizeClasses[size], className);
 }
 
 export function getAutoCompleteDropdownClasses({

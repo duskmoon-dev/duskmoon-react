@@ -3,11 +3,7 @@ import { cn } from "../utils";
 export const dmDrawerBaseClass = "dm-drawer";
 export const dmDrawerFooterActionClass = "dm-drawer-footer-action";
 
-export function getDmDrawerClasses({
-  className,
-}: {
-  className?: string;
-}) {
+export function getDmDrawerClasses({ className }: { className?: string }) {
   return cn(dmDrawerBaseClass, className);
 }
 

@@ -17,4 +17,3 @@ export function getDmAuxiliaryClasses({
 }) {
   return cn(dmAuxiliaryBaseClass, closed && "dm-auxiliary-closed", className);
 }
-

@@ -77,7 +77,11 @@ function addYears(date: Date, amount: number) {
 }
 
 function startOfCalendarGrid(panelDate: Date) {
-  const firstOfMonth = new Date(panelDate.getFullYear(), panelDate.getMonth(), 1);
+  const firstOfMonth = new Date(
+    panelDate.getFullYear(),
+    panelDate.getMonth(),
+    1,
+  );
   const start = new Date(firstOfMonth);
   start.setDate(firstOfMonth.getDate() - firstOfMonth.getDay());
   return start;
@@ -100,7 +104,10 @@ function isSameMonth(left: Date, right: Date) {
   );
 }
 
-function isOutsideRange(date: Date, validRange?: [CalendarValue, CalendarValue]) {
+function isOutsideRange(
+  date: Date,
+  validRange?: [CalendarValue, CalendarValue],
+) {
   if (!validRange) {
     return false;
   }
@@ -138,7 +145,9 @@ function Header({
             aria-label="Previous panel"
             onClick={() =>
               setPanelDate(
-                mode === "year" ? addYears(panelDate, -1) : addMonths(panelDate, -1),
+                mode === "year"
+                  ? addYears(panelDate, -1)
+                  : addMonths(panelDate, -1),
                 mode,
               )
             }
@@ -150,7 +159,9 @@ function Header({
             aria-label="Next panel"
             onClick={() =>
               setPanelDate(
-                mode === "year" ? addYears(panelDate, 1) : addMonths(panelDate, 1),
+                mode === "year"
+                  ? addYears(panelDate, 1)
+                  : addMonths(panelDate, 1),
                 mode,
               )
             }
@@ -205,11 +216,16 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
     ref,
   ) => {
     const selectedDate = parseDate(value ?? defaultValue);
-    const [innerValue, setInnerValue] = useState(() => formatDate(selectedDate));
+    const [innerValue, setInnerValue] = useState(() =>
+      formatDate(selectedDate),
+    );
     const [panelDate, setInnerPanelDate] = useState(selectedDate);
-    const [innerMode, setInnerMode] = useState<CalendarMode>(mode ?? defaultMode);
+    const [innerMode, setInnerMode] = useState<CalendarMode>(
+      mode ?? defaultMode,
+    );
     const currentMode = mode ?? innerMode;
-    const currentValue = value === undefined ? innerValue : formatDate(parseDate(value));
+    const currentValue =
+      value === undefined ? innerValue : formatDate(parseDate(value));
     const today = useMemo(() => formatDate(new Date()), []);
     const dateGrid = useMemo(() => buildDateGrid(panelDate), [panelDate]);
 
@@ -227,7 +243,8 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
     }
 
     function commitValue(nextDate: Date, source: "date" | "month") {
-      const nextValue = source === "month" ? formatMonth(nextDate) : formatDate(nextDate);
+      const nextValue =
+        source === "month" ? formatMonth(nextDate) : formatDate(nextDate);
 
       if (disabledDate?.(nextValue) || isOutsideRange(nextDate, validRange)) {
         return;
@@ -260,7 +277,8 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
         dateFullCellRender?.(dateValue) ??
         cellRender?.(dateValue, info) ??
         originNode;
-      const disabled = disabledDate?.(dateValue) || isOutsideRange(date, validRange);
+      const disabled =
+        disabledDate?.(dateValue) || isOutsideRange(date, validRange);
 
       return (
         <button
@@ -300,7 +318,8 @@ export const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
         monthFullCellRender?.(dateValue) ??
         cellRender?.(dateValue, info) ??
         originNode;
-      const disabled = disabledDate?.(dateValue) || isOutsideRange(date, validRange);
+      const disabled =
+        disabledDate?.(dateValue) || isOutsideRange(date, validRange);
 
       return (
         <button

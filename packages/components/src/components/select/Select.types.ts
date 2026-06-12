@@ -27,11 +27,10 @@ export type SelectOptionInput = SelectOptionType | SelectOptGroupType;
 
 export type SelectChangeValue = SelectValue | SelectValue[] | undefined;
 
-export interface SelectProps
-  extends Omit<
-    ComponentProps<"div">,
-    "children" | "defaultValue" | "onChange"
-  > {
+export interface SelectProps extends Omit<
+  ComponentProps<"div">,
+  "children" | "defaultValue" | "onChange"
+> {
   allowClear?: boolean;
   children?: ReactNode;
   defaultValue?: SelectChangeValue;
@@ -53,15 +52,19 @@ export interface SelectProps
   value?: SelectChangeValue;
 }
 
-export interface SelectOptionProps
-  extends Omit<ComponentProps<"div">, "children"> {
+export interface SelectOptionProps extends Omit<
+  ComponentProps<"div">,
+  "children"
+> {
   children?: ReactNode;
   disabled?: boolean;
   value: SelectValue;
 }
 
-export interface SelectOptGroupProps
-  extends Omit<ComponentProps<"div">, "children"> {
+export interface SelectOptGroupProps extends Omit<
+  ComponentProps<"div">,
+  "children"
+> {
   children?: ReactNode;
   label?: ReactNode;
 }

@@ -33,8 +33,10 @@ export type PopconfirmAction =
   | Promise<unknown>
   | unknown;
 
-export interface PopconfirmProps
-  extends Omit<ComponentProps<"span">, "children" | "title"> {
+export interface PopconfirmProps extends Omit<
+  ComponentProps<"span">,
+  "children" | "title"
+> {
   title?: ReactNode;
   description?: ReactNode;
   placement?: PopconfirmPlacement;

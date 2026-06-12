@@ -14,11 +14,10 @@ export interface MentionsOptionType {
   className?: string;
 }
 
-export interface MentionsProps
-  extends Omit<
-    ComponentProps<"textarea">,
-    "children" | "defaultValue" | "onChange" | "onSelect" | "prefix" | "value"
-  > {
+export interface MentionsProps extends Omit<
+  ComponentProps<"textarea">,
+  "children" | "defaultValue" | "onChange" | "onSelect" | "prefix" | "value"
+> {
   children?: ReactNode;
   defaultValue?: string;
   filterOption?:
@@ -35,8 +34,10 @@ export interface MentionsProps
   value?: string;
 }
 
-export interface MentionsOptionProps
-  extends Omit<ComponentProps<"div">, "children"> {
+export interface MentionsOptionProps extends Omit<
+  ComponentProps<"div">,
+  "children"
+> {
   children?: ReactNode;
   disabled?: boolean;
   value: string;

@@ -47,7 +47,8 @@ function clampCurrent(current: number, total: number) {
 function resolveTarget(target: TourTarget | undefined) {
   if (typeof document === "undefined" || target === null) return null;
   if (typeof target === "function") return target();
-  if (typeof target === "string") return document.querySelector<HTMLElement>(target);
+  if (typeof target === "string")
+    return document.querySelector<HTMLElement>(target);
   return target ?? null;
 }
 
@@ -104,7 +105,10 @@ function getPanelStyle({
       ...base,
       left: placement === "topLeft" ? rect.left : horizontalCenter,
       top: rect.top - gap,
-      transform: placement === "topLeft" ? "translateY(-100%)" : "translate(-50%, -100%)",
+      transform:
+        placement === "topLeft"
+          ? "translateY(-100%)"
+          : "translate(-50%, -100%)",
     };
   }
 
@@ -113,7 +117,10 @@ function getPanelStyle({
       ...base,
       left: rect.left - gap,
       top: placement === "leftTop" ? rect.top : verticalCenter,
-      transform: placement === "leftTop" ? "translateX(-100%)" : "translate(-100%, -50%)",
+      transform:
+        placement === "leftTop"
+          ? "translateX(-100%)"
+          : "translate(-100%, -50%)",
     };
   }
 
@@ -210,8 +217,12 @@ export const Tour = forwardRef<HTMLDivElement, TourProps>(
     const titleId = `${rootId}-title`;
     const descriptionId = `${rootId}-description`;
     const lastStep = mergedCurrent >= steps.length - 1;
-    const showHighlight = hasMask && (targetRect.width > 0 || targetRect.height > 0);
-    const rootStyle = { ...style, ...(zIndex !== undefined ? { zIndex } : undefined) };
+    const showHighlight =
+      hasMask && (targetRect.width > 0 || targetRect.height > 0);
+    const rootStyle = {
+      ...style,
+      ...(zIndex !== undefined ? { zIndex } : undefined),
+    };
     const currentCloseIcon = step.closeIcon ?? closeIcon;
     const currentNextButtonProps = mergeButtonProps(
       nextButtonProps,
@@ -347,7 +358,9 @@ export const Tour = forwardRef<HTMLDivElement, TourProps>(
               </button>
             ) : null}
           </div>
-          {step.cover ? <div className={tourCoverClass}>{step.cover}</div> : null}
+          {step.cover ? (
+            <div className={tourCoverClass}>{step.cover}</div>
+          ) : null}
           {step.description ? (
             <div id={descriptionId} className={tourBodyClass}>
               {step.description}
@@ -379,7 +392,8 @@ export const Tour = forwardRef<HTMLDivElement, TourProps>(
                   if (!event.defaultPrevented) next();
                 }}
               >
-                {currentNextButtonProps?.children ?? (lastStep ? "Finish" : "Next")}
+                {currentNextButtonProps?.children ??
+                  (lastStep ? "Finish" : "Next")}
               </Button>
             </div>
           </div>

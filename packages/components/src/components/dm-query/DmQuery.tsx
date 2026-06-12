@@ -1,4 +1,9 @@
-import React, { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import React, {
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import { DmSearch } from "../dm-search";
 import type { DmSearchItem, DmSearchRef } from "../dm-search";
 import type { DmQueryItem, DmQueryProps, DmQueryRef } from "./DmQuery.types";
@@ -32,12 +37,16 @@ export const DmQuery = forwardRef<DmQueryRef, DmQueryProps>(
     const [selectedItem, setSelectedItem] = useState<DmQueryItem | undefined>(
       queryItem[0],
     );
-    const items = selectedItem ? [toSearchItem(selectedItem)] : queryItem.map(toSearchItem);
+    const items = selectedItem
+      ? [toSearchItem(selectedItem)]
+      : queryItem.map(toSearchItem);
 
     useImperativeHandle(ref, () => ({
       onReset: () => searchRef.current?.onReset(),
       retractChange: (value, data = queryItem) => {
-        setSelectedItem(data.find((item) => item.name === value || item.key === value));
+        setSelectedItem(
+          data.find((item) => item.name === value || item.key === value),
+        );
       },
     }));
 
@@ -47,7 +56,9 @@ export const DmQuery = forwardRef<DmQueryRef, DmQueryProps>(
         ref={searchRef}
         defaultCollapsed={collapsed}
         items={collapsed ? queryItem.map(toSearchItem) : items}
-        fastFilterItem={fastFilterItem ? toSearchItem(fastFilterItem) : undefined}
+        fastFilterItem={
+          fastFilterItem ? toSearchItem(fastFilterItem) : undefined
+        }
         onSearch={onSearch}
         extra={
           <>

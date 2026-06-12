@@ -40,7 +40,10 @@ function initialValues(
 
 function optionList(extraProps: Record<string, unknown> | undefined) {
   return Array.isArray(extraProps?.options)
-    ? (extraProps.options as Array<{ label?: React.ReactNode; value: string | number }>)
+    ? (extraProps.options as Array<{
+        label?: React.ReactNode;
+        value: string | number;
+      }>)
     : [];
 }
 
@@ -175,7 +178,9 @@ export const DmSearch = forwardRef<DmSearchRef, DmSearchProps>(
       [fastFilterItem, items],
     );
     const [collapsed, setCollapsed] = useState(defaultCollapsed);
-    const [values, setValues] = useState(() => initialValues(allItems, searchParams));
+    const [values, setValues] = useState(() =>
+      initialValues(allItems, searchParams),
+    );
     const visibleItems = collapsed ? allItems.slice(0, 1) : allItems;
 
     useEffect(() => {
@@ -216,7 +221,10 @@ export const DmSearch = forwardRef<DmSearchRef, DmSearchProps>(
                 loading,
                 enableDefaultPlaceHolder,
                 setValue: (value) =>
-                  setValues((current) => ({ ...current, [item.dataIndex]: value })),
+                  setValues((current) => ({
+                    ...current,
+                    [item.dataIndex]: value,
+                  })),
               })}
             </label>
           ))}

@@ -381,7 +381,10 @@ function createScopedApi({
 
     const duration = getDuration(config, holderConfig);
     if (duration && duration > 0) {
-      timerMap.set(key, setTimeout(() => close(key), duration * 1000));
+      timerMap.set(
+        key,
+        setTimeout(() => close(key), duration * 1000),
+      );
     }
   }
 

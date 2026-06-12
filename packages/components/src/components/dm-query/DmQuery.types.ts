@@ -15,7 +15,8 @@ export interface DmQueryRef extends DmSearchRef {
 }
 
 export interface DmQueryProps
-  extends Omit<DmSearchProps, "items" | "fastFilterItem" | "ref">,
+  extends
+    Omit<DmSearchProps, "items" | "fastFilterItem" | "ref">,
     RefAttributes<DmQueryRef> {
   queryItem: DmQueryItem[];
   fastFilterItem?: DmQueryItem;

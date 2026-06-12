@@ -9,7 +9,10 @@ const alignStyleMap: Record<RowAlign, React.CSSProperties["alignItems"]> = {
   stretch: "stretch",
 };
 
-const justifyStyleMap: Record<RowJustify, React.CSSProperties["justifyContent"]> = {
+const justifyStyleMap: Record<
+  RowJustify,
+  React.CSSProperties["justifyContent"]
+> = {
   start: "flex-start",
   end: "flex-end",
   center: "center",

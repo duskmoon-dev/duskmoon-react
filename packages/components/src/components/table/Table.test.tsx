@@ -14,7 +14,13 @@ interface UserRow {
 }
 
 const dataSource: UserRow[] = [
-  { key: "1", name: "Ada", age: 36, role: "admin", address: { city: "London" } },
+  {
+    key: "1",
+    name: "Ada",
+    age: 36,
+    role: "admin",
+    address: { city: "London" },
+  },
   { key: "2", name: "Ben", age: 24, role: "user", address: { city: "Paris" } },
   { key: "3", name: "Cid", age: 42, role: "user", address: { city: "Rome" } },
 ];
@@ -44,7 +50,9 @@ describe("Table", () => {
     expect(container.querySelector(".table-wrapper")?.className).toContain(
       "table-loading",
     );
-    expect(container.querySelector(".table")?.className).toContain("table-bordered");
+    expect(container.querySelector(".table")?.className).toContain(
+      "table-bordered",
+    );
     expect(screen.getByText("Ada")).toBeTruthy();
     expect(screen.getByText("London")).toBeTruthy();
     expect(screen.getByRole("status").textContent).toBe("Working");
@@ -145,11 +153,16 @@ describe("Table", () => {
     render(
       <Table<UserRow>
         dataSource={dataSource}
-        pagination={{ defaultPageSize: 2, onChange: (page) => pageChanges.push(String(page)) }}
+        pagination={{
+          defaultPageSize: 2,
+          onChange: (page) => pageChanges.push(String(page)),
+        }}
         summary={(rows) => (
           <Table.Summary>
             <Table.Summary.Row>
-              <Table.Summary.Cell colSpan={2}>Rows: {rows.length}</Table.Summary.Cell>
+              <Table.Summary.Cell colSpan={2}>
+                Rows: {rows.length}
+              </Table.Summary.Cell>
             </Table.Summary.Row>
           </Table.Summary>
         )}

@@ -29,7 +29,11 @@ export function getSplitterPanelClasses({
   collapsed?: boolean;
   className?: string;
 }) {
-  return cn(splitterPanelClass, collapsed && splitterPanelCollapsedClass, className);
+  return cn(
+    splitterPanelClass,
+    collapsed && splitterPanelCollapsedClass,
+    className,
+  );
 }
 
 export function getSplitterHandleClasses({
@@ -39,5 +43,9 @@ export function getSplitterHandleClasses({
   disabled?: boolean;
   className?: string;
 }) {
-  return cn(splitterHandleClass, disabled && splitterHandleDisabledClass, className);
+  return cn(
+    splitterHandleClass,
+    disabled && splitterHandleDisabledClass,
+    className,
+  );
 }

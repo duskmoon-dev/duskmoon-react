@@ -22,9 +22,5 @@
     }
   },
   "booleanModifiers": {},
-  "reactProps": [
-    "src?: string",
-    "alt?: string",
-    "fallback?: React.ReactNode"
-  ]
+  "reactProps": ["src?: string", "alt?: string", "fallback?: React.ReactNode"]
 }

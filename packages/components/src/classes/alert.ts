@@ -1,6 +1,9 @@
 // GENERATED FILE. DO NOT EDIT.
 import { cn } from "../utils";
-import type { AlertColor, AlertAppearance } from "../components/alert/Alert.types";
+import type {
+  AlertColor,
+  AlertAppearance,
+} from "../components/alert/Alert.types";
 
 export const alertBaseClass = "alert";
 
@@ -17,7 +20,6 @@ export const alertAppearanceClasses: Record<AlertAppearance, string> = {
   tonal: "alert-tonal",
 };
 
-
 export function getAlertClasses({
   color = "info",
   appearance = "filled",
@@ -31,6 +33,6 @@ export function getAlertClasses({
     alertBaseClass,
     alertColorClasses[color],
     alertAppearanceClasses[appearance],
-    className
+    className,
   );
 }

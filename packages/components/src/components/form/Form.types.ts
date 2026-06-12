@@ -21,7 +21,9 @@ export interface FieldError {
   errors: ReactNode[];
 }
 
-export interface FormInstance<T extends Record<string, unknown> = Record<string, unknown>> {
+export interface FormInstance<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> {
   getFieldValue: (name: FormNamePath) => unknown;
   getFieldsValue: () => Partial<T>;
   setFieldValue: (name: FormNamePath, value: unknown) => void;
@@ -44,8 +46,12 @@ export interface FormContextValue {
   setFieldError: (name: FormNamePath, errors: ReactNode[]) => void;
 }
 
-export interface FormProps<T extends Record<string, unknown> = Record<string, unknown>>
-  extends Omit<ComponentProps<"form">, "children" | "onSubmit" | "onFinish" | "onChange"> {
+export interface FormProps<
+  T extends Record<string, unknown> = Record<string, unknown>,
+> extends Omit<
+  ComponentProps<"form">,
+  "children" | "onSubmit" | "onFinish" | "onChange"
+> {
   children?: ReactNode;
   form?: FormInstance<T>;
   initialValues?: Partial<T>;
@@ -56,12 +62,17 @@ export interface FormProps<T extends Record<string, unknown> = Record<string, un
   colon?: boolean;
   requiredMark?: boolean;
   onFinish?: (values: Partial<T>) => void;
-  onFinishFailed?: (errorInfo: { errorFields: FieldError[]; values: Partial<T> }) => void;
+  onFinishFailed?: (errorInfo: {
+    errorFields: FieldError[];
+    values: Partial<T>;
+  }) => void;
   onValuesChange?: (changedValues: Partial<T>, values: Partial<T>) => void;
 }
 
-export interface FormItemProps
-  extends Omit<ComponentProps<"div">, "children" | "onChange" | "title"> {
+export interface FormItemProps extends Omit<
+  ComponentProps<"div">,
+  "children" | "onChange" | "title"
+> {
   children?: ReactNode;
   name?: FormNamePath;
   label?: ReactNode;
@@ -102,8 +113,14 @@ export interface ErrorListProps extends ComponentProps<"div"> {
 
 export interface FormProviderProps {
   children?: ReactNode;
-  onFormChange?: (name: string, info: { changedFields: unknown[]; forms: Record<string, FormInstance> }) => void;
-  onFormFinish?: (name: string, info: { values: unknown; forms: Record<string, FormInstance> }) => void;
+  onFormChange?: (
+    name: string,
+    info: { changedFields: unknown[]; forms: Record<string, FormInstance> },
+  ) => void;
+  onFormFinish?: (
+    name: string,
+    info: { values: unknown; forms: Record<string, FormInstance> },
+  ) => void;
 }
 
 export type FormItemComponent = ForwardRefExoticComponent<

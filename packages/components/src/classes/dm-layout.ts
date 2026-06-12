@@ -12,4 +12,3 @@ export const dmLayoutAuxiliaryClass = "dm-layout-auxiliary";
 export function getDmLayoutClasses({ className }: { className?: string }) {
   return cn(dmLayoutClass, className);
 }
-

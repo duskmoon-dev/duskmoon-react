@@ -4,8 +4,10 @@ import type {
   ConfigProviderProps,
 } from "../config-provider";
 
-export interface DmProviderProps
-  extends Omit<ComponentPropsWithoutRef<"div">, "children" | "className"> {
+export interface DmProviderProps extends Omit<
+  ComponentPropsWithoutRef<"div">,
+  "children" | "className"
+> {
   children?: ReactNode;
   className?: string;
   component?: ConfigProviderProps["component"];

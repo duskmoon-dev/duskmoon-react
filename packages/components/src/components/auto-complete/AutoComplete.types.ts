@@ -18,11 +18,10 @@ export type AutoCompleteFilterOption =
   | boolean
   | ((inputValue: string, option: AutoCompleteOptionType) => boolean);
 
-export interface AutoCompleteProps
-  extends Omit<
-    ComponentProps<"div">,
-    "children" | "defaultValue" | "onChange" | "onSelect"
-  > {
+export interface AutoCompleteProps extends Omit<
+  ComponentProps<"div">,
+  "children" | "defaultValue" | "onChange" | "onSelect"
+> {
   allowClear?: boolean;
   children?: ReactNode;
   defaultOpen?: boolean;
@@ -40,8 +39,10 @@ export interface AutoCompleteProps
   value?: string;
 }
 
-export interface AutoCompleteOptionProps
-  extends Omit<ComponentProps<"div">, "children"> {
+export interface AutoCompleteOptionProps extends Omit<
+  ComponentProps<"div">,
+  "children"
+> {
   children?: ReactNode;
   disabled?: boolean;
   value: string;

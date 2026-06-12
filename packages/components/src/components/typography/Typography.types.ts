@@ -71,27 +71,29 @@ export interface TypographyBehaviorProps {
 export type TypographyProps = ComponentProps<"div">;
 
 export interface TextProps
-  extends Omit<ComponentProps<"span">, "color">,
+  extends
+    Omit<ComponentProps<"span">, "color">,
     TypographySemanticProps,
     TypographyBehaviorProps {
   size?: TypographySize;
 }
 
 export interface ParagraphProps
-  extends Omit<ComponentProps<"p">, "color">,
+  extends
+    Omit<ComponentProps<"p">, "color">,
     TypographySemanticProps,
     TypographyBehaviorProps {}
 
 export interface TitleProps
-  extends Omit<ComponentProps<"h1">, "color">,
+  extends
+    Omit<ComponentProps<"h1">, "color">,
     TypographySemanticProps,
     TypographyBehaviorProps {
   level?: TypographyLevel;
 }
 
 export interface LinkProps
-  extends Omit<ComponentProps<"a">, "color" | "type">,
-    TypographySemanticProps {
+  extends Omit<ComponentProps<"a">, "color" | "type">, TypographySemanticProps {
   ellipsis?: TypographyEllipsis;
 }
 

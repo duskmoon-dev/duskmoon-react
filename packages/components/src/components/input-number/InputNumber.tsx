@@ -56,9 +56,8 @@ export const InputNumber = forwardRef<HTMLInputElement, InputNumberProps>(
     ref,
   ) => {
     const controlled = value !== undefined;
-    const [innerValue, setInnerValue] = useState<InputNumberValue>(
-      defaultValue,
-    );
+    const [innerValue, setInnerValue] =
+      useState<InputNumberValue>(defaultValue);
     const currentValue = controlled ? value : innerValue;
     const displayValue = useMemo(
       () => toDisplayValue(currentValue, formatter),
@@ -123,7 +122,9 @@ export const InputNumber = forwardRef<HTMLInputElement, InputNumberProps>(
             <button
               type="button"
               className={inputNumberControlClass}
-              disabled={disabled || (max !== undefined && Number(currentValue) >= max)}
+              disabled={
+                disabled || (max !== undefined && Number(currentValue) >= max)
+              }
               aria-label="Increase value"
               onClick={() => stepValue("up")}
             >
@@ -132,7 +133,9 @@ export const InputNumber = forwardRef<HTMLInputElement, InputNumberProps>(
             <button
               type="button"
               className={inputNumberControlClass}
-              disabled={disabled || (min !== undefined && Number(currentValue) <= min)}
+              disabled={
+                disabled || (min !== undefined && Number(currentValue) <= min)
+              }
               aria-label="Decrease value"
               onClick={() => stepValue("down")}
             >

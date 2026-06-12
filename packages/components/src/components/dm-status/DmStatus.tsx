@@ -22,8 +22,22 @@ const emptyImage = (
     width="96"
     height="72"
   >
-    <rect x="14" y="18" width="68" height="40" rx="6" fill="currentColor" opacity="0.12" />
-    <path d="M28 31h40M28 42h24" stroke="currentColor" strokeWidth="4" strokeLinecap="round" opacity="0.32" />
+    <rect
+      x="14"
+      y="18"
+      width="68"
+      height="40"
+      rx="6"
+      fill="currentColor"
+      opacity="0.12"
+    />
+    <path
+      d="M28 31h40M28 42h24"
+      stroke="currentColor"
+      strokeWidth="4"
+      strokeLinecap="round"
+      opacity="0.32"
+    />
   </svg>
 );
 
@@ -36,7 +50,13 @@ const errorImage = (
     height="72"
   >
     <circle cx="48" cy="36" r="25" fill="currentColor" opacity="0.12" />
-    <path d="M39 27l18 18M57 27L39 45" stroke="currentColor" strokeWidth="5" strokeLinecap="round" opacity="0.48" />
+    <path
+      d="M39 27l18 18M57 27L39 45"
+      stroke="currentColor"
+      strokeWidth="5"
+      strokeLinecap="round"
+      opacity="0.48"
+    />
   </svg>
 );
 
@@ -48,12 +68,17 @@ function normalizeHeight(height?: string | number) {
   return height ?? "100%";
 }
 
-function normalizeImage(image: string | React.ReactNode, imageStyle?: React.CSSProperties) {
+function normalizeImage(
+  image: string | React.ReactNode,
+  imageStyle?: React.CSSProperties,
+) {
   if (typeof image !== "string") {
     return image;
   }
 
-  return <img src={image} alt="" className={dmStatusImageClass} style={imageStyle} />;
+  return (
+    <img src={image} alt="" className={dmStatusImageClass} style={imageStyle} />
+  );
 }
 
 export const DmStatus = forwardRef<HTMLDivElement, DmStatusProps>(
@@ -101,7 +126,8 @@ export const DmStatus = forwardRef<HTMLDivElement, DmStatusProps>(
       imageStyle,
     );
     const finalDescription =
-      description ?? defaultDescriptions[status === "error" ? "error" : "empty"];
+      description ??
+      defaultDescriptions[status === "error" ? "error" : "empty"];
 
     return (
       <div
@@ -127,4 +153,3 @@ export const DmStatus = forwardRef<HTMLDivElement, DmStatusProps>(
 DmStatus.displayName = "DmStatus";
 
 export default DmStatus;
-

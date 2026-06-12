@@ -1,5 +1,6 @@
 import React, { forwardRef, useState } from "react";
 import {
+  colorPickerFormatSelectClass,
   colorPickerInputClass,
   colorPickerPanelClass,
   colorPickerPresetClass,
@@ -182,14 +183,18 @@ export const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>(
           className={colorPickerInputClass}
           aria-label="Color value"
           value={cssValue}
-          onChange={(event) => emitChange(parseInput(event.currentTarget.value, format))}
+          onChange={(event) =>
+            emitChange(parseInput(event.currentTarget.value, format))
+          }
         />
         {presets?.length ? (
           <div className={colorPickerPresetsClass}>
             {presets.map((preset, presetIndex) => (
               <div key={presetIndex} className={colorPickerPresetClass}>
                 {preset.label ? (
-                  <div className={colorPickerPresetLabelClass}>{preset.label}</div>
+                  <div className={colorPickerPresetLabelClass}>
+                    {preset.label}
+                  </div>
                 ) : null}
                 <div className={colorPickerPresetColorsClass}>
                   {preset.colors.map((presetColor, colorIndex) => {
@@ -200,7 +205,9 @@ export const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>(
                         type="button"
                         aria-label={`Select color ${presetCss}`}
                         className={colorPickerSwatchClass}
-                        style={{ backgroundColor: colorToCss(presetColor, "hex") }}
+                        style={{
+                          backgroundColor: colorToCss(presetColor, "hex"),
+                        }}
                         onClick={() => emitChange(presetColor)}
                       />
                     );
@@ -248,16 +255,19 @@ export const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>(
           </span>
         ) : null}
         <select
+          className={colorPickerFormatSelectClass}
           aria-label="Color format"
           value={format}
           disabled={disabled}
-          onChange={(event) => onFormatChange?.(event.currentTarget.value as ColorPickerFormat)}
+          onChange={(event) =>
+            onFormatChange?.(event.currentTarget.value as ColorPickerFormat)
+          }
         >
           <option value="hex">hex</option>
           <option value="rgb">rgb</option>
           <option value="hsb">hsb</option>
         </select>
-        {visible ? panelRender?.(panel) ?? panel : null}
+        {visible ? (panelRender?.(panel) ?? panel) : null}
       </div>
     );
   },

@@ -12,7 +12,11 @@ const dataSource = [
 describe("Transfer", () => {
   test("renders source and target lists with titles", () => {
     const { container } = render(
-      <Transfer dataSource={dataSource} targetKeys={["2"]} titles={["Left", "Right"]} />,
+      <Transfer
+        dataSource={dataSource}
+        targetKeys={["2"]}
+        titles={["Left", "Right"]}
+      />,
     );
 
     const root = container.querySelector(".transfer") as HTMLElement;
@@ -25,7 +29,11 @@ describe("Transfer", () => {
   });
 
   test("moves selected source items to target", () => {
-    const changes: Array<{ keys: string[]; direction: string; moved: string[] }> = [];
+    const changes: Array<{
+      keys: string[];
+      direction: string;
+      moved: string[];
+    }> = [];
 
     render(
       <Transfer
@@ -37,9 +45,13 @@ describe("Transfer", () => {
     );
 
     fireEvent.click(screen.getByLabelText("Alpha"));
-    fireEvent.click(screen.getByRole("button", { name: "Move selected items to target" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Move selected items to target" }),
+    );
 
-    expect(changes).toEqual([{ keys: ["1"], direction: "right", moved: ["1"] }]);
+    expect(changes).toEqual([
+      { keys: ["1"], direction: "right", moved: ["1"] },
+    ]);
   });
 
   test("supports selectedKeys and select change callbacks", () => {
@@ -67,15 +79,23 @@ describe("Transfer", () => {
         dataSource={dataSource}
         showSearch
         pagination={{ pageSize: 1 }}
-        render={(item) => ({ label: <span>{item.title}</span>, value: String(item.title) })}
-        filterOption={(input, item) => String(item.title).toLowerCase().includes(input)}
+        render={(item) => ({
+          label: <span>{item.title}</span>,
+          value: String(item.title),
+        })}
+        filterOption={(input, item) =>
+          String(item.title).toLowerCase().includes(input)
+        }
         onSearch={(direction, value) => searches.push(`${direction}:${value}`)}
       />,
     );
 
-    fireEvent.change(screen.getByRole("searchbox", { name: "Search left list" }), {
-      target: { value: "bet" },
-    });
+    fireEvent.change(
+      screen.getByRole("searchbox", { name: "Search left list" }),
+      {
+        target: { value: "bet" },
+      },
+    );
 
     expect(searches.at(-1)).toBe("left:bet");
     expect(screen.queryByText("Alpha")).toBeNull();
@@ -86,14 +106,23 @@ describe("Transfer", () => {
     const { container } = render(
       <>
         <Transfer
-          dataSource={[{ id: "a", title: "Row keyed" } as { id: string; title: string; key: string }]}
+          dataSource={[
+            { id: "a", title: "Row keyed" } as {
+              id: string;
+              title: string;
+              key: string;
+            },
+          ]}
           rowKey={(item) => item.id}
           defaultTargetKeys={["a"]}
           defaultSelectedKeys={["a"]}
           oneWay
           disabled
         />
-        <Transfer.Search aria-label="Standalone search" onChange={() => undefined} />
+        <Transfer.Search
+          aria-label="Standalone search"
+          onChange={() => undefined}
+        />
         <Transfer.Operation oneWay />
       </>,
     );
@@ -104,6 +133,8 @@ describe("Transfer", () => {
     expect(
       screen.queryByRole("button", { name: "Move selected items to source" }),
     ).toBeNull();
-    expect(screen.getByRole("searchbox", { name: "Standalone search" })).toBeTruthy();
+    expect(
+      screen.getByRole("searchbox", { name: "Standalone search" }),
+    ).toBeTruthy();
   });
 });

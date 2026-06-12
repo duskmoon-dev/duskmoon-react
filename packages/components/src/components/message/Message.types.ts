@@ -41,11 +41,31 @@ export interface MessageHandle extends Promise<void> {
 
 export interface MessageApi {
   open: (config: MessageArgsProps) => MessageHandle;
-  success: (content: MessageContent, duration?: number, onClose?: () => void) => MessageHandle;
-  error: (content: MessageContent, duration?: number, onClose?: () => void) => MessageHandle;
-  info: (content: MessageContent, duration?: number, onClose?: () => void) => MessageHandle;
-  warning: (content: MessageContent, duration?: number, onClose?: () => void) => MessageHandle;
-  loading: (content: MessageContent, duration?: number, onClose?: () => void) => MessageHandle;
+  success: (
+    content: MessageContent,
+    duration?: number,
+    onClose?: () => void,
+  ) => MessageHandle;
+  error: (
+    content: MessageContent,
+    duration?: number,
+    onClose?: () => void,
+  ) => MessageHandle;
+  info: (
+    content: MessageContent,
+    duration?: number,
+    onClose?: () => void,
+  ) => MessageHandle;
+  warning: (
+    content: MessageContent,
+    duration?: number,
+    onClose?: () => void,
+  ) => MessageHandle;
+  loading: (
+    content: MessageContent,
+    duration?: number,
+    onClose?: () => void,
+  ) => MessageHandle;
   destroy: (key?: string | number) => void;
   config: (config: MessageConfig) => void;
   useMessage: () => [MessageApi, ReactNode];

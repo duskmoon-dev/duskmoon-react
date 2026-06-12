@@ -46,8 +46,9 @@ export interface TransferLocale {
   searchPlaceholder?: string;
 }
 
-export interface TransferListProps<T extends TransferItem = TransferItem>
-  extends Omit<ComponentProps<"div">, "children" | "title"> {
+export interface TransferListProps<
+  T extends TransferItem = TransferItem,
+> extends Omit<ComponentProps<"div">, "children" | "title"> {
   direction: TransferDirection;
   title?: ReactNode;
   items: T[];
@@ -60,18 +61,24 @@ export interface TransferListProps<T extends TransferItem = TransferItem>
   render?: TransferRender<T>;
   filterOption?: TransferFilterOption<T>;
   pagination?: boolean | TransferPaginationConfig;
-  listStyle?: CSSProperties | ((style: { direction: TransferDirection }) => CSSProperties);
+  listStyle?:
+    | CSSProperties
+    | ((style: { direction: TransferDirection }) => CSSProperties);
   onSearch?: (direction: TransferDirection, value: string) => void;
   onItemSelect?: (key: TransferKey, selected: boolean) => void;
 }
 
-export interface TransferSearchProps
-  extends Omit<ComponentProps<"input">, "onChange" | "size"> {
+export interface TransferSearchProps extends Omit<
+  ComponentProps<"input">,
+  "onChange" | "size"
+> {
   onChange?: (value: string) => void;
 }
 
-export interface TransferOperationProps
-  extends Omit<ComponentProps<"div">, "children"> {
+export interface TransferOperationProps extends Omit<
+  ComponentProps<"div">,
+  "children"
+> {
   disabled?: boolean;
   oneWay?: boolean;
   operations?: ReactNode[];
@@ -81,8 +88,9 @@ export interface TransferOperationProps
   onMoveToLeft?: () => void;
 }
 
-export interface TransferProps<T extends TransferItem = TransferItem>
-  extends Omit<ComponentProps<"div">, "children" | "onChange" | "title"> {
+export interface TransferProps<
+  T extends TransferItem = TransferItem,
+> extends Omit<ComponentProps<"div">, "children" | "onChange" | "title"> {
   dataSource?: T[];
   targetKeys?: TransferKey[];
   defaultTargetKeys?: TransferKey[];
@@ -96,7 +104,9 @@ export interface TransferProps<T extends TransferItem = TransferItem>
   operations?: ReactNode[];
   titles?: ReactNode[];
   disabled?: boolean;
-  listStyle?: CSSProperties | ((style: { direction: TransferDirection }) => CSSProperties);
+  listStyle?:
+    | CSSProperties
+    | ((style: { direction: TransferDirection }) => CSSProperties);
   rowKey?: (item: T) => TransferKey;
   locale?: TransferLocale;
   onChange?: (

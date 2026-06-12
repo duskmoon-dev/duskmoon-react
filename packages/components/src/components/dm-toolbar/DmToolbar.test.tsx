@@ -17,7 +17,9 @@ describe("DmToolbar", () => {
 
     expect(container.querySelector(".dm-toolbar")).toBeTruthy();
 
-    const buttons = screen.getAllByRole("button").map((button) => button.textContent);
+    const buttons = screen
+      .getAllByRole("button")
+      .map((button) => button.textContent);
 
     expect(buttons).toEqual(["Export", "Delete", "Create"]);
     expect(screen.getByRole("button", { name: "Create" }).className).toContain(
@@ -72,7 +74,9 @@ describe("DmToolbar", () => {
       />,
     );
 
-    expect(container.querySelectorAll(".dm-toolbar-secondary-item")).toHaveLength(0);
+    expect(
+      container.querySelectorAll(".dm-toolbar-secondary-item"),
+    ).toHaveLength(0);
     expect(screen.getByRole("button", { name: "Actions" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Save" })).toBeTruthy();
   });

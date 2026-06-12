@@ -20,9 +20,10 @@ function createWatermarkSvg({
   WatermarkProps,
   "content" | "font" | "height" | "image" | "rotate" | "width"
 >) {
-  const text = typeof content === "string" || typeof content === "number"
-    ? String(content)
-    : "";
+  const text =
+    typeof content === "string" || typeof content === "number"
+      ? String(content)
+      : "";
   const color = font?.color ?? "rgba(0, 0, 0, 0.12)";
   const fontSize = font?.fontSize ?? 16;
   const viewWidth = width ?? 180;

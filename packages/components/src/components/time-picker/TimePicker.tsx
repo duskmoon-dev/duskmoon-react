@@ -181,7 +181,10 @@ const TimePickerRoot = forwardRef<HTMLDivElement, TimePickerProps>(
         setInnerValue(nextValue);
       }
 
-      onChange?.(nextValue, normalizedTimeString(nextValue, timeFormat, use12Hours));
+      onChange?.(
+        nextValue,
+        normalizedTimeString(nextValue, timeFormat, use12Hours),
+      );
     }
 
     return (

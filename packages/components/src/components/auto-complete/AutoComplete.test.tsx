@@ -1,6 +1,8 @@
 import React from "react";
 import { describe, expect, test } from "bun:test";
 import { fireEvent, render, screen } from "@testing-library/react";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { AutoComplete } from "./AutoComplete";
 import type { AutoCompleteOptionType } from "./AutoComplete.types";
 
@@ -148,5 +150,16 @@ describe("AutoComplete", () => {
     const input = screen.getByRole("combobox");
     expect(input).toHaveProperty("disabled", true);
     expect(input.getAttribute("aria-disabled")).toBe("true");
+  });
+
+  test("includes component stylesheet rules", () => {
+    const styles = readFileSync(join(import.meta.dir, "../../styles.css"), {
+      encoding: "utf8",
+    });
+
+    expect(styles).toContain(".autocomplete-input-wrapper");
+    expect(styles).toContain(".autocomplete-toggle");
+    expect(styles).toContain(".autocomplete-option-selected");
+    expect(styles).toContain(".autocomplete-no-options");
   });
 });

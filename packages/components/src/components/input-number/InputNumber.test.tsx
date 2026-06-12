@@ -1,6 +1,8 @@
 import React from "react";
 import { describe, expect, test } from "bun:test";
 import { fireEvent, render, screen } from "@testing-library/react";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { InputNumber } from "./InputNumber";
 
 describe("InputNumber", () => {
@@ -84,5 +86,16 @@ describe("InputNumber", () => {
     expect(screen.queryByRole("button", { name: "Increase value" })).toBeNull();
     fireEvent.keyDown(screen.getByDisplayValue("1"), { key: "ArrowUp" });
     expect(screen.getByDisplayValue("1")).toBeTruthy();
+  });
+
+  test("includes component stylesheet rules", () => {
+    const styles = readFileSync(join(import.meta.dir, "../../styles.css"), {
+      encoding: "utf8",
+    });
+
+    expect(styles).toContain(".input-number");
+    expect(styles).toContain(".input-number-input");
+    expect(styles).toContain(".input-number-controls");
+    expect(styles).toContain(".input-number-control");
   });
 });

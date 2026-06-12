@@ -6,7 +6,11 @@ import { Calendar } from "./Calendar";
 describe("Calendar", () => {
   test("renders controlled value with fullscreen and custom classes", () => {
     const { container } = render(
-      <Calendar value="2026-05-25" fullscreen={false} className="custom-calendar" />,
+      <Calendar
+        value="2026-05-25"
+        fullscreen={false}
+        className="custom-calendar"
+      />,
     );
 
     const root = container.querySelector(".calendar") as HTMLElement;

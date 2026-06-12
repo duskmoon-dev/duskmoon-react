@@ -83,7 +83,9 @@ const DatePickerRoot = forwardRef<HTMLDivElement, DatePickerProps>(
       normalizeDateValue(defaultValue),
     );
     const [innerOpen, setInnerOpen] = useState(Boolean(defaultOpen));
-    const currentValue = isValueControlled ? normalizeDateValue(value) : innerValue;
+    const currentValue = isValueControlled
+      ? normalizeDateValue(value)
+      : innerValue;
     const visible = isOpenControlled ? Boolean(open) : innerOpen;
     const inputType = inputTypeForPicker(picker);
 
@@ -136,7 +138,9 @@ const DatePickerRoot = forwardRef<HTMLDivElement, DatePickerProps>(
             onBlur?.(event);
             setVisible(false);
           }}
-          onChange={(event) => emitChange(event.currentTarget.value || undefined)}
+          onChange={(event) =>
+            emitChange(event.currentTarget.value || undefined)
+          }
         />
         {allowClear && currentValue && !disabled ? (
           <button
@@ -227,7 +231,9 @@ const RangePicker = forwardRef<HTMLDivElement, RangePickerProps>(
 
     function updateIndex(index: 0 | 1, nextItem: string | undefined) {
       emitChange(
-        index === 0 ? [nextItem, currentValue?.[1]] : [currentValue?.[0], nextItem],
+        index === 0
+          ? [nextItem, currentValue?.[1]]
+          : [currentValue?.[0], nextItem],
       );
     }
 
@@ -249,8 +255,12 @@ const RangePicker = forwardRef<HTMLDivElement, RangePickerProps>(
           disabled={disabled}
           type={inputType}
           value={currentValue?.[0] ?? ""}
-          placeholder={Array.isArray(placeholder) ? placeholder[0] : "Start date"}
-          onChange={(event) => updateIndex(0, event.currentTarget.value || undefined)}
+          placeholder={
+            Array.isArray(placeholder) ? placeholder[0] : "Start date"
+          }
+          onChange={(event) =>
+            updateIndex(0, event.currentTarget.value || undefined)
+          }
         />
         <span className={datePickerSeparatorClass}>{separator}</span>
         <input
@@ -259,7 +269,9 @@ const RangePicker = forwardRef<HTMLDivElement, RangePickerProps>(
           type={inputType}
           value={currentValue?.[1] ?? ""}
           placeholder={Array.isArray(placeholder) ? placeholder[1] : "End date"}
-          onChange={(event) => updateIndex(1, event.currentTarget.value || undefined)}
+          onChange={(event) =>
+            updateIndex(1, event.currentTarget.value || undefined)
+          }
         />
         {allowClear && (currentValue?.[0] || currentValue?.[1]) && !disabled ? (
           <button

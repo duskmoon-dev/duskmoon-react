@@ -402,20 +402,45 @@
     "README.md"
   ],
   "scripts": {
-    "build": "rm -rf dist && bun run build:js && bun run build:types && bun run build:css",
+    "build": "bun run sync:version && rm -rf dist && bun run build:js && bun run build:types && bun run build:css",
     "build:js": "bun run build.ts",
     "build:types": "tsc -p tsconfig.build.json --emitDeclarationOnly",
     "build:css": "bun run scripts/build-css.ts",
-    "test": "bun test --preload ../../test/setup.ts",
-    "test:a11y": "bun test --preload ../../test/setup.ts src/**/*.test.tsx",
-    "typecheck": "tsc --noEmit",
+    "test": "bun run sync:version && bun test --preload ../../test/setup.ts",
+    "test:a11y": "bun run sync:version && bun test --preload ../../test/setup.ts src/**/*.test.tsx",
+    "typecheck": "bun run sync:version && tsc --noEmit",
     "parity:components": "bun run scripts/check-component-parity.ts",
-    "size": "bundlesize"
+    "sync:version": "bun run scripts/sync-version.ts",
+    "size": "GITHUB_TOKEN= BUNDLESIZE_GITHUB_TOKEN= github_token= bundlesize_github_token= bundlesize"
   },
   "bundlesize": [
     {
-      "path": "./dist/**/*.js",
+      "path": "./dist/index.js",
       "maxSize": "120 kB"
+    },
+    {
+      "path": "./dist/chunk-*.js",
+      "maxSize": "100 kB"
+    },
+    {
+      "path": "./dist/infrastructure.js",
+      "maxSize": "100 kB"
+    },
+    {
+      "path": "./dist/classes/**/*.js",
+      "maxSize": "100 kB"
+    },
+    {
+      "path": "./dist/components/**/*.js",
+      "maxSize": "100 kB"
+    },
+    {
+      "path": "./dist/theme/**/*.js",
+      "maxSize": "100 kB"
+    },
+    {
+      "path": "./dist/utils/**/*.js",
+      "maxSize": "100 kB"
     }
   ],
   "peerDependencies": {

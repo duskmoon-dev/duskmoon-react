@@ -18,7 +18,11 @@ describe("Alert", () => {
   });
 
   test("applies color and appearance classes", () => {
-    render(<Alert color="error" appearance="outline">Error alert</Alert>);
+    render(
+      <Alert color="error" appearance="outline">
+        Error alert
+      </Alert>,
+    );
     const alert = screen.getByRole("alert");
     expect(alert.className).toContain("alert-error");
     expect(alert.className).toContain("alert-outline");

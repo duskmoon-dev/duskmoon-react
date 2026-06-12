@@ -64,7 +64,8 @@ describe("DmBreadcrumb", () => {
 
     expect(screen.getByText("...")).toBeTruthy();
     expect(screen.queryByText("Three")).toBeNull();
-    expect(container.querySelectorAll(".breadcrumb-separator").length).toBeGreaterThan(0);
+    expect(
+      container.querySelectorAll(".breadcrumb-separator").length,
+    ).toBeGreaterThan(0);
   });
 });
-

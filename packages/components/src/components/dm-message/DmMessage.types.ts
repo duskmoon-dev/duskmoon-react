@@ -35,4 +35,3 @@ export interface DmMessageOpenConfig extends Omit<
 }
 
 export type DmMessageContentNode = ReactNode;
-

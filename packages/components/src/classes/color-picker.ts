@@ -8,8 +8,11 @@ import { cn } from "../utils";
 export const colorPickerBaseClass = "color-picker";
 export const colorPickerSwatchClass = "color-picker-swatch";
 export const colorPickerTextClass = "color-picker-text";
-export const colorPickerPanelClass = "color-picker-panel popover popover-show";
+export const colorPickerPanelClass =
+  "color-picker-panel popover popover-bottom popover-show";
 export const colorPickerInputClass = "color-picker-input input";
+export const colorPickerFormatSelectClass =
+  "color-picker-format-select select select-sm";
 export const colorPickerPresetsClass = "color-picker-presets";
 export const colorPickerPresetClass = "color-picker-preset";
 export const colorPickerPresetLabelClass = "color-picker-preset-label";

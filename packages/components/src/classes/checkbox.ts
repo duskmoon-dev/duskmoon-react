@@ -5,11 +5,12 @@ import type {
   CheckboxSize,
 } from "../components/checkbox/Checkbox.types";
 
-export const checkboxBaseClass = "checkbox";
+export const checkboxBaseClass = "checkbox-wrapper";
+export const checkboxInputBaseClass = "checkbox";
 export const checkboxInputClass = "checkbox-input";
 export const checkboxBoxBaseClass = "checkbox-box";
 export const checkboxCheckmarkClass = "checkbox-checkmark";
-export const checkboxLabelBaseClass = "checkbox-label";
+export const checkboxLabelBaseClass = "checkbox-text";
 
 export const checkboxColorClasses: Record<CheckboxColor, string> = {
   primary: "checkbox-primary",
@@ -35,22 +36,35 @@ export const checkboxErrorClass = "checkbox-error";
 export const checkboxLoadingClass = "checkbox-loading";
 
 export function getCheckboxClasses({
-  size = "md",
-  error,
   loading,
   className,
 }: {
-  size?: CheckboxSize;
-  error?: boolean;
   loading?: boolean;
   className?: string;
 }) {
   return cn(
+    "checkbox-label",
     checkboxBaseClass,
-    checkboxSizeClasses[size],
-    error && checkboxErrorClass,
     loading && checkboxLoadingClass,
     className,
+  );
+}
+
+export function getCheckboxInputClasses({
+  color = "primary",
+  size = "md",
+  error,
+}: {
+  color?: CheckboxColor;
+  size?: CheckboxSize;
+  error?: boolean;
+}) {
+  return cn(
+    checkboxInputBaseClass,
+    checkboxInputClass,
+    checkboxColorClasses[color],
+    checkboxSizeClasses[size],
+    error && checkboxErrorClass,
   );
 }
 

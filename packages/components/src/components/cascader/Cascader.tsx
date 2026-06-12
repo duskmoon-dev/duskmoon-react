@@ -36,15 +36,25 @@ function normalizeFieldNames(fieldNames?: CascaderFieldNames) {
   return { ...defaultFieldNames, ...fieldNames };
 }
 
-function getOptionValue(option: CascaderOption, names: Required<CascaderFieldNames>) {
+function getOptionValue(
+  option: CascaderOption,
+  names: Required<CascaderFieldNames>,
+) {
   return option[names.value] as CascaderValue | undefined;
 }
 
-function getOptionLabel(option: CascaderOption, names: Required<CascaderFieldNames>) {
-  return (option[names.label] ?? getOptionValue(option, names)) as React.ReactNode;
+function getOptionLabel(
+  option: CascaderOption,
+  names: Required<CascaderFieldNames>,
+) {
+  return (option[names.label] ??
+    getOptionValue(option, names)) as React.ReactNode;
 }
 
-function getOptionChildren(option: CascaderOption, names: Required<CascaderFieldNames>) {
+function getOptionChildren(
+  option: CascaderOption,
+  names: Required<CascaderFieldNames>,
+) {
   const children = option[names.children];
   return Array.isArray(children) ? (children as CascaderOption[]) : undefined;
 }
@@ -53,11 +63,15 @@ function valueKey(value: CascaderSingleValue) {
   return value.map(String).join("__dm_cascader__");
 }
 
-function isMultipleValue(value: CascaderChangeValue | undefined): value is CascaderMultipleValue {
+function isMultipleValue(
+  value: CascaderChangeValue | undefined,
+): value is CascaderMultipleValue {
   return Array.isArray(value) && Array.isArray(value[0]);
 }
 
-function normalizeSingleValue(value: CascaderChangeValue | undefined): CascaderSingleValue {
+function normalizeSingleValue(
+  value: CascaderChangeValue | undefined,
+): CascaderSingleValue {
   if (!Array.isArray(value) || isMultipleValue(value)) {
     return [];
   }
@@ -68,7 +82,9 @@ function normalizeSingleValue(value: CascaderChangeValue | undefined): CascaderS
   );
 }
 
-function normalizeMultipleValue(value: CascaderChangeValue | undefined): CascaderMultipleValue {
+function normalizeMultipleValue(
+  value: CascaderChangeValue | undefined,
+): CascaderMultipleValue {
   if (!Array.isArray(value)) {
     return [];
   }
@@ -90,7 +106,9 @@ function findPath(
   let levelOptions = options;
 
   for (const item of value) {
-    const next = levelOptions.find((option) => getOptionValue(option, names) === item);
+    const next = levelOptions.find(
+      (option) => getOptionValue(option, names) === item,
+    );
 
     if (!next) {
       return [];
@@ -120,11 +138,17 @@ function flattenLeafPaths(
   });
 }
 
-function labelsForPath(path: CascaderOption[], names: Required<CascaderFieldNames>) {
+function labelsForPath(
+  path: CascaderOption[],
+  names: Required<CascaderFieldNames>,
+) {
   return path.map((option) => getOptionLabel(option, names));
 }
 
-function valuesForPath(path: CascaderOption[], names: Required<CascaderFieldNames>) {
+function valuesForPath(
+  path: CascaderOption[],
+  names: Required<CascaderFieldNames>,
+) {
   return path
     .map((option) => getOptionValue(option, names))
     .filter(
@@ -215,10 +239,14 @@ function CascaderMenus({
               const optionValue = getOptionValue(option, names);
               const optionChildren = getOptionChildren(option, names);
               const nextValue =
-                optionValue === undefined ? parentValue : [...parentValue, optionValue];
+                optionValue === undefined
+                  ? parentValue
+                  : [...parentValue, optionValue];
               const path = findPath(options, nextValue, names);
               const hasChildren = Boolean(optionChildren?.length);
-              const canLoad = Boolean(loadData && option.isLeaf === false && !hasChildren);
+              const canLoad = Boolean(
+                loadData && option.isLeaf === false && !hasChildren,
+              );
               const selectable = !hasChildren || changeOnSelect || multiple;
               const selected = selectedKeys.has(valueKey(nextValue));
               const active = activeValue[columnIndex] === optionValue;
@@ -238,7 +266,11 @@ function CascaderMenus({
                     className: option.className,
                   })}
                   onMouseEnter={() => {
-                    if (!disabled && !option.disabled && expandTrigger === "hover") {
+                    if (
+                      !disabled &&
+                      !option.disabled &&
+                      expandTrigger === "hover"
+                    ) {
                       onActiveChange(nextValue);
                     }
                   }}
@@ -260,7 +292,9 @@ function CascaderMenus({
                 >
                   <span>{getOptionLabel(option, names)}</span>
                   {option.loading ? <span aria-hidden="true">...</span> : null}
-                  {hasChildren || canLoad ? <span aria-hidden="true">›</span> : null}
+                  {hasChildren || canLoad ? (
+                    <span aria-hidden="true">›</span>
+                  ) : null}
                 </button>
               );
             })}
@@ -272,14 +306,26 @@ function CascaderMenus({
 }
 
 const CascaderPanel = forwardRef<HTMLDivElement, CascaderPanelProps>(
-  ({ className, options = [], fieldNames, value, defaultValue, onChange, onSelect, ...props }, ref) => {
+  (
+    {
+      className,
+      options = [],
+      fieldNames,
+      value,
+      defaultValue,
+      onChange,
+      onSelect,
+      ...props
+    },
+    ref,
+  ) => {
     const names = useMemo(() => normalizeFieldNames(fieldNames), [fieldNames]);
     const [activeValue, setActiveValue] = useState<CascaderSingleValue>(
       normalizeSingleValue(value ?? defaultValue),
     );
-    const [internalValue, setInternalValue] = useState<CascaderChangeValue | undefined>(
-      defaultValue,
-    );
+    const [internalValue, setInternalValue] = useState<
+      CascaderChangeValue | undefined
+    >(defaultValue);
     const currentValue = value ?? internalValue;
     const selectedValues = normalizeMultipleValue(currentValue);
     const selectedKeys = new Set(selectedValues.map(valueKey));
@@ -342,9 +388,9 @@ const CascaderRoot = forwardRef<HTMLDivElement, CascaderProps>(
   ) => {
     const names = useMemo(() => normalizeFieldNames(fieldNames), [fieldNames]);
     const [internalOpen, setInternalOpen] = useState(Boolean(defaultOpen));
-    const [internalValue, setInternalValue] = useState<CascaderChangeValue | undefined>(
-      defaultValue,
-    );
+    const [internalValue, setInternalValue] = useState<
+      CascaderChangeValue | undefined
+    >(defaultValue);
     const [activeValue, setActiveValue] = useState<CascaderSingleValue>(
       normalizeSingleValue(value ?? defaultValue),
     );
@@ -359,29 +405,33 @@ const CascaderRoot = forwardRef<HTMLDivElement, CascaderProps>(
         ? [normalizeSingleValue(currentValue)]
         : [];
     const selectedKeys = new Set(selectedValues.map(valueKey));
-    const selectedPaths = selectedValues.map((item) => findPath(options, item, names));
+    const selectedPaths = selectedValues.map((item) =>
+      findPath(options, item, names),
+    );
     const hasValue = selectedValues.length > 0;
     const searchable = Boolean(showSearch);
     const flattenedPaths = useMemo(
       () => flattenLeafPaths(options, names),
       [names, options],
     );
-    const filteredPaths = searchable && searchValue
-      ? flattenedPaths
-          .filter((path: CascaderOption[]) => {
-            if (typeof showSearch === "object" && showSearch.filter) {
-              return showSearch.filter(searchValue, path, names);
-            }
+    const filteredPaths =
+      searchable && searchValue
+        ? flattenedPaths
+            .filter((path: CascaderOption[]) => {
+              if (typeof showSearch === "object" && showSearch.filter) {
+                return showSearch.filter(searchValue, path, names);
+              }
 
-            return defaultFilter(searchValue, path, names);
-          })
-          .slice(
-            0,
-            typeof showSearch === "object" && typeof showSearch.limit === "number"
-              ? showSearch.limit
-              : undefined,
-          )
-      : [];
+              return defaultFilter(searchValue, path, names);
+            })
+            .slice(
+              0,
+              typeof showSearch === "object" &&
+                typeof showSearch.limit === "number"
+                ? showSearch.limit
+                : undefined,
+            )
+        : [];
 
     function setVisible(nextOpen: boolean) {
       if (disabled) {
@@ -396,7 +446,10 @@ const CascaderRoot = forwardRef<HTMLDivElement, CascaderProps>(
       onDropdownVisibleChange?.(nextOpen);
     }
 
-    function emitChange(nextValue: CascaderChangeValue, selectedOptions: CascaderOption[] | CascaderOption[][]) {
+    function emitChange(
+      nextValue: CascaderChangeValue,
+      selectedOptions: CascaderOption[] | CascaderOption[][],
+    ) {
       if (!controlledValue) {
         setInternalValue(nextValue);
       }
@@ -412,11 +465,15 @@ const CascaderRoot = forwardRef<HTMLDivElement, CascaderProps>(
       if (multiple) {
         const currentValues = normalizeMultipleValue(currentValue);
         const nextKey = valueKey(nextValue);
-        const selected = currentValues.some((item) => valueKey(item) === nextKey);
+        const selected = currentValues.some(
+          (item) => valueKey(item) === nextKey,
+        );
         const nextValues = selected
           ? currentValues.filter((item) => valueKey(item) !== nextKey)
           : [...currentValues, nextValue];
-        const nextPaths = nextValues.map((item) => findPath(options, item, names));
+        const nextPaths = nextValues.map((item) =>
+          findPath(options, item, names),
+        );
 
         emitChange(nextValues, nextPaths);
         return;
@@ -455,7 +512,10 @@ const CascaderRoot = forwardRef<HTMLDivElement, CascaderProps>(
 
       if (multiple) {
         return selectedPaths.map((path, index) => (
-          <span key={valueKey(selectedValues[index] ?? [])} className={cascaderTagClass}>
+          <span
+            key={valueKey(selectedValues[index] ?? [])}
+            className={cascaderTagClass}
+          >
             {displayRender
               ? displayRender(labelsForPath(path, names), path)
               : defaultDisplay(labelsForPath(path, names))}
@@ -466,40 +526,43 @@ const CascaderRoot = forwardRef<HTMLDivElement, CascaderProps>(
       const path = selectedPaths[0] ?? [];
       const labels = labelsForPath(path, names);
 
-      return displayRender ? displayRender(labels, path) : defaultDisplay(labels);
+      return displayRender
+        ? displayRender(labels, path)
+        : defaultDisplay(labels);
     }
 
-    const searchResults = filteredPaths.length > 0 ? (
-      <div className={cascaderMenuClass} role="menu">
-        {filteredPaths.map((path: CascaderOption[]) => {
-          const pathValue = valuesForPath(path, names);
-          const label =
-            typeof showSearch === "object" && showSearch.render
-              ? showSearch.render(searchValue, path, names)
-              : defaultDisplay(labelsForPath(path, names));
+    const searchResults =
+      filteredPaths.length > 0 ? (
+        <div className={cascaderMenuClass} role="menu">
+          {filteredPaths.map((path: CascaderOption[]) => {
+            const pathValue = valuesForPath(path, names);
+            const label =
+              typeof showSearch === "object" && showSearch.render
+                ? showSearch.render(searchValue, path, names)
+                : defaultDisplay(labelsForPath(path, names));
 
-          return (
-            <button
-              key={valueKey(pathValue)}
-              type="button"
-              role="menuitem"
-              className={getCascaderOptionClasses({
-                selected: selectedKeys.has(valueKey(pathValue)),
-              })}
-              onClick={() => {
-                setActiveValue(pathValue);
-                pickPath(path, true);
-                setSearchValue("");
-              }}
-            >
-              {label}
-            </button>
-          );
-        })}
-      </div>
-    ) : (
-      <div className={cascaderEmptyClass}>{notFoundContent}</div>
-    );
+            return (
+              <button
+                key={valueKey(pathValue)}
+                type="button"
+                role="menuitem"
+                className={getCascaderOptionClasses({
+                  selected: selectedKeys.has(valueKey(pathValue)),
+                })}
+                onClick={() => {
+                  setActiveValue(pathValue);
+                  pickPath(path, true);
+                  setSearchValue("");
+                }}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
+      ) : (
+        <div className={cascaderEmptyClass}>{notFoundContent}</div>
+      );
 
     return (
       <div
@@ -530,7 +593,9 @@ const CascaderRoot = forwardRef<HTMLDivElement, CascaderProps>(
               onKeyDown={(event) => {
                 if (event.key === "Enter" || event.key === " ") {
                   event.stopPropagation();
-                  clearValue(event as unknown as React.MouseEvent<HTMLSpanElement>);
+                  clearValue(
+                    event as unknown as React.MouseEvent<HTMLSpanElement>,
+                  );
                 }
               }}
             >
@@ -546,7 +611,9 @@ const CascaderRoot = forwardRef<HTMLDivElement, CascaderProps>(
             {searchable ? (
               <input
                 className={cascaderSearchClass}
-                placeholder={typeof placeholder === "string" ? placeholder : undefined}
+                placeholder={
+                  typeof placeholder === "string" ? placeholder : undefined
+                }
                 value={searchValue}
                 onChange={(event) => {
                   setSearchValue(event.currentTarget.value);

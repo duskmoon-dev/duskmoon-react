@@ -39,7 +39,10 @@ describe("Splitter", () => {
   test("resizes uncontrolled numeric panels", () => {
     const resizes: Array<Array<number | string>> = [];
     const { container } = render(
-      <Splitter defaultSizes={[120, 120]} onResize={(sizes) => resizes.push(sizes)}>
+      <Splitter
+        defaultSizes={[120, 120]}
+        onResize={(sizes) => resizes.push(sizes)}
+      >
         <Splitter.Panel min={100} max={150}>
           First
         </Splitter.Panel>
@@ -60,7 +63,10 @@ describe("Splitter", () => {
     const collapses: boolean[] = [];
     const { container } = render(
       <Splitter defaultSizes={[120, 120]}>
-        <Splitter.Panel collapsible onCollapse={(collapsed) => collapses.push(collapsed)}>
+        <Splitter.Panel
+          collapsible
+          onCollapse={(collapsed) => collapses.push(collapsed)}
+        >
           First
         </Splitter.Panel>
         <Splitter.Panel>Second</Splitter.Panel>

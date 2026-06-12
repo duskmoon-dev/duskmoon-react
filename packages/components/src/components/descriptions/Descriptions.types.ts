@@ -48,8 +48,10 @@ export interface DescriptionsProps extends Omit<
   contentStyle?: CSSProperties;
 }
 
-export interface DescriptionsItemProps
-  extends Omit<ComponentProps<"div">, "children"> {
+export interface DescriptionsItemProps extends Omit<
+  ComponentProps<"div">,
+  "children"
+> {
   label?: ReactNode;
   children?: ReactNode;
   span?: DescriptionsSpan;

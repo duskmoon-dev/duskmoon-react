@@ -1,5 +1,3 @@
-
-
 import React from "react";
 import { getButtonClasses } from "../../classes/button";
 import type { ButtonProps } from "./Button.types";

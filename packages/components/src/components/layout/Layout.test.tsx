@@ -27,11 +27,7 @@ describe("Layout", () => {
 
   test("passes native div props and style through root", () => {
     render(
-      <Layout
-        id="shell"
-        data-testid="layout"
-        style={{ minHeight: 320 }}
-      />,
+      <Layout id="shell" data-testid="layout" style={{ minHeight: 320 }} />,
     );
 
     const root = screen.getByTestId("layout");

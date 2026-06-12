@@ -47,8 +47,5 @@
     "block": "btn-block",
     "isLoading": "btn-loading"
   },
-  "reactProps": [
-    "leftIcon?: React.ReactNode",
-    "rightIcon?: React.ReactNode"
-  ]
+  "reactProps": ["leftIcon?: React.ReactNode", "rightIcon?: React.ReactNode"]
 }

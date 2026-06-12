@@ -20,11 +20,10 @@ export interface DisabledTimeConfig {
   disabledSeconds?: (selectedHour: number, selectedMinute: number) => number[];
 }
 
-export interface TimePickerProps
-  extends Omit<
-    ComponentProps<"div">,
-    "children" | "defaultValue" | "onBlur" | "onChange" | "onFocus"
-  > {
+export interface TimePickerProps extends Omit<
+  ComponentProps<"div">,
+  "children" | "defaultValue" | "onBlur" | "onChange" | "onFocus"
+> {
   value?: TimePickerValue;
   defaultValue?: TimePickerValue;
   format?: string;
@@ -44,22 +43,23 @@ export interface TimePickerProps
   onFocus?: (event: TimePickerInputFocusEvent) => void;
 }
 
-export interface RangePickerProps
-  extends Omit<
-    TimePickerProps,
-    "placeholder" | "value" | "defaultValue" | "onChange"
-  > {
+export interface RangePickerProps extends Omit<
+  TimePickerProps,
+  "placeholder" | "value" | "defaultValue" | "onChange"
+> {
   value?: TimePickerRangeValue;
   defaultValue?: TimePickerRangeValue;
-  onChange?: (value: TimePickerRangeValue, timeStrings: [string, string]) => void;
+  onChange?: (
+    value: TimePickerRangeValue,
+    timeStrings: [string, string],
+  ) => void;
   placeholder?: [string, string];
   separator?: ReactNode;
 }
 
-export interface TimePickerComponent
-  extends ForwardRefExoticComponent<
-    TimePickerProps & RefAttributes<HTMLDivElement>
-  > {
+export interface TimePickerComponent extends ForwardRefExoticComponent<
+  TimePickerProps & RefAttributes<HTMLDivElement>
+> {
   RangePicker: ForwardRefExoticComponent<
     RangePickerProps & RefAttributes<HTMLDivElement>
   >;

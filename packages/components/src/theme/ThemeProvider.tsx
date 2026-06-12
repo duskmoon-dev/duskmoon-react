@@ -34,7 +34,8 @@ export function ThemeProvider({
 
   useEffect(() => {
     const root = window.document.documentElement;
-    const initialTheme = (root.getAttribute(attribute) as Theme) || defaultTheme;
+    const initialTheme =
+      (root.getAttribute(attribute) as Theme) || defaultTheme;
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setThemeState(initialTheme);
   }, [attribute, defaultTheme]);
@@ -49,7 +50,7 @@ export function ThemeProvider({
       }
       window.document.documentElement.setAttribute(attribute, newTheme);
     },
-    [storageKey, attribute]
+    [storageKey, attribute],
   );
 
   // Handle multi-tab sync

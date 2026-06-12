@@ -32,7 +32,11 @@ export function DmProTable<T extends TableRecord = TableRecord>({
         <div className={dmProTableHeaderClass}>
           <div className={dmProTableTitleClass}>{headerTitle}</div>
           <div className={dmProTableToolbarClass}>
-            {toolbarItems?.length ? <DmToolbar items={toolbarItems} /> : renderToolbar(toolBarRender)}
+            {toolbarItems?.length ? (
+              <DmToolbar items={toolbarItems} />
+            ) : (
+              renderToolbar(toolBarRender)
+            )}
             {columnSettingVisible ? (
               <Button
                 type="button"

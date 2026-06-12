@@ -55,7 +55,9 @@ function toOverflowMenu(items: DmToolbarItem[]): DropdownMenu {
       disabled: item.disabled,
     })),
     onClick: ({ key, domEvent }) => {
-      const target = items.find((item, index) => String(item.key ?? index) === key);
+      const target = items.find(
+        (item, index) => String(item.key ?? index) === key,
+      );
       target?.onClick?.(domEvent);
     },
   };
@@ -99,7 +101,10 @@ export function DmToolbar({
         </span>
       ))}
       {showMore ? (
-        <Dropdown trigger={["click"]} menu={toOverflowMenu(overflowSecondaryItems)}>
+        <Dropdown
+          trigger={["click"]}
+          menu={toOverflowMenu(overflowSecondaryItems)}
+        >
           <Button
             type="button"
             className={dmToolbarMoreClass}

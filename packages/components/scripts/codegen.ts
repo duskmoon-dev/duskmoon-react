@@ -31,10 +31,10 @@ async function run() {
     const spec: ComponentSpec = JSON.parse(specContent);
 
     const componentNameLowerCase = spec.name.toLowerCase();
-    
+
     // Generate Button.types.ts
     await generateTypes(spec, componentNameLowerCase);
-    
+
     // Generate button.ts (classes)
     await generateClasses(spec, componentNameLowerCase);
   }
@@ -48,7 +48,7 @@ async function generateTypes(spec: ComponentSpec, lowerName: string) {
   const typesFilePath = path.join(
     componentsDir,
     lowerName,
-    `${spec.name}.types.ts`
+    `${spec.name}.types.ts`,
   );
 
   let typesContent = `// GENERATED FILE. DO NOT EDIT.\n`;
@@ -56,7 +56,9 @@ async function generateTypes(spec: ComponentSpec, lowerName: string) {
 
   for (const [axisName, axis] of Object.entries(spec.axes)) {
     const typeName = `${spec.name}${capitalize(axisName)}`;
-    const values = Object.keys(axis.values).map((v) => `"${v}"`).join(" | ");
+    const values = Object.keys(axis.values)
+      .map((v) => `"${v}"`)
+      .join(" | ");
     typesContent += `export type ${typeName} = ${values};\n\n`;
   }
 
@@ -85,7 +87,7 @@ async function generateClasses(spec: ComponentSpec, lowerName: string) {
   classesContent += `import { cn } from "../utils";\n`;
 
   const importedTypes = Object.keys(spec.axes).map(
-    (axisName) => `${spec.name}${capitalize(axisName)}`
+    (axisName) => `${spec.name}${capitalize(axisName)}`,
   );
   classesContent += `import type { ${importedTypes.join(", ")} } from "../components/${lowerName}/${spec.name}.types";\n\n`;
 

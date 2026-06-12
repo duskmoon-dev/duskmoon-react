@@ -1,6 +1,11 @@
 // GENERATED FILE. DO NOT EDIT.
 import { cn } from "../utils";
-import type { ButtonColor, ButtonAppearance, ButtonShape, ButtonSize } from "../components/button/Button.types";
+import type {
+  ButtonColor,
+  ButtonAppearance,
+  ButtonShape,
+  ButtonSize,
+} from "../components/button/Button.types";
 
 export const buttonBaseClass = "btn";
 
@@ -63,6 +68,6 @@ export function getButtonClasses({
     buttonSizeClasses[size],
     block && buttonBlockClass,
     isLoading && buttonIsLoadingClass,
-    className
+    className,
   );
 }
