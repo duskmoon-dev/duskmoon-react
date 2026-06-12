@@ -11,7 +11,7 @@
     "dev": "bun run --filter \"@duskmoon-dev/docs\" dev",
     "build:all": "bun run --filter '*' build",
     "build": "bun run --filter \"@duskmoon-dev/components\" build",
-    "test": "bun test packages/",
+    "test": "bun run --filter \"@duskmoon-dev/components\" test && bun run --filter \"@duskmoon-dev/art-components\" test",
     "lint": "bun run lint:all",
     "lint:all": "bun x eslint .",
     "lint:check": "bun x eslint .",

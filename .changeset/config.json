@@ -2,12 +2,7 @@
   "$schema": "https://unpkg.com/@changesets/config@3.1.4/schema.json",
   "changelog": "@changesets/cli/changelog",
   "commit": false,
-  "fixed": [
-    [
-      "@duskmoon-dev/components",
-      "@duskmoon-dev/art-components"
-    ]
-  ],
+  "fixed": [["@duskmoon-dev/components", "@duskmoon-dev/art-components"]],
   "linked": [],
   "access": "public",
   "baseBranch": "main",

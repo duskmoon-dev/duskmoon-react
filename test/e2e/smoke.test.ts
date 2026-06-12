@@ -1,8 +1,8 @@
-import { test, expect } from '@playwright/test';
-import AxeBuilder from '@axe-core/playwright';
+import { test, expect } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
 
-test.describe('smoke and a11y', () => {
-  test('basic a11y test on a simple HTML page', async ({ page }) => {
+test.describe("smoke and a11y", () => {
+  test("basic a11y test on a simple HTML page", async ({ page }) => {
     // Navigate to a simple local data URI or we can just mock a page
     await page.setContent(`
       <html lang="en">
