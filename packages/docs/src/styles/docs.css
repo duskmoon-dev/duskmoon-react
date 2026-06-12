@@ -540,7 +540,33 @@ code {
     grid-template-columns: 1fr;
   }
 
+  main {
+    width: min(100% - 24px, 1180px);
+    padding-top: 24px;
+  }
+
+  .doc-shell {
+    gap: 20px;
+    padding: 16px;
+  }
+
+  .doc-content {
+    order: 1;
+  }
+
   .side-nav {
+    order: 2;
     position: static;
+    max-height: 320px;
+    border-radius: 8px;
+  }
+
+  .api-card {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .api-table {
+    min-width: 640px;
   }
 }

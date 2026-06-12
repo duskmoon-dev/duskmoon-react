@@ -11,6 +11,8 @@ interface DemoRendererProps {
 
 type ParsedProps = Record<string, unknown>;
 
+const typeOnlyInfrastructureExports = new Set(["breakpoint"]);
+
 function GridPreview() {
   const screens = DmComponents.Grid.useBreakpoint();
   const active = Object.entries(screens)
@@ -57,7 +59,10 @@ function GridPreview() {
   );
 }
 
-function DmSplitterPreview() {
+function SplitterPreview({ variant }: { variant: "standard" | "dm" }) {
+  const Root =
+    variant === "dm" ? DmComponents.DmSplitter : DmComponents.Splitter;
+  const Panel = Root.Panel;
   const panelStyle: React.CSSProperties = {
     display: "grid",
     minHeight: "92px",
@@ -72,48 +77,165 @@ function DmSplitterPreview() {
 
   return (
     <div style={{ width: "min(560px, 100%)" }}>
-      <DmComponents.DmSplitter
-        defaultSizes={[180, "1fr"]}
-        gap={8}
+      <Root
+        defaultSizes={["34%", "66%"]}
+        gap={variant === "dm" ? 8 : undefined}
         style={{ width: "100%" }}
       >
-        <DmComponents.DmSplitter.Panel style={panelStyle}>
-          Navigation
-        </DmComponents.DmSplitter.Panel>
-        <DmComponents.DmSplitter.Panel style={panelStyle}>
-          Workspace
-        </DmComponents.DmSplitter.Panel>
-      </DmComponents.DmSplitter>
+        <Panel style={panelStyle}>Navigation</Panel>
+        <Panel style={panelStyle}>Workspace</Panel>
+      </Root>
     </div>
   );
 }
 
-function SplitterPreview() {
-  const panelStyle: React.CSSProperties = {
-    display: "grid",
-    minHeight: "92px",
-    placeItems: "center",
-    padding: "12px",
-    background: "var(--dm-surface)",
-    border: "1px solid var(--dm-border)",
+function FlexPreview() {
+  const itemStyle: React.CSSProperties = {
+    padding: "10px 14px",
+    background: "var(--color-primary-container)",
+    color: "var(--color-primary)",
     borderRadius: "6px",
-    color: "var(--dm-text)",
-    fontWeight: 600,
+    fontWeight: 700,
   };
 
   return (
-    <div style={{ width: "min(560px, 100%)" }}>
-      <DmComponents.Splitter
-        defaultSizes={[180, "1fr"]}
-        style={{ width: "100%" }}
+    <DmComponents.Flex gap="middle" wrap align="center" style={{ width: "100%" }}>
+      <span style={itemStyle}>Alpha</span>
+      <span style={itemStyle}>Beta</span>
+      <span style={itemStyle}>Gamma</span>
+    </DmComponents.Flex>
+  );
+}
+
+function FormPreview() {
+  return (
+    <DmComponents.Form
+      layout="vertical"
+      initialValues={{ project: "DuskMoon" }}
+      style={{ width: "min(420px, 100%)" }}
+      onFinish={(values) => console.log(values)}
+    >
+      <DmComponents.Form.Item
+        name="project"
+        label="Project"
+        rules={[{ required: true, message: "Project is required" }]}
+        extra="The name shown in dashboards."
       >
-        <DmComponents.Splitter.Panel style={panelStyle}>
-          Navigation
-        </DmComponents.Splitter.Panel>
-        <DmComponents.Splitter.Panel style={panelStyle}>
-          Workspace
-        </DmComponents.Splitter.Panel>
-      </DmComponents.Splitter>
+        <DmComponents.Input placeholder="Project name" />
+      </DmComponents.Form.Item>
+      <DmComponents.Form.Item>
+        <DmComponents.Button color="primary">Save</DmComponents.Button>
+      </DmComponents.Form.Item>
+    </DmComponents.Form>
+  );
+}
+
+function LayoutPreview() {
+  return (
+    <DmComponents.Layout style={{ width: "min(640px, 100%)" }}>
+      <DmComponents.Layout.Header>Header</DmComponents.Layout.Header>
+      <DmComponents.Layout hasSider>
+        <DmComponents.Layout.Sider width={160}>Sider</DmComponents.Layout.Sider>
+        <DmComponents.Layout.Content>Content</DmComponents.Layout.Content>
+      </DmComponents.Layout>
+      <DmComponents.Layout.Footer>Footer</DmComponents.Layout.Footer>
+    </DmComponents.Layout>
+  );
+}
+
+function RowPreview() {
+  const cellStyle: React.CSSProperties = {
+    display: "grid",
+    minHeight: "56px",
+    placeItems: "center",
+    color: "var(--color-primary)",
+    fontSize: "13px",
+    fontWeight: 800,
+    background: "var(--color-primary-container)",
+    border: "1px solid var(--color-outline-variant)",
+    borderRadius: "6px",
+  };
+
+  return (
+    <DmComponents.Row
+      gutter={[12, 12]}
+      align="middle"
+      justify="space-between"
+      style={{ width: "100%" }}
+    >
+      <DmComponents.Col span={7}>
+        <div style={cellStyle}>span 7</div>
+      </DmComponents.Col>
+      <DmComponents.Col span={7}>
+        <div style={cellStyle}>span 7</div>
+      </DmComponents.Col>
+      <DmComponents.Col span={7}>
+        <div style={cellStyle}>span 7</div>
+      </DmComponents.Col>
+    </DmComponents.Row>
+  );
+}
+
+function SpacePreview() {
+  const itemStyle: React.CSSProperties = {
+    display: "inline-flex",
+    alignItems: "center",
+    padding: "8px 12px",
+    color: "var(--color-primary)",
+    fontSize: "13px",
+    fontWeight: 800,
+    background: "var(--color-primary-container)",
+    border: "1px solid var(--color-outline-variant)",
+    borderRadius: "6px",
+  };
+
+  return (
+    <DmComponents.Space size="middle" wrap split="|">
+      <span style={itemStyle}>Design</span>
+      <span style={itemStyle}>Build</span>
+      <span style={itemStyle}>Ship</span>
+    </DmComponents.Space>
+  );
+}
+
+function ListPreview() {
+  const items = [
+    { title: "Design tokens", description: "Updated color and spacing scale" },
+    { title: "Components", description: "Reviewed visual states" },
+    { title: "Release", description: "Ready for package validation" },
+  ];
+
+  return (
+    <DmComponents.List bordered style={{ width: "min(520px, 100%)" }}>
+      {items.map((item) => (
+        <DmComponents.List.Item key={item.title} extra="Open">
+          <DmComponents.List.Item.Meta
+            title={item.title}
+            description={item.description}
+          />
+        </DmComponents.List.Item>
+      ))}
+    </DmComponents.List>
+  );
+}
+
+function ModalPreview() {
+  const [open, setOpen] = React.useState(false);
+
+  return (
+    <div style={{ display: "grid", gap: "12px" }}>
+      <DmComponents.Button color="primary" onClick={() => setOpen(true)}>
+        Open modal
+      </DmComponents.Button>
+      <DmComponents.Modal
+        open={open}
+        title="Release checklist"
+        width={420}
+        onCancel={() => setOpen(false)}
+        onOk={() => setOpen(false)}
+      >
+        Review component styles before publishing the package.
+      </DmComponents.Modal>
     </div>
   );
 }
@@ -312,16 +434,70 @@ function parsePropsText(propsText: string): ParsedProps {
 
 function parseJsx(code: string, componentName: string) {
   const normalizedComponentName = componentName.trim();
+  const openTag = `<${normalizedComponentName}`;
+  const openStart = code.indexOf(openTag);
 
-  // Match <ComponentName ...>...</ComponentName> or <ComponentName ... />
-  const jsxRegex = new RegExp(
-    `<${normalizedComponentName}\\b([\\s\\S]*?)(?:>([\\s\\S]*?)</${normalizedComponentName}>|/>)`,
-  );
-  const match = code.match(jsxRegex);
-  if (!match) return null;
+  if (openStart === -1) return null;
 
-  const propsText = match[1];
-  const childrenText = match[2] || "";
+  let i = openStart + openTag.length;
+  let braceDepth = 0;
+  let quote: '"' | "'" | "`" | null = null;
+  let openingEnd = -1;
+
+  while (i < code.length) {
+    const char = code[i];
+
+    if (quote) {
+      if (char === "\\" && i + 1 < code.length) {
+        i += 2;
+        continue;
+      }
+      if (char === quote) {
+        quote = null;
+      }
+      i += 1;
+      continue;
+    }
+
+    if (char === '"' || char === "'" || char === "`") {
+      quote = char;
+      i += 1;
+      continue;
+    }
+
+    if (char === "{") {
+      braceDepth += 1;
+      i += 1;
+      continue;
+    }
+
+    if (char === "}") {
+      braceDepth = Math.max(0, braceDepth - 1);
+      i += 1;
+      continue;
+    }
+
+    if (char === ">" && braceDepth === 0) {
+      openingEnd = i;
+      break;
+    }
+
+    i += 1;
+  }
+
+  if (openingEnd === -1) return null;
+
+  const rawPropsText = code.slice(openStart + openTag.length, openingEnd);
+  const selfClosing = rawPropsText.trimEnd().endsWith("/");
+  const propsText = selfClosing
+    ? rawPropsText.replace(/\/\s*$/, "")
+    : rawPropsText;
+  const closeTag = `</${normalizedComponentName}>`;
+  const closeStart = selfClosing ? -1 : code.indexOf(closeTag, openingEnd + 1);
+  const childrenText =
+    selfClosing || closeStart === -1
+      ? ""
+      : code.slice(openingEnd + 1, closeStart);
 
   const props = parsePropsText(propsText);
 
@@ -335,9 +511,12 @@ export default function DemoRenderer({
 }: DemoRendererProps) {
   // Handle special case utility/hook/types
   const isArtComponent = componentId.startsWith("art-");
+  const isTypeOnlyInfrastructure =
+    typeOnlyInfrastructureExports.has(componentId);
   const isHook =
     componentId.startsWith("use-") || componentName.startsWith("use");
   const isUtility =
+    isTypeOnlyInfrastructure ||
     componentId.startsWith("get-") ||
     componentId.startsWith("set-") ||
     componentId.startsWith("on-") ||
@@ -363,6 +542,23 @@ export default function DemoRenderer({
   }
 
   if (isUtility) {
+    if (isTypeOnlyInfrastructure) {
+      return (
+        <div
+          style={{
+            padding: "8px 12px",
+            background: "var(--dm-surface)",
+            borderRadius: "6px",
+            fontSize: "14px",
+            color: "var(--dm-muted)",
+            border: "1px dashed var(--dm-border)",
+          }}
+        >
+          Type-only export (no visual preview)
+        </div>
+      );
+    }
+
     if (componentId === "version") {
       return (
         <div
@@ -478,12 +674,50 @@ export default function DemoRenderer({
     return <GridPreview />;
   }
 
-  if (componentId === "dm-splitter") {
-    return <DmSplitterPreview />;
+  if (componentId === "flex") {
+    return <FlexPreview />;
+  }
+
+  if (componentId === "form") {
+    return <FormPreview />;
+  }
+
+  if (componentId === "layout") {
+    return <LayoutPreview />;
+  }
+
+  if (componentId === "row") {
+    return <RowPreview />;
+  }
+
+  if (componentId === "space") {
+    return <SpacePreview />;
+  }
+
+  if (componentId === "list") {
+    return <ListPreview />;
+  }
+
+  if (componentId === "modal") {
+    return <ModalPreview />;
+  }
+
+  if (componentId === "carousel") {
+    return (
+      <DmComponents.Carousel arrows>
+        <div>Research</div>
+        <div>Design</div>
+        <div>Ship</div>
+      </DmComponents.Carousel>
+    );
   }
 
   if (componentId === "splitter") {
-    return <SplitterPreview />;
+    return <SplitterPreview variant="standard" />;
+  }
+
+  if (componentId === "dm-splitter") {
+    return <SplitterPreview variant="dm" />;
   }
 
   // Handle standard React component rendering
@@ -598,7 +832,7 @@ export default function DemoRenderer({
               width: "100%",
               padding: "12px 0",
             }
-          : { padding: "8px 0" }
+          : { width: "100%", padding: "8px 0" }
       }
     >
       <Component {...parsed.props}>{parsed.children || undefined}</Component>

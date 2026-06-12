@@ -405,7 +405,7 @@
     "build": "rm -rf dist && bun run build:js && bun run build:types && bun run build:css",
     "build:js": "bun run build.ts",
     "build:types": "tsc -p tsconfig.build.json --emitDeclarationOnly",
-    "build:css": "mkdir -p dist && cp node_modules/@duskmoon-dev/core/dist/index.css dist/styles.css",
+    "build:css": "bun run scripts/build-css.ts",
     "test": "bun test --preload ../../test/setup.ts",
     "test:a11y": "bun test --preload ../../test/setup.ts src/**/*.test.tsx",
     "typecheck": "tsc --noEmit",

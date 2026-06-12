@@ -475,7 +475,10 @@ function propsObjectFromApi(api: ApiSection[], target: Target) {
   if (propNames.includes("color")) {
     props.push('color="primary"');
   }
-  if (propNames.includes("appearance")) {
+  if (
+    propNames.includes("appearance") &&
+    !["alert", "button", "card"].includes(target.id)
+  ) {
     props.push('appearance="tonal"');
   }
   if (propNames.includes("onChange")) {
@@ -506,6 +509,9 @@ function propsObjectFromApi(api: ApiSection[], target: Target) {
   }
   if (target.id === "alert") {
     props.push('color="success"', 'appearance="tonal"');
+  }
+  if (target.id === "card") {
+    props.push('appearance="elevated"');
   }
   if (target.id === "upload") {
     props.push('action="/api/upload"');
@@ -623,8 +629,17 @@ function demoCode(
 
   if (target.id === "dm-table" || target.id === "table") {
     return `<${name}
-  columns={[{ title: "Name", dataIndex: "name", key: "name" }]}
-  dataSource={[{ key: 1, name: "DuskMoon" }]}
+  columns={[
+    { title: "Name", dataIndex: "name", key: "name" },
+    { title: "Status", dataIndex: "status", key: "status" },
+    { title: "Owner", dataIndex: "owner", key: "owner" }
+  ]}
+  dataSource={[
+    { key: 1, name: "Design tokens", status: "Ready", owner: "Luna" },
+    { key: 2, name: "Components", status: "Review", owner: "Kai" }
+  ]}
+  pagination={false}
+  bordered
 />`;
   }
 
@@ -656,6 +671,37 @@ function demoCode(
     name: "name"
   }]}
   onSearch={(values) => console.log(values)}
+/>`;
+  }
+
+  if (target.id === "tree") {
+    return `<${name}
+  checkable
+  showLine
+  showIcon
+  defaultExpandAll
+  defaultSelectedKeys={["tokens"]}
+  defaultCheckedKeys={["components"]}
+  treeData={[
+    {
+      key: "workspace",
+      title: "Workspace",
+      icon: "W",
+      children: [
+        { key: "tokens", title: "Design tokens", icon: "T" },
+        { key: "components", title: "Components", icon: "C" },
+        {
+          key: "release",
+          title: "Release",
+          icon: "R",
+          children: [
+            { key: "notes", title: "Notes" },
+            { key: "qa", title: "Visual QA" }
+          ]
+        }
+      ]
+    }
+  ]}
 />`;
   }
 
@@ -692,8 +738,177 @@ function demoCode(
 />`;
   }
 
+  if (target.id === "avatar") {
+    return `<${name} className="avatar-primary">DM</${name}>`;
+  }
+
   if (target.id === "back-top") {
     return `<${name} visibilityHeight={0}>Back to top</${name}>`;
+  }
+
+  if (target.id === "breadcrumb") {
+    return `<${name}
+  items={[
+    { title: "Home", href: "/" },
+    { title: "Components", href: "/components" },
+    { title: "Breadcrumb" }
+  ]}
+/>`;
+  }
+
+  if (target.id === "carousel") {
+    return `<${name} arrows>
+  <div>Research</div>
+  <div>Design</div>
+  <div>Ship</div>
+</${name}>`;
+  }
+
+  if (target.id === "cascader") {
+    return `<${name}
+  options={[
+    {
+      label: "Design",
+      value: "design",
+      children: [{ label: "Components", value: "components" }]
+    },
+    {
+      label: "Engineering",
+      value: "engineering",
+      children: [{ label: "Release", value: "release" }]
+    }
+  ]}
+  placeholder="Select workflow"
+/>`;
+  }
+
+  if (target.id === "col") {
+    return `<${name}
+  span={12}
+  style={{
+    width: "50%",
+    padding: "12px",
+    background: "var(--color-primary-container)",
+    color: "var(--color-primary)",
+    borderRadius: "6px",
+    fontWeight: 700
+  }}
+>
+  span 12
+</${name}>`;
+  }
+
+  if (target.id === "collapse") {
+    return `<${name}
+  defaultActiveKey="intro"
+  items={[
+    {
+      key: "intro",
+      label: "What is DuskMoon?",
+      children: "DuskMoon React components provide typed, themeable UI primitives."
+    }
+  ]}
+/>`;
+  }
+
+  if (target.id === "descriptions") {
+    return `<${name}
+  title="Release summary"
+  bordered
+  column={2}
+  items={[
+    { key: "status", label: "Status", children: "Ready" },
+    { key: "owner", label: "Owner", children: "DuskMoon" },
+    { key: "version", label: "Version", children: "0.1.2" },
+    { key: "channel", label: "Channel", children: "Stable" }
+  ]}
+/>`;
+  }
+
+  if (target.id === "dropdown") {
+    return `<${name}
+  defaultOpen
+  trigger={["click"]}
+  menu={{
+    items: [
+      { key: "edit", label: "Edit" },
+      { key: "divider", type: "divider" },
+      { key: "delete", label: "Delete", danger: true }
+    ]
+  }}
+>
+  Actions
+</${name}>`;
+  }
+
+  if (target.id === "flex") {
+    return `<${name} gap="middle" wrap align="center">
+  <span>Alpha</span>
+  <span>Beta</span>
+  <span>Gamma</span>
+</${name}>`;
+  }
+
+  if (target.id === "row") {
+    return `<${name} gutter={[12, 12]} align="middle" justify="space-between">
+  <div style={{ flex: "0 0 29.167%" }}>span 7</div>
+  <div style={{ flex: "0 0 29.167%" }}>span 7</div>
+  <div style={{ flex: "0 0 29.167%" }}>span 7</div>
+</${name}>`;
+  }
+
+  if (target.id === "float-button") {
+    return `<${name} type="primary" icon="+" tooltip="Create" />`;
+  }
+
+  if (target.id === "form") {
+    return `<${name}
+  layout="vertical"
+  initialValues={{ project: "DuskMoon" }}
+  onFinish={(values) => console.log(values)}
+>
+  <${name}.Item
+    name="project"
+    label="Project"
+    rules={[{ required: true, message: "Project is required" }]}
+    extra="The name shown in dashboards."
+  >
+    <input placeholder="Project name" />
+  </${name}.Item>
+  <${name}.Item>
+    <button type="submit">Save</button>
+  </${name}.Item>
+</${name}>`;
+  }
+
+  if (target.id === "date-picker") {
+    return `<${name}
+  defaultValue="2026-05-25"
+  size="lg"
+  status="success"
+  onChange={(value) => console.log(value)}
+/>`;
+  }
+
+  if (target.id === "color-picker") {
+    return `<${name}
+  defaultValue="#1677ff"
+  size="large"
+  format="hex"
+  showText
+  onChange={(value, css) => console.log(value, css)}
+/>`;
+  }
+
+  if (target.id === "popover") {
+    return `<${name}
+  title="DuskMoon"
+  content="Popover content"
+  placement="bottom"
+  open
+>
+  Hover target
+</${name}>`;
   }
 
   if (target.id === "image") {
@@ -706,15 +921,228 @@ function demoCode(
 />`;
   }
 
-  if (target.id === "dm-splitter") {
+  if (target.id === "input-number") {
     return `<${name}
-  defaultSizes={[180, "1fr"]}
-  gap={8}
-  style={{ width: "100%" }}
->
-  <${name}.Panel>Navigation</${name}.Panel>
-  <${name}.Panel>Workspace</${name}.Panel>
+  defaultValue={24}
+  min={0}
+  max={100}
+  step={1}
+  status="success"
+/>`;
+  }
+
+  if (target.id === "layout") {
+    return `<${name} style={{ width: "100%", maxWidth: 640 }}>
+  <${name}.Header>Header</${name}.Header>
+  <${name} hasSider>
+    <${name}.Sider width={160}>Sider</${name}.Sider>
+    <${name}.Content>Content</${name}.Content>
+  </${name}>
+  <${name}.Footer>Footer</${name}.Footer>
 </${name}>`;
+  }
+
+  if (target.id === "list") {
+    return `<${name} bordered>
+  {[
+    { title: "Design tokens", description: "Updated color and spacing scale" },
+    { title: "Components", description: "Reviewed visual states" },
+    { title: "Release", description: "Ready for package validation" }
+  ].map((item) => (
+    <${name}.Item key={item.title} extra="Open">
+      <${name}.Item.Meta
+        title={item.title}
+        description={item.description}
+      />
+    </${name}.Item>
+  ))}
+</${name}>`;
+  }
+
+  if (target.id === "mentions") {
+    return `<${name}
+  defaultValue="@design"
+  placeholder="Mention a teammate"
+  options={[
+    { value: "design", label: "Design team" },
+    { value: "engineering", label: "Engineering" },
+    { value: "release", label: "Release desk" }
+  ]}
+/>`;
+  }
+
+  if (target.id === "menu") {
+    return `<${name}
+  defaultSelectedKeys={["overview"]}
+  defaultOpenKeys={["workspace"]}
+  items={[
+    { key: "overview", label: "Overview", extra: "⌘1" },
+    {
+      key: "workspace",
+      label: "Workspace",
+      children: [
+        { key: "tasks", label: "Tasks" },
+        { key: "reports", label: "Reports" }
+      ]
+    },
+    { type: "divider" },
+    { key: "settings", label: "Settings" }
+  ]}
+/>`;
+  }
+
+  if (target.id === "modal") {
+    return `<${name}
+  open
+  title="Release checklist"
+  width={420}
+  onOk={() => console.log("ok")}
+  onCancel={() => console.log("cancel")}
+>
+  Review component styles before publishing the package.
+</${name}>`;
+  }
+
+  if (target.id === "progress") {
+    return `<${name}
+  percent={68}
+  showInfo
+  color="success"
+  size="lg"
+/>`;
+  }
+
+  if (target.id === "qr-code") {
+    return `<${name}
+  value="https://duskmoon.dev/components"
+  size={160}
+  color="#111827"
+  bgColor="#ffffff"
+/>`;
+  }
+
+  if (target.id === "rate") {
+    return `<${name}
+  defaultValue={3.5}
+  allowHalf
+  color="warning"
+  size="lg"
+/>`;
+  }
+
+  if (target.id === "segmented") {
+    return `<${name}
+  options={["Overview", "Usage", "API"]}
+  defaultValue="Usage"
+  size="lg"
+/>`;
+  }
+
+  if (target.id === "select") {
+    return `<${name}
+  options={[
+    { label: "React", value: "react" },
+    { label: "Astro", value: "astro" },
+    { label: "TypeScript", value: "typescript" }
+  ]}
+  defaultValue="react"
+  placeholder="Select a stack"
+  allowClear
+/>`;
+  }
+
+  if (target.id === "slider") {
+    return `<${name}
+  defaultValue={48}
+  marks={{ 0: "0", 50: "50", 100: "100" }}
+  tooltip={{ open: true }}
+  color="secondary"
+/>`;
+  }
+
+  if (target.id === "space") {
+    return `<${name} size="middle" wrap split="|">
+  <span>Design</span>
+  <span>Build</span>
+  <span>Ship</span>
+</${name}>`;
+  }
+
+  if (target.id === "statistic") {
+    return `<${name}
+  title="Uptime"
+  value={98.6}
+  precision={1}
+  suffix="%"
+/>`;
+  }
+
+  if (target.id === "steps") {
+    return `<${name}
+  current={1}
+  items={[
+    { title: "Plan", description: "Define scope" },
+    { title: "Build", description: "Implement UI" },
+    { title: "Ship", description: "Release" }
+  ]}
+/>`;
+  }
+
+  if (target.id === "switch") {
+    return `<${name}
+  defaultChecked
+  checkedChildren="On"
+  unCheckedChildren="Off"
+/>`;
+  }
+
+  if (target.id === "tabs") {
+    return `<${name}
+  defaultActiveKey="usage"
+  items={[
+    { key: "overview", label: "Overview", children: "Component status overview." },
+    { key: "usage", label: "Usage", children: "Tabs organize related views." },
+    { key: "api", label: "API", children: "Document props and events." }
+  ]}
+/>`;
+  }
+
+  if (target.id === "time-picker") {
+    return `<${name}
+  defaultValue="09:30:00"
+  format="HH:mm:ss"
+  allowClear
+/>`;
+  }
+
+  if (target.id === "tooltip") {
+    return `<${name}
+  title="Review details"
+  placement="bottom"
+  size="lg"
+  open
+>
+  Hover for details
+</${name}>`;
+  }
+
+  if (target.id === "timeline") {
+    return `<${name}
+  items={[
+    { label: "09:00", children: "Kickoff and scope review", color: "primary" },
+    { label: "11:30", children: "Design QA completed", color: "success" },
+    { label: "14:00", children: "Release notes prepared", color: "secondary" }
+  ]}
+/>`;
+  }
+
+  if (target.id === "skeleton") {
+    return `<${name}
+  active
+  avatar
+  paragraph={{ rows: 3 }}
+  style={{ width: "420px", maxWidth: "100%" }}
+/>`;
   }
 
   if (target.id === "splitter") {
@@ -727,13 +1155,15 @@ function demoCode(
 </${name}>`;
   }
 
-  if (target.id === "skeleton") {
+  if (target.id === "dm-splitter") {
     return `<${name}
-  active
-  avatar
-  paragraph={{ rows: 3 }}
-  style={{ width: "420px", maxWidth: "100%" }}
-/>`;
+  defaultSizes={[180, "1fr"]}
+  gap={8}
+  style={{ width: "100%" }}
+>
+  <${name}.Panel>Navigation</${name}.Panel>
+  <${name}.Panel>Workspace</${name}.Panel>
+</${name}>`;
   }
 
   if (target.id === "tour") {
@@ -752,6 +1182,21 @@ function demoCode(
       }
     }
   ]}
+/>`;
+  }
+
+  if (target.id === "transfer") {
+    return `<${name}
+  dataSource={[
+    { key: "tokens", title: "Design tokens", description: "Theme primitives" },
+    { key: "docs", title: "Docs site", description: "Examples and API pages" },
+    { key: "qa", title: "Visual QA", description: "Review queue" },
+    { key: "release", title: "Release notes", description: "Publish checklist" }
+  ]}
+  defaultTargetKeys={["release"]}
+  defaultSelectedKeys={["tokens"]}
+  titles={["Available", "Selected"]}
+  showSearch
 />`;
   }
 
@@ -790,11 +1235,23 @@ function demosFor(
   scenarios: string[],
 ): DemoSpec[] {
   const importPath = importPathForTarget(target);
+
+  if (target.id === "breakpoint") {
+    return [
+      {
+        title: "Type usage",
+        description: `${name} is a TypeScript-only breakpoint union exported from the root package.`,
+        code: `import type { ${name} } from "${importPath}";\n\nconst compact: ${name} = "sm";\nconst desktop: ${name} = "lg";\n\nexport const responsiveBreakpoints: ${name}[] = [compact, desktop];`,
+      },
+    ];
+  }
+
   const usage = demoCode(target, name, api);
   const importLine =
     target.kind === "internal-component"
       ? `// Internal component: packages/components/src/components/${target.id}`
       : `import { ${name} } from "${importPath}";`;
+  const componentStyleImport = `import "@duskmoon-dev/components/styles.css";`;
 
   if (target.kind === "art-component") {
     return [
@@ -812,7 +1269,7 @@ function demosFor(
     return {
       title: scenario,
       description: `${name} scenario from the component test coverage: ${scenario.toLowerCase()}.`,
-      code: `${importLine}\n\nexport function ${name}${scenario
+      code: `${componentStyleImport}\n${importLine}\n\nexport function ${name}${scenario
         .replace(/[^A-Za-z0-9]+/g, " ")
         .trim()
         .split(" ")
@@ -825,8 +1282,8 @@ function demosFor(
   return [
     {
       title: "Basic usage",
-      description: `Import ${name} from its package subpath and render it with the core props.`,
-      code: `${importLine}\n\nexport function Example() {\n  return (${usage});\n}`,
+      description: `Import the component stylesheet and ${name} from its package subpath, then render it with the core props.`,
+      code: `${componentStyleImport}\n${importLine}\n\nexport function Example() {\n  return (${usage});\n}`,
     },
     ...scenarioDemos,
     {
