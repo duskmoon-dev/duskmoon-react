@@ -1,5 +1,13 @@
 # Duskmoon React
 
+[![CI](https://github.com/duskmoon-dev/duskmoon-react/actions/workflows/ci.yml/badge.svg)](https://github.com/duskmoon-dev/duskmoon-react/actions/workflows/ci.yml)
+[![Deploy Documentation](https://github.com/duskmoon-dev/duskmoon-react/actions/workflows/docs.yml/badge.svg)](https://github.com/duskmoon-dev/duskmoon-react/actions/workflows/docs.yml)
+[![Release](https://github.com/duskmoon-dev/duskmoon-react/actions/workflows/release.yml/badge.svg)](https://github.com/duskmoon-dev/duskmoon-react/actions/workflows/release.yml)
+[![Publish Packages](https://github.com/duskmoon-dev/duskmoon-react/actions/workflows/publish-packages.yml/badge.svg)](https://github.com/duskmoon-dev/duskmoon-react/actions/workflows/publish-packages.yml)
+[![GitHub Release](https://img.shields.io/github/v/release/duskmoon-dev/duskmoon-react?include_prereleases&sort=semver)](https://github.com/duskmoon-dev/duskmoon-react/releases)
+[![npm @duskmoon-dev/components](https://img.shields.io/npm/v/%40duskmoon-dev%2Fcomponents?label=%40duskmoon-dev%2Fcomponents)](https://www.npmjs.com/package/@duskmoon-dev/components)
+[![npm @duskmoon-dev/art-components](https://img.shields.io/npm/v/%40duskmoon-dev%2Fart-components?label=%40duskmoon-dev%2Fart-components)](https://www.npmjs.com/package/@duskmoon-dev/art-components)
+
 A modern, high-quality React component library built with TypeScript and optimized for performance.
 
 ## Project Structure
