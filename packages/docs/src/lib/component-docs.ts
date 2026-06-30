@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { docsPath } from "./paths";
 
 type Target = {
   id: string;
@@ -1327,7 +1328,7 @@ function toDoc(target: Target): ComponentDoc {
   return {
     ...target,
     title: name,
-    route: `/components/${target.id}`,
+    route: docsPath(`/components/${target.id}`),
     category: categoryFor(target.kind),
     intro: introFor(target, name, scenarios, keyProps),
     importPath: importPathForTarget(target),

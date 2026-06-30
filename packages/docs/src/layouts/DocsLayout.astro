@@ -2,6 +2,7 @@
 import "@duskmoon-dev/components/styles.css";
 import "@duskmoon-dev/art-components/styles.css";
 import "../styles/docs.css";
+import { docsPath } from "../lib/paths";
 
 interface Props {
   title: string;
@@ -33,13 +34,13 @@ const { title, description = "DuskMoon React component documentation" } = Astro.
   </head>
   <body>
     <header class="site-header">
-      <a class="brand" href="/">
+      <a class="brand" href={docsPath("/")}>
         <span class="brand-mark">Dm</span>
         <span>DuskMoon React</span>
       </a>
       <nav class="top-nav" aria-label="Primary">
-        <a href="/">Components</a>
-        <a href="/components/dm-provider">Theme</a>
+        <a href={docsPath("/")}>Components</a>
+        <a href={docsPath("/components/dm-provider")}>Theme</a>
       </nav>
       <button class="theme-toggle" type="button" data-theme-toggle>
         <span data-theme-label>Light</span>
