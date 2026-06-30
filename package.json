@@ -1,6 +1,6 @@
 {
   "name": "duskmoon-react-monorepo",
-  "version": "0.0.0",
+  "version": "0.1.2",
   "private": true,
   "type": "module",
   "workspaces": [
@@ -19,8 +19,12 @@
     "format:check": "bun x prettier --check .",
     "typecheck": "bun run --filter '*' typecheck",
     "parity:components": "bun run --filter \"@duskmoon-dev/components\" parity:components",
-    "release": "changeset publish",
-    "release:dry-run": "echo \"Dry run release not implemented yet\""
+    "release": "bun run release:check-versions && changeset publish --no-git-tag",
+    "release:version": "changeset version && bun run release:sync-versions",
+    "release:sync-versions": "bun run scripts/release-versions.mjs sync",
+    "release:check-versions": "bun run scripts/release-versions.mjs check",
+    "release:version-current": "bun run --silent scripts/release-versions.mjs current",
+    "release:dry-run": "bun run release:check-versions"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.3",

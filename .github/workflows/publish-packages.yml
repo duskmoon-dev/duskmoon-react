@@ -9,7 +9,7 @@ on:
         default: "main"
 
 permissions:
-  contents: read
+  contents: write
   id-token: write
 
 concurrency:
@@ -92,6 +92,9 @@ jobs:
           console.log(`Publishing ${packages.map((pkg) => pkg.name).join(", ")} at ${packages[0].version}.`);
           NODE
 
+      - name: Check package versions
+        run: bun run release:check-versions
+
       - name: Test packages
         run: |
           for package_dir in ${{ steps.packages.outputs.package_dirs }}; do
@@ -155,3 +158,25 @@ jobs:
               exit 1
             )
           done
+
+      - name: Create version tag and GitHub release
+        run: |
+          tag="v${{ steps.packages.outputs.version }}"
+
+          if git ls-remote --exit-code --tags origin "refs/tags/${tag}" >/dev/null 2>&1; then
+            echo "${tag} already exists on origin."
+          else
+            if ! git rev-parse --verify --quiet "${tag}" >/dev/null; then
+              git tag "${tag}"
+            fi
+
+            git push origin "refs/tags/${tag}"
+          fi
+
+          if gh release view "${tag}" >/dev/null 2>&1; then
+            echo "GitHub release ${tag} already exists."
+          else
+            gh release create "${tag}" --verify-tag --title "${tag}" --generate-notes
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}

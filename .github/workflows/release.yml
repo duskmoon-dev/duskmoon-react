@@ -37,6 +37,7 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
+          version: bun run release:version
           publish: bun run release
           commit: "chore(release): version packages"
           title: "chore(release): version packages"
@@ -44,3 +45,27 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
+
+      - name: Create version tag and GitHub release
+        if: steps.changesets.outputs.published == 'true'
+        run: |
+          version="$(bun run --silent release:version-current)"
+          tag="v${version}"
+
+          if git ls-remote --exit-code --tags origin "refs/tags/${tag}" >/dev/null 2>&1; then
+            echo "${tag} already exists on origin."
+          else
+            if ! git rev-parse --verify --quiet "${tag}" >/dev/null; then
+              git tag "${tag}"
+            fi
+
+            git push origin "refs/tags/${tag}"
+          fi
+
+          if gh release view "${tag}" >/dev/null 2>&1; then
+            echo "GitHub release ${tag} already exists."
+          else
+            gh release create "${tag}" --verify-tag --title "${tag}" --generate-notes
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
