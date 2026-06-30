@@ -90,6 +90,7 @@ const AutoCompleteRoot = forwardRef<HTMLDivElement, AutoCompleteProps>(
       allowClear,
       children,
       className,
+      color,
       defaultOpen,
       defaultValue = "",
       disabled,
@@ -269,6 +270,7 @@ const AutoCompleteRoot = forwardRef<HTMLDivElement, AutoCompleteProps>(
         {...props}
         ref={ref}
         className={getAutoCompleteClasses({
+          color,
           disabled,
           open: isOpen,
           className,

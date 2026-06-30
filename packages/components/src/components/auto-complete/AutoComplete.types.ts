@@ -7,6 +7,15 @@ import type {
 
 export type AutoCompleteSize = "sm" | "md" | "lg";
 
+export type AutoCompleteColor =
+  | "primary"
+  | "secondary"
+  | "tertiary"
+  | "info"
+  | "success"
+  | "warning"
+  | "error";
+
 export interface AutoCompleteOptionType {
   value: string;
   label?: ReactNode;
@@ -24,6 +33,7 @@ export interface AutoCompleteProps extends Omit<
 > {
   allowClear?: boolean;
   children?: ReactNode;
+  color?: AutoCompleteColor;
   defaultOpen?: boolean;
   defaultValue?: string;
   disabled?: boolean;

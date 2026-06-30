@@ -14,6 +14,27 @@ type ParsedProps = Record<string, unknown>;
 const typeOnlyInfrastructureExports = new Set(["breakpoint"]);
 const alertColors = ["info", "success", "warning", "error"] as const;
 const alertAppearances = ["filled", "outline", "tonal"] as const;
+const autoCompleteColors = [
+  "primary",
+  "secondary",
+  "tertiary",
+  "info",
+  "success",
+  "warning",
+  "error",
+] as const;
+const autoCompleteOptions = [
+  { value: "react", label: "React" },
+  { value: "remix", label: "Remix" },
+  { value: "astro", label: "Astro" },
+  { value: "solid", label: "Solid" },
+];
+const asyncAutoCompleteOptions = [
+  { value: "apollo", label: "Apollo" },
+  { value: "atlas", label: "Atlas" },
+  { value: "matrix", label: "Matrix" },
+  { value: "mercury", label: "Mercury" },
+];
 
 function AlertPreview() {
   return (
@@ -63,6 +84,166 @@ function AlertPreview() {
           </div>
         </section>
       ))}
+    </div>
+  );
+}
+
+function filterAutoCompleteOptions(
+  query: string,
+  options: typeof asyncAutoCompleteOptions,
+) {
+  const normalized = query.trim().toLowerCase();
+
+  if (!normalized) return options;
+
+  return options.filter((option) =>
+    option.label.toLowerCase().includes(normalized),
+  );
+}
+
+function AutoCompletePreview() {
+  const [asyncValue, setAsyncValue] = React.useState("ma");
+  const [asyncOptions, setAsyncOptions] = React.useState(() =>
+    filterAutoCompleteOptions("ma", asyncAutoCompleteOptions),
+  );
+  const [asyncLoading, setAsyncLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    setAsyncLoading(true);
+
+    const timeout = window.setTimeout(() => {
+      setAsyncOptions(
+        filterAutoCompleteOptions(asyncValue, asyncAutoCompleteOptions),
+      );
+      setAsyncLoading(false);
+    }, 300);
+
+    return () => window.clearTimeout(timeout);
+  }, [asyncValue]);
+
+  return (
+    <div
+      style={{
+        display: "grid",
+        gap: "18px",
+        paddingBottom: "110px",
+        width: "100%",
+      }}
+    >
+      <section style={{ display: "grid", gap: "10px" }}>
+        <h4
+          style={{
+            margin: 0,
+            color: "var(--dm-muted)",
+            fontSize: "12px",
+            fontWeight: 700,
+            textTransform: "uppercase",
+          }}
+        >
+          Colors
+        </h4>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+            gap: "10px",
+          }}
+        >
+          {autoCompleteColors.map((color) => (
+            <div key={color} style={{ display: "grid", gap: "5px" }}>
+              <span
+                style={{
+                  color: "var(--dm-muted)",
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  textTransform: "capitalize",
+                }}
+              >
+                {color}
+              </span>
+              <DmComponents.AutoComplete
+                color={color}
+                placeholder={`${color} search`}
+                options={autoCompleteOptions}
+              />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+          gap: "12px",
+        }}
+      >
+        <div style={{ display: "grid", gap: "8px" }}>
+          <h4
+            style={{
+              margin: 0,
+              color: "var(--dm-muted)",
+              fontSize: "12px",
+              fontWeight: 700,
+              textTransform: "uppercase",
+            }}
+          >
+            Match options
+          </h4>
+          <DmComponents.AutoComplete
+            defaultOpen
+            defaultValue="re"
+            color="primary"
+            options={autoCompleteOptions}
+            placeholder="Framework"
+          />
+        </div>
+
+        <div style={{ display: "grid", gap: "8px" }}>
+          <h4
+            style={{
+              margin: 0,
+              color: "var(--dm-muted)",
+              fontSize: "12px",
+              fontWeight: 700,
+              textTransform: "uppercase",
+            }}
+          >
+            Async match
+          </h4>
+          <DmComponents.AutoComplete
+            open
+            value={asyncValue}
+            color="info"
+            options={asyncOptions}
+            notFoundContent={asyncLoading ? "Loading matches" : "No matches"}
+            placeholder="Remote source"
+            onChange={(value) => setAsyncValue(value)}
+            onSearch={(value) => setAsyncValue(value)}
+          />
+        </div>
+
+        <div style={{ display: "grid", gap: "8px" }}>
+          <h4
+            style={{
+              margin: 0,
+              color: "var(--dm-muted)",
+              fontSize: "12px",
+              fontWeight: 700,
+              textTransform: "uppercase",
+            }}
+          >
+            Allow clear
+          </h4>
+          <DmComponents.AutoComplete
+            allowClear
+            defaultValue="astro"
+            color="success"
+            options={autoCompleteOptions}
+            placeholder="Clearable value"
+          />
+        </div>
+      </section>
     </div>
   );
 }
@@ -153,7 +334,12 @@ function FlexPreview() {
   };
 
   return (
-    <DmComponents.Flex gap="middle" wrap align="center" style={{ width: "100%" }}>
+    <DmComponents.Flex
+      gap="middle"
+      wrap
+      align="center"
+      style={{ width: "100%" }}
+    >
       <span style={itemStyle}>Alpha</span>
       <span style={itemStyle}>Beta</span>
       <span style={itemStyle}>Gamma</span>
@@ -726,6 +912,10 @@ export default function DemoRenderer({
 
   if (componentId === "alert") {
     return <AlertPreview />;
+  }
+
+  if (componentId === "auto-complete") {
+    return <AutoCompletePreview />;
   }
 
   if (componentId === "grid") {

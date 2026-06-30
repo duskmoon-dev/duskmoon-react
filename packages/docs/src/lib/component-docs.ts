@@ -638,6 +638,20 @@ function demoCode(
 </div>`;
   }
 
+  if (target.id === "auto-complete") {
+    return `<${name}
+  color="primary"
+  allowClear
+  defaultOpen
+  defaultValue="re"
+  options={[
+    { value: "react", label: "React" },
+    { value: "remix", label: "Remix" },
+    { value: "astro", label: "Astro" }
+  ]}
+/>`;
+  }
+
   if (target.id === "dm-table" || target.id === "table") {
     return `<${name}
   columns={[
@@ -1280,6 +1294,16 @@ function demosFor(
         title: "Colors and appearances",
         description: `${name} supports info, success, warning, and error colors across filled, outline, and tonal appearances.`,
         code: `${componentStyleImport}\n${importLine}\n\nexport function AlertDemo() {\n  return (${usage});\n}`,
+      },
+    ];
+  }
+
+  if (target.id === "auto-complete") {
+    return [
+      {
+        title: "Colors and matching",
+        description: `${name} supports primary, secondary, tertiary, info, success, warning, and error colors with filtered options, async matches, and clearable values.`,
+        code: `${componentStyleImport}\nimport React from "react";\n${importLine}\n\nconst colors = [\n  "primary",\n  "secondary",\n  "tertiary",\n  "info",\n  "success",\n  "warning",\n  "error"\n] as const;\n\nconst options = [\n  { value: "react", label: "React" },\n  { value: "remix", label: "Remix" },\n  { value: "astro", label: "Astro" },\n  { value: "solid", label: "Solid" }\n];\n\nconst remoteOptions = [\n  { value: "apollo", label: "Apollo" },\n  { value: "atlas", label: "Atlas" },\n  { value: "matrix", label: "Matrix" },\n  { value: "mercury", label: "Mercury" }\n];\n\nfunction matchOptions(query: string) {\n  const normalized = query.trim().toLowerCase();\n  return remoteOptions.filter((option) =>\n    option.label.toLowerCase().includes(normalized)\n  );\n}\n\nfunction AsyncMatchDemo() {\n  const [value, setValue] = React.useState("ma");\n  const [matches, setMatches] = React.useState(() => matchOptions("ma"));\n\n  React.useEffect(() => {\n    const timeout = window.setTimeout(() => {\n      setMatches(matchOptions(value));\n    }, 300);\n\n    return () => window.clearTimeout(timeout);\n  }, [value]);\n\n  return (\n    <${name}\n      open\n      value={value}\n      color="info"\n      options={matches}\n      notFoundContent="No matches"\n      onChange={setValue}\n      onSearch={setValue}\n    />\n  );\n}\n\nexport function AutoCompleteDemo() {\n  return (\n    <div style={{ display: "grid", gap: 16 }}>\n      <div style={{ display: "grid", gap: 10 }}>\n        {colors.map((color) => (\n          <${name}\n            key={color}\n            color={color}\n            placeholder={\`\${color} search\`}\n            options={options}\n          />\n        ))}\n      </div>\n\n      <${name}\n        defaultOpen\n        defaultValue="re"\n        color="primary"\n        options={options}\n      />\n\n      <AsyncMatchDemo />\n\n      <${name}\n        allowClear\n        defaultValue="astro"\n        color="success"\n        options={options}\n      />\n    </div>\n  );\n}`,
       },
     ];
   }

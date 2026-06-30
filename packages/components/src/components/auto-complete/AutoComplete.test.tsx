@@ -27,6 +27,37 @@ describe("AutoComplete", () => {
     expect(screen.getByRole("option", { name: "Alpha" })).toBeTruthy();
   });
 
+  test("supports all color classes", () => {
+    const colors = [
+      "primary",
+      "secondary",
+      "tertiary",
+      "info",
+      "success",
+      "warning",
+      "error",
+    ] as const;
+
+    const { container } = render(
+      <div>
+        {colors.map((color) => (
+          <AutoComplete
+            key={color}
+            color={color}
+            aria-label={`${color} autocomplete`}
+          />
+        ))}
+      </div>,
+    );
+
+    for (const color of colors) {
+      expect(
+        container.querySelector(`[aria-label="${color} autocomplete"]`)
+          ?.className,
+      ).toContain(`autocomplete-${color}`);
+    }
+  });
+
   test("supports uncontrolled search and filtering", () => {
     let searched = "";
     let changed = "";
