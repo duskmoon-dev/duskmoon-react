@@ -14,7 +14,7 @@ describe("Alert", () => {
     const alert = screen.getByRole("alert");
     expect(alert.className).toContain("alert");
     expect(alert.className).toContain("alert-info");
-    // "filled" appearance Maps to "" so no extra class for appearance by default
+    expect(alert.className).toContain("alert-filled");
   });
 
   test("applies color and appearance classes", () => {
@@ -25,7 +25,19 @@ describe("Alert", () => {
     );
     const alert = screen.getByRole("alert");
     expect(alert.className).toContain("alert-error");
-    expect(alert.className).toContain("alert-outline");
+    expect(alert.className).toContain("alert-outlined");
+  });
+
+  test("maps tonal appearance to the base container style", () => {
+    render(
+      <Alert color="warning" appearance="tonal">
+        Tonal alert
+      </Alert>,
+    );
+    const alert = screen.getByRole("alert");
+    expect(alert.className).toContain("alert-warning");
+    expect(alert.className).not.toContain("alert-filled");
+    expect(alert.className).not.toContain("alert-outlined");
   });
 
   test("applies custom className", () => {

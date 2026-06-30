@@ -12,6 +12,60 @@ interface DemoRendererProps {
 type ParsedProps = Record<string, unknown>;
 
 const typeOnlyInfrastructureExports = new Set(["breakpoint"]);
+const alertColors = ["info", "success", "warning", "error"] as const;
+const alertAppearances = ["filled", "outline", "tonal"] as const;
+
+function AlertPreview() {
+  return (
+    <div
+      style={{
+        display: "grid",
+        gap: "14px",
+        width: "100%",
+      }}
+    >
+      {alertAppearances.map((appearance) => (
+        <section
+          key={appearance}
+          aria-label={`${appearance} alerts`}
+          style={{
+            display: "grid",
+            gap: "8px",
+          }}
+        >
+          <h4
+            style={{
+              margin: 0,
+              color: "var(--dm-muted)",
+              fontSize: "12px",
+              fontWeight: 700,
+              textTransform: "uppercase",
+            }}
+          >
+            {appearance}
+          </h4>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+              gap: "8px",
+            }}
+          >
+            {alertColors.map((color) => (
+              <DmComponents.Alert
+                key={`${appearance}-${color}`}
+                color={color}
+                appearance={appearance}
+              >
+                {color} alert
+              </DmComponents.Alert>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  );
+}
 
 function GridPreview() {
   const screens = DmComponents.Grid.useBreakpoint();
@@ -668,6 +722,10 @@ export default function DemoRenderer({
         </DmComponents.Button>
       </div>
     );
+  }
+
+  if (componentId === "alert") {
+    return <AlertPreview />;
   }
 
   if (componentId === "grid") {

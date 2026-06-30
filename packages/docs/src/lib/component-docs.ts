@@ -624,7 +624,17 @@ function demoCode(
   }
 
   if (target.id === "alert") {
-    return `<${name} color="success" appearance="tonal">Saved successfully</${name}>`;
+    return `<div style={{ display: "grid", gap: 12 }}>
+  {(["filled", "outline", "tonal"] as const).map((appearance) => (
+    <div key={appearance} style={{ display: "grid", gap: 8 }}>
+      {(["info", "success", "warning", "error"] as const).map((color) => (
+        <${name} key={color} color={color} appearance={appearance}>
+          {color} alert
+        </${name}>
+      ))}
+    </div>
+  ))}
+</div>`;
   }
 
   if (target.id === "dm-table" || target.id === "table") {
@@ -1259,6 +1269,16 @@ function demosFor(
         title: "Basic usage",
         description: `Import ${name} and the art component stylesheet before rendering the CSS art scene.`,
         code: `import "@duskmoon-dev/art-components/styles.css";\n${importLine}\n\nexport function Example() {\n  return (${usage});\n}`,
+      },
+    ];
+  }
+
+  if (target.id === "alert") {
+    return [
+      {
+        title: "Colors and appearances",
+        description: `${name} supports info, success, warning, and error colors across filled, outline, and tonal appearances.`,
+        code: `${componentStyleImport}\n${importLine}\n\nexport function AlertDemo() {\n  return (${usage});\n}`,
       },
     ];
   }

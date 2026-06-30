@@ -15,9 +15,9 @@ export const alertColorClasses: Record<AlertColor, string> = {
 };
 
 export const alertAppearanceClasses: Record<AlertAppearance, string> = {
-  filled: "",
-  outline: "alert-outline",
-  tonal: "alert-tonal",
+  filled: "alert-filled",
+  outline: "alert-outlined",
+  tonal: "",
 };
 
 export function getAlertClasses({

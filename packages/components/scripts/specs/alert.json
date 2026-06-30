@@ -14,9 +14,9 @@
     },
     "appearance": {
       "values": {
-        "filled": "",
-        "outline": "alert-outline",
-        "tonal": "alert-tonal"
+        "filled": "alert-filled",
+        "outline": "alert-outlined",
+        "tonal": ""
       },
       "default": "filled"
     }
