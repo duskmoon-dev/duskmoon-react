@@ -41,14 +41,14 @@ jobs:
           publish: bun run release
           commit: "chore(release): version packages"
           title: "chore(release): version packages"
-          create-github-releases: false
+          createGithubReleases: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
 
       - name: Create version tag and GitHub release
-        if: steps.changesets.outputs['has-changesets'] == 'false'
+        if: steps.changesets.outputs.hasChangesets == 'false'
         run: |
           version="$(bun run --silent release:version-current)"
           tag="v${version}"
