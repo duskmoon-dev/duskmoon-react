@@ -32,7 +32,6 @@ export * from "./dm-infinite-scroll";
 export * from "./dm-page-header";
 export * from "./dm-pagination";
 export * from "./dm-pro-table";
-export * from "./dm-pro-table-inner";
 export * from "./dm-provider";
 export * from "./dm-query";
 export * from "./dm-search";

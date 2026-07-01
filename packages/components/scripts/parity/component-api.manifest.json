@@ -1167,17 +1167,5 @@
       "status": "implemented"
     }
   ],
-  "internalTargets": [
-    {
-      "id": "dm-pro-table-inner",
-      "kind": "internal-component",
-      "source": "duskmoon",
-      "exportName": "DmProTableInner",
-      "directory": "dm-pro-table-inner",
-      "rootExport": "./components/dm-pro-table-inner",
-      "packageSubpath": "./dm-pro-table-inner",
-      "buildEntrypoint": "src/components/dm-pro-table-inner/index.ts",
-      "status": "implemented"
-    }
-  ]
+  "internalTargets": []
 }

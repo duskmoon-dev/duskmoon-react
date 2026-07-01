@@ -7,7 +7,7 @@ import {
   getDmProTableClasses,
 } from "../../classes/dm-pro-table";
 import { Button } from "../button";
-import { DmProTableInner } from "../dm-pro-table-inner";
+import { DmTable } from "../dm-table";
 import { DmToolbar } from "../dm-toolbar";
 import type { TableRecord } from "../table/Table.types";
 import type { DmProTableProps } from "./DmProTable.types";
@@ -24,6 +24,7 @@ export function DmProTable<T extends TableRecord = TableRecord>({
   showTitleBar = true,
   columnSettingVisible,
   className,
+  rowData,
   ...props
 }: DmProTableProps<T>) {
   return (
@@ -50,9 +51,10 @@ export function DmProTable<T extends TableRecord = TableRecord>({
           </div>
         </div>
       ) : null}
-      <DmProTableInner
+      <DmTable
         {...props}
         columnSettingVisible={showTitleBar ? false : columnSettingVisible}
+        dataSource={rowData}
       />
     </div>
   );

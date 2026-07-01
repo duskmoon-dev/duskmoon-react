@@ -97,7 +97,6 @@ export * from "./components/dm-infinite-scroll";
 export * from "./components/dm-page-header";
 export * from "./components/dm-pagination";
 export * from "./components/dm-pro-table";
-export * from "./components/dm-pro-table-inner";
 export * from "./components/dm-provider";
 export * from "./components/dm-query";
 export * from "./components/dm-search";

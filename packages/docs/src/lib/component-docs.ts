@@ -610,7 +610,6 @@ function demoCode(
     "table",
     "dm-table",
     "dm-pro-table",
-    "dm-pro-table-inner",
     "dm-query",
     "dm-search",
     "pagination",
@@ -668,7 +667,7 @@ function demoCode(
 />`;
   }
 
-  if (target.id === "dm-pro-table" || target.id === "dm-pro-table-inner") {
+  if (target.id === "dm-pro-table") {
     return `<${name}
   columns={[{ title: "Name", dataIndex: "name", key: "name" }]}
   rowData={[{ key: 1, name: "DuskMoon" }]}

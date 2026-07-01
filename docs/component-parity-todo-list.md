@@ -122,7 +122,3 @@ Source of record: `packages/components/scripts/parity/component-api.manifest.jso
 | [x] | infrastructure-export | duskmoon | `unstable-set-render` | `unstableSetRender` | React render override compatibility export |
 | [x] | infrastructure-export | duskmoon | `use-persisted-page-size` | `usePersistedPageSize` | `usePersistedPageSize` |
 | [x] | infrastructure-export | duskmoon | `version` | `version` | package version export |
-
-## Internal Targets
-
-- [x] `dm-pro-table-inner`

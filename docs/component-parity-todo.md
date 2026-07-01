@@ -269,11 +269,9 @@ Composite contracts to preserve or intentionally replace:
       `DmPagination`: preserve schema-driven search items, compact/collapsed
       modes, derived table search items, hidden/order column settings, custom
       pagination, and `_pageSize` persistence.
-- [x] `DmProTable` and `dm-pro-table-inner`: preserve column transformation,
-      toolbar/column setting behavior, `${persistenceKey}_ag_grid` persistence,
-      and the chosen ag-grid/browser compatibility story. Treat
-      `dm-pro-table-inner` as an internal implementation target unless explicitly
-      promoted later.
+- [x] `DmProTable`: preserve column transformation, toolbar/column setting
+      behavior, `${persistenceKey}_ag_grid` persistence, and the chosen
+      ag-grid/browser compatibility story.
 - [ ] `DmSplitter`: expose `DmSplitter.Panel` while preserving local/network
       persistence modes, collapse/reset behavior, and resize tests.
 - [ ] `DmToolbar`: keep primary actions visible, overflow secondary actions, and

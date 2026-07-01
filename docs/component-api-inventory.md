@@ -147,15 +147,6 @@ These DuskMoon-prefixed components make up the workflow-oriented public APIs.
 | `DmStatus`              | loading/empty/error/success state rendering, spin props, retry/action slots                          |
 | `DmToolbar`             | primary action preservation, secondary overflow menu, resize observer behavior                       |
 
-## Internal Implementation Targets
-
-These are not primary public exports unless a later design decision promotes
-them.
-
-| Internal Target      | Purpose                                       |
-| -------------------- | --------------------------------------------- |
-| `dm-pro-table-inner` | internal engine layer for `DmProTable` parity |
-
 ## Shared Feature Requirements
 
 - Forward refs for focusable or imperative components.

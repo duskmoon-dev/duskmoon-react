@@ -171,10 +171,6 @@
       "import": "./dist/components/dm-pro-table/index.js",
       "types": "./dist/components/dm-pro-table/index.d.ts"
     },
-    "./dm-pro-table-inner": {
-      "import": "./dist/components/dm-pro-table-inner/index.js",
-      "types": "./dist/components/dm-pro-table-inner/index.d.ts"
-    },
     "./dm-query": {
       "import": "./dist/components/dm-query/index.js",
       "types": "./dist/components/dm-query/index.d.ts"

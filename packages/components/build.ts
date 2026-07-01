@@ -91,7 +91,6 @@ async function runBuild() {
       "src/components/dm-page-header/index.ts",
       "src/components/dm-pagination/index.ts",
       "src/components/dm-pro-table/index.ts",
-      "src/components/dm-pro-table-inner/index.ts",
       "src/components/dm-provider/index.ts",
       "src/components/dm-query/index.ts",
       "src/components/dm-search/index.ts",
