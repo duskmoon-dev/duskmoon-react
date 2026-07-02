@@ -1,5 +1,11 @@
 # @duskmoon-dev/components
 
+## 0.3.0
+
+### Minor Changes
+
+- 2d789e7: Add full semantic color variants across color-capable components and document every palette demo.
+
 ## 0.2.1
 
 ### Patch Changes
