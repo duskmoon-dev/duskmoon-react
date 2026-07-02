@@ -1,0 +1,240 @@
+---
+import DemoRenderer from "./DemoRenderer";
+import DocsLayout from "../layouts/DocsLayout.astro";
+import { getDocsByCategory, type ComponentDoc } from "../lib/component-docs";
+import { docsPath } from "../lib/paths";
+
+const { component } = Astro.props as { component: ComponentDoc };
+const categories = Array.from(getDocsByCategory().entries());
+const apiPropCount = component.api.reduce(
+  (count, section) => count + section.props.length,
+  0,
+);
+const apiTypeCount = component.api.length;
+---
+
+<DocsLayout title={component.title} description={component.intro}>
+  <div class="doc-shell">
+    <aside class="side-nav" aria-label="Component sections">
+      <div class="nav-section">
+        <a href="#overview">Overview</a>
+        <a href="#usage">Usage</a>
+        <a href="#features">Features</a>
+        <a href="#demos">Demos</a>
+        <a href="#api">API</a>
+        <a href={docsPath("/")}>All components</a>
+      </div>
+
+      {
+        categories.map(([category, docs]) => (
+          <div class="nav-group">
+            <div class="nav-group-title">{category}</div>
+            <div class="nav-group-items">
+              {docs.map((item) => (
+                <a
+                  href={item.route}
+                  class={`nav-item ${item.id === component.id ? "active" : ""}`}
+                >
+                  {item.title}
+                </a>
+              ))}
+            </div>
+          </div>
+        ))
+      }
+    </aside>
+
+    <article class="doc-content">
+      <header id="overview" class="doc-title">
+        <div class="badge-row">
+          <span class="badge">{component.category}</span>
+          <span class="badge">{component.source}</span>
+          <span class="badge">{component.status}</span>
+          <span class="badge">{component.demos.length} demos</span>
+        </div>
+        <h1>{component.title}</h1>
+        <p>{component.intro}</p>
+        <div class="install-line">
+          <span>Import</span>
+          <code>{component.importPath}</code>
+        </div>
+        <div class="doc-stats" aria-label="Documentation coverage">
+          <div>
+            <strong>{apiTypeCount}</strong>
+            <span>API sections</span>
+          </div>
+          <div>
+            <strong>{apiPropCount}</strong>
+            <span>documented props</span>
+          </div>
+          <div>
+            <strong>{component.scenarios.length}</strong>
+            <span>behavior scenarios</span>
+          </div>
+        </div>
+        {
+          component.keyProps.length > 0 ? (
+            <div class="meta-panel">
+              <strong>Key API</strong>
+              <div class="tag-list">
+                {component.keyProps.map((prop) => (
+                  <code>{prop}</code>
+                ))}
+              </div>
+            </div>
+          ) : null
+        }
+      </header>
+
+      <section id="usage" class="section">
+        <h2>Usage</h2>
+        <div class="usage-grid">
+          <div>
+            <h3>When to use</h3>
+            <ul class="check-list">
+              {
+                component.pageContent.whenToUse.map((item) => (
+                  <li>{item}</li>
+                ))
+              }
+            </ul>
+          </div>
+          <div>
+            <h3>Implementation notes</h3>
+            <div class="note-stack">
+              {
+                component.pageContent.usageNotes.map((note) => (
+                  <div class="note-item">
+                    <strong>{note.title}</strong>
+                    <span>{note.description}</span>
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="features" class="section">
+        <h2>Features</h2>
+        <div class="feature-grid">
+          {
+            component.pageContent.featureHighlights.map((feature) => (
+              <div class="feature-item">
+                <strong>{feature.title}</strong>
+                <p>{feature.description}</p>
+              </div>
+            ))
+          }
+        </div>
+      </section>
+
+      <section id="demos" class="section">
+        <h2>Feature Demos</h2>
+        <p>{component.pageContent.demoIntro}</p>
+        <div class="demo-grid">
+          {
+            component.demos.map((demo) => (
+              <div class="demo-card">
+                <div
+                  class={`demo-preview ${component.category === "CSS Art" ? "art-demo-preview" : ""}`}
+                >
+                  <DemoRenderer
+                    componentId={component.id}
+                    componentName={component.title}
+                    demoTitle={demo.title}
+                    demoCode={demo.code}
+                    client:load
+                  />
+                </div>
+                <div class="demo-body">
+                  <div class="demo-heading">
+                    <h3>{demo.title}</h3>
+                    <span class={`demo-source demo-source-${demo.source}`}>
+                      {demo.source}
+                    </span>
+                  </div>
+                  <p>{demo.description}</p>
+                  <pre><code>{demo.code}</code></pre>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </section>
+
+      <section id="api" class="section">
+        <h2>API</h2>
+        <p>{component.pageContent.apiIntro}</p>
+        <div class="api-source">
+          {
+            component.apiSource ? (
+              <span>
+                Types: <code>{component.apiSource}</code>
+              </span>
+            ) : (
+              <span>No type source found.</span>
+            )
+          }
+          {
+            component.testSource ? (
+              <span>
+                Scenarios: <code>{component.testSource}</code>
+              </span>
+            ) : null
+          }
+        </div>
+        {
+          component.api.length === 0 ? (
+            <div class="empty-state">No dedicated props interface was found.</div>
+          ) : (
+            component.api.map((section) => (
+              <div class="api-card">
+                <header>
+                  <strong>{section.name}</strong>
+                  <span class="api-meta">
+                    {section.kind}
+                    {section.extendsText ? ` extends ${section.extendsText}` : ""}
+                  </span>
+                </header>
+                {section.definition ? (
+                  <pre><code>{section.definition}</code></pre>
+                ) : section.props.length > 0 ? (
+                  <table class="api-table">
+                    <thead>
+                      <tr>
+                        <th>Prop</th>
+                        <th>Type</th>
+                        <th>Required</th>
+                        <th>Description</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {section.props.map((prop) => (
+                        <tr>
+                          <td>
+                            <code>{prop.name}</code>
+                          </td>
+                          <td>
+                            <code>{prop.type}</code>
+                          </td>
+                          <td>{prop.required ? "Yes" : "No"}</td>
+                          <td>
+                            {prop.description ||
+                              `${prop.name} configures ${component.title}.`}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <div class="empty-state">No direct props declared.</div>
+                )}
+              </div>
+            ))
+          )
+        }
+      </section>
+    </article>
+  </div>
+</DocsLayout>

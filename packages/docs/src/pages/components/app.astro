@@ -1,0 +1,12 @@
+---
+import ComponentDocPage from "../../components/ComponentDocPage.astro";
+import { getComponentDoc } from "../../lib/component-docs";
+
+const component = getComponentDoc("app");
+
+if (!component) {
+  throw new Error("Missing component docs for app");
+}
+---
+
+<ComponentDocPage component={component} />

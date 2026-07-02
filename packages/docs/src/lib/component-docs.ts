@@ -1,5 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
+import {
+  componentPageContentFor,
+  type ComponentPageContent,
+} from "./component-page-content";
 import { docsPath } from "./paths";
 
 type Target = {
@@ -39,9 +43,12 @@ export type ComponentDoc = Target & {
   route: string;
   category: string;
   intro: string;
+  pageContent: ComponentPageContent;
   importPath: string;
   typeFile: string | null;
   testFile: string | null;
+  apiSource: string | null;
+  testSource: string | null;
   scenarios: string[];
   keyProps: string[];
   api: ApiSection[];
@@ -52,6 +59,7 @@ export type DemoSpec = {
   title: string;
   description: string;
   code: string;
+  source: "authored" | "test-backed" | "type-driven";
 };
 
 function findRepoRoot() {
@@ -279,12 +287,17 @@ function findTypeFile(target: Target, name: string) {
   const direct = path.join(componentDir, `${name}.types.ts`);
   if (fs.existsSync(direct)) return direct;
 
-  return (
-    fs
-      .readdirSync(componentDir)
-      .find((file) => file.endsWith(".types.ts"))
-      ?.replace(/^/, `${componentDir}/`) ?? null
-  );
+  const generatedTypes = fs
+    .readdirSync(componentDir)
+    .find((file) => file.endsWith(".types.ts"));
+  if (generatedTypes) return path.join(componentDir, generatedTypes);
+
+  for (const extension of [".tsx", ".ts"]) {
+    const implementation = path.join(componentDir, `${name}${extension}`);
+    if (fs.existsSync(implementation)) return implementation;
+  }
+
+  return null;
 }
 
 function findTestFile(target: Target, name: string) {
@@ -409,9 +422,9 @@ function parseApi(typeFile: string | null, name: string): ApiSection[] {
     ? preferredNames.flatMap((item) =>
         typeNames.filter((typeInfo) => typeInfo.name === item),
       )
-    : typeNames.slice(0, 8);
+    : typeNames;
 
-  for (const interfaceName of orderedInterfaceNames.slice(0, 8)) {
+  for (const interfaceName of orderedInterfaceNames) {
     const parsed = splitInterfaceBody(source, interfaceName);
     if (!parsed) continue;
 
@@ -613,6 +626,18 @@ function artDemoCode(target: Target, name: string) {
     default:
       return `<${name} />`;
   }
+}
+
+function accessibleArtDemoCode(target: Target, name: string) {
+  const label = `${titleCase(target.id)} illustration`;
+  const usage = artDemoCode(target, name);
+  const accessibleProps = `\n  decorative={false}\n  aria-label="${label}"`;
+
+  if (usage.endsWith("\n/>")) {
+    return usage.replace(/\n\/>$/, `${accessibleProps}\n/>`);
+  }
+
+  return usage.replace(/\s\/>$/, `${accessibleProps} />`);
 }
 
 function demoCode(
@@ -1277,6 +1302,10 @@ function importPathForTarget(target: Target) {
     : "@duskmoon-dev/components";
 }
 
+function relativeSource(filePath: string | null) {
+  return filePath ? path.relative(repoRoot, filePath) : null;
+}
+
 function colorDemoBody(target: Target, name: string) {
   switch (target.id) {
     case "alert":
@@ -1417,6 +1446,7 @@ function colorDemoFor(
     title: target.id === "auto-complete" ? "Colors and matching" : "Colors",
     description: `${name} supports the full semantic color palette: ${semanticColors.join(", ")}.`,
     code: `${componentStyleImport}\n${importLine}\n\n${semanticColorsDeclaration()}${options}\n\nexport function ${name}ColorsDemo() {\n  return (${body});\n}`,
+    source: "authored",
   };
 }
 
@@ -1434,6 +1464,7 @@ function demosFor(
         title: "Type usage",
         description: `${name} is a TypeScript-only breakpoint union exported from the root package.`,
         code: `import type { ${name} } from "${importPath}";\n\nconst compact: ${name} = "sm";\nconst desktop: ${name} = "lg";\n\nexport const responsiveBreakpoints: ${name}[] = [compact, desktop];`,
+        source: "type-driven",
       },
     ];
   }
@@ -1457,11 +1488,18 @@ function demosFor(
         title: "Basic usage",
         description: `Import ${name} and the art component stylesheet before rendering the CSS art scene.`,
         code: `import "@duskmoon-dev/art-components/styles.css";\n${importLine}\n\nexport function Example() {\n  return (${usage});\n}`,
+        source: "authored",
+      },
+      {
+        title: "Accessible art",
+        description: `Use ${name} as decorative output by default, or pass accessible labeling when the scene is meaningful.`,
+        code: `import "@duskmoon-dev/art-components/styles.css";\n${importLine}\n\nexport function AccessibleArt() {\n  return (${accessibleArtDemoCode(target, name)});\n}`,
+        source: "authored",
       },
     ];
   }
 
-  const scenarioDemos = scenarios.slice(0, 3).map((scenario) => {
+  const scenarioDemos = scenarios.map((scenario) => {
     const scenarioUsage = demoCode(target, name, api, scenario);
 
     return {
@@ -1474,6 +1512,7 @@ function demosFor(
         .slice(0, 4)
         .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
         .join("")}Demo() {\n  return (${scenarioUsage});\n}`,
+      source: "test-backed",
     };
   });
 
@@ -1483,6 +1522,7 @@ function demosFor(
       title: "Basic usage",
       description: `Import the component stylesheet and ${name} from its package subpath, then render it with the core props.`,
       code: `${componentStyleImport}\n${importLine}\n\nexport function Example() {\n  return (${usage});\n}`,
+      source: "authored",
     },
     ...scenarioDemos,
     {
@@ -1490,6 +1530,7 @@ function demosFor(
       description:
         "Docs previews inherit the DuskMoon data-theme value. Use the header switch to compare light and dark rendering.",
       code: `<div data-theme="sunshine">\n  ${usage}\n</div>\n\n<div data-theme="moonlight">\n  ${usage}\n</div>`,
+      source: "authored",
     },
   ];
 }
@@ -1502,16 +1543,29 @@ function toDoc(target: Target): ComponentDoc {
   const scenarios =
     target.manualScenarios?.map(sentenceCase) ?? scenariosFromTest(testFile);
   const keyProps = keyPropsFromApi(api);
+  const category = categoryFor(target.kind);
+  const pageContent = componentPageContentFor({
+    id: target.id,
+    name,
+    kind: target.kind,
+    category,
+    source: target.source,
+    scenarios,
+    keyProps,
+  });
 
   return {
     ...target,
     title: name,
     route: docsPath(`/components/${target.id}`),
-    category: categoryFor(target.kind),
-    intro: introFor(target, name, scenarios, keyProps),
+    category,
+    intro: pageContent.summary || introFor(target, name, scenarios, keyProps),
+    pageContent,
     importPath: importPathForTarget(target),
     typeFile,
     testFile,
+    apiSource: relativeSource(typeFile),
+    testSource: relativeSource(testFile),
     scenarios,
     keyProps,
     api,

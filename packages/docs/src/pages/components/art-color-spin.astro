@@ -1,0 +1,12 @@
+---
+import ComponentDocPage from "../../components/ComponentDocPage.astro";
+import { getComponentDoc } from "../../lib/component-docs";
+
+const component = getComponentDoc("art-color-spin");
+
+if (!component) {
+  throw new Error("Missing component docs for art-color-spin");
+}
+---
+
+<ComponentDocPage component={component} />

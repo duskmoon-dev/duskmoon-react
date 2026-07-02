@@ -1,0 +1,12 @@
+---
+import ComponentDocPage from "../../components/ComponentDocPage.astro";
+import { getComponentDoc } from "../../lib/component-docs";
+
+const component = getComponentDoc("dm-pagination");
+
+if (!component) {
+  throw new Error("Missing component docs for dm-pagination");
+}
+---
+
+<ComponentDocPage component={component} />
