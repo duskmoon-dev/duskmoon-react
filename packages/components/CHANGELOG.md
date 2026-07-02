@@ -1,5 +1,11 @@
 # @duskmoon-dev/components
 
+## 0.2.1
+
+### Patch Changes
+
+- f610a69: Remove the unused DmProTableInner implementation and package export.
+
 ## 0.2.0
 
 ### Minor Changes
