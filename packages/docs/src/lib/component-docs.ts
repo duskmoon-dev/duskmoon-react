@@ -186,6 +186,39 @@ function humanList(items: string[]) {
   return `${items.slice(0, -1).join(", ")}, and ${items.at(-1)}`;
 }
 
+const semanticColors = [
+  "primary",
+  "secondary",
+  "tertiary",
+  "accent",
+  "neutral",
+  "base",
+  "info",
+  "success",
+  "warning",
+  "error",
+] as const;
+
+const semanticColorComponentIds = new Set([
+  "alert",
+  "auto-complete",
+  "badge",
+  "button",
+  "checkbox",
+  "divider",
+  "progress",
+  "radio",
+  "rate",
+  "slider",
+  "switch",
+  "tag",
+  "timeline",
+]);
+
+function semanticColorsDeclaration() {
+  return `const colors = [\n${semanticColors.map((color) => `  "${color}"`).join(",\n")}\n] as const;`;
+}
+
 function scenarioPhrase(scenarios: string[]) {
   return scenarios
     .slice(0, 3)
@@ -624,17 +657,9 @@ function demoCode(
   }
 
   if (target.id === "alert") {
-    return `<div style={{ display: "grid", gap: 12 }}>
-  {(["filled", "outline", "tonal"] as const).map((appearance) => (
-    <div key={appearance} style={{ display: "grid", gap: 8 }}>
-      {(["info", "success", "warning", "error"] as const).map((color) => (
-        <${name} key={color} color={color} appearance={appearance}>
-          {color} alert
-        </${name}>
-      ))}
-    </div>
-  ))}
-</div>`;
+    return `<${name} color="success" appearance="tonal">
+  Release checks passed.
+</${name}>`;
   }
 
   if (target.id === "auto-complete") {
@@ -1252,6 +1277,149 @@ function importPathForTarget(target: Target) {
     : "@duskmoon-dev/components";
 }
 
+function colorDemoBody(target: Target, name: string) {
+  switch (target.id) {
+    case "alert":
+      return `<div style={{ display: "grid", gap: 12 }}>
+  {(["filled", "outline", "tonal"] as const).map((appearance) => (
+    <section key={appearance} style={{ display: "grid", gap: 8 }}>
+      {colors.map((color) => (
+        <${name} key={color} color={color} appearance={appearance}>
+          {color} alert
+        </${name}>
+      ))}
+    </section>
+  ))}
+</div>`;
+    case "auto-complete":
+      return `<div style={{ display: "grid", gap: 10 }}>
+  {colors.map((color) => (
+    <${name}
+      key={color}
+      color={color}
+      placeholder={\`\${color} search\`}
+      options={options}
+    />
+  ))}
+</div>`;
+    case "badge":
+      return `<div style={{ display: "grid", gap: 12 }}>
+  {(["filled", "outline", "tonal", "ghost"] as const).map((appearance) => (
+    <div key={appearance} style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+      {colors.map((color) => (
+        <${name} key={color} color={color} appearance={appearance}>
+          {color}
+        </${name}>
+      ))}
+    </div>
+  ))}
+</div>`;
+    case "button":
+      return `<div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+  {colors.map((color) => (
+    <${name} key={color} color={color}>
+      {color}
+    </${name}>
+  ))}
+</div>`;
+    case "checkbox":
+      return `<div style={{ display: "grid", gap: 8 }}>
+  {colors.map((color) => (
+    <${name} key={color} color={color} defaultChecked>
+      {color}
+    </${name}>
+  ))}
+</div>`;
+    case "divider":
+      return `<div style={{ display: "grid", gap: 14 }}>
+  {colors.map((color) => (
+    <${name} key={color} color={color}>
+      {color}
+    </${name}>
+  ))}
+</div>`;
+    case "progress":
+      return `<div style={{ display: "grid", gap: 10 }}>
+  {colors.map((color) => (
+    <${name} key={color} color={color} percent={72} showInfo />
+  ))}
+</div>`;
+    case "radio":
+      return `<div style={{ display: "grid", gap: 8 }}>
+  {colors.map((color) => (
+    <${name} key={color} name={\`radio-\${color}\`} color={color} defaultChecked>
+      {color}
+    </${name}>
+  ))}
+</div>`;
+    case "rate":
+      return `<div style={{ display: "grid", gap: 10 }}>
+  {colors.map((color) => (
+    <${name} key={color} color={color} defaultValue={4} readOnly />
+  ))}
+</div>`;
+    case "slider":
+      return `<div style={{ display: "grid", gap: 14 }}>
+  {colors.map((color) => (
+    <${name} key={color} color={color} defaultValue={64} tooltip={{ open: true }} />
+  ))}
+</div>`;
+    case "switch":
+      return `<div style={{ display: "grid", gap: 10 }}>
+  {colors.map((color) => (
+    <${name}
+      key={color}
+      color={color}
+      defaultChecked
+      checkedChildren={color.slice(0, 2)}
+      unCheckedChildren={color.slice(0, 2)}
+    />
+  ))}
+</div>`;
+    case "tag":
+      return `<div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+  {colors.map((color) => (
+    <${name} key={color} color={color}>
+      {color}
+    </${name}>
+  ))}
+</div>`;
+    case "timeline":
+      return `<${name}
+  items={colors.map((color, index) => ({
+    label: \`\${index + 1}\`,
+    children: \`\${color} milestone\`,
+    color
+  }))}
+/>`;
+    default:
+      return null;
+  }
+}
+
+function colorDemoFor(
+  target: Target,
+  name: string,
+  importLine: string,
+  componentStyleImport: string,
+): DemoSpec | null {
+  if (!semanticColorComponentIds.has(target.id)) return null;
+
+  const body = colorDemoBody(target, name);
+  if (!body) return null;
+
+  const options =
+    target.id === "auto-complete"
+      ? `\n\nconst options = [\n  { value: "react", label: "React" },\n  { value: "remix", label: "Remix" },\n  { value: "astro", label: "Astro" },\n  { value: "solid", label: "Solid" }\n];`
+      : "";
+
+  return {
+    title: target.id === "auto-complete" ? "Colors and matching" : "Colors",
+    description: `${name} supports the full semantic color palette: ${semanticColors.join(", ")}.`,
+    code: `${componentStyleImport}\n${importLine}\n\n${semanticColorsDeclaration()}${options}\n\nexport function ${name}ColorsDemo() {\n  return (${body});\n}`,
+  };
+}
+
 function demosFor(
   target: Target,
   name: string,
@@ -1276,6 +1444,12 @@ function demosFor(
       ? `// Internal component: packages/components/src/components/${target.id}`
       : `import { ${name} } from "${importPath}";`;
   const componentStyleImport = `import "@duskmoon-dev/components/styles.css";`;
+  const colorDemo = colorDemoFor(
+    target,
+    name,
+    importLine,
+    componentStyleImport,
+  );
 
   if (target.kind === "art-component") {
     return [
@@ -1283,26 +1457,6 @@ function demosFor(
         title: "Basic usage",
         description: `Import ${name} and the art component stylesheet before rendering the CSS art scene.`,
         code: `import "@duskmoon-dev/art-components/styles.css";\n${importLine}\n\nexport function Example() {\n  return (${usage});\n}`,
-      },
-    ];
-  }
-
-  if (target.id === "alert") {
-    return [
-      {
-        title: "Colors and appearances",
-        description: `${name} supports info, success, warning, and error colors across filled, outline, and tonal appearances.`,
-        code: `${componentStyleImport}\n${importLine}\n\nexport function AlertDemo() {\n  return (${usage});\n}`,
-      },
-    ];
-  }
-
-  if (target.id === "auto-complete") {
-    return [
-      {
-        title: "Colors and matching",
-        description: `${name} supports primary, secondary, tertiary, info, success, warning, and error colors with filtered options, async matches, and clearable values.`,
-        code: `${componentStyleImport}\nimport React from "react";\n${importLine}\n\nconst colors = [\n  "primary",\n  "secondary",\n  "tertiary",\n  "info",\n  "success",\n  "warning",\n  "error"\n] as const;\n\nconst options = [\n  { value: "react", label: "React" },\n  { value: "remix", label: "Remix" },\n  { value: "astro", label: "Astro" },\n  { value: "solid", label: "Solid" }\n];\n\nconst remoteOptions = [\n  { value: "apollo", label: "Apollo" },\n  { value: "atlas", label: "Atlas" },\n  { value: "matrix", label: "Matrix" },\n  { value: "mercury", label: "Mercury" }\n];\n\nfunction matchOptions(query: string) {\n  const normalized = query.trim().toLowerCase();\n  return remoteOptions.filter((option) =>\n    option.label.toLowerCase().includes(normalized)\n  );\n}\n\nfunction AsyncMatchDemo() {\n  const [value, setValue] = React.useState("ma");\n  const [matches, setMatches] = React.useState(() => matchOptions("ma"));\n\n  React.useEffect(() => {\n    const timeout = window.setTimeout(() => {\n      setMatches(matchOptions(value));\n    }, 300);\n\n    return () => window.clearTimeout(timeout);\n  }, [value]);\n\n  return (\n    <${name}\n      open\n      value={value}\n      color="info"\n      options={matches}\n      notFoundContent="No matches"\n      onChange={setValue}\n      onSearch={setValue}\n    />\n  );\n}\n\nexport function AutoCompleteDemo() {\n  return (\n    <div style={{ display: "grid", gap: 16 }}>\n      <div style={{ display: "grid", gap: 10 }}>\n        {colors.map((color) => (\n          <${name}\n            key={color}\n            color={color}\n            placeholder={\`\${color} search\`}\n            options={options}\n          />\n        ))}\n      </div>\n\n      <${name}\n        defaultOpen\n        defaultValue="re"\n        color="primary"\n        options={options}\n      />\n\n      <AsyncMatchDemo />\n\n      <${name}\n        allowClear\n        defaultValue="astro"\n        color="success"\n        options={options}\n      />\n    </div>\n  );\n}`,
       },
     ];
   }
@@ -1324,6 +1478,7 @@ function demosFor(
   });
 
   return [
+    ...(colorDemo ? [colorDemo] : []),
     {
       title: "Basic usage",
       description: `Import the component stylesheet and ${name} from its package subpath, then render it with the core props.`,

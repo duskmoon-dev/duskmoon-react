@@ -12,17 +12,37 @@ interface DemoRendererProps {
 type ParsedProps = Record<string, unknown>;
 
 const typeOnlyInfrastructureExports = new Set(["breakpoint"]);
-const alertColors = ["info", "success", "warning", "error"] as const;
-const alertAppearances = ["filled", "outline", "tonal"] as const;
-const autoCompleteColors = [
+const semanticColors = [
   "primary",
   "secondary",
   "tertiary",
+  "accent",
+  "neutral",
+  "base",
   "info",
   "success",
   "warning",
   "error",
 ] as const;
+const alertColors = semanticColors;
+const alertAppearances = ["filled", "outline", "tonal"] as const;
+const badgeAppearances = ["filled", "outline", "tonal", "ghost"] as const;
+const autoCompleteColors = semanticColors;
+const semanticColorComponentIds = new Set([
+  "alert",
+  "auto-complete",
+  "badge",
+  "button",
+  "checkbox",
+  "divider",
+  "progress",
+  "radio",
+  "rate",
+  "slider",
+  "switch",
+  "tag",
+  "timeline",
+]);
 const autoCompleteOptions = [
   { value: "react", label: "React" },
   { value: "remix", label: "Remix" },
@@ -246,6 +266,178 @@ function AutoCompletePreview() {
       </section>
     </div>
   );
+}
+
+function colorDemoLabel(label: string) {
+  return (
+    <span
+      style={{
+        color: "var(--dm-muted)",
+        fontSize: "12px",
+        fontWeight: 700,
+        textTransform: "capitalize",
+      }}
+    >
+      {label}
+    </span>
+  );
+}
+
+function colorDemoGrid(
+  children: (color: (typeof semanticColors)[number]) => React.ReactNode,
+  minWidth = 160,
+) {
+  return (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: `repeat(auto-fit, minmax(${minWidth}px, 1fr))`,
+        gap: "10px",
+        width: "100%",
+      }}
+    >
+      {semanticColors.map((color) => (
+        <div key={color} style={{ display: "grid", gap: "6px" }}>
+          {colorDemoLabel(color)}
+          {children(color)}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function SemanticColorPreview({ componentId }: { componentId: string }) {
+  if (componentId === "alert") {
+    return <AlertPreview />;
+  }
+
+  if (componentId === "auto-complete") {
+    return <AutoCompletePreview />;
+  }
+
+  if (componentId === "badge") {
+    return (
+      <div style={{ display: "grid", gap: "14px", width: "100%" }}>
+        {badgeAppearances.map((appearance) => (
+          <section key={appearance} style={{ display: "grid", gap: "8px" }}>
+            {colorDemoLabel(appearance)}
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+              {semanticColors.map((color) => (
+                <DmComponents.Badge
+                  key={`${appearance}-${color}`}
+                  color={color}
+                  appearance={appearance}
+                >
+                  {color}
+                </DmComponents.Badge>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    );
+  }
+
+  if (componentId === "button") {
+    return colorDemoGrid((color) => (
+      <DmComponents.Button color={color}>{color}</DmComponents.Button>
+    ));
+  }
+
+  if (componentId === "checkbox") {
+    return colorDemoGrid((color) => (
+      <DmComponents.Checkbox color={color} defaultChecked>
+        {color}
+      </DmComponents.Checkbox>
+    ));
+  }
+
+  if (componentId === "divider") {
+    return (
+      <div style={{ display: "grid", gap: "14px", width: "100%" }}>
+        {semanticColors.map((color) => (
+          <DmComponents.Divider key={color} color={color}>
+            {color}
+          </DmComponents.Divider>
+        ))}
+      </div>
+    );
+  }
+
+  if (componentId === "progress") {
+    return colorDemoGrid(
+      (color) => <DmComponents.Progress color={color} percent={72} showInfo />,
+      180,
+    );
+  }
+
+  if (componentId === "radio") {
+    return colorDemoGrid((color) => (
+      <DmComponents.Radio
+        color={color}
+        name={`docs-radio-${color}`}
+        defaultChecked
+      >
+        {color}
+      </DmComponents.Radio>
+    ));
+  }
+
+  if (componentId === "rate") {
+    return colorDemoGrid((color) => (
+      <DmComponents.Rate color={color} defaultValue={4} readOnly />
+    ));
+  }
+
+  if (componentId === "slider") {
+    return colorDemoGrid(
+      (color) => (
+        <DmComponents.Slider
+          color={color}
+          defaultValue={64}
+          tooltip={{ open: true }}
+        />
+      ),
+      220,
+    );
+  }
+
+  if (componentId === "switch") {
+    return colorDemoGrid((color) => (
+      <DmComponents.Switch
+        color={color}
+        defaultChecked
+        checkedChildren={color.slice(0, 2)}
+        unCheckedChildren={color.slice(0, 2)}
+      />
+    ));
+  }
+
+  if (componentId === "tag") {
+    return (
+      <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+        {semanticColors.map((color) => (
+          <DmComponents.Tag key={color} color={color}>
+            {color}
+          </DmComponents.Tag>
+        ))}
+      </div>
+    );
+  }
+
+  if (componentId === "timeline") {
+    return (
+      <DmComponents.Timeline
+        items={semanticColors.map((color, index) => ({
+          label: `${index + 1}`,
+          children: `${color} milestone`,
+          color,
+        }))}
+      />
+    );
+  }
+
+  return null;
 }
 
 function GridPreview() {
@@ -747,6 +939,7 @@ function parseJsx(code: string, componentName: string) {
 export default function DemoRenderer({
   componentId,
   componentName,
+  demoTitle,
   demoCode,
 }: DemoRendererProps) {
   // Handle special case utility/hook/types
@@ -910,12 +1103,12 @@ export default function DemoRenderer({
     );
   }
 
-  if (componentId === "alert") {
-    return <AlertPreview />;
-  }
-
-  if (componentId === "auto-complete") {
-    return <AutoCompletePreview />;
+  if (
+    demoTitle.toLowerCase().includes("color") &&
+    semanticColorComponentIds.has(componentId)
+  ) {
+    const colorPreview = <SemanticColorPreview componentId={componentId} />;
+    if (colorPreview) return colorPreview;
   }
 
   if (componentId === "grid") {
