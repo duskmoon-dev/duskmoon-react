@@ -1,5 +1,13 @@
 # @duskmoon-dev/docs
 
+## 0.3.0
+
+### Patch Changes
+
+- Updated dependencies [2d789e7]
+  - @duskmoon-dev/components@0.3.0
+  - @duskmoon-dev/art-components@0.3.0
+
 ## 0.2.1
 
 ### Patch Changes
