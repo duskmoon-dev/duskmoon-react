@@ -5441,4 +5441,506 @@
     color: var(--color-secondary);
     background: var(--color-secondary-container);
   }
+
+  /* WORKAROUND(upstream): duskmoon-dev/duskmoonui#44 supplies missing semantic component color classes. */
+  :is(
+      .btn-accent,
+      .badge-accent,
+      .chip-accent,
+      .alert-accent,
+      .autocomplete-accent,
+      .checkbox-accent,
+      .radio-accent,
+      .slider-accent,
+      .switch-accent,
+      .rating-accent,
+      .progress-accent,
+      .timeline-marker-accent,
+      .divider-accent
+    ) {
+    --dm-color: var(--color-accent);
+    --dm-color-solid: var(--color-accent);
+    --dm-color-content: var(--color-accent-content);
+    --dm-color-solid-content: var(--color-accent-content);
+    --dm-color-container: color-mix(
+      in oklch,
+      var(--color-accent) 18%,
+      var(--color-surface)
+    );
+    --dm-color-on-container: var(--color-accent);
+  }
+
+  :is(
+      .btn-neutral,
+      .badge-neutral,
+      .chip-neutral,
+      .alert-neutral,
+      .autocomplete-neutral,
+      .checkbox-neutral,
+      .radio-neutral,
+      .slider-neutral,
+      .switch-neutral,
+      .rating-neutral,
+      .progress-neutral,
+      .timeline-marker-neutral,
+      .divider-neutral
+    ) {
+    --dm-color: var(--color-neutral);
+    --dm-color-solid: var(--color-neutral);
+    --dm-color-content: var(--color-neutral-content);
+    --dm-color-solid-content: var(--color-neutral-content);
+    --dm-color-container: color-mix(
+      in oklch,
+      var(--color-neutral) 16%,
+      var(--color-surface)
+    );
+    --dm-color-on-container: var(--color-neutral);
+  }
+
+  :is(
+      .btn-base,
+      .badge-base,
+      .chip-base,
+      .alert-base,
+      .autocomplete-base,
+      .checkbox-base,
+      .radio-base,
+      .slider-base,
+      .switch-base,
+      .rating-base,
+      .progress-base,
+      .timeline-marker-base,
+      .divider-base
+    ) {
+    --dm-color: var(--color-base-content);
+    --dm-color-solid: var(--color-base-300);
+    --dm-color-content: var(--color-base-content);
+    --dm-color-solid-content: var(--color-base-content);
+    --dm-color-container: var(--color-base-200);
+    --dm-color-on-container: var(--color-base-content);
+  }
+
+  .timeline-marker-primary {
+    --dm-color: var(--color-primary);
+    --dm-color-solid: var(--color-primary);
+    --dm-color-content: var(--color-primary-content);
+    --dm-color-solid-content: var(--color-primary-content);
+    --dm-color-container: var(--color-primary-container);
+    --dm-color-on-container: var(--color-on-primary-container);
+  }
+
+  .timeline-marker-secondary {
+    --dm-color: var(--color-secondary);
+    --dm-color-solid: var(--color-secondary);
+    --dm-color-content: var(--color-secondary-content);
+    --dm-color-solid-content: var(--color-secondary-content);
+    --dm-color-container: var(--color-secondary-container);
+    --dm-color-on-container: var(--color-on-secondary-container);
+  }
+
+  .timeline-marker-tertiary {
+    --dm-color: var(--color-tertiary);
+    --dm-color-solid: var(--color-tertiary);
+    --dm-color-content: var(--color-tertiary-content);
+    --dm-color-solid-content: var(--color-tertiary-content);
+    --dm-color-container: var(--color-tertiary-container);
+    --dm-color-on-container: var(--color-on-tertiary-container);
+  }
+
+  .timeline-marker-info {
+    --dm-color: var(--color-info);
+    --dm-color-solid: var(--color-info);
+    --dm-color-content: var(--color-info-content);
+    --dm-color-solid-content: var(--color-info-content);
+    --dm-color-container: var(--color-info-container);
+    --dm-color-on-container: var(--color-on-info-container);
+  }
+
+  .timeline-marker-success {
+    --dm-color: var(--color-success);
+    --dm-color-solid: var(--color-success);
+    --dm-color-content: var(--color-success-content);
+    --dm-color-solid-content: var(--color-success-content);
+    --dm-color-container: var(--color-success-container);
+    --dm-color-on-container: var(--color-on-success-container);
+  }
+
+  .timeline-marker-warning {
+    --dm-color: var(--color-warning);
+    --dm-color-solid: var(--color-warning);
+    --dm-color-content: var(--color-warning-content);
+    --dm-color-solid-content: var(--color-warning-content);
+    --dm-color-container: var(--color-warning-container);
+    --dm-color-on-container: var(--color-on-warning-container);
+  }
+
+  .timeline-marker-error {
+    --dm-color: var(--color-error);
+    --dm-color-solid: var(--color-error);
+    --dm-color-content: var(--color-error-content);
+    --dm-color-solid-content: var(--color-error-content);
+    --dm-color-container: var(--color-error-container);
+    --dm-color-on-container: var(--color-on-error-container);
+  }
+
+  :is(.btn-accent, .btn-neutral, .btn-base) {
+    --btn-text-color: var(--dm-color-solid-content);
+    color: var(--btn-text-color);
+    background-color: var(--dm-color-solid);
+    border-color: var(--dm-color-solid);
+  }
+
+  :is(.btn-accent, .btn-neutral, .btn-base):hover {
+    background-color: color-mix(in oklch, var(--dm-color-solid), black 10%);
+    border-color: color-mix(in oklch, var(--dm-color-solid), black 10%);
+    filter: none;
+  }
+
+  :is(.btn-outline, .btn-outlined):is(.btn-accent, .btn-neutral, .btn-base) {
+    --btn-text-color: var(--dm-color);
+    color: var(--btn-text-color);
+    background-color: transparent;
+    border-color: currentcolor;
+  }
+
+  :is(.btn-outline, .btn-outlined):is(
+      .btn-accent,
+      .btn-neutral,
+      .btn-base
+    ):hover {
+    --btn-text-color: var(--dm-color-solid-content);
+    color: var(--btn-text-color);
+    background-color: var(--dm-color-solid);
+  }
+
+  :is(.btn-ghost, .btn-text):is(.btn-accent, .btn-neutral, .btn-base) {
+    --btn-text-color: var(--dm-color);
+    color: var(--btn-text-color);
+    background-color: transparent;
+    border-color: transparent;
+  }
+
+  :is(.btn-ghost, .btn-text):is(
+      .btn-accent,
+      .btn-neutral,
+      .btn-base
+    ):hover,
+  .btn-tonal:is(.btn-accent, .btn-neutral, .btn-base) {
+    --btn-text-color: var(--dm-color-on-container);
+    color: var(--btn-text-color);
+    background-color: var(--dm-color-container);
+    border-color: transparent;
+  }
+
+  :is(.badge-accent, .badge-neutral, .badge-base) {
+    color: var(--dm-color-solid-content);
+    background-color: var(--dm-color-solid);
+  }
+
+  .badge-outline:is(.badge-accent, .badge-neutral, .badge-base) {
+    color: var(--dm-color);
+    background-color: transparent;
+    border-color: currentcolor;
+  }
+
+  .badge-tonal {
+    color: var(--color-on-primary-container);
+    background-color: var(--color-primary-container);
+  }
+
+  .badge-tonal.badge-primary {
+    color: var(--color-on-primary-container);
+    background-color: var(--color-primary-container);
+  }
+
+  .badge-tonal.badge-secondary {
+    color: var(--color-on-secondary-container);
+    background-color: var(--color-secondary-container);
+  }
+
+  .badge-tonal.badge-tertiary {
+    color: var(--color-on-tertiary-container);
+    background-color: var(--color-tertiary-container);
+  }
+
+  .badge-tonal.badge-info {
+    color: var(--color-on-info-container);
+    background-color: var(--color-info-container);
+  }
+
+  .badge-tonal.badge-success {
+    color: var(--color-on-success-container);
+    background-color: var(--color-success-container);
+  }
+
+  .badge-tonal.badge-warning {
+    color: var(--color-on-warning-container);
+    background-color: var(--color-warning-container);
+  }
+
+  .badge-tonal.badge-error {
+    color: var(--color-on-error-container);
+    background-color: var(--color-error-container);
+  }
+
+  .badge-tonal:is(.badge-accent, .badge-neutral, .badge-base) {
+    color: var(--dm-color-on-container);
+    background-color: var(--dm-color-container);
+  }
+
+  .badge-ghost {
+    background-color: transparent;
+    border-color: transparent;
+  }
+
+  .badge-ghost.badge-primary {
+    color: var(--color-primary);
+  }
+
+  .badge-ghost.badge-secondary {
+    color: var(--color-secondary);
+  }
+
+  .badge-ghost.badge-tertiary {
+    color: var(--color-tertiary);
+  }
+
+  .badge-ghost.badge-info {
+    color: var(--color-info);
+  }
+
+  .badge-ghost.badge-success {
+    color: var(--color-success);
+  }
+
+  .badge-ghost.badge-warning {
+    color: var(--color-warning);
+  }
+
+  .badge-ghost.badge-error {
+    color: var(--color-error);
+  }
+
+  .badge-ghost:is(.badge-accent, .badge-neutral, .badge-base) {
+    color: var(--dm-color);
+  }
+
+  :is(.chip-accent, .chip-neutral, .chip-base) {
+    color: var(--dm-color-solid-content);
+    background-color: var(--dm-color-solid);
+    border-color: var(--dm-color-solid);
+  }
+
+  :is(.chip-accent, .chip-neutral, .chip-base):hover {
+    background-color: color-mix(in oklch, var(--dm-color-solid), black 10%);
+  }
+
+  :is(.chip-outlined, .chip-ghost):is(
+      .chip-accent,
+      .chip-neutral,
+      .chip-base
+    ) {
+    color: var(--dm-color);
+    background-color: transparent;
+  }
+
+  :is(.chip-outlined, .chip-ghost):is(
+      .chip-accent,
+      .chip-neutral,
+      .chip-base
+    ):hover,
+  .chip-tonal:is(.chip-accent, .chip-neutral, .chip-base) {
+    color: var(--dm-color-on-container);
+    background-color: var(--dm-color-container);
+  }
+
+  :is(.alert-accent, .alert-neutral, .alert-base) {
+    color: var(--dm-color-on-container);
+    background-color: var(--dm-color-container);
+    border-color: transparent;
+  }
+
+  .alert-filled:is(.alert-accent, .alert-neutral, .alert-base) {
+    color: var(--dm-color-solid-content);
+    background-color: var(--dm-color-solid);
+    border-color: var(--dm-color-solid);
+  }
+
+  .alert-outlined:is(.alert-accent, .alert-neutral, .alert-base) {
+    color: var(--dm-color);
+    background-color: transparent;
+    border-color: currentcolor;
+  }
+
+  :is(.autocomplete-accent, .autocomplete-neutral, .autocomplete-base)
+    .autocomplete-input {
+    color: var(--dm-color);
+  }
+
+  :is(.autocomplete-accent, .autocomplete-neutral, .autocomplete-base)
+    .autocomplete-input:focus {
+    box-shadow: 0 0 0 3px
+      color-mix(in oklch, var(--dm-color) 10%, transparent);
+  }
+
+  :is(.checkbox-accent, .checkbox-neutral, .checkbox-base) {
+    --checkbox-color: var(--dm-color-solid);
+  }
+
+  :is(.checkbox-accent, .checkbox-neutral, .checkbox-base):checked::before,
+  :is(
+      .checkbox-accent,
+      .checkbox-neutral,
+      .checkbox-base
+    ):indeterminate::before {
+    border-color: var(--dm-color-solid-content);
+  }
+
+  :is(.radio-accent, .radio-neutral, .radio-base) {
+    --radio-color: var(--dm-color-solid);
+  }
+
+  :is(.progress-accent, .progress-neutral, .progress-base) .progress-bar {
+    background-color: var(--dm-color-solid);
+  }
+
+  :is(.rating-accent, .rating-neutral, .rating-base) .rating-item.filled {
+    color: var(--dm-color-solid);
+  }
+
+  :is(.rating-accent, .rating-neutral, .rating-base):not(.rating-readonly):hover
+    .rating-item {
+    color: var(--dm-color-solid);
+  }
+
+  :is(.rating-accent, .rating-neutral, .rating-base) .rating-item:focus-visible {
+    box-shadow: 0 0 0 3px
+      color-mix(in oklch, var(--dm-color-solid) 20%, transparent);
+  }
+
+  :is(.switch-accent, .switch-neutral, .switch-base) {
+    --switch-color: var(--dm-color-solid);
+    --switch-content-color: var(--dm-color-solid-content);
+    --switch-container-color: var(--dm-color-container);
+  }
+
+  :is(.slider-accent, .slider-neutral, .slider-base)
+    :is(.slider-track-filled, .slider-thumb) {
+    background-color: var(--dm-color-solid);
+  }
+
+  :is(.slider-accent, .slider-neutral, .slider-base) .slider-mark-active {
+    background-color: var(--dm-color-solid-content);
+  }
+
+  :is(.slider-accent, .slider-neutral, .slider-base)
+    .slider-thumb:is(:hover, :focus-visible) {
+    box-shadow:
+      0 0 0 8px var(--dm-color-container),
+      0 2px 4px color-mix(in srgb, var(--color-shadow) 20%, transparent);
+  }
+
+  :is(.slider-accent, .slider-neutral, .slider-base) .slider-thumb-label {
+    color: var(--dm-color-solid-content);
+    background-color: var(--dm-color-solid);
+  }
+
+  :is(.slider-accent, .slider-neutral, .slider-base) .slider-thumb-label::after {
+    border-top-color: var(--dm-color-solid);
+  }
+
+  :is(.slider-accent, .slider-neutral, .slider-base).slider-vertical
+    .slider-thumb-label::after {
+    border-right-color: var(--dm-color-solid);
+  }
+
+  :is(
+      .timeline-marker-primary,
+      .timeline-marker-secondary,
+      .timeline-marker-tertiary,
+      .timeline-marker-accent,
+      .timeline-marker-neutral,
+      .timeline-marker-base,
+      .timeline-marker-info,
+      .timeline-marker-success,
+      .timeline-marker-warning,
+      .timeline-marker-error
+    ) {
+    color: var(--dm-color-on-container);
+    background-color: var(--dm-color-container);
+    border-color: var(--dm-color-solid);
+  }
+
+  :is(
+      .timeline-marker-primary,
+      .timeline-marker-secondary,
+      .timeline-marker-tertiary,
+      .timeline-marker-accent,
+      .timeline-marker-neutral,
+      .timeline-marker-base,
+      .timeline-marker-info,
+      .timeline-marker-success,
+      .timeline-marker-warning,
+      .timeline-marker-error
+    ):is(.timeline-marker-icon),
+  :is(
+      .timeline-marker-primary,
+      .timeline-marker-secondary,
+      .timeline-marker-tertiary,
+      .timeline-marker-accent,
+      .timeline-marker-neutral,
+      .timeline-marker-base,
+      .timeline-marker-info,
+      .timeline-marker-success,
+      .timeline-marker-warning,
+      .timeline-marker-error
+    ) :is(.timeline-marker-icon, .timeline-marker-dot) {
+    color: var(--dm-color-solid-content);
+    background-color: var(--dm-color-solid);
+  }
+
+  :is(.divider-accent, .divider-neutral, .divider-base),
+  :is(.divider-accent, .divider-neutral, .divider-base).divider-text {
+    color: var(--dm-color);
+  }
+
+  :is(.divider-accent, .divider-neutral, .divider-base)::before,
+  :is(.divider-accent, .divider-neutral, .divider-base)::after {
+    background-color: var(--dm-color);
+  }
+
+  :is(
+      .divider-accent,
+      .divider-neutral,
+      .divider-base
+    ).divider-dashed::before,
+  :is(
+      .divider-accent,
+      .divider-neutral,
+      .divider-base
+    ).divider-dashed::after {
+    background-image: linear-gradient(
+      to right,
+      var(--dm-color) 50%,
+      transparent 50%
+    );
+  }
+
+  :is(
+      .divider-accent,
+      .divider-neutral,
+      .divider-base
+    ).divider-dashed.divider-vertical::before,
+  :is(
+      .divider-accent,
+      .divider-neutral,
+      .divider-base
+    ).divider-dashed.divider-vertical::after {
+    background-image: linear-gradient(
+      to bottom,
+      var(--dm-color) 50%,
+      transparent 50%
+    );
+  }
+
 }

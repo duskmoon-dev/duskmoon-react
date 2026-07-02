@@ -1,6 +1,16 @@
 import type { ChangeEvent, ComponentProps, ReactNode } from "react";
 
-export type CheckboxColor = "primary" | "secondary" | "tertiary";
+export type CheckboxColor =
+  | "primary"
+  | "secondary"
+  | "tertiary"
+  | "accent"
+  | "neutral"
+  | "base"
+  | "info"
+  | "success"
+  | "warning"
+  | "error";
 
 export type CheckboxSize = "sm" | "md" | "lg";
 

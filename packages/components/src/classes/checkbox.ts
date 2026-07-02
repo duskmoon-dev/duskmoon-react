@@ -16,6 +16,13 @@ export const checkboxColorClasses: Record<CheckboxColor, string> = {
   primary: "checkbox-primary",
   secondary: "checkbox-secondary",
   tertiary: "checkbox-tertiary",
+  accent: "checkbox-accent",
+  neutral: "checkbox-neutral",
+  base: "checkbox-base",
+  info: "checkbox-info",
+  success: "checkbox-success",
+  warning: "checkbox-warning",
+  error: "checkbox-error",
 };
 
 export const checkboxSizeClasses: Record<CheckboxSize, string> = {

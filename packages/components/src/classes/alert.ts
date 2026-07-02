@@ -8,6 +8,12 @@ import type {
 export const alertBaseClass = "alert";
 
 export const alertColorClasses: Record<AlertColor, string> = {
+  primary: "alert-primary",
+  secondary: "alert-secondary",
+  tertiary: "alert-tertiary",
+  accent: "alert-accent",
+  neutral: "alert-neutral",
+  base: "alert-base",
   info: "alert-info",
   success: "alert-success",
   warning: "alert-warning",

@@ -7,7 +7,17 @@ export type DividerVariant = "solid" | "dashed" | "dotted";
 
 export type DividerThickness = "thin" | "medium" | "thick";
 
-export type DividerColor = "neutral" | "primary" | "secondary" | "tertiary";
+export type DividerColor =
+  | "primary"
+  | "secondary"
+  | "tertiary"
+  | "accent"
+  | "neutral"
+  | "base"
+  | "info"
+  | "success"
+  | "warning"
+  | "error";
 
 export type DividerSpacing = "normal" | "compact" | "comfortable" | "spacious";
 

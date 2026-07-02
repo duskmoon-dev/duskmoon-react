@@ -8,13 +8,16 @@ import type {
 export const progressBaseClass = "progress";
 
 export const progressColorClasses: Record<ProgressColor, string> = {
-  primary: "",
+  primary: "progress-primary",
   secondary: "progress-secondary",
   tertiary: "progress-tertiary",
-  success: "progress-success",
-  error: "progress-error",
-  warning: "progress-warning",
+  accent: "progress-accent",
+  neutral: "progress-neutral",
+  base: "progress-base",
   info: "progress-info",
+  success: "progress-success",
+  warning: "progress-warning",
+  error: "progress-error",
 };
 
 export const progressSizeClasses: Record<ProgressSize, string> = {

@@ -5,10 +5,13 @@ export type ProgressColor =
   | "primary"
   | "secondary"
   | "tertiary"
+  | "accent"
+  | "neutral"
+  | "base"
+  | "info"
   | "success"
-  | "error"
   | "warning"
-  | "info";
+  | "error";
 
 export type ProgressSize = "sm" | "md" | "lg" | "xl";
 

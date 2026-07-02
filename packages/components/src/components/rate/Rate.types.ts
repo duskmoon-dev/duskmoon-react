@@ -2,7 +2,17 @@ import type { ComponentProps, ReactNode } from "react";
 
 export type RateSize = "sm" | "md" | "lg" | "xl";
 
-export type RateColor = "primary" | "secondary" | "tertiary" | "warning";
+export type RateColor =
+  | "primary"
+  | "secondary"
+  | "tertiary"
+  | "accent"
+  | "neutral"
+  | "base"
+  | "info"
+  | "success"
+  | "warning"
+  | "error";
 
 export interface RateCharacterRenderInfo {
   index: number;

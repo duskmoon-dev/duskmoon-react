@@ -11,6 +11,10 @@ export const badgeBaseClass = "badge";
 export const badgeColorClasses: Record<BadgeColor, string> = {
   primary: "badge-primary",
   secondary: "badge-secondary",
+  tertiary: "badge-tertiary",
+  accent: "badge-accent",
+  neutral: "badge-neutral",
+  base: "badge-base",
   info: "badge-info",
   success: "badge-success",
   warning: "badge-warning",

@@ -15,6 +15,13 @@ export const radioColorClasses: Record<RadioColor, string> = {
   primary: "radio-primary",
   secondary: "radio-secondary",
   tertiary: "radio-tertiary",
+  accent: "radio-accent",
+  neutral: "radio-neutral",
+  base: "radio-base",
+  info: "radio-info",
+  success: "radio-success",
+  warning: "radio-warning",
+  error: "radio-error",
 };
 
 export const radioSizeClasses: Record<RadioSize, string> = {

@@ -4,6 +4,10 @@ import type { ComponentProps } from "react";
 export type BadgeColor =
   | "primary"
   | "secondary"
+  | "tertiary"
+  | "accent"
+  | "neutral"
+  | "base"
   | "info"
   | "success"
   | "warning"

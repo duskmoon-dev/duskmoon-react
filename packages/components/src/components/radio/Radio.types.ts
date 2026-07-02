@@ -1,6 +1,16 @@
 import type { ChangeEvent, ComponentProps, ReactNode } from "react";
 
-export type RadioColor = "primary" | "secondary" | "tertiary";
+export type RadioColor =
+  | "primary"
+  | "secondary"
+  | "tertiary"
+  | "accent"
+  | "neutral"
+  | "base"
+  | "info"
+  | "success"
+  | "warning"
+  | "error";
 
 export type RadioSize = "sm" | "md" | "lg";
 

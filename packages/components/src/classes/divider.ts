@@ -28,10 +28,16 @@ export const dividerThicknessClasses: Record<DividerThickness, string> = {
 };
 
 export const dividerColorClasses: Record<DividerColor, string> = {
-  neutral: "",
   primary: "divider-primary",
   secondary: "divider-secondary",
   tertiary: "divider-tertiary",
+  accent: "divider-accent",
+  neutral: "divider-neutral",
+  base: "divider-base",
+  info: "divider-info",
+  success: "divider-success",
+  warning: "divider-warning",
+  error: "divider-error",
 };
 
 export const dividerSpacingClasses: Record<DividerSpacing, string> = {

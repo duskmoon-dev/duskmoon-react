@@ -14,10 +14,14 @@ export const tagColorClasses: Record<TagColor, string> = {
   primary: "chip-primary",
   secondary: "chip-secondary",
   tertiary: "chip-tertiary",
-  success: "chip-success",
-  error: "chip-error",
-  warning: "chip-warning",
+  // WORKAROUND(upstream): duskmoon-dev/duskmoonui#44 supplements these core classes in local CSS.
+  accent: "chip-accent",
+  neutral: "chip-neutral",
+  base: "chip-base",
   info: "chip-info",
+  success: "chip-success",
+  warning: "chip-warning",
+  error: "chip-error",
 };
 
 export function getTagClasses({
