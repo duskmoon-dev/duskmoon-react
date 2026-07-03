@@ -136,16 +136,19 @@ const apiTypeCount = component.api.length;
           {
             component.demos.map((demo) => (
               <div class="demo-card">
-                <div
-                  class={`demo-preview ${component.category === "CSS Art" ? "art-demo-preview" : ""}`}
-                >
-                  <DemoRenderer
-                    componentId={component.id}
-                    componentName={component.title}
-                    demoTitle={demo.title}
-                    demoCode={demo.code}
-                    client:load
-                  />
+                <div class="demo-panel demo-panel-preview">
+                  <div class="demo-panel-label">Preview</div>
+                  <div
+                    class={`demo-preview ${component.category === "CSS Art" ? "art-demo-preview" : ""}`}
+                  >
+                    <DemoRenderer
+                      componentId={component.id}
+                      componentName={component.title}
+                      demoTitle={demo.title}
+                      demoCode={demo.code}
+                      client:load
+                    />
+                  </div>
                 </div>
                 <div class="demo-body">
                   <div class="demo-heading">
@@ -155,7 +158,10 @@ const apiTypeCount = component.api.length;
                     </span>
                   </div>
                   <p>{demo.description}</p>
-                  <pre><code>{demo.code}</code></pre>
+                  <div class="demo-panel demo-panel-source">
+                    <div class="demo-panel-label">Source</div>
+                    <pre><code>{demo.code}</code></pre>
+                  </div>
                 </div>
               </div>
             ))

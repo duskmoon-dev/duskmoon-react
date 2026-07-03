@@ -672,6 +672,84 @@ function ModalPreview() {
   );
 }
 
+function AffixPreview() {
+  const scrollTargetRef = React.useRef<HTMLDivElement>(null);
+  const getScrollTarget = React.useCallback(() => scrollTargetRef.current, []);
+
+  return (
+    <div
+      style={{
+        display: "grid",
+        gap: "12px",
+        width: "100%",
+      }}
+    >
+      <div
+        ref={scrollTargetRef}
+        style={{
+          display: "grid",
+          gridTemplateColumns: "minmax(0, 1fr) auto",
+          gap: "12px",
+          alignItems: "start",
+          width: "min(560px, 100%)",
+          minHeight: "148px",
+          border: "1px solid var(--dm-border)",
+          borderRadius: "8px",
+          background: "var(--dm-surface)",
+          padding: "14px",
+        }}
+      >
+        <div style={{ display: "grid", gap: "8px" }}>
+          {["Header", "Content", "Details"].map((label) => (
+            <div
+              key={label}
+              style={{
+                height: "28px",
+                borderRadius: "6px",
+                background:
+                  label === "Content"
+                    ? "var(--color-primary-container)"
+                    : "var(--dm-surface-soft)",
+                color:
+                  label === "Content"
+                    ? "var(--color-primary)"
+                    : "var(--dm-muted)",
+                display: "grid",
+                placeItems: "center",
+                fontSize: "12px",
+                fontWeight: 700,
+              }}
+            >
+              {label}
+            </div>
+          ))}
+        </div>
+        <DmComponents.Affix offsetTop={12} target={getScrollTarget}>
+          <div
+            style={{
+              minWidth: "126px",
+              border: "1px solid var(--color-primary)",
+              borderRadius: "8px",
+              background: "var(--color-primary-container)",
+              color: "var(--color-primary)",
+              padding: "10px 12px",
+              fontSize: "13px",
+              fontWeight: 800,
+              textAlign: "center",
+              boxShadow: "var(--shadow-sm)",
+            }}
+          >
+            Sticky action
+          </div>
+        </DmComponents.Affix>
+      </div>
+      <span style={{ color: "var(--dm-muted)", fontSize: "13px" }}>
+        Scroll-bound content with a visible affixed action target.
+      </span>
+    </div>
+  );
+}
+
 function parsePropsText(propsText: string): ParsedProps {
   const props: ParsedProps = {};
   let i = 0;
@@ -1141,6 +1219,10 @@ export default function DemoRenderer({
 
   if (componentId === "modal") {
     return <ModalPreview />;
+  }
+
+  if (componentId === "affix") {
+    return <AffixPreview />;
   }
 
   if (componentId === "carousel") {
