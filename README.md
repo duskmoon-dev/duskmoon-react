@@ -8,15 +8,19 @@
 [![npm @duskmoon-dev/components](https://img.shields.io/npm/v/%40duskmoon-dev%2Fcomponents?label=%40duskmoon-dev%2Fcomponents)](https://www.npmjs.com/package/@duskmoon-dev/components)
 [![npm @duskmoon-dev/art-components](https://img.shields.io/npm/v/%40duskmoon-dev%2Fart-components?label=%40duskmoon-dev%2Fart-components)](https://www.npmjs.com/package/@duskmoon-dev/art-components)
 
-A modern, high-quality React component library built with TypeScript and optimized for performance.
+A modern React component library for DuskMoon, built with TypeScript, Bun, and
+React 19.
 
 ## Project Structure
 
 This is a monorepo powered by [Bun](https://bun.sh/).
 
-- `packages/components`: The core component library (`@duskmoon-dev/components`).
-- `packages/art-components`: React wrappers for CSS art illustrations (`@duskmoon-dev/art-components`).
-- `packages/docs`: Documentation for the library (`@duskmoon-dev/docs`).
+- `packages/components`: React components, class helpers, theme helpers, and
+  package exports for `@duskmoon-dev/components`.
+- `packages/art-components`: React wrappers for `@duskmoon-dev/css-art`
+  illustrations, published as `@duskmoon-dev/art-components`.
+- `packages/docs`: Astro documentation site for components, infrastructure
+  exports, and art wrappers.
 - `examples/nextjs-15-smoke`: A smoke test example using Next.js 15.
 
 ## Getting Started
@@ -44,7 +48,7 @@ bun run build:all
 Run tests:
 
 ```bash
-bun test
+bun run test
 ```
 
 Lint the codebase:
@@ -59,12 +63,25 @@ Format the codebase:
 bun run format
 ```
 
-## Usage
-
-To use the components in your project, install the `@duskmoon-dev/components` package and its peer dependencies.
+Run component parity checks:
 
 ```bash
-bun add @duskmoon-dev/components react react-dom
+bun run parity:components
+```
+
+Start the docs site:
+
+```bash
+bun run dev
+```
+
+## Usage
+
+To use the React components in your project, install
+`@duskmoon-dev/components` and its peer dependencies.
+
+```bash
+bun add @duskmoon-dev/components @duskmoon-dev/core react react-dom
 ```
 
 Example usage:
@@ -78,17 +95,32 @@ function App() {
 }
 ```
 
-## Version Contract
+To use the CSS art wrappers, install the wrapper package and the external CSS
+art package:
 
-This project adheres to a strict version contract between our React UI components and the core CSS design system:
+```bash
+bun add @duskmoon-dev/art-components @duskmoon-dev/css-art react react-dom
+```
 
-| `@duskmoon-dev/components` version | `@duskmoon-dev/core` version |
-| :--------------------------------- | :--------------------------- |
-| `0.x.x` (pre-release)              | `0.x.x` (pre-release)        |
-| `1.x.x`                            | `1.x.x`                      |
-| `2.x.x`                            | `2.x.x`                      |
+```tsx
+import "@duskmoon-dev/art-components/styles.css";
+import { ArtMoon } from "@duskmoon-dev/art-components";
 
-_Note: Minor and patch versions are compatible within the same major version. Breaking changes in the core design system will be accompanied by a major version bump in the components library to maintain sync._
+function ArtDemo() {
+  return <ArtMoon crescent glow size="lg" />;
+}
+```
+
+## Package Compatibility
+
+| Package                        | Current version | Key peer dependencies                              |
+| :----------------------------- | :-------------- | :------------------------------------------------- |
+| `@duskmoon-dev/components`     | `0.3.0`         | `@duskmoon-dev/core >=1.16.1`, `react >=19.0.0`    |
+| `@duskmoon-dev/art-components` | `0.3.0`         | `@duskmoon-dev/css-art >=1.17.0`, `react >=19.0.0` |
+
+The React packages are versioned from this monorepo. The CSS design system and
+CSS art packages are external peer dependencies and should be kept compatible
+with the ranges declared in each package's `package.json`.
 
 ## License
 

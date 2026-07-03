@@ -2,6 +2,11 @@
 
 Generated from parity manifest and component-api-inventory.
 
+Snapshot date: 2026-07-03
+
+Current parity status from `bun run parity:components`: 105/105 public targets
+complete.
+
 Source of record: `packages/components/scripts/parity/component-api.manifest.json`
 
 ## Public Targets

@@ -1,15 +1,20 @@
 # Component API Inventory
 
-Snapshot date: 2026-05-25
+Snapshot date: 2026-07-03
 
 This inventory defines what `@duskmoon-dev/components` should implement in this
 repo.
 
+Current parity status: 105/105 public targets complete, split across 71
+standard components, 21 DuskMoon workflow components, and 13 infrastructure
+exports.
+
 ## Implementation Policy
 
 - Implement components in this repo as DuskMoon React components.
-- Use `@duskmoon-dev/design` generated tokens as the token source of truth.
-- Use DuskMoon UI/Core class recipes where they exist.
+- Use DuskMoon design tokens through `@duskmoon-dev/core` and the local CSS
+  variable/class contract.
+- Use DuskMoon Core class recipes where they exist.
 - Implement DuskMoon-owned component files instead of source-porting another
   package.
 - Keep DuskMoon workflow component names prefixed with `Dm`.
