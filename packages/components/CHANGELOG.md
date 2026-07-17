@@ -1,5 +1,11 @@
 # @duskmoon-dev/components
 
+## 0.3.1
+
+### Patch Changes
+
+- 911572b: Add a Markdown component with GFM rendering, color chips, front matter modes, and soft line breaks enabled by default.
+
 ## 0.3.0
 
 ### Minor Changes
