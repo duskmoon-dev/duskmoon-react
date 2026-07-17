@@ -1181,6 +1181,36 @@ export default function DemoRenderer({
     );
   }
 
+  if (componentId === "markdown") {
+    return (
+      <DmComponents.Markdown
+        markdown={`---
+title: DmMarkdown feature showcase
+tags:
+  - react
+  - markdown
+accent: '#4C86FC'
+---
+# DmMarkdown rendering
+
+DuskMoon Markdown renders source text in the shared typography scope.
+This line demonstrates \`breaks={true}\`.
+
+## Inline color chips
+
+| Color | Inline code |
+| --- | --- |
+| Brand blue | \`#4C86FC\` |
+| White | \`#fff\` |
+| Black | \`#000\` |
+| Transparent red | \`#FF000080\` |`}
+        colorChips
+        frontMatter="render"
+        breaks={true}
+      />
+    );
+  }
+
   if (
     demoTitle.toLowerCase().includes("color") &&
     semanticColorComponentIds.has(componentId)

@@ -9,7 +9,13 @@ async function runBuild() {
     root: "./src",
     target: "browser",
     format: "esm",
-    external: ["react", "react-dom"],
+    external: [
+      "react",
+      "react-dom",
+      "react-markdown",
+      "remark-breaks",
+      "remark-gfm",
+    ],
     minify: false,
     naming: "[dir]/[name].[ext]",
     define: {
@@ -112,6 +118,7 @@ async function runBuild() {
       "src/components/input-number/index.ts",
       "src/components/layout/index.ts",
       "src/components/list/index.ts",
+      "src/components/markdown/index.ts",
       "src/components/mentions/index.ts",
       "src/components/menu/index.ts",
       "src/components/message/index.ts",

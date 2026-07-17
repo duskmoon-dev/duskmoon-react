@@ -383,6 +383,10 @@
       "import": "./dist/components/typography/index.js",
       "types": "./dist/components/typography/index.d.ts"
     },
+    "./markdown": {
+      "import": "./dist/components/markdown/index.js",
+      "types": "./dist/components/markdown/index.d.ts"
+    },
     "./upload": {
       "import": "./dist/components/upload/index.js",
       "types": "./dist/components/upload/index.d.ts"
@@ -445,7 +449,10 @@
     "react-dom": ">=19.0.0"
   },
   "dependencies": {
-    "clsx": "^2.1.1"
+    "clsx": "^2.1.1",
+    "react-markdown": "^10.1.0",
+    "remark-breaks": "^4.0.0",
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
     "@duskmoon-dev/core": "1.17.0",

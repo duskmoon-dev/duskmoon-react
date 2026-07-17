@@ -1458,6 +1458,52 @@ function demosFor(
 ): DemoSpec[] {
   const importPath = importPathForTarget(target);
 
+  if (target.id === "markdown") {
+    return [
+      {
+        title: "Front matter, color chips, and line breaks",
+        description:
+          "Render YAML front matter, preview inline CSS colors, and explicitly enable soft line breaks.",
+        code: `import "@duskmoon-dev/components/styles.css";
+import { Markdown } from "${importPath}";
+
+const source = \`---
+title: DmMarkdown feature showcase
+tags:
+  - react
+  - markdown
+accent: '#4C86FC'
+---
+# DmMarkdown rendering
+
+DuskMoon Markdown renders source text in the shared typography scope.
+This line demonstrates \\\`breaks={true}\\\`.
+
+## Inline color chips
+
+| Color | Inline code |
+| --- | --- |
+| Brand blue | \\\`#4C86FC\\\` |
+| White | \\\`#fff\\\` |
+| Black | \\\`#000\\\` |
+| Transparent red | \\\`#FF000080\\\` |
+\`;
+
+export function MarkdownFeaturesDemo() {
+  return (
+    <Markdown
+      markdown={source}
+      colorChips
+      frontMatter="render"
+      breaks={true}
+    />
+  );
+}`,
+        source: "authored",
+      },
+    ];
+  }
+
   if (target.id === "breakpoint") {
     return [
       {

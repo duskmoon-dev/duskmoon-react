@@ -64,6 +64,7 @@ const displayIds = new Set([
   "divider",
   "empty",
   "image",
+  "markdown",
   "progress",
   "qr-code",
   "result",
@@ -195,6 +196,8 @@ const purposeById: Record<string, string> = {
   layout:
     "composes application shells with header, sider, content, and footer regions.",
   list: "renders repeated records with item metadata and secondary actions.",
+  markdown:
+    "renders Markdown content with GitHub-flavored syntax, front matter, color previews, and configurable soft line breaks.",
   mentions: "captures text input with mention suggestions.",
   menu: "renders structured navigation or action lists.",
   message: "shows transient global feedback after user actions.",

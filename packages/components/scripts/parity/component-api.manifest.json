@@ -760,6 +760,17 @@
       "status": "implemented"
     },
     {
+      "id": "markdown",
+      "kind": "standard-component",
+      "source": "yew-duskmoon-ui",
+      "exportName": "Markdown",
+      "directory": "markdown",
+      "rootExport": "./components/markdown",
+      "packageSubpath": "./markdown",
+      "buildEntrypoint": "src/components/markdown/index.ts",
+      "status": "implemented"
+    },
+    {
       "id": "typography",
       "kind": "standard-component",
       "source": "duskmoon",

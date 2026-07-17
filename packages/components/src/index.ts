@@ -153,5 +153,6 @@ export * from "./components/transfer";
 export * from "./components/tree";
 export * from "./components/tree-select";
 export * from "./components/typography";
+export * from "./components/markdown";
 export * from "./components/upload";
 export * from "./components/watermark";
