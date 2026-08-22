@@ -129,8 +129,6 @@ function AutoCompletePreview() {
   const [asyncLoading, setAsyncLoading] = React.useState(false);
 
   React.useEffect(() => {
-    setAsyncLoading(true);
-
     const timeout = window.setTimeout(() => {
       setAsyncOptions(
         filterAutoCompleteOptions(asyncValue, asyncAutoCompleteOptions),
@@ -140,6 +138,11 @@ function AutoCompletePreview() {
 
     return () => window.clearTimeout(timeout);
   }, [asyncValue]);
+
+  const updateAsyncValue = (value: string) => {
+    setAsyncLoading(true);
+    setAsyncValue(value);
+  };
 
   return (
     <div
@@ -238,8 +241,8 @@ function AutoCompletePreview() {
             options={asyncOptions}
             notFoundContent={asyncLoading ? "Loading matches" : "No matches"}
             placeholder="Remote source"
-            onChange={(value) => setAsyncValue(value)}
-            onSearch={(value) => setAsyncValue(value)}
+            onChange={updateAsyncValue}
+            onSearch={updateAsyncValue}
           />
         </div>
 
