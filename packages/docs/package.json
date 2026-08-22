@@ -9,14 +9,14 @@
     "preview": "astro preview"
   },
   "dependencies": {
-    "@astrojs/react": "5.0.7",
+    "@astrojs/react": "6.0.2",
     "@duskmoon-dev/art-components": "workspace:*",
     "@duskmoon-dev/components": "workspace:*",
-    "@duskmoon-dev/core": "1.17.0",
-    "@types/react": "19.2.17",
-    "@types/react-dom": "^19.2.3",
-    "astro": "6.4.5",
-    "react": "19.2.7",
-    "react-dom": "19.2.7"
+    "@duskmoon-dev/core": "1.17.2",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
+    "astro": "7.1.6",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
   }
 }
