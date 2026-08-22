@@ -27,8 +27,7 @@ export interface AutoCompleteOptionType {
 }
 
 export type AutoCompleteFilterOption =
-  | boolean
-  | ((inputValue: string, option: AutoCompleteOptionType) => boolean);
+  boolean | ((inputValue: string, option: AutoCompleteOptionType) => boolean);
 
 export interface AutoCompleteProps extends Omit<
   ComponentProps<"div">,

@@ -67,8 +67,7 @@ export interface DmTreeCommonProps<
       ) => ReactNode);
   customTopToolbar?: ReactNode;
   itemToolbar?:
-    | DmTreeItemAction<TDataNode>[]
-    | ((item: TDataNode) => ReactNode);
+    DmTreeItemAction<TDataNode>[] | ((item: TDataNode) => ReactNode);
   itemToolbarAlwaysShow?: boolean;
   beforeSelect?: (
     selectItem: TDataNode,

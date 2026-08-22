@@ -418,8 +418,7 @@ const FormItem = forwardRef<HTMLDivElement, FormItemProps>(
       const value = context.form.getFieldValue(name);
       const childProps = children.props as Record<string, unknown>;
       const originalTrigger = childProps[trigger] as
-        | ((...args: unknown[]) => void)
-        | undefined;
+        ((...args: unknown[]) => void) | undefined;
 
       return React.cloneElement(children, {
         [valuePropName]:

@@ -9,9 +9,7 @@ import type {
 export type TreeSelectValue = string | number;
 export type TreeSelectRawValue = TreeSelectValue | TreeSelectValue[];
 export type TreeSelectCheckedStrategy =
-  | "SHOW_ALL"
-  | "SHOW_PARENT"
-  | "SHOW_CHILD";
+  "SHOW_ALL" | "SHOW_PARENT" | "SHOW_CHILD";
 
 export interface TreeSelectDataNode {
   value?: TreeSelectValue;

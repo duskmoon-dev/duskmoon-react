@@ -3,12 +3,7 @@ import type { CSSProperties, ReactNode } from "react";
 export type NotificationType = "success" | "info" | "warning" | "error";
 
 export type NotificationPlacement =
-  | "top"
-  | "topLeft"
-  | "topRight"
-  | "bottom"
-  | "bottomLeft"
-  | "bottomRight";
+  "top" | "topLeft" | "topRight" | "bottom" | "bottomLeft" | "bottomRight";
 
 export type NotificationKey = string | number;
 

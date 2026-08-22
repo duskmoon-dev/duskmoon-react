@@ -14,11 +14,7 @@ export type ButtonColor =
   | "error";
 
 export type ButtonAppearance =
-  | "filled"
-  | "outline"
-  | "tonal"
-  | "ghost"
-  | "text";
+  "filled" | "outline" | "tonal" | "ghost" | "text";
 
 export type ButtonShape = "rect" | "circle" | "square";
 

@@ -380,7 +380,8 @@
   .cascader:focus-visible {
     outline: none;
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px color-mix(in oklch, var(--color-primary) 22%, transparent);
+    box-shadow: 0 0 0 3px
+      color-mix(in oklch, var(--color-primary) 22%, transparent);
   }
 
   .cascader-sm {
@@ -506,7 +507,8 @@
   .cascader-search:focus {
     outline: none;
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px color-mix(in oklch, var(--color-primary) 18%, transparent);
+    box-shadow: 0 0 0 3px
+      color-mix(in oklch, var(--color-primary) 18%, transparent);
   }
 
   .cascader-menus {
@@ -1698,7 +1700,11 @@
     place-items: center;
     padding: 12px;
     color: var(--color-on-surface-variant);
-    background: color-mix(in srgb, var(--color-surface-container-highest) 86%, transparent);
+    background: color-mix(
+      in srgb,
+      var(--color-surface-container-highest) 86%,
+      transparent
+    );
     font-size: 0.875rem;
     text-align: center;
   }
@@ -1718,7 +1724,8 @@
     color: var(--color-on-primary);
     cursor: zoom-in;
     opacity: 0;
-    transition: opacity var(--motion-duration-fast) var(--motion-easing-standard);
+    transition: opacity var(--motion-duration-fast)
+      var(--motion-easing-standard);
   }
 
   .image-preview:hover .image-preview-mask,
@@ -1734,7 +1741,8 @@
     max-height: 88vh;
     transform: translate(-50%, -50%);
     border-radius: 10px;
-    box-shadow: 0 20px 60px color-mix(in srgb, var(--color-scrim) 45%, transparent);
+    box-shadow: 0 20px 60px
+      color-mix(in srgb, var(--color-scrim) 45%, transparent);
   }
 
   .image-preview-group {
@@ -1952,7 +1960,11 @@
     margin-top: auto;
     padding: 4px 8px;
     color: var(--color-on-secondary-container);
-    background: color-mix(in oklch, var(--color-secondary-container) 84%, var(--color-surface));
+    background: color-mix(
+      in oklch,
+      var(--color-secondary-container) 84%,
+      var(--color-surface)
+    );
     border: 1px solid var(--color-outline-variant);
     border-radius: 6px;
     cursor: pointer;
@@ -2680,9 +2692,11 @@
   }
 
   .datepicker .datepicker-input[type="date"]::-webkit-calendar-picker-indicator,
-  .datepicker .datepicker-input[type="month"]::-webkit-calendar-picker-indicator,
+  .datepicker
+    .datepicker-input[type="month"]::-webkit-calendar-picker-indicator,
   .datepicker .datepicker-input[type="week"]::-webkit-calendar-picker-indicator,
-  .datepicker .datepicker-input[type="time"]::-webkit-calendar-picker-indicator {
+  .datepicker
+    .datepicker-input[type="time"]::-webkit-calendar-picker-indicator {
     display: none;
     -webkit-appearance: none;
   }
@@ -3367,11 +3381,7 @@
     color: var(--result-color);
     font-size: 1.875rem;
     font-weight: 800;
-    background-color: color-mix(
-      in oklch,
-      var(--result-color) 12%,
-      transparent
-    );
+    background-color: color-mix(in oklch, var(--result-color) 12%, transparent);
     border-radius: var(--radius-full);
   }
 
@@ -3721,7 +3731,11 @@
     place-items: center;
     width: auto;
     height: auto;
-    background-color: color-mix(in oklch, var(--color-surface) 78%, transparent);
+    background-color: color-mix(
+      in oklch,
+      var(--color-surface) 78%,
+      transparent
+    );
   }
 
   @keyframes spin-rotate {
@@ -4133,7 +4147,11 @@
   .table-loading::after {
     position: absolute;
     inset: 0;
-    background-color: color-mix(in oklch, var(--color-surface) 72%, transparent);
+    background-color: color-mix(
+      in oklch,
+      var(--color-surface) 72%,
+      transparent
+    );
     content: "";
   }
 
@@ -5487,20 +5505,20 @@
 
   /* WORKAROUND(upstream): duskmoon-dev/duskmoonui#44 supplies missing semantic component color classes. */
   :is(
-      .btn-accent,
-      .badge-accent,
-      .chip-accent,
-      .alert-accent,
-      .autocomplete-accent,
-      .checkbox-accent,
-      .radio-accent,
-      .slider-accent,
-      .switch-accent,
-      .rating-accent,
-      .progress-accent,
-      .timeline-marker-accent,
-      .divider-accent
-    ) {
+    .btn-accent,
+    .badge-accent,
+    .chip-accent,
+    .alert-accent,
+    .autocomplete-accent,
+    .checkbox-accent,
+    .radio-accent,
+    .slider-accent,
+    .switch-accent,
+    .rating-accent,
+    .progress-accent,
+    .timeline-marker-accent,
+    .divider-accent
+  ) {
     --dm-color: var(--color-accent);
     --dm-color-solid: var(--color-accent);
     --dm-color-content: var(--color-accent-content);
@@ -5514,20 +5532,20 @@
   }
 
   :is(
-      .btn-neutral,
-      .badge-neutral,
-      .chip-neutral,
-      .alert-neutral,
-      .autocomplete-neutral,
-      .checkbox-neutral,
-      .radio-neutral,
-      .slider-neutral,
-      .switch-neutral,
-      .rating-neutral,
-      .progress-neutral,
-      .timeline-marker-neutral,
-      .divider-neutral
-    ) {
+    .btn-neutral,
+    .badge-neutral,
+    .chip-neutral,
+    .alert-neutral,
+    .autocomplete-neutral,
+    .checkbox-neutral,
+    .radio-neutral,
+    .slider-neutral,
+    .switch-neutral,
+    .rating-neutral,
+    .progress-neutral,
+    .timeline-marker-neutral,
+    .divider-neutral
+  ) {
     --dm-color: var(--color-neutral);
     --dm-color-solid: var(--color-neutral);
     --dm-color-content: var(--color-neutral-content);
@@ -5541,20 +5559,20 @@
   }
 
   :is(
-      .btn-base,
-      .badge-base,
-      .chip-base,
-      .alert-base,
-      .autocomplete-base,
-      .checkbox-base,
-      .radio-base,
-      .slider-base,
-      .switch-base,
-      .rating-base,
-      .progress-base,
-      .timeline-marker-base,
-      .divider-base
-    ) {
+    .btn-base,
+    .badge-base,
+    .chip-base,
+    .alert-base,
+    .autocomplete-base,
+    .checkbox-base,
+    .radio-base,
+    .slider-base,
+    .switch-base,
+    .rating-base,
+    .progress-base,
+    .timeline-marker-base,
+    .divider-base
+  ) {
     --dm-color: var(--color-base-content);
     --dm-color-solid: var(--color-base-300);
     --dm-color-content: var(--color-base-content);
@@ -5663,11 +5681,7 @@
     border-color: transparent;
   }
 
-  :is(.btn-ghost, .btn-text):is(
-      .btn-accent,
-      .btn-neutral,
-      .btn-base
-    ):hover,
+  :is(.btn-ghost, .btn-text):is(.btn-accent, .btn-neutral, .btn-base):hover,
   .btn-tonal:is(.btn-accent, .btn-neutral, .btn-base) {
     --btn-text-color: var(--dm-color-on-container);
     color: var(--btn-text-color);
@@ -5778,11 +5792,7 @@
     background-color: color-mix(in oklch, var(--dm-color-solid), black 10%);
   }
 
-  :is(.chip-outlined, .chip-ghost):is(
-      .chip-accent,
-      .chip-neutral,
-      .chip-base
-    ) {
+  :is(.chip-outlined, .chip-ghost):is(.chip-accent, .chip-neutral, .chip-base) {
     color: var(--dm-color);
     background-color: transparent;
   }
@@ -5822,8 +5832,7 @@
 
   :is(.autocomplete-accent, .autocomplete-neutral, .autocomplete-base)
     .autocomplete-input:focus {
-    box-shadow: 0 0 0 3px
-      color-mix(in oklch, var(--dm-color) 10%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in oklch, var(--dm-color) 10%, transparent);
   }
 
   :is(.checkbox-accent, .checkbox-neutral, .checkbox-base) {
@@ -5856,7 +5865,8 @@
     color: var(--dm-color-solid);
   }
 
-  :is(.rating-accent, .rating-neutral, .rating-base) .rating-item:focus-visible {
+  :is(.rating-accent, .rating-neutral, .rating-base)
+    .rating-item:focus-visible {
     box-shadow: 0 0 0 3px
       color-mix(in oklch, var(--dm-color-solid) 20%, transparent);
   }
@@ -5888,7 +5898,8 @@
     background-color: var(--dm-color-solid);
   }
 
-  :is(.slider-accent, .slider-neutral, .slider-base) .slider-thumb-label::after {
+  :is(.slider-accent, .slider-neutral, .slider-base)
+    .slider-thumb-label::after {
     border-top-color: var(--dm-color-solid);
   }
 
@@ -5898,34 +5909,34 @@
   }
 
   :is(
-      .timeline-marker-primary,
-      .timeline-marker-secondary,
-      .timeline-marker-tertiary,
-      .timeline-marker-accent,
-      .timeline-marker-neutral,
-      .timeline-marker-base,
-      .timeline-marker-info,
-      .timeline-marker-success,
-      .timeline-marker-warning,
-      .timeline-marker-error
-    ) {
+    .timeline-marker-primary,
+    .timeline-marker-secondary,
+    .timeline-marker-tertiary,
+    .timeline-marker-accent,
+    .timeline-marker-neutral,
+    .timeline-marker-base,
+    .timeline-marker-info,
+    .timeline-marker-success,
+    .timeline-marker-warning,
+    .timeline-marker-error
+  ) {
     color: var(--dm-color-on-container);
     background-color: var(--dm-color-container);
     border-color: var(--dm-color-solid);
   }
 
   :is(
-      .timeline-marker-primary,
-      .timeline-marker-secondary,
-      .timeline-marker-tertiary,
-      .timeline-marker-accent,
-      .timeline-marker-neutral,
-      .timeline-marker-base,
-      .timeline-marker-info,
-      .timeline-marker-success,
-      .timeline-marker-warning,
-      .timeline-marker-error
-    ):is(.timeline-marker-icon),
+    .timeline-marker-primary,
+    .timeline-marker-secondary,
+    .timeline-marker-tertiary,
+    .timeline-marker-accent,
+    .timeline-marker-neutral,
+    .timeline-marker-base,
+    .timeline-marker-info,
+    .timeline-marker-success,
+    .timeline-marker-warning,
+    .timeline-marker-error
+  ):is(.timeline-marker-icon),
   :is(
       .timeline-marker-primary,
       .timeline-marker-secondary,
@@ -5937,7 +5948,8 @@
       .timeline-marker-success,
       .timeline-marker-warning,
       .timeline-marker-error
-    ) :is(.timeline-marker-icon, .timeline-marker-dot) {
+    )
+    :is(.timeline-marker-icon, .timeline-marker-dot) {
     color: var(--dm-color-solid-content);
     background-color: var(--dm-color-solid);
   }
@@ -5952,16 +5964,8 @@
     background-color: var(--dm-color);
   }
 
-  :is(
-      .divider-accent,
-      .divider-neutral,
-      .divider-base
-    ).divider-dashed::before,
-  :is(
-      .divider-accent,
-      .divider-neutral,
-      .divider-base
-    ).divider-dashed::after {
+  :is(.divider-accent, .divider-neutral, .divider-base).divider-dashed::before,
+  :is(.divider-accent, .divider-neutral, .divider-base).divider-dashed::after {
     background-image: linear-gradient(
       to right,
       var(--dm-color) 50%,
@@ -5985,5 +5989,4 @@
       transparent 50%
     );
   }
-
 }

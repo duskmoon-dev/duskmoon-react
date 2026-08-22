@@ -20,8 +20,7 @@ export interface RateCharacterRenderInfo {
 }
 
 export type RateCharacter =
-  | ReactNode
-  | ((info: RateCharacterRenderInfo) => ReactNode);
+  ReactNode | ((info: RateCharacterRenderInfo) => ReactNode);
 
 export interface RateProps extends Omit<
   ComponentProps<"div">,

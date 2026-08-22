@@ -7,12 +7,7 @@ import type {
 } from "react";
 
 export type DescriptionsSize =
-  | "small"
-  | "middle"
-  | "default"
-  | "sm"
-  | "md"
-  | "lg";
+  "small" | "middle" | "default" | "sm" | "md" | "lg";
 
 export type DescriptionsLayout = "horizontal" | "vertical";
 export type DescriptionsBreakpoint = "xs" | "sm" | "md" | "lg" | "xl" | "xxl";

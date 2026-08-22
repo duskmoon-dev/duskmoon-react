@@ -36,8 +36,7 @@ export interface SelectProps extends Omit<
   defaultValue?: SelectChangeValue;
   disabled?: boolean;
   filterOption?:
-    | boolean
-    | ((inputValue: string, option: SelectOptionType) => boolean);
+    boolean | ((inputValue: string, option: SelectOptionType) => boolean);
   loading?: boolean;
   mode?: SelectMode;
   onChange?: (

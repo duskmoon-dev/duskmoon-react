@@ -21,8 +21,7 @@ export interface MentionsProps extends Omit<
   children?: ReactNode;
   defaultValue?: string;
   filterOption?:
-    | boolean
-    | ((input: string, option: MentionsOptionType) => boolean);
+    boolean | ((input: string, option: MentionsOptionType) => boolean);
   notFoundContent?: ReactNode;
   onChange?: (value: string) => void;
   onSearch?: (text: string, prefix: string) => void;

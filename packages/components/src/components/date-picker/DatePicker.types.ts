@@ -13,12 +13,7 @@ export type DatePickerRangeValue = [
   DatePickerValue | undefined,
 ];
 export type DatePickerPicker =
-  | "date"
-  | "week"
-  | "month"
-  | "quarter"
-  | "year"
-  | "time";
+  "date" | "week" | "month" | "quarter" | "year" | "time";
 export type DatePickerSize = "sm" | "md" | "lg";
 export type DatePickerStatus = "error" | "success";
 

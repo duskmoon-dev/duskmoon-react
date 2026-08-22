@@ -39,9 +39,7 @@ export interface SliderTooltipConfig {
 }
 
 export type SliderTooltip =
-  | boolean
-  | SliderTooltipFormatter
-  | SliderTooltipConfig;
+  boolean | SliderTooltipFormatter | SliderTooltipConfig;
 
 export interface SliderRangeConfig {
   draggableTrack?: boolean;

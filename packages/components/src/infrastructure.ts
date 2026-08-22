@@ -26,8 +26,7 @@ export const theme = {
 };
 
 let renderOverride:
-  | ((node: unknown, container: Element | DocumentFragment) => void)
-  | undefined;
+  ((node: unknown, container: Element | DocumentFragment) => void) | undefined;
 let primaryColor = "#0065ff";
 let prefixCls = "dm";
 let datePickerLocale: "zh" | "en" = "en";
