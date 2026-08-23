@@ -5,6 +5,7 @@ import { alertColorClasses } from "./classes/alert";
 import { autoCompleteColorClasses } from "./classes/auto-complete";
 import { badgeColorClasses } from "./classes/badge";
 import { buttonColorClasses } from "./classes/button";
+import { chatBubbleColorClasses } from "./classes/chat";
 import { checkboxColorClasses } from "./classes/checkbox";
 import { dividerColorClasses } from "./classes/divider";
 import { progressColorClasses } from "./classes/progress";
@@ -33,6 +34,7 @@ const colorClassMaps = [
   { name: "AutoComplete", classes: autoCompleteColorClasses },
   { name: "Badge", classes: badgeColorClasses },
   { name: "Button", classes: buttonColorClasses },
+  { name: "Chat", classes: chatBubbleColorClasses },
   { name: "Checkbox", classes: checkboxColorClasses },
   { name: "Divider", classes: dividerColorClasses },
   { name: "Progress", classes: progressColorClasses },

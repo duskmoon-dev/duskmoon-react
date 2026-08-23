@@ -212,6 +212,7 @@ const semanticColorComponentIds = new Set([
   "auto-complete",
   "badge",
   "button",
+  "chat",
   "checkbox",
   "divider",
   "progress",
@@ -676,6 +677,31 @@ function demoCode(
   const childText = noChildrenComponents.includes(target.id)
     ? ""
     : `\n  DuskMoon ${titleCase(target.id)}\n`;
+
+  if (target.id === "chat") {
+    return `<${name} aria-live="polite">
+  <${name}.Avatar>
+    <span className="avatar avatar-sm avatar-info">AI</span>
+  </${name}.Avatar>
+  <${name}.Header>Assistant · just now</${name}.Header>
+  <${name}.Reasoning open>
+    <summary>Thinking (2s)</summary>
+    <div>Reviewing the component API before answering.</div>
+  </${name}.Reasoning>
+  <${name}.Tool status="success" open>
+    <${name}.ToolHeader>
+      <span>search_components</span>
+      <${name}.ToolStatus>Done</${name}.ToolStatus>
+    </${name}.ToolHeader>
+    <${name}.ToolCall>{'{"query":"chat"}'}</${name}.ToolCall>
+    <${name}.ToolResult>Found the DuskMoon Chat primitives.</${name}.ToolResult>
+  </${name}.Tool>
+  <${name}.Bubble color="primary" streaming>
+    Chat is ready for React.
+  </${name}.Bubble>
+  <${name}.Footer>Delivered</${name}.Footer>
+</${name}>`;
+  }
 
   if (target.id === "button") {
     return `<${name} color="primary">Save changes</${name}>`;
@@ -1348,6 +1374,14 @@ function colorDemoBody(target: Target, name: string) {
   {colors.map((color) => (
     <${name} key={color} color={color}>
       {color}
+    </${name}>
+  ))}
+</div>`;
+    case "chat":
+      return `<div style={{ display: "grid", gap: 10 }}>
+  {colors.map((color) => (
+    <${name} key={color}>
+      <${name}.Bubble color={color}>{color} response</${name}.Bubble>
     </${name}>
   ))}
 </div>`;

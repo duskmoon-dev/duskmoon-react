@@ -115,7 +115,7 @@ function ArtDemo() {
 
 | Package                        | Current version | Key peer dependencies                              |
 | :----------------------------- | :-------------- | :------------------------------------------------- |
-| `@duskmoon-dev/components`     | `0.3.0`         | `@duskmoon-dev/core >=1.16.1`, `react >=19.0.0`    |
+| `@duskmoon-dev/components`     | `0.3.0`         | `@duskmoon-dev/core >=1.17.0`, `react >=19.0.0`    |
 | `@duskmoon-dev/art-components` | `0.3.0`         | `@duskmoon-dev/css-art >=1.17.0`, `react >=19.0.0` |
 
 The React packages are versioned from this monorepo. The CSS design system and

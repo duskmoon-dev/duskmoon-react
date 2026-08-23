@@ -66,6 +66,7 @@ export type { Breakpoint } from "./components/grid";
 export * from "./components/button";
 export * from "./components/calendar";
 export * from "./components/card";
+export * from "./components/chat";
 export * from "./components/carousel";
 export * from "./components/cascader";
 export * from "./components/badge";

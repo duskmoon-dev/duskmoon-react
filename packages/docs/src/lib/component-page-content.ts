@@ -60,6 +60,7 @@ const displayIds = new Set([
   "avatar",
   "badge",
   "card",
+  "chat",
   "collapse",
   "divider",
   "empty",
@@ -166,6 +167,7 @@ const purposeById: Record<string, string> = {
   calendar:
     "renders date-oriented browsing and selection with month and year modes.",
   card: "groups related content and actions into a small self-contained surface.",
+  chat: "composes conversational turns with message bubbles, reasoning traces, tool calls, and live response states.",
   carousel:
     "cycles through a limited set of panels while keeping one panel in focus.",
   cascader:

@@ -33,6 +33,7 @@ const semanticColorComponentIds = new Set([
   "auto-complete",
   "badge",
   "button",
+  "chat",
   "checkbox",
   "divider",
   "progress",
@@ -347,6 +348,19 @@ function SemanticColorPreview({ componentId }: { componentId: string }) {
     ));
   }
 
+  if (componentId === "chat") {
+    return colorDemoGrid(
+      (color) => (
+        <DmComponents.Chat>
+          <DmComponents.Chat.Bubble color={color}>
+            {color} response
+          </DmComponents.Chat.Bubble>
+        </DmComponents.Chat>
+      ),
+      200,
+    );
+  }
+
   if (componentId === "checkbox") {
     return colorDemoGrid((color) => (
       <DmComponents.Checkbox color={color} defaultChecked>
@@ -441,6 +455,79 @@ function SemanticColorPreview({ componentId }: { componentId: string }) {
   }
 
   return null;
+}
+
+function ChatPreview() {
+  const transcriptStyle: React.CSSProperties = {
+    display: "grid",
+    gap: "14px",
+    width: "min(680px, 100%)",
+  };
+  const payloadStyle: React.CSSProperties = {
+    margin: 0,
+    whiteSpace: "pre-wrap",
+  };
+
+  return (
+    <div style={transcriptStyle} aria-label="Example chat transcript">
+      <DmComponents.Chat aria-live="polite">
+        <DmComponents.Chat.Avatar>
+          <DmComponents.Avatar
+            size="sm"
+            fallback="AI"
+            className="avatar-info"
+          />
+        </DmComponents.Chat.Avatar>
+        <DmComponents.Chat.Header>
+          Assistant · just now
+        </DmComponents.Chat.Header>
+        <DmComponents.Chat.Reasoning open>
+          <summary>Thinking (2s)</summary>
+          <div>Checking the component catalog before replying.</div>
+        </DmComponents.Chat.Reasoning>
+        <DmComponents.Chat.Tool status="success" open>
+          <DmComponents.Chat.ToolHeader>
+            <span>search_components</span>
+            <DmComponents.Chat.ToolStatus>Done</DmComponents.Chat.ToolStatus>
+          </DmComponents.Chat.ToolHeader>
+          <DmComponents.Chat.ToolCall>
+            <pre style={payloadStyle}>{'{"query":"chat"}'}</pre>
+          </DmComponents.Chat.ToolCall>
+          <DmComponents.Chat.ToolResult>
+            <pre style={payloadStyle}>Found the DuskMoon Chat primitives.</pre>
+          </DmComponents.Chat.ToolResult>
+        </DmComponents.Chat.Tool>
+        <DmComponents.Chat.Bubble color="info" streaming>
+          The React chat primitives are ready to compose.
+        </DmComponents.Chat.Bubble>
+        <DmComponents.Chat.Footer>Delivered</DmComponents.Chat.Footer>
+      </DmComponents.Chat>
+
+      <DmComponents.Chat placement="end">
+        <DmComponents.Chat.Avatar>
+          <DmComponents.Avatar size="sm" fallback="You" />
+        </DmComponents.Chat.Avatar>
+        <DmComponents.Chat.Header>You · just now</DmComponents.Chat.Header>
+        <DmComponents.Chat.Bubble color="primary" filled>
+          Show me the live response state.
+        </DmComponents.Chat.Bubble>
+        <DmComponents.Chat.Footer>Sent</DmComponents.Chat.Footer>
+      </DmComponents.Chat>
+
+      <DmComponents.Chat>
+        <DmComponents.Chat.Avatar>
+          <DmComponents.Avatar
+            size="sm"
+            fallback="AI"
+            className="avatar-info"
+          />
+        </DmComponents.Chat.Avatar>
+        <DmComponents.Chat.Bubble>
+          <DmComponents.Chat.Typing />
+        </DmComponents.Chat.Bubble>
+      </DmComponents.Chat>
+    </div>
+  );
 }
 
 function GridPreview() {
@@ -1220,6 +1307,10 @@ This line demonstrates \`breaks={true}\`.
   ) {
     const colorPreview = <SemanticColorPreview componentId={componentId} />;
     if (colorPreview) return colorPreview;
+  }
+
+  if (componentId === "chat") {
+    return <ChatPreview />;
   }
 
   if (componentId === "grid") {

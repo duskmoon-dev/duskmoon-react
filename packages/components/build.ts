@@ -66,6 +66,7 @@ async function runBuild() {
       "src/components/button/index.ts",
       "src/components/calendar/index.ts",
       "src/components/card/index.ts",
+      "src/components/chat/index.ts",
       "src/components/carousel/index.ts",
       "src/components/cascader/index.ts",
       "src/components/badge/index.ts",

@@ -10,6 +10,7 @@ export * from "./breadcrumb";
 export * from "./button";
 export * from "./calendar";
 export * from "./card";
+export * from "./chat";
 export * from "./carousel";
 export * from "./cascader";
 export * from "./checkbox";

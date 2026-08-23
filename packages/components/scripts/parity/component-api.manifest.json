@@ -144,6 +144,17 @@
       "status": "implemented"
     },
     {
+      "id": "chat",
+      "kind": "standard-component",
+      "source": "duskmoon",
+      "exportName": "Chat",
+      "directory": "chat",
+      "rootExport": "./components/chat",
+      "packageSubpath": "./chat",
+      "buildEntrypoint": "src/components/chat/index.ts",
+      "status": "implemented"
+    },
+    {
       "id": "carousel",
       "kind": "standard-component",
       "source": "duskmoon",
