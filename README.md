@@ -1,4 +1,4 @@
-# Duskmoon React
+# DuskMoon React
 
 [![CI](https://github.com/duskmoon-dev/duskmoon-react/actions/workflows/ci.yml/badge.svg)](https://github.com/duskmoon-dev/duskmoon-react/actions/workflows/ci.yml)
 [![Deploy Documentation](https://github.com/duskmoon-dev/duskmoon-react/actions/workflows/docs.yml/badge.svg)](https://github.com/duskmoon-dev/duskmoon-react/actions/workflows/docs.yml)
@@ -8,83 +8,78 @@
 [![npm @duskmoon-dev/components](https://img.shields.io/npm/v/%40duskmoon-dev%2Fcomponents?label=%40duskmoon-dev%2Fcomponents)](https://www.npmjs.com/package/@duskmoon-dev/components)
 [![npm @duskmoon-dev/art-components](https://img.shields.io/npm/v/%40duskmoon-dev%2Fart-components?label=%40duskmoon-dev%2Fart-components)](https://www.npmjs.com/package/@duskmoon-dev/art-components)
 
-A modern React component library for DuskMoon, built with TypeScript, Bun, and
-React 19.
+A React 19+ component library for the DuskMoon design system, built with
+TypeScript and Bun.
 
-## Project Structure
+[Documentation](https://duskmoon-dev.github.io/duskmoon-react/) ·
+[@duskmoon-dev/components](https://www.npmjs.com/package/@duskmoon-dev/components) ·
+[@duskmoon-dev/art-components](https://www.npmjs.com/package/@duskmoon-dev/art-components)
 
-This is a monorepo powered by [Bun](https://bun.sh/).
+## Packages
 
-- `packages/components`: React components, class helpers, theme helpers, and
-  package exports for `@duskmoon-dev/components`.
-- `packages/art-components`: React wrappers for `@duskmoon-dev/css-art`
-  illustrations, published as `@duskmoon-dev/art-components`.
-- `packages/docs`: Astro documentation site for components, infrastructure
-  exports, and art wrappers.
-- `examples/nextjs-15-smoke`: A smoke test example using Next.js 15.
+This Bun monorepo contains two public packages, an Astro documentation site,
+and a framework smoke test.
 
-## Getting Started
+| Workspace                                              | Description                                                                                                                    |
+| :----------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------- |
+| [`packages/components`](packages/components)           | `@duskmoon-dev/components`: 73 standard components, 21 `Dm*` workflow components, theme helpers, class helpers, and utilities. |
+| [`packages/art-components`](packages/art-components)   | `@duskmoon-dev/art-components`: 15 React wrappers for `@duskmoon-dev/css-art` illustrations.                                   |
+| [`packages/docs`](packages/docs)                       | Internal Astro site containing API references, demos, and theme previews; not published to npm.                                |
+| [`examples/nextjs-15-smoke`](examples/nextjs-15-smoke) | Internal Next.js 16 smoke app; not published to npm. The directory name is retained from its Next.js 15 setup.                 |
+
+## Repository Development
 
 ### Prerequisites
 
-- [Bun](https://bun.sh/) installed on your machine.
+- [Bun](https://bun.sh/) installed on your machine. The repository does not pin
+  a Bun version; CI uses the current release.
 
-### Installation
+### Local Setup
 
-Install dependencies for the entire monorepo:
+From the repository root, install dependencies and start the documentation
+site:
 
 ```bash
 bun install
-```
-
-### Development
-
-Build all packages:
-
-```bash
-bun run build:all
-```
-
-Run tests:
-
-```bash
-bun run test
-```
-
-Lint the codebase:
-
-```bash
-bun run lint
-```
-
-Format the codebase:
-
-```bash
-bun run format
-```
-
-Run component parity checks:
-
-```bash
-bun run parity:components
-```
-
-Start the docs site:
-
-```bash
 bun run dev
+```
+
+The local documentation server listens at <http://localhost:4334>.
+
+### Development Commands
+
+| Command                                                 | Purpose                                                                             |
+| :------------------------------------------------------ | :---------------------------------------------------------------------------------- |
+| `bun run dev`                                           | Start the Astro documentation site on port 4334.                                    |
+| `bun run build`                                         | Build `@duskmoon-dev/components` only.                                              |
+| `bun run --filter "@duskmoon-dev/art-components" build` | Build `@duskmoon-dev/art-components` only.                                          |
+| `bun run build:all`                                     | Build every workspace, including the docs and Next.js smoke app.                    |
+| `bun run test`                                          | Run both public-package unit-test suites; this does not run Playwright smoke tests. |
+| `bun x playwright test`                                 | Run the Playwright smoke and accessibility test.                                    |
+| `bun run typecheck`                                     | Type-check every workspace that defines a `typecheck` script.                       |
+| `bun run lint`                                          | Run ESLint across the repository.                                                   |
+| `bun run format:check`                                  | Check formatting without changing files.                                            |
+| `bun run format`                                        | Format supported files with Prettier.                                               |
+| `bun run parity:components`                             | Verify component APIs against package exports and build entries.                    |
+
+Install the Playwright browser once before running its smoke test:
+
+```bash
+bun x playwright install chromium
 ```
 
 ## Usage
 
-To use the React components in your project, install
-`@duskmoon-dev/components` and its peer dependencies.
+### Components
+
+Install the component package and its peer dependencies:
 
 ```bash
 bun add @duskmoon-dev/components @duskmoon-dev/core react react-dom
 ```
 
-Example usage:
+Import the package stylesheet once in your application, then import a
+component from its individual subpath:
 
 ```tsx
 import "@duskmoon-dev/components/styles.css";
@@ -95,8 +90,12 @@ function App() {
 }
 ```
 
-To use the CSS art wrappers, install the wrapper package and the external CSS
-art package:
+Root imports are also supported, for example
+`import { Button, DmTable, ThemeProvider } from "@duskmoon-dev/components"`.
+
+### CSS Art Wrappers
+
+Install the wrapper package and its peer dependencies:
 
 ```bash
 bun add @duskmoon-dev/art-components @duskmoon-dev/css-art react react-dom
@@ -113,15 +112,12 @@ function ArtDemo() {
 
 ## Package Compatibility
 
-| Package                        | Current version | Key peer dependencies                              |
-| :----------------------------- | :-------------- | :------------------------------------------------- |
-| `@duskmoon-dev/components`     | `0.3.0`         | `@duskmoon-dev/core >=1.17.0`, `react >=19.0.0`    |
-| `@duskmoon-dev/art-components` | `0.3.0`         | `@duskmoon-dev/css-art >=1.17.0`, `react >=19.0.0` |
+| Package                        | Required peers                                                           |
+| :----------------------------- | :----------------------------------------------------------------------- |
+| `@duskmoon-dev/components`     | `@duskmoon-dev/core >=1.17.0`, `react >=19.0.0`, `react-dom >=19.0.0`    |
+| `@duskmoon-dev/art-components` | `@duskmoon-dev/css-art >=1.17.0`, `react >=19.0.0`, `react-dom >=19.0.0` |
 
-The React packages are versioned from this monorepo. The CSS design system and
-CSS art packages are external peer dependencies and should be kept compatible
-with the ranges declared in each package's `package.json`.
-
-## License
-
-MIT
+The npm badges above show the current published versions. The React packages are
+versioned together from this monorepo. The CSS design system and CSS art
+packages are external peer dependencies and should be kept compatible with the
+ranges declared in each package's `package.json`.
