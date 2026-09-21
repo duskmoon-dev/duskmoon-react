@@ -1,3 +1,7 @@
+name: cmd-update-project-docs
+disable-model-invocation: true
+description: Update project docs and skills
+---
 # Update Project Documentation
 
 Refresh the existing project documentation and package-usage skills for this
