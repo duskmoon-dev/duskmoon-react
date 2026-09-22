@@ -45,7 +45,7 @@
       "name": "@duskmoon-dev/art-components",
       "version": "0.3.1",
       "devDependencies": {
-        "@duskmoon-dev/css-art": "1.17.2",
+        "@duskmoon-dev/css-art": "1.19.9",
         "@testing-library/react": "16.3.2",
         "@types/react": "19.2.18",
         "@types/react-dom": "19.2.4",
@@ -67,7 +67,7 @@
         "remark-gfm": "^4.0.1",
       },
       "devDependencies": {
-        "@duskmoon-dev/core": "1.17.2",
+        "@duskmoon-dev/core": "1.19.9",
         "@testing-library/react": "16.3.2",
         "@types/react": "19.2.18",
         "@types/react-dom": "19.2.4",
@@ -86,7 +86,7 @@
         "@astrojs/react": "6.0.2",
         "@duskmoon-dev/art-components": "workspace:*",
         "@duskmoon-dev/components": "workspace:*",
-        "@duskmoon-dev/core": "1.17.2",
+        "@duskmoon-dev/core": "1.19.9",
         "@types/react": "19.2.18",
         "@types/react-dom": "19.2.4",
         "astro": "7.1.6",
@@ -232,9 +232,9 @@
 
     "@duskmoon-dev/components": ["@duskmoon-dev/components@workspace:packages/components"],
 
-    "@duskmoon-dev/core": ["@duskmoon-dev/core@1.17.2", "https://npm.gsmlg.dev/@duskmoon-dev/core/-/core-1.17.2.tgz", { "peerDependencies": { "tailwindcss": "^4.0.0" } }, "sha512-hehS/PdF/sT8b9YpDjf6UNHqBAxt/WvadFzIQucmamJAw4smenhja00bPj3/HvN6piPH5fLrmA4eJlUICY79Lw=="],
+    "@duskmoon-dev/core": ["@duskmoon-dev/core@1.19.9", "", { "peerDependencies": { "tailwindcss": "^4.0.0" } }, "sha512-2SyrspWSPy/iUQe5iAHSWpPQCBfXyCwO+Qbz8tup7u2zWW+GyqskrhPSSVfSD6RdJLQzxAZOE37DnyXC2R7Clw=="],
 
-    "@duskmoon-dev/css-art": ["@duskmoon-dev/css-art@1.17.2", "https://npm.gsmlg.dev/@duskmoon-dev/css-art/-/css-art-1.17.2.tgz", {}, "sha512-nw2oE/2ZLx1nu8n47GmRpPfHfB8arzmxDqtXkRZOFG1uexo4b7lBOhXQ8N8Qr6ODuphtail85Fv4AaGPMCkMwA=="],
+    "@duskmoon-dev/css-art": ["@duskmoon-dev/css-art@1.19.9", "", {}, "sha512-uVuyrete+nQIor53daKST3q+wVSCJTFKAFqbuPcReXsDSmAPpm6KWDhN5WoTHRHEtuerDJR60GjKJXhZYBDIMA=="],
 
     "@duskmoon-dev/docs": ["@duskmoon-dev/docs@workspace:packages/docs"],
 
