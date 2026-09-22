@@ -1,5 +1,12 @@
 # @duskmoon-dev/components
 
+## 0.4.0
+
+### Minor Changes
+
+- 5e6d33e: Add compound React chat primitives for message bubbles, reasoning, tool calls,
+  and live typing or streaming states.
+
 ## 0.3.1
 
 ### Patch Changes
