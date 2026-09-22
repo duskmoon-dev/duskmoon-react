@@ -1,0 +1,134 @@
+name: First Publish to npm
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: "Public package path (for example, packages/components)"
+        required: true
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}-${{ inputs.package }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  first-publish:
+    name: First Publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: oven-sh/setup-bun@v2
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Check versions and packages
+        run: |
+          bun run release:check-versions
+          bun run test
+          bun run typecheck
+
+      - name: Build packages
+        run: bun run build:all
+
+      - name: Validate selected package
+        id: package
+        env:
+          PACKAGE_PATH: ${{ inputs.package }}
+        run: |
+          node <<'NODE'
+          const fs = require("node:fs");
+          const path = require("node:path");
+
+          const packagePath = process.env.PACKAGE_PATH;
+          if (!/^packages\/[a-z0-9-]+$/.test(packagePath)) {
+            throw new Error("Select a direct child of packages/.");
+          }
+
+          const manifestPath = path.join(packagePath, "package.json");
+          const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+          if (manifest.private || !manifest.name?.startsWith("@duskmoon-dev/") || manifest.publishConfig?.access !== "public") {
+            throw new Error("Only public @duskmoon-dev packages can be published.");
+          }
+          if (!manifest.version || !fs.existsSync(path.join(packagePath, "dist"))) {
+            throw new Error("The selected package needs a version and built dist/.");
+          }
+          for (const field of ["dependencies", "devDependencies", "peerDependencies", "optionalDependencies"]) {
+            if (Object.values(manifest[field] ?? {}).some((value) => value.startsWith("workspace:"))) {
+              throw new Error(`Resolve ${field} workspace dependencies before publishing.`);
+            }
+          }
+
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `path=${packagePath}\nname=${manifest.name}\nversion=${manifest.version}\n`);
+          console.log(`Selected ${manifest.name}@${manifest.version} from ${packagePath}`);
+          NODE
+
+      - name: Check npm registry
+        id: registry
+        env:
+          PACKAGE_NAME: ${{ steps.package.outputs.name }}
+          PACKAGE_VERSION: ${{ steps.package.outputs.version }}
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from "node:fs";
+          const name = process.env.PACKAGE_NAME;
+          const version = process.env.PACKAGE_VERSION;
+          const packageUrl = `https://registry.npmjs.org/${encodeURIComponent(name)}`;
+          const packageResponse = await fetch(packageUrl);
+          if (packageResponse.status !== 200 && packageResponse.status !== 404) {
+            throw new Error(`npm registry returned HTTP ${packageResponse.status}`);
+          }
+          const exists = packageResponse.status === 200;
+          if (exists) {
+            const metadata = await packageResponse.json();
+            if (!metadata.versions?.[version]) {
+              throw new Error(`${name} already exists. Use the normal release workflow for ${version}.`);
+            }
+          }
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `exists=${exists}\n`);
+          console.log(`${name}@${version} ${exists ? "already exists" : "is ready for first publication"}.`);
+          NODE
+
+      - name: Check package tarball
+        if: steps.registry.outputs.exists == 'false'
+        working-directory: ${{ steps.package.outputs.path }}
+        run: npm pack --dry-run
+
+      - name: Publish package with npm token
+        if: steps.registry.outputs.exists == 'false'
+        working-directory: ${{ steps.package.outputs.path }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -z "$NODE_AUTH_TOKEN" ]; then
+            echo "::error::NPM_TOKEN is required for a first publish"
+            exit 1
+          fi
+          npm publish --access public --provenance --registry https://registry.npmjs.org
+
+      - name: Verify publication
+        if: steps.registry.outputs.exists == 'false'
+        env:
+          PACKAGE_NAME: ${{ steps.package.outputs.name }}
+          PACKAGE_VERSION: ${{ steps.package.outputs.version }}
+        run: |
+          for attempt in {1..12}; do
+            if env -u NODE_AUTH_TOKEN npm view "${PACKAGE_NAME}@${PACKAGE_VERSION}" version --registry https://registry.npmjs.org >/dev/null 2>&1; then
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::${PACKAGE_NAME}@${PACKAGE_VERSION} is not public on npm"
+          exit 1
