@@ -1,6 +1,6 @@
 {
   "name": "duskmoon-react-monorepo",
-  "version": "0.0.0",
+  "version": "0.3.1",
   "private": true,
   "type": "module",
   "workspaces": [
@@ -11,7 +11,7 @@
     "dev": "bun run --filter \"@duskmoon-dev/docs\" dev",
     "build:all": "bun run --filter '*' build",
     "build": "bun run --filter \"@duskmoon-dev/components\" build",
-    "test": "bun test packages/",
+    "test": "bun run --filter \"@duskmoon-dev/components\" test && bun run --filter \"@duskmoon-dev/art-components\" test",
     "lint": "bun run lint:all",
     "lint:all": "bun x eslint .",
     "lint:check": "bun x eslint .",
@@ -19,27 +19,31 @@
     "format:check": "bun x prettier --check .",
     "typecheck": "bun run --filter '*' typecheck",
     "parity:components": "bun run --filter \"@duskmoon-dev/components\" parity:components",
-    "release": "changeset publish",
-    "release:dry-run": "echo \"Dry run release not implemented yet\""
+    "release": "bun run release:check-versions && changeset publish --no-git-tag",
+    "release:version": "changeset version && bun run release:sync-versions",
+    "release:sync-versions": "bun run scripts/release-versions.mjs sync",
+    "release:check-versions": "bun run scripts/release-versions.mjs check",
+    "release:version-current": "bun run --silent scripts/release-versions.mjs current",
+    "release:dry-run": "bun run release:check-versions"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.11.3",
-    "@changesets/cli": "^2.31.0",
+    "@axe-core/playwright": "4.12.1",
+    "@changesets/cli": "2.31.1",
     "@eslint/js": "^10.0.1",
-    "@happy-dom/global-registrator": "^20.9.0",
-    "@playwright/test": "^1.60.0",
+    "@happy-dom/global-registrator": "20.11.1",
+    "@playwright/test": "1.62.1",
     "@testing-library/react": "^16.3.2",
     "@types/bun": "^1.3.14",
     "bundlesize": "^0.18.2",
-    "eslint": "^10.4.0",
+    "eslint": "10.8.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.1.1",
     "glob": "^13.0.6",
-    "globals": "^17.6.0",
-    "happy-dom": "^20.9.0",
-    "prettier": "^3.4.2",
-    "typescript": "^5.7.2",
-    "typescript-eslint": "^8.59.3"
+    "globals": "17.8.0",
+    "happy-dom": "20.11.1",
+    "prettier": "3.9.6",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.65.0"
   }
 }

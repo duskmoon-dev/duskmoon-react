@@ -159,8 +159,10 @@ const InternalFloatButton = forwardRef<
               event.preventDefault();
               return;
             }
-            onClick?.(event as React.MouseEvent<HTMLButtonElement> &
-              React.MouseEvent<HTMLAnchorElement>);
+            onClick?.(
+              event as React.MouseEvent<HTMLButtonElement> &
+                React.MouseEvent<HTMLAnchorElement>,
+            );
           }}
         >
           {content}
@@ -256,7 +258,10 @@ const FloatButtonGroup = forwardRef<HTMLDivElement, FloatButtonGroupProps>(
 
 FloatButtonGroup.displayName = "FloatButton.Group";
 
-const FloatButtonBackTop = forwardRef<HTMLButtonElement, FloatButtonBackTopProps>(
+const FloatButtonBackTop = forwardRef<
+  HTMLButtonElement,
+  FloatButtonBackTopProps
+>(
   (
     {
       visibilityHeight = 400,
@@ -296,10 +301,7 @@ const FloatButtonBackTop = forwardRef<HTMLButtonElement, FloatButtonBackTopProps
         ref={ref}
         icon={icon}
         tooltip={tooltip}
-        className={cn(
-          getFloatButtonBackTopClasses({ visible }),
-          className,
-        )}
+        className={cn(getFloatButtonBackTopClasses({ visible }), className)}
         hidden={!visible}
         aria-label={props["aria-label"] ?? "Back to top"}
         onClick={(event: React.MouseEvent<HTMLButtonElement>) => {

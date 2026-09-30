@@ -3,13 +3,11 @@ import type { DmPaginationProps } from "../dm-pagination";
 import type { DmSearchItem, DmSearchProps } from "../dm-search";
 import type {
   TableColumnType,
-  TableColumnsType,
   TableProps,
   TableRecord,
 } from "../table/Table.types";
 
-export interface DmTableColumnType<T = TableRecord>
-  extends TableColumnType<T> {
+export interface DmTableColumnType<T = TableRecord> extends TableColumnType<T> {
   hideInTable?: boolean;
   onlySearch?: boolean;
   search?: false | DmSearchItem["search"];
@@ -18,8 +16,10 @@ export interface DmTableColumnType<T = TableRecord>
 
 export type DmTableColumnsType<T = TableRecord> = DmTableColumnType<T>[];
 
-export interface DmTableProps<T = TableRecord>
-  extends Omit<TableProps<T>, "columns" | "pagination"> {
+export interface DmTableProps<T = TableRecord> extends Omit<
+  TableProps<T>,
+  "columns" | "pagination"
+> {
   name?: ReactNode;
   extra?: ReactNode;
   indicators?: ReactNode;

@@ -54,8 +54,11 @@ describe("Image", () => {
 
   it("calls onError when image fails", () => {
     let calls = 0;
-    render(<Image src="broken.jpg" alt="Broken" onError={() => calls += 1} />);
+    render(
+      <Image src="broken.jpg" alt="Broken" onError={() => (calls += 1)} />,
+    );
 
+    calls = 0;
     fireEvent.error(screen.getByRole("img", { name: "Broken" }));
 
     expect(calls).toBe(1);

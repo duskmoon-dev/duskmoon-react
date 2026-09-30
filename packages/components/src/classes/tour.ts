@@ -61,7 +61,12 @@ export function getTourPanelClasses({
   placement?: TourPlacement;
   className?: string;
 }) {
-  return cn(tourPanelClass, "popover-show", tourPlacementClasses[placement], className);
+  return cn(
+    tourPanelClass,
+    "popover-show",
+    tourPlacementClasses[placement],
+    className,
+  );
 }
 
 export function getTourIndicatorClasses({ active }: { active?: boolean }) {

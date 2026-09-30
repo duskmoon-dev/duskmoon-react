@@ -31,7 +31,9 @@ describe("Carousel", () => {
         arrows
         beforeChange={(from, to) => changes.push(`before:${from}-${to}`)}
         afterChange={(current) => changes.push(`after:${current}`)}
-        onChange={(current, previous) => changes.push(`change:${previous}-${current}`)}
+        onChange={(current, previous) =>
+          changes.push(`change:${previous}-${current}`)
+        }
       >
         <div>One</div>
         <div>Two</div>
@@ -40,9 +42,9 @@ describe("Carousel", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Next slide" }));
 
-    expect((container.querySelector(".carousel") as HTMLElement).dataset.activeIndex).toBe(
-      "1",
-    );
+    expect(
+      (container.querySelector(".carousel") as HTMLElement).dataset.activeIndex,
+    ).toBe("1");
     expect(changes).toEqual(["before:0-1", "change:0-1", "after:1"]);
   });
 
@@ -54,9 +56,9 @@ describe("Carousel", () => {
       </Carousel>,
     );
 
-    expect((container.querySelector(".carousel") as HTMLElement).dataset.activeIndex).toBe(
-      "1",
-    );
+    expect(
+      (container.querySelector(".carousel") as HTMLElement).dataset.activeIndex,
+    ).toBe("1");
     expect(container.querySelector(".custom-dots")).toBeTruthy();
   });
 
@@ -102,7 +104,8 @@ describe("Carousel", () => {
       });
 
       expect(
-        (container.querySelector(".carousel") as HTMLElement).dataset.activeIndex,
+        (container.querySelector(".carousel") as HTMLElement).dataset
+          .activeIndex,
       ).toBe("1");
     } finally {
       window.setInterval = originalSetInterval;

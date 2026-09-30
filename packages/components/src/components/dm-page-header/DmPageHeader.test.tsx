@@ -53,7 +53,9 @@ describe("DmPageHeader", () => {
     const { container } = render(
       <DmPageHeader
         title="Detail"
-        breadcrumb={{ items: [{ title: "Home", href: "/" }, { title: "Detail" }] }}
+        breadcrumb={{
+          items: [{ title: "Home", href: "/" }, { title: "Detail" }],
+        }}
         extra={{
           items: [
             { key: "secondary", title: "Export" },

@@ -26,12 +26,15 @@ import type {
 const defaultCloseIcon = "x";
 const serviceHandles = new Set<ModalFuncHandle>();
 
-function createServiceHandle(_config: ModalFuncProps): ModalFuncHandle {
+function createServiceHandle(config: ModalFuncProps): ModalFuncHandle {
+  let currentConfig = config;
   const handle: ModalFuncHandle = {
     destroy: () => {
       serviceHandles.delete(handle);
     },
-    update: (_nextConfig: ModalFuncProps) => undefined,
+    update: (nextConfig: ModalFuncProps) => {
+      currentConfig = { ...currentConfig, ...nextConfig };
+    },
   };
 
   serviceHandles.add(handle);
@@ -132,12 +135,13 @@ const ModalBase = forwardRef<HTMLDivElement, ModalProps>(
     return (
       <div
         aria-hidden={mergedOpen ? undefined : true}
+        role="presentation"
         className={getModalBackdropClasses({
           open: mergedOpen,
           centered,
           className: maskClassName,
         })}
-        onClick={handleMaskClick}
+        onMouseDown={handleMaskClick}
       >
         <div
           {...props}

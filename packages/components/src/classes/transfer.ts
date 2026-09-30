@@ -9,7 +9,8 @@ export const transferListItemClass = "transfer-list-item";
 export const transferListItemSelectedClass = "transfer-list-item-selected";
 export const transferListItemDisabledClass = "transfer-list-item-disabled";
 export const transferListItemContentClass = "transfer-list-item-content";
-export const transferListItemDescriptionClass = "transfer-list-item-description";
+export const transferListItemDescriptionClass =
+  "transfer-list-item-description";
 export const transferListEmptyClass = "transfer-list-empty";
 export const transferSearchClass = "transfer-search";
 export const transferOperationClass = "transfer-operation";

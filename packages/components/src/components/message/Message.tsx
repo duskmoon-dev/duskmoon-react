@@ -132,11 +132,8 @@ function open(config: MessageArgsProps): MessageHandle {
 }
 
 function typedOpen(type: MessageType) {
-  return (
-    content: MessageContent,
-    duration?: number,
-    onClose?: () => void,
-  ) => open(normalizeContent(type, content, duration, onClose));
+  return (content: MessageContent, duration?: number, onClose?: () => void) =>
+    open(normalizeContent(type, content, duration, onClose));
 }
 
 function config(nextConfig: MessageConfig) {
@@ -148,16 +145,23 @@ export function MessageHolder({ className }: { className?: string }) {
   const snapshot = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 
   return (
-    <div className={getMessageHolderClasses({
-      placement: snapshot.config.placement,
-      className,
-    })}>
+    <div
+      className={getMessageHolderClasses({
+        placement: snapshot.config.placement,
+        className,
+      })}
+    >
       {snapshot.messages.map((item) => (
-        <div key={item.key} className={getMessageClasses({
-          type: item.type,
-          className: item.className,
-        })}>
-          {item.icon ? <span className={messageIconClass}>{item.icon}</span> : null}
+        <div
+          key={item.key}
+          className={getMessageClasses({
+            type: item.type,
+            className: item.className,
+          })}
+        >
+          {item.icon ? (
+            <span className={messageIconClass}>{item.icon}</span>
+          ) : null}
           <span className={messageContentClass}>{item.content}</span>
           <button
             type="button"
@@ -186,5 +190,9 @@ const apiBase = {
 
 export const message = {
   ...apiBase,
-  useMessage: () => [message, <MessageHolder key="message-holder" />] as [MessageApi, ReactNode],
+  useMessage: () =>
+    [message, <MessageHolder key="message-holder" />] as [
+      MessageApi,
+      ReactNode,
+    ],
 } as MessageApi;

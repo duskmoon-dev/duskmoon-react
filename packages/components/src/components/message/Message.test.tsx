@@ -30,8 +30,18 @@ describe("message", () => {
     render(<MessageHolder />);
 
     act(() => {
-      message.open({ key: "job", type: "loading", content: "Loading", duration: 0 });
-      message.open({ key: "job", type: "success", content: "Done", duration: 0 });
+      message.open({
+        key: "job",
+        type: "loading",
+        content: "Loading",
+        duration: 0,
+      });
+      message.open({
+        key: "job",
+        type: "success",
+        content: "Done",
+        duration: 0,
+      });
     });
 
     expect(screen.queryByText("Loading")).toBeNull();
@@ -64,7 +74,11 @@ describe("message", () => {
     render(<MessageHolder />);
 
     act(() => {
-      message.warning({ content: "Close me", duration: 0, onClose: () => closed.push("closed") });
+      message.warning({
+        content: "Close me",
+        duration: 0,
+        onClose: () => closed.push("closed"),
+      });
     });
     act(() => {
       fireEvent.click(screen.getByRole("button", { name: "Close message" }));

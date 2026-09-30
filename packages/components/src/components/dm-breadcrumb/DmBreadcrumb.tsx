@@ -16,7 +16,8 @@ const defaultMaxHistoryLength = 10;
 
 function canUseSessionStorage() {
   return (
-    typeof window !== "undefined" && typeof window.sessionStorage !== "undefined"
+    typeof window !== "undefined" &&
+    typeof window.sessionStorage !== "undefined"
   );
 }
 
@@ -89,7 +90,11 @@ function collapseItems(
   items: BreadcrumbItemType[],
   maxVisibleItems: number | undefined,
 ): BreadcrumbItemType[] {
-  if (!maxVisibleItems || items.length <= maxVisibleItems || maxVisibleItems < 3) {
+  if (
+    !maxVisibleItems ||
+    items.length <= maxVisibleItems ||
+    maxVisibleItems < 3
+  ) {
     return items;
   }
 
@@ -119,9 +124,9 @@ export const DmBreadcrumb = forwardRef<HTMLElement, DmBreadcrumbProps>(
     },
     ref,
   ) => {
-    const [currentHistory, setCurrentHistory] = useState<DmBreadcrumbHistoryItem[]>(
-      () => history ?? readHistory(storageKey),
-    );
+    const [currentHistory, setCurrentHistory] = useState<
+      DmBreadcrumbHistoryItem[]
+    >(() => history ?? readHistory(storageKey));
 
     useEffect(() => {
       if (history) {
@@ -184,4 +189,3 @@ export const DmBreadcrumb = forwardRef<HTMLElement, DmBreadcrumbProps>(
 );
 
 DmBreadcrumb.displayName = "DmBreadcrumb";
-

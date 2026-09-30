@@ -39,10 +39,10 @@ describe("Dropdown", () => {
 
     expect(screen.queryByRole("menu")).toBeNull();
 
-    fireEvent.click(trigger.parentElement as HTMLElement);
+    fireEvent.click(trigger);
     expect(screen.getByRole("menu")).toBeTruthy();
 
-    fireEvent.click(trigger.parentElement as HTMLElement);
+    fireEvent.click(trigger);
     expect(screen.queryByRole("menu")).toBeNull();
   });
 

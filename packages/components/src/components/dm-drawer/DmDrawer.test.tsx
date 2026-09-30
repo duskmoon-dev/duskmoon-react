@@ -44,7 +44,11 @@ describe("DmDrawer", () => {
 
   test("prefers custom footer over submit footer", () => {
     render(
-      <DmDrawer open footer={<button>Custom action</button>} footerText="Save" />,
+      <DmDrawer
+        open
+        footer={<button>Custom action</button>}
+        footerText="Save"
+      />,
     );
 
     expect(screen.getByRole("button", { name: "Custom action" })).toBeTruthy();

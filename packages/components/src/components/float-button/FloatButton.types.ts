@@ -25,11 +25,10 @@ export interface FloatButtonBadge {
   overflowCount?: number;
 }
 
-export interface FloatButtonProps
-  extends Omit<
-    ComponentPropsWithoutRef<"button">,
-    "children" | "onClick" | "type"
-  > {
+export interface FloatButtonProps extends Omit<
+  ComponentPropsWithoutRef<"button">,
+  "children" | "onClick" | "type"
+> {
   icon?: ReactNode;
   type?: FloatButtonType;
   shape?: FloatButtonShape;
@@ -42,8 +41,10 @@ export interface FloatButtonProps
   onClick?: MouseEventHandler<HTMLElement>;
 }
 
-export interface FloatButtonGroupProps
-  extends Omit<ComponentPropsWithoutRef<"div">, "onClick"> {
+export interface FloatButtonGroupProps extends Omit<
+  ComponentPropsWithoutRef<"div">,
+  "onClick"
+> {
   shape?: FloatButtonShape;
   trigger?: FloatButtonGroupTrigger;
   open?: boolean;
@@ -52,8 +53,10 @@ export interface FloatButtonGroupProps
   onClick?: MouseEventHandler<HTMLElement>;
 }
 
-export interface FloatButtonBackTopProps
-  extends Omit<FloatButtonProps, "href" | "target"> {
+export interface FloatButtonBackTopProps extends Omit<
+  FloatButtonProps,
+  "href" | "target"
+> {
   visibilityHeight?: number;
   target?: () => Window | HTMLElement | null;
 }

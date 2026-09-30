@@ -1,5 +1,4 @@
 import type {
-  ComponentProps,
   ComponentPropsWithoutRef,
   Context,
   ElementType,
@@ -30,11 +29,10 @@ export interface ConfigProviderContextValue {
   wave?: Record<string, unknown> | false;
 }
 
-export interface ConfigProviderProps
-  extends Omit<
-    ComponentPropsWithoutRef<"div">,
-    "children" | "className" | "prefix"
-  > {
+export interface ConfigProviderProps extends Omit<
+  ComponentPropsWithoutRef<"div">,
+  "children" | "className" | "prefix"
+> {
   children?: ReactNode;
   className?: string;
   component?: false | ElementType;
@@ -49,10 +47,9 @@ export interface ConfigProviderProps
   wave?: Record<string, unknown> | false;
 }
 
-export interface ConfigProviderComponent
-  extends ForwardRefExoticComponent<
-    ConfigProviderProps & RefAttributes<HTMLElement>
-  > {
+export interface ConfigProviderComponent extends ForwardRefExoticComponent<
+  ConfigProviderProps & RefAttributes<HTMLElement>
+> {
   ConfigContext: Context<ConfigProviderContextValue>;
   useConfig: () => ConfigProviderContextValue;
   config: (config: Partial<ConfigProviderContextValue>) => void;

@@ -6,7 +6,10 @@ import { Popconfirm } from "./Popconfirm";
 describe("Popconfirm", () => {
   test("renders title and description from click trigger", () => {
     render(
-      <Popconfirm title="Delete item" description="This action cannot be undone">
+      <Popconfirm
+        title="Delete item"
+        description="This action cannot be undone"
+      >
         <button type="button">Delete</button>
       </Popconfirm>,
     );
@@ -49,7 +52,10 @@ describe("Popconfirm", () => {
     expect(canceled).toBe(true);
     expect(screen.queryByRole("tooltip")).toBeNull();
 
-    fireEvent.click(screen.getByRole("button", { name: "Action" }).parentElement as HTMLElement);
+    fireEvent.click(
+      screen.getByRole("button", { name: "Action" })
+        .parentElement as HTMLElement,
+    );
     fireEvent.click(screen.getByRole("button", { name: "OK" }));
 
     expect(confirmed).toBe(true);

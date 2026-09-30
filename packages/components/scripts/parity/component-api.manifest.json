@@ -7,16 +7,14 @@
     "standardComponentsRemainUnprefixed": true
   },
   "sources": {
-    "zDesign": "/Users/gao/Workspace/zdns/z-design",
-    "antDesignVersion": "5.29.3",
     "designTokens": "https://github.com/duskmoon-dev/design",
     "duskmoonCore": "/Users/gao/Workspace/duskmoon-dev/duskmoonui"
   },
   "publicTargets": [
     {
       "id": "affix",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Affix",
       "directory": "affix",
       "rootExport": "./components/affix",
@@ -26,8 +24,8 @@
     },
     {
       "id": "alert",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Alert",
       "directory": "alert",
       "rootExport": "./components/alert",
@@ -37,8 +35,8 @@
     },
     {
       "id": "anchor",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Anchor",
       "directory": "anchor",
       "rootExport": "./components/anchor",
@@ -48,8 +46,8 @@
     },
     {
       "id": "app",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "App",
       "directory": "app",
       "rootExport": "./components/app",
@@ -59,8 +57,8 @@
     },
     {
       "id": "auto-complete",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "AutoComplete",
       "directory": "auto-complete",
       "rootExport": "./components/auto-complete",
@@ -70,8 +68,8 @@
     },
     {
       "id": "avatar",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Avatar",
       "directory": "avatar",
       "rootExport": "./components/avatar",
@@ -81,8 +79,8 @@
     },
     {
       "id": "back-top",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "BackTop",
       "directory": "back-top",
       "rootExport": "./components/back-top",
@@ -92,8 +90,8 @@
     },
     {
       "id": "badge",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Badge",
       "directory": "badge",
       "rootExport": "./components/badge",
@@ -103,8 +101,8 @@
     },
     {
       "id": "breadcrumb",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Breadcrumb",
       "directory": "breadcrumb",
       "rootExport": "./components/breadcrumb",
@@ -114,8 +112,8 @@
     },
     {
       "id": "button",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Button",
       "directory": "button",
       "rootExport": "./components/button",
@@ -125,8 +123,8 @@
     },
     {
       "id": "calendar",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Calendar",
       "directory": "calendar",
       "rootExport": "./components/calendar",
@@ -136,8 +134,8 @@
     },
     {
       "id": "card",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Card",
       "directory": "card",
       "rootExport": "./components/card",
@@ -146,9 +144,20 @@
       "status": "implemented"
     },
     {
+      "id": "chat",
+      "kind": "standard-component",
+      "source": "duskmoon",
+      "exportName": "Chat",
+      "directory": "chat",
+      "rootExport": "./components/chat",
+      "packageSubpath": "./chat",
+      "buildEntrypoint": "src/components/chat/index.ts",
+      "status": "implemented"
+    },
+    {
       "id": "carousel",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Carousel",
       "directory": "carousel",
       "rootExport": "./components/carousel",
@@ -158,8 +167,8 @@
     },
     {
       "id": "cascader",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Cascader",
       "directory": "cascader",
       "rootExport": "./components/cascader",
@@ -169,8 +178,8 @@
     },
     {
       "id": "checkbox",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Checkbox",
       "directory": "checkbox",
       "rootExport": "./components/checkbox",
@@ -180,8 +189,8 @@
     },
     {
       "id": "col",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Col",
       "directory": "col",
       "rootExport": "./components/col",
@@ -191,8 +200,8 @@
     },
     {
       "id": "collapse",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Collapse",
       "directory": "collapse",
       "rootExport": "./components/collapse",
@@ -202,8 +211,8 @@
     },
     {
       "id": "color-picker",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "ColorPicker",
       "directory": "color-picker",
       "rootExport": "./components/color-picker",
@@ -213,8 +222,8 @@
     },
     {
       "id": "config-provider",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "ConfigProvider",
       "directory": "config-provider",
       "rootExport": "./components/config-provider",
@@ -224,8 +233,8 @@
     },
     {
       "id": "date-picker",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "DatePicker",
       "directory": "date-picker",
       "rootExport": "./components/date-picker",
@@ -235,8 +244,8 @@
     },
     {
       "id": "descriptions",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Descriptions",
       "directory": "descriptions",
       "rootExport": "./components/descriptions",
@@ -246,8 +255,8 @@
     },
     {
       "id": "divider",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Divider",
       "directory": "divider",
       "rootExport": "./components/divider",
@@ -257,8 +266,8 @@
     },
     {
       "id": "drawer",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Drawer",
       "directory": "drawer",
       "rootExport": "./components/drawer",
@@ -268,8 +277,8 @@
     },
     {
       "id": "dropdown",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Dropdown",
       "directory": "dropdown",
       "rootExport": "./components/dropdown",
@@ -279,8 +288,8 @@
     },
     {
       "id": "empty",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Empty",
       "directory": "empty",
       "rootExport": "./components/empty",
@@ -290,8 +299,8 @@
     },
     {
       "id": "flex",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Flex",
       "directory": "flex",
       "rootExport": "./components/flex",
@@ -301,8 +310,8 @@
     },
     {
       "id": "float-button",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "FloatButton",
       "directory": "float-button",
       "rootExport": "./components/float-button",
@@ -312,8 +321,8 @@
     },
     {
       "id": "form",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Form",
       "directory": "form",
       "rootExport": "./components/form",
@@ -323,8 +332,8 @@
     },
     {
       "id": "grid",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Grid",
       "directory": "grid",
       "rootExport": "./components/grid",
@@ -334,8 +343,8 @@
     },
     {
       "id": "image",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Image",
       "directory": "image",
       "rootExport": "./components/image",
@@ -345,8 +354,8 @@
     },
     {
       "id": "input",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Input",
       "directory": "input",
       "rootExport": "./components/input",
@@ -356,8 +365,8 @@
     },
     {
       "id": "input-number",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "InputNumber",
       "directory": "input-number",
       "rootExport": "./components/input-number",
@@ -367,8 +376,8 @@
     },
     {
       "id": "layout",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Layout",
       "directory": "layout",
       "rootExport": "./components/layout",
@@ -378,8 +387,8 @@
     },
     {
       "id": "list",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "List",
       "directory": "list",
       "rootExport": "./components/list",
@@ -389,8 +398,8 @@
     },
     {
       "id": "mentions",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Mentions",
       "directory": "mentions",
       "rootExport": "./components/mentions",
@@ -400,8 +409,8 @@
     },
     {
       "id": "menu",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Menu",
       "directory": "menu",
       "rootExport": "./components/menu",
@@ -411,8 +420,8 @@
     },
     {
       "id": "message",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "message",
       "directory": "message",
       "rootExport": "./components/message",
@@ -422,8 +431,8 @@
     },
     {
       "id": "modal",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Modal",
       "directory": "modal",
       "rootExport": "./components/modal",
@@ -433,8 +442,8 @@
     },
     {
       "id": "notification",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "notification",
       "directory": "notification",
       "rootExport": "./components/notification",
@@ -444,8 +453,8 @@
     },
     {
       "id": "pagination",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Pagination",
       "directory": "pagination",
       "rootExport": "./components/pagination",
@@ -455,8 +464,8 @@
     },
     {
       "id": "popconfirm",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Popconfirm",
       "directory": "popconfirm",
       "rootExport": "./components/popconfirm",
@@ -466,8 +475,8 @@
     },
     {
       "id": "popover",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Popover",
       "directory": "popover",
       "rootExport": "./components/popover",
@@ -477,8 +486,8 @@
     },
     {
       "id": "progress",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Progress",
       "directory": "progress",
       "rootExport": "./components/progress",
@@ -488,8 +497,8 @@
     },
     {
       "id": "qr-code",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "QRCode",
       "directory": "qr-code",
       "rootExport": "./components/qr-code",
@@ -499,8 +508,8 @@
     },
     {
       "id": "radio",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Radio",
       "directory": "radio",
       "rootExport": "./components/radio",
@@ -510,8 +519,8 @@
     },
     {
       "id": "rate",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Rate",
       "directory": "rate",
       "rootExport": "./components/rate",
@@ -521,8 +530,8 @@
     },
     {
       "id": "result",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Result",
       "directory": "result",
       "rootExport": "./components/result",
@@ -532,8 +541,8 @@
     },
     {
       "id": "row",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Row",
       "directory": "row",
       "rootExport": "./components/row",
@@ -543,8 +552,8 @@
     },
     {
       "id": "segmented",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Segmented",
       "directory": "segmented",
       "rootExport": "./components/segmented",
@@ -554,8 +563,8 @@
     },
     {
       "id": "select",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Select",
       "directory": "select",
       "rootExport": "./components/select",
@@ -565,8 +574,8 @@
     },
     {
       "id": "skeleton",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Skeleton",
       "directory": "skeleton",
       "rootExport": "./components/skeleton",
@@ -576,8 +585,8 @@
     },
     {
       "id": "slider",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Slider",
       "directory": "slider",
       "rootExport": "./components/slider",
@@ -587,8 +596,8 @@
     },
     {
       "id": "space",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Space",
       "directory": "space",
       "rootExport": "./components/space",
@@ -598,8 +607,8 @@
     },
     {
       "id": "spin",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Spin",
       "directory": "spin",
       "rootExport": "./components/spin",
@@ -609,8 +618,8 @@
     },
     {
       "id": "splitter",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Splitter",
       "directory": "splitter",
       "rootExport": "./components/splitter",
@@ -620,8 +629,8 @@
     },
     {
       "id": "statistic",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Statistic",
       "directory": "statistic",
       "rootExport": "./components/statistic",
@@ -631,8 +640,8 @@
     },
     {
       "id": "steps",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Steps",
       "directory": "steps",
       "rootExport": "./components/steps",
@@ -642,8 +651,8 @@
     },
     {
       "id": "switch",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Switch",
       "directory": "switch",
       "rootExport": "./components/switch",
@@ -653,8 +662,8 @@
     },
     {
       "id": "table",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Table",
       "directory": "table",
       "rootExport": "./components/table",
@@ -664,8 +673,8 @@
     },
     {
       "id": "tabs",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Tabs",
       "directory": "tabs",
       "rootExport": "./components/tabs",
@@ -675,8 +684,8 @@
     },
     {
       "id": "tag",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Tag",
       "directory": "tag",
       "rootExport": "./components/tag",
@@ -686,8 +695,8 @@
     },
     {
       "id": "time-picker",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "TimePicker",
       "directory": "time-picker",
       "rootExport": "./components/time-picker",
@@ -697,8 +706,8 @@
     },
     {
       "id": "timeline",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Timeline",
       "directory": "timeline",
       "rootExport": "./components/timeline",
@@ -708,8 +717,8 @@
     },
     {
       "id": "tooltip",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Tooltip",
       "directory": "tooltip",
       "rootExport": "./components/tooltip",
@@ -719,8 +728,8 @@
     },
     {
       "id": "tour",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Tour",
       "directory": "tour",
       "rootExport": "./components/tour",
@@ -730,8 +739,8 @@
     },
     {
       "id": "transfer",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Transfer",
       "directory": "transfer",
       "rootExport": "./components/transfer",
@@ -741,8 +750,8 @@
     },
     {
       "id": "tree",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Tree",
       "directory": "tree",
       "rootExport": "./components/tree",
@@ -752,8 +761,8 @@
     },
     {
       "id": "tree-select",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "TreeSelect",
       "directory": "tree-select",
       "rootExport": "./components/tree-select",
@@ -762,9 +771,20 @@
       "status": "implemented"
     },
     {
+      "id": "markdown",
+      "kind": "standard-component",
+      "source": "yew-duskmoon-ui",
+      "exportName": "Markdown",
+      "directory": "markdown",
+      "rootExport": "./components/markdown",
+      "packageSubpath": "./markdown",
+      "buildEntrypoint": "src/components/markdown/index.ts",
+      "status": "implemented"
+    },
+    {
       "id": "typography",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Typography",
       "directory": "typography",
       "rootExport": "./components/typography",
@@ -774,8 +794,8 @@
     },
     {
       "id": "upload",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Upload",
       "directory": "upload",
       "rootExport": "./components/upload",
@@ -785,8 +805,8 @@
     },
     {
       "id": "watermark",
-      "kind": "ant-compatible-component",
-      "source": "antd",
+      "kind": "standard-component",
+      "source": "duskmoon",
       "exportName": "Watermark",
       "directory": "watermark",
       "rootExport": "./components/watermark",
@@ -797,7 +817,7 @@
     {
       "id": "dm-provider",
       "kind": "dm-workflow-component",
-      "source": "CustomConfigProvider",
+      "source": "duskmoon",
       "exportName": "DmProvider",
       "directory": "dm-provider",
       "rootExport": "./components/dm-provider",
@@ -808,7 +828,7 @@
     {
       "id": "dm-layout",
       "kind": "dm-workflow-component",
-      "source": "ZLayout",
+      "source": "duskmoon",
       "exportName": "DmLayout",
       "directory": "dm-layout",
       "rootExport": "./components/dm-layout",
@@ -819,7 +839,7 @@
     {
       "id": "dm-menu",
       "kind": "dm-workflow-component",
-      "source": "ZMenu",
+      "source": "duskmoon",
       "exportName": "DmMenu",
       "directory": "dm-menu",
       "rootExport": "./components/dm-menu",
@@ -830,7 +850,7 @@
     {
       "id": "dm-breadcrumb",
       "kind": "dm-workflow-component",
-      "source": "ZBreadcrumb",
+      "source": "duskmoon",
       "exportName": "DmBreadcrumb",
       "directory": "dm-breadcrumb",
       "rootExport": "./components/dm-breadcrumb",
@@ -841,7 +861,7 @@
     {
       "id": "dm-auxiliary",
       "kind": "dm-workflow-component",
-      "source": "ZAuxiliary",
+      "source": "duskmoon",
       "exportName": "DmAuxiliary",
       "directory": "dm-auxiliary",
       "rootExport": "./components/dm-auxiliary",
@@ -852,7 +872,7 @@
     {
       "id": "dm-query",
       "kind": "dm-workflow-component",
-      "source": "ZQuery",
+      "source": "duskmoon",
       "exportName": "DmQuery",
       "directory": "dm-query",
       "rootExport": "./components/dm-query",
@@ -863,7 +883,7 @@
     {
       "id": "dm-search",
       "kind": "dm-workflow-component",
-      "source": "ZSearch",
+      "source": "duskmoon",
       "exportName": "DmSearch",
       "directory": "dm-search",
       "rootExport": "./components/dm-search",
@@ -874,7 +894,7 @@
     {
       "id": "dm-drawer",
       "kind": "dm-workflow-component",
-      "source": "ZDrawer",
+      "source": "duskmoon",
       "exportName": "DmDrawer",
       "directory": "dm-drawer",
       "rootExport": "./components/dm-drawer",
@@ -885,7 +905,7 @@
     {
       "id": "dm-table",
       "kind": "dm-workflow-component",
-      "source": "ZTable",
+      "source": "duskmoon",
       "exportName": "DmTable",
       "directory": "dm-table",
       "rootExport": "./components/dm-table",
@@ -896,7 +916,7 @@
     {
       "id": "dm-pagination",
       "kind": "dm-workflow-component",
-      "source": "ZPagination",
+      "source": "duskmoon",
       "exportName": "DmPagination",
       "directory": "dm-pagination",
       "rootExport": "./components/dm-pagination",
@@ -907,7 +927,7 @@
     {
       "id": "dm-date-picker",
       "kind": "dm-workflow-component",
-      "source": "ZDatePicker",
+      "source": "duskmoon",
       "exportName": "DmDatePicker",
       "directory": "dm-date-picker",
       "rootExport": "./components/dm-date-picker",
@@ -918,7 +938,7 @@
     {
       "id": "dm-pro-table",
       "kind": "dm-workflow-component",
-      "source": "ZProTable",
+      "source": "duskmoon",
       "exportName": "DmProTable",
       "directory": "dm-pro-table",
       "rootExport": "./components/dm-pro-table",
@@ -929,7 +949,7 @@
     {
       "id": "dm-tree",
       "kind": "dm-workflow-component",
-      "source": "ZTree",
+      "source": "duskmoon",
       "exportName": "DmTree",
       "directory": "dm-tree",
       "rootExport": "./components/dm-tree",
@@ -940,7 +960,7 @@
     {
       "id": "dm-tabs",
       "kind": "dm-workflow-component",
-      "source": "ZTabs",
+      "source": "duskmoon",
       "exportName": "DmTabs",
       "directory": "dm-tabs",
       "rootExport": "./components/dm-tabs",
@@ -951,7 +971,7 @@
     {
       "id": "dm-message",
       "kind": "dm-workflow-component",
-      "source": "ZMessage",
+      "source": "duskmoon",
       "exportName": "DmMessage",
       "directory": "dm-message",
       "rootExport": "./components/dm-message",
@@ -962,7 +982,7 @@
     {
       "id": "dm-page-header",
       "kind": "dm-workflow-component",
-      "source": "ZPageHeader",
+      "source": "duskmoon",
       "exportName": "DmPageHeader",
       "directory": "dm-page-header",
       "rootExport": "./components/dm-page-header",
@@ -973,7 +993,7 @@
     {
       "id": "dm-splitter",
       "kind": "dm-workflow-component",
-      "source": "ZSplitter",
+      "source": "duskmoon",
       "exportName": "DmSplitter",
       "directory": "dm-splitter",
       "rootExport": "./components/dm-splitter",
@@ -984,7 +1004,7 @@
     {
       "id": "dm-truncate",
       "kind": "dm-workflow-component",
-      "source": "ZTruncate",
+      "source": "duskmoon",
       "exportName": "DmTruncate",
       "directory": "dm-truncate",
       "rootExport": "./components/dm-truncate",
@@ -995,7 +1015,7 @@
     {
       "id": "dm-infinite-scroll",
       "kind": "dm-workflow-component",
-      "source": "ZInfiniteScroll",
+      "source": "duskmoon",
       "exportName": "DmInfiniteScroll",
       "directory": "dm-infinite-scroll",
       "rootExport": "./components/dm-infinite-scroll",
@@ -1006,7 +1026,7 @@
     {
       "id": "dm-status",
       "kind": "dm-workflow-component",
-      "source": "ZStatus",
+      "source": "duskmoon",
       "exportName": "DmStatus",
       "directory": "dm-status",
       "rootExport": "./components/dm-status",
@@ -1017,7 +1037,7 @@
     {
       "id": "dm-toolbar",
       "kind": "dm-workflow-component",
-      "source": "ZToolbar",
+      "source": "duskmoon",
       "exportName": "DmToolbar",
       "directory": "dm-toolbar",
       "rootExport": "./components/dm-toolbar",
@@ -1028,7 +1048,7 @@
     {
       "id": "theme",
       "kind": "infrastructure-export",
-      "source": "antd",
+      "source": "duskmoon",
       "exportName": "theme",
       "directory": null,
       "rootExport": "theme",
@@ -1039,7 +1059,7 @@
     {
       "id": "version",
       "kind": "infrastructure-export",
-      "source": "antd",
+      "source": "duskmoon",
       "exportName": "version",
       "directory": null,
       "rootExport": "version",
@@ -1050,7 +1070,7 @@
     {
       "id": "unstable-set-render",
       "kind": "infrastructure-export",
-      "source": "antd",
+      "source": "duskmoon",
       "exportName": "unstableSetRender",
       "directory": null,
       "rootExport": "unstableSetRender",
@@ -1061,7 +1081,7 @@
     {
       "id": "get-props",
       "kind": "infrastructure-export",
-      "source": "antd",
+      "source": "duskmoon",
       "exportName": "GetProps",
       "directory": null,
       "rootExport": "GetProps",
@@ -1072,7 +1092,7 @@
     {
       "id": "get-ref",
       "kind": "infrastructure-export",
-      "source": "antd",
+      "source": "duskmoon",
       "exportName": "GetRef",
       "directory": null,
       "rootExport": "GetRef",
@@ -1083,7 +1103,7 @@
     {
       "id": "get-prop",
       "kind": "infrastructure-export",
-      "source": "antd",
+      "source": "duskmoon",
       "exportName": "GetProp",
       "directory": null,
       "rootExport": "GetProp",
@@ -1094,7 +1114,7 @@
     {
       "id": "breakpoint",
       "kind": "infrastructure-export",
-      "source": "antd",
+      "source": "duskmoon",
       "exportName": "Breakpoint",
       "directory": null,
       "rootExport": "Breakpoint",
@@ -1105,7 +1125,7 @@
     {
       "id": "use-persisted-page-size",
       "kind": "infrastructure-export",
-      "source": "ZTable",
+      "source": "duskmoon",
       "exportName": "usePersistedPageSize",
       "directory": null,
       "rootExport": "usePersistedPageSize",
@@ -1116,7 +1136,7 @@
     {
       "id": "get-dm-theme",
       "kind": "infrastructure-export",
-      "source": "getZDesignTheme",
+      "source": "duskmoon",
       "exportName": "getDmTheme",
       "directory": null,
       "rootExport": "getDmTheme",
@@ -1127,7 +1147,7 @@
     {
       "id": "on-dm-theme-update",
       "kind": "infrastructure-export",
-      "source": "onThemeUpdate",
+      "source": "duskmoon",
       "exportName": "onDmThemeUpdate",
       "directory": null,
       "rootExport": "onDmThemeUpdate",
@@ -1138,7 +1158,7 @@
     {
       "id": "set-dm-prefix-cls",
       "kind": "infrastructure-export",
-      "source": "setZDesignPrefixCls",
+      "source": "duskmoon",
       "exportName": "setDmPrefixCls",
       "directory": null,
       "rootExport": "setDmPrefixCls",
@@ -1149,7 +1169,7 @@
     {
       "id": "set-dm-primary-color",
       "kind": "infrastructure-export",
-      "source": "setZDesignPrimaryColor",
+      "source": "duskmoon",
       "exportName": "setDmPrimaryColor",
       "directory": null,
       "rootExport": "setDmPrimaryColor",
@@ -1160,7 +1180,7 @@
     {
       "id": "set-dm-date-picker-locale",
       "kind": "infrastructure-export",
-      "source": "setZDatePickerLocale",
+      "source": "duskmoon",
       "exportName": "setDmDatePickerLocale",
       "directory": null,
       "rootExport": "setDmDatePickerLocale",
@@ -1169,17 +1189,5 @@
       "status": "implemented"
     }
   ],
-  "internalTargets": [
-    {
-      "id": "dm-pro-table-inner",
-      "kind": "internal-component",
-      "source": "z-pro-table-inner",
-      "exportName": null,
-      "directory": "dm-pro-table-inner",
-      "rootExport": null,
-      "packageSubpath": null,
-      "buildEntrypoint": "src/components/dm-pro-table-inner/index.ts",
-      "status": "implemented"
-    }
-  ]
+  "internalTargets": []
 }

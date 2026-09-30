@@ -14,9 +14,9 @@ describe("DmSplitter", () => {
 
     expect(container.querySelector(".dm-splitter")).toBeTruthy();
     expect(container.querySelector(".splitter")).toBeTruthy();
-    expect((container.querySelector(".splitter-panel") as HTMLElement).style.width).toBe(
-      "120px",
-    );
+    expect(
+      (container.querySelector(".splitter-panel") as HTMLElement).style.width,
+    ).toBe("120px");
     expect(screen.getByText("Left")).toBeTruthy();
   });
 
@@ -48,9 +48,9 @@ describe("DmSplitter", () => {
       </DmSplitter>,
     );
 
-    expect((container.querySelector(".splitter-panel") as HTMLElement).style.width).toBe(
-      "136px",
-    );
+    expect(
+      (container.querySelector(".splitter-panel") as HTMLElement).style.width,
+    ).toBe("136px");
   });
 
   test("supports reset and panel collapse basics", () => {

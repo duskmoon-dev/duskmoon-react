@@ -1,9 +1,4 @@
-import React, {
-  forwardRef,
-  useMemo,
-  useState,
-  type ChangeEvent,
-} from "react";
+import React, { forwardRef, useMemo, useState, type ChangeEvent } from "react";
 import {
   getTransferClasses,
   getTransferListClasses,
@@ -171,7 +166,15 @@ function splitSelectedKeys(
 }
 
 export const TransferSearch = forwardRef<HTMLInputElement, TransferSearchProps>(
-  ({ className, placeholder = defaultLocale.searchPlaceholder, onChange, ...props }, ref) => (
+  (
+    {
+      className,
+      placeholder = defaultLocale.searchPlaceholder,
+      onChange,
+      ...props
+    },
+    ref,
+  ) => (
     <input
       {...props}
       ref={ref}
@@ -265,18 +268,14 @@ function TransferListRoot<T extends TransferItem>(
   const filteredItems = useMemo(
     () =>
       items.filter((item) =>
-        defaultFilter(
-          mergedSearchValue,
-          item,
-          direction,
-          render,
-          filterOption,
-        ),
+        defaultFilter(mergedSearchValue, item, direction, render, filterOption),
       ),
     [direction, filterOption, items, mergedSearchValue, render],
   );
   const pageSize = getPageSize(pagination);
-  const pageCount = pageSize ? Math.max(1, Math.ceil(filteredItems.length / pageSize)) : 1;
+  const pageCount = pageSize
+    ? Math.max(1, Math.ceil(filteredItems.length / pageSize))
+    : 1;
   const currentPage = Math.min(page, pageCount);
   const visibleItems = pageSize
     ? filteredItems.slice((currentPage - 1) * pageSize, currentPage * pageSize)
@@ -431,8 +430,12 @@ function TransferRoot<T extends TransferItem>(
     () => new Set(mergedTargetKeys),
     [mergedTargetKeys],
   );
-  const sourceItems = normalizedItems.filter((item) => !targetKeySet.has(item.key));
-  const targetItems = normalizedItems.filter((item) => targetKeySet.has(item.key));
+  const sourceItems = normalizedItems.filter(
+    (item) => !targetKeySet.has(item.key),
+  );
+  const targetItems = normalizedItems.filter((item) =>
+    targetKeySet.has(item.key),
+  );
   const selectedGroups = splitSelectedKeys(mergedSelectedKeys, targetKeySet);
   const movableSourceKeys = getMovableSelectedKeys(
     sourceItems,
@@ -467,9 +470,7 @@ function TransferRoot<T extends TransferItem>(
     }
 
     const moveKeys =
-      direction === "right"
-        ? movableSourceKeys
-        : movableTargetKeys;
+      direction === "right" ? movableSourceKeys : movableTargetKeys;
 
     if (moveKeys.length === 0) {
       return;

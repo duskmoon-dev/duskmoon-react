@@ -6,8 +6,10 @@
     "jsx": "react-jsx",
     "strict": true,
     "skipLibCheck": true,
+    "ignoreDeprecations": "6.0",
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
+    "types": ["bun"],
     "baseUrl": ".",
     "paths": {
       "@duskmoon-dev/components": ["./src/index.ts"]

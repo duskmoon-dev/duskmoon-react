@@ -1,10 +1,4 @@
-import React, {
-  forwardRef,
-  useId,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { forwardRef, useId, useMemo, useRef, useState } from "react";
 import {
   getMentionsClasses,
   getMentionsDropdownClasses,
@@ -169,7 +163,9 @@ const MentionsRoot = forwardRef<HTMLTextAreaElement, MentionsProps>(
       isOpen && visibleOptions.length > 0
         ? visibleOptions[Math.min(focusedIndex, visibleOptions.length - 1)]
         : undefined;
-    const activeIndex = activeOption ? visibleOptions.indexOf(activeOption) : -1;
+    const activeIndex = activeOption
+      ? visibleOptions.indexOf(activeOption)
+      : -1;
     const activeDescendant =
       activeIndex >= 0 ? `${listboxId}-option-${activeIndex}` : undefined;
 
@@ -219,7 +215,11 @@ const MentionsRoot = forwardRef<HTMLTextAreaElement, MentionsProps>(
         currentValue.slice(0, search.start) +
         `${search.prefix}${option.value}${split}` +
         currentValue.slice(search.end);
-      const nextCursor = search.start + search.prefix.length + option.value.length + split.length;
+      const nextCursor =
+        search.start +
+        search.prefix.length +
+        option.value.length +
+        split.length;
 
       emitChange(nextValue);
       onSelect?.(option, search.prefix);

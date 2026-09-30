@@ -1,5 +1,8 @@
 import { cn } from "../utils";
-import type { AutoCompleteSize } from "../components/auto-complete/AutoComplete.types";
+import type {
+  AutoCompleteColor,
+  AutoCompleteSize,
+} from "../components/auto-complete/AutoComplete.types";
 
 export const autoCompleteBaseClass = "autocomplete";
 export const autoCompleteInputWrapperClass = "autocomplete-input-wrapper";
@@ -15,6 +18,19 @@ export const autoCompleteOptionDisabledClass = "autocomplete-option-disabled";
 export const autoCompleteClearClass = "autocomplete-clear";
 export const autoCompleteNoOptionsClass = "autocomplete-no-options";
 
+export const autoCompleteColorClasses: Record<AutoCompleteColor, string> = {
+  primary: "autocomplete-primary",
+  secondary: "autocomplete-secondary",
+  tertiary: "autocomplete-tertiary",
+  accent: "autocomplete-accent",
+  neutral: "autocomplete-neutral",
+  base: "autocomplete-base",
+  info: "autocomplete-info",
+  success: "autocomplete-success",
+  warning: "autocomplete-warning",
+  error: "autocomplete-error",
+};
+
 export const autoCompleteSizeClasses: Record<AutoCompleteSize, string> = {
   sm: "autocomplete-sm",
   md: "",
@@ -22,16 +38,19 @@ export const autoCompleteSizeClasses: Record<AutoCompleteSize, string> = {
 };
 
 export function getAutoCompleteClasses({
+  color,
   disabled,
   open,
   className,
 }: {
+  color?: AutoCompleteColor;
   disabled?: boolean;
   open?: boolean;
   className?: string;
 }) {
   return cn(
     autoCompleteBaseClass,
+    color && autoCompleteColorClasses[color],
     disabled && "autocomplete-disabled",
     open && "autocomplete-open",
     className,
@@ -45,11 +64,7 @@ export function getAutoCompleteInputClasses({
   size?: AutoCompleteSize;
   className?: string;
 }) {
-  return cn(
-    autoCompleteInputClass,
-    autoCompleteSizeClasses[size],
-    className,
-  );
+  return cn(autoCompleteInputClass, autoCompleteSizeClasses[size], className);
 }
 
 export function getAutoCompleteDropdownClasses({

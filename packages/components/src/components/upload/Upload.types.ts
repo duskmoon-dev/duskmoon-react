@@ -46,8 +46,10 @@ export type UploadBeforeUploadResult =
 
 export type UploadListIgnore = symbol;
 
-export interface UploadProps
-  extends Omit<ComponentProps<"div">, "children" | "defaultValue" | "onChange"> {
+export interface UploadProps extends Omit<
+  ComponentProps<"div">,
+  "children" | "defaultValue" | "onChange"
+> {
   accept?: string;
   action?: string;
   beforeUpload?: (file: File, fileList: File[]) => UploadBeforeUploadResult;
@@ -63,7 +65,7 @@ export interface UploadProps
   onRemove?: (file: UploadFile) => boolean | Promise<boolean> | void;
 }
 
-export interface UploadDraggerProps extends UploadProps {}
+export type UploadDraggerProps = UploadProps;
 
 export type UploadComponent = ForwardRefExoticComponent<
   UploadProps & RefAttributes<HTMLDivElement>

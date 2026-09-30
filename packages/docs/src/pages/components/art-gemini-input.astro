@@ -1,0 +1,12 @@
+---
+import ComponentDocPage from "../../components/ComponentDocPage.astro";
+import { getComponentDoc } from "../../lib/component-docs";
+
+const component = getComponentDoc("art-gemini-input");
+
+if (!component) {
+  throw new Error("Missing component docs for art-gemini-input");
+}
+---
+
+<ComponentDocPage component={component} />

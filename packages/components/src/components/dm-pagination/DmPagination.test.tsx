@@ -63,7 +63,9 @@ describe("DmPagination", () => {
     expect(screen.getByRole("button", { name: /Refresh/ })).toBeTruthy();
     expect(screen.queryByRole("navigation")).toBeNull();
 
-    rerender(<DmPagination total={0} showPagination={false} showRefresh={false} />);
+    rerender(
+      <DmPagination total={0} showPagination={false} showRefresh={false} />,
+    );
 
     expect(screen.queryByRole("button", { name: /Refresh/ })).toBeNull();
   });

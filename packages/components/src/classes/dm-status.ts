@@ -22,4 +22,3 @@ export function getDmStatusClasses({
 }) {
   return cn(dmStatusBaseClass, dmStatusTypeClasses[status], className);
 }
-

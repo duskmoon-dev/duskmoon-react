@@ -16,10 +16,12 @@ export interface AppInstance {
   modal: ModalComponent;
 }
 
-export interface AppContextValue extends AppInstance {}
+export type AppContextValue = AppInstance;
 
-export interface AppProps
-  extends Omit<ComponentProps<"div">, "children" | "className"> {
+export interface AppProps extends Omit<
+  ComponentProps<"div">,
+  "children" | "className"
+> {
   children?: ReactNode;
   className?: string;
   component?: false | ElementType;
@@ -33,8 +35,9 @@ export interface AppProps
   };
 }
 
-export interface AppComponent
-  extends ForwardRefExoticComponent<AppProps & RefAttributes<HTMLElement>> {
+export interface AppComponent extends ForwardRefExoticComponent<
+  AppProps & RefAttributes<HTMLElement>
+> {
   useApp: () => AppInstance;
   Context: Context<AppContextValue>;
 }

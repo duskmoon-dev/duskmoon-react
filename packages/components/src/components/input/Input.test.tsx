@@ -4,7 +4,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { Input } from "./Input";
 
 describe("Input", () => {
-  test("renders z-design parity input props", () => {
+  test("renders parity input props", () => {
     render(
       <Input
         className="custom-input"

@@ -5,7 +5,9 @@ import { DmTruncate } from "./DmTruncate";
 
 function defineSize(
   element: Element,
-  sizes: Partial<Record<"clientWidth" | "scrollWidth" | "scrollHeight", number>>,
+  sizes: Partial<
+    Record<"clientWidth" | "scrollWidth" | "scrollHeight", number>
+  >,
 ) {
   for (const [key, value] of Object.entries(sizes)) {
     Object.defineProperty(element, key, {
@@ -36,7 +38,9 @@ describe("DmTruncate", () => {
     );
 
     const root = container.querySelector(".dm-truncate") as HTMLElement;
-    const measure = container.querySelector(".dm-truncate-measure") as HTMLElement;
+    const measure = container.querySelector(
+      ".dm-truncate-measure",
+    ) as HTMLElement;
     defineSize(root, { clientWidth: 60 });
     defineSize(measure, { scrollWidth: 180 });
 
@@ -47,7 +51,9 @@ describe("DmTruncate", () => {
     });
 
     fireEvent.mouseEnter(screen.getByLabelText("Text overflow"));
-    expect(screen.getByRole("tooltip").textContent).toContain("Full: Long content");
+    expect(screen.getByRole("tooltip").textContent).toContain(
+      "Full: Long content",
+    );
   });
 
   test("uses text tooltip when overflow tag is disabled", async () => {
@@ -56,7 +62,9 @@ describe("DmTruncate", () => {
     );
 
     const root = container.querySelector(".dm-truncate") as HTMLElement;
-    const measure = container.querySelector(".dm-truncate-measure") as HTMLElement;
+    const measure = container.querySelector(
+      ".dm-truncate-measure",
+    ) as HTMLElement;
     defineSize(root, { clientWidth: 80 });
     defineSize(measure, { scrollWidth: 220 });
 
@@ -66,8 +74,12 @@ describe("DmTruncate", () => {
       expect(container.querySelector(".tooltip-wrapper")).toBeTruthy();
     });
 
-    fireEvent.mouseEnter(container.querySelector(".tooltip-wrapper") as HTMLElement);
-    expect(screen.getByRole("tooltip").textContent).toContain("Hidden full text");
+    fireEvent.mouseEnter(
+      container.querySelector(".tooltip-wrapper") as HTMLElement,
+    );
+    expect(screen.getByRole("tooltip").textContent).toContain(
+      "Hidden full text",
+    );
   });
 
   test("copies string content", async () => {
@@ -100,4 +112,3 @@ describe("DmTruncate", () => {
     });
   });
 });
-

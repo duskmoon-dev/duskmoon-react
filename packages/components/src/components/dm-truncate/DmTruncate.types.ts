@@ -1,12 +1,10 @@
-import type {
-  CSSProperties,
-  ComponentPropsWithoutRef,
-  ReactNode,
-} from "react";
+import type { CSSProperties, ComponentPropsWithoutRef, ReactNode } from "react";
 import type { TooltipProps } from "../tooltip/Tooltip.types";
 
-export interface DmTruncateProps
-  extends Omit<ComponentPropsWithoutRef<"div">, "children" | "onCopy"> {
+export interface DmTruncateProps extends Omit<
+  ComponentPropsWithoutRef<"div">,
+  "children" | "onCopy"
+> {
   children?: ReactNode;
   showOverflowTag?: boolean;
   overflowContent?: ReactNode | ((value: string) => ReactNode);
@@ -21,4 +19,3 @@ export interface DmTruncateProps
   textStyle?: CSSProperties;
   onCopy?: (value: string) => void;
 }
-

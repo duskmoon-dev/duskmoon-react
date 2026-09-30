@@ -1,6 +1,11 @@
 // GENERATED FILE. DO NOT EDIT.
 import { cn } from "../utils";
-import type { ButtonColor, ButtonAppearance, ButtonShape, ButtonSize } from "../components/button/Button.types";
+import type {
+  ButtonColor,
+  ButtonAppearance,
+  ButtonShape,
+  ButtonSize,
+} from "../components/button/Button.types";
 
 export const buttonBaseClass = "btn";
 
@@ -8,6 +13,10 @@ export const buttonColorClasses: Record<ButtonColor, string> = {
   primary: "btn-primary",
   secondary: "btn-secondary",
   tertiary: "btn-tertiary",
+  // WORKAROUND(upstream): duskmoon-dev/duskmoonui#44 supplements these core classes in local CSS.
+  accent: "btn-accent",
+  neutral: "btn-neutral",
+  base: "btn-base",
   info: "btn-info",
   success: "btn-success",
   warning: "btn-warning",
@@ -63,6 +72,6 @@ export function getButtonClasses({
     buttonSizeClasses[size],
     block && buttonBlockClass,
     isLoading && buttonIsLoadingClass,
-    className
+    className,
   );
 }

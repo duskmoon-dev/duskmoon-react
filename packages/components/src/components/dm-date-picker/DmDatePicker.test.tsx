@@ -23,7 +23,9 @@ describe("DmDatePicker", () => {
   });
 
   test("exposes range picker", () => {
-    render(<DmDatePicker.RangePicker defaultValue={["2026-01-01", "2026-01-02"]} />);
+    render(
+      <DmDatePicker.RangePicker defaultValue={["2026-01-01", "2026-01-02"]} />,
+    );
 
     expect(screen.getByDisplayValue("2026-01-01")).toBeTruthy();
     expect(screen.getByDisplayValue("2026-01-02")).toBeTruthy();

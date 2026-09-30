@@ -8,14 +8,12 @@ import type {
 } from "react";
 
 export type DatePickerValue = string;
-export type DatePickerRangeValue = [DatePickerValue | undefined, DatePickerValue | undefined];
+export type DatePickerRangeValue = [
+  DatePickerValue | undefined,
+  DatePickerValue | undefined,
+];
 export type DatePickerPicker =
-  | "date"
-  | "week"
-  | "month"
-  | "quarter"
-  | "year"
-  | "time";
+  "date" | "week" | "month" | "quarter" | "year" | "time";
 export type DatePickerSize = "sm" | "md" | "lg";
 export type DatePickerStatus = "error" | "success";
 
@@ -24,11 +22,10 @@ export interface DatePickerPreset {
   value: DatePickerValue;
 }
 
-export interface DatePickerProps
-  extends Omit<
-    ComponentProps<"div">,
-    "children" | "defaultValue" | "onBlur" | "onChange" | "onFocus"
-  > {
+export interface DatePickerProps extends Omit<
+  ComponentProps<"div">,
+  "children" | "defaultValue" | "onBlur" | "onChange" | "onFocus"
+> {
   value?: DatePickerValue;
   defaultValue?: DatePickerValue;
   onChange?: (value: DatePickerValue | undefined, dateString: string) => void;
@@ -49,22 +46,23 @@ export interface DatePickerProps
   status?: DatePickerStatus;
 }
 
-export interface RangePickerProps
-  extends Omit<
-    DatePickerProps,
-    "placeholder" | "value" | "defaultValue" | "onChange"
-  > {
+export interface RangePickerProps extends Omit<
+  DatePickerProps,
+  "placeholder" | "value" | "defaultValue" | "onChange"
+> {
   value?: DatePickerRangeValue;
   defaultValue?: DatePickerRangeValue;
-  onChange?: (value: DatePickerRangeValue, dateStrings: [string, string]) => void;
+  onChange?: (
+    value: DatePickerRangeValue,
+    dateStrings: [string, string],
+  ) => void;
   placeholder?: [string, string];
   separator?: ReactNode;
 }
 
-export interface DatePickerComponent
-  extends ForwardRefExoticComponent<
-    DatePickerProps & RefAttributes<HTMLDivElement>
-  > {
+export interface DatePickerComponent extends ForwardRefExoticComponent<
+  DatePickerProps & RefAttributes<HTMLDivElement>
+> {
   RangePicker: ForwardRefExoticComponent<
     RangePickerProps & RefAttributes<HTMLDivElement>
   >;

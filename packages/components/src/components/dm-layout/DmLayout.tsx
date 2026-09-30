@@ -17,7 +17,9 @@ import type { DmMenuSchema } from "../dm-menu/DmMenu.types";
 import type { DmLayoutProps, DmLayoutSelection } from "./DmLayout.types";
 
 function getLabel(menu: DmMenuSchema, locale?: string) {
-  return locale === "en-US" && menu.menuNameEn ? menu.menuNameEn : menu.menuName;
+  return locale === "en-US" && menu.menuNameEn
+    ? menu.menuNameEn
+    : menu.menuName;
 }
 
 function getAllMenuUrls(menus: DmMenuSchema[] = [], includeSubRoutes: boolean) {
@@ -118,7 +120,8 @@ export function deriveDmLayoutSelection({
   const openKeys = openAllKeys
     ? unique([...getAllTopOpenKeys(menus), ...selectOpenKeys])
     : selectOpenKeys;
-  const activeMenu = selectedBreadcrumbPath?.[selectedBreadcrumbPath.length - 1];
+  const activeMenu =
+    selectedBreadcrumbPath?.[selectedBreadcrumbPath.length - 1];
 
   return {
     selectedMenuKey,
@@ -165,8 +168,11 @@ export const DmLayout = forwardRef<HTMLDivElement, DmLayoutProps>(
     ref,
   ) => {
     const collapsedControlled = collapsed !== undefined;
-    const [internalCollapsed, setInternalCollapsed] = useState(defaultCollapsed);
-    const [manualOpenKeys, setManualOpenKeys] = useState<string[] | undefined>();
+    const [internalCollapsed, setInternalCollapsed] =
+      useState(defaultCollapsed);
+    const [manualOpenKeys, setManualOpenKeys] = useState<
+      string[] | undefined
+    >();
     const mergedCollapsed = collapsedControlled ? collapsed : internalCollapsed;
     const selection = useMemo(
       () =>
@@ -251,4 +257,3 @@ export const DmLayout = forwardRef<HTMLDivElement, DmLayoutProps>(
 );
 
 DmLayout.displayName = "DmLayout";
-

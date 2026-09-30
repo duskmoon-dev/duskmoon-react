@@ -1,8 +1,5 @@
 import React, { forwardRef } from "react";
-import {
-  getDmTabsClasses,
-  getDmTabsShellClasses,
-} from "../../classes/dm-tabs";
+import { getDmTabsClasses, getDmTabsShellClasses } from "../../classes/dm-tabs";
 import { Tabs } from "../tabs";
 import type { DmTabsProps } from "./DmTabs.types";
 

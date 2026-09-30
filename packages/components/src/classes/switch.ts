@@ -20,6 +20,13 @@ export const switchColorClasses: Record<SwitchColor, string> = {
   primary: "switch-primary",
   secondary: "switch-secondary",
   tertiary: "switch-tertiary",
+  accent: "switch-accent",
+  neutral: "switch-neutral",
+  base: "switch-base",
+  info: "switch-info",
+  success: "switch-success",
+  warning: "switch-warning",
+  error: "switch-error",
 };
 
 export function getSwitchClasses({

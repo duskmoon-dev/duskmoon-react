@@ -130,9 +130,7 @@ export const Result = forwardRef<HTMLDivElement, ResultProps>(
         {icon ?? <PresentedIcon status={status} />}
       </div>
       {title ? <div className={resultTitleClass}>{title}</div> : null}
-      {subTitle ? (
-        <div className={resultSubTitleClass}>{subTitle}</div>
-      ) : null}
+      {subTitle ? <div className={resultSubTitleClass}>{subTitle}</div> : null}
       {extra ? <div className={resultExtraClass}>{extra}</div> : null}
     </div>
   ),

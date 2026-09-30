@@ -20,8 +20,10 @@ export interface DmPaginationLocale {
   selected?: (selectedTotal: number) => string;
 }
 
-export interface DmPaginationProps
-  extends Omit<PaginationProps, "children" | "showTotal"> {
+export interface DmPaginationProps extends Omit<
+  PaginationProps,
+  "children" | "showTotal"
+> {
   selectedTotal?: number;
   refresh?: () => void;
   showRefresh?: boolean;

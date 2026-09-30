@@ -60,10 +60,10 @@ export type DropdownButtonProps = Omit<
   "children" | "onClick" | keyof ButtonProps
 > &
   Omit<ButtonProps, "children" | "onClick"> & {
-  buttonsRender?: (buttons: ReactNode[]) => ReactNode[];
-  children?: ReactNode;
-  onClick?: ButtonProps["onClick"];
-};
+    buttonsRender?: (buttons: ReactNode[]) => ReactNode[];
+    children?: ReactNode;
+    onClick?: ButtonProps["onClick"];
+  };
 
 export type DropdownComponent = ForwardRefExoticComponent<
   DropdownProps & RefAttributes<HTMLSpanElement>

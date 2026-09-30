@@ -1,6 +1,9 @@
 import React, { forwardRef } from "react";
 import { getDmDatePickerClasses } from "../../classes/dm-date-picker";
-import { getDmDatePickerLocale, setDmDatePickerLocale } from "../../infrastructure";
+import {
+  getDmDatePickerLocale,
+  setDmDatePickerLocale,
+} from "../../infrastructure";
 import { DatePicker } from "../date-picker";
 import type {
   DmDatePickerComponent,

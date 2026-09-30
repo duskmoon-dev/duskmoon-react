@@ -95,7 +95,9 @@ function optionsFromChildren(children: React.ReactNode): SelectOptionInput[] {
 }
 
 function flattenOptions(options: SelectOptionInput[]) {
-  return options.flatMap((option) => (isGroup(option) ? option.options : option));
+  return options.flatMap((option) =>
+    isGroup(option) ? option.options : option,
+  );
 }
 
 function matchesOption(
@@ -112,9 +114,10 @@ function matchesOption(
   }
 
   const label = optionLabel(option);
-  const text = typeof label === "string" || typeof label === "number"
-    ? String(label)
-    : String(option.value);
+  const text =
+    typeof label === "string" || typeof label === "number"
+      ? String(label)
+      : String(option.value);
 
   return text.toLowerCase().includes(searchValue.toLowerCase());
 }
@@ -134,7 +137,9 @@ function filterOptions(
         matchesOption(child, searchValue, filterOption),
       );
 
-      return groupOptions.length > 0 ? { ...option, options: groupOptions } : null;
+      return groupOptions.length > 0
+        ? { ...option, options: groupOptions }
+        : null;
     })
     .filter((option): option is SelectOptionInput => option !== null);
 }
@@ -190,11 +195,18 @@ const SelectRoot = forwardRef<HTMLDivElement, SelectProps>(
       () => options ?? optionsFromChildren(children),
       [children, options],
     );
-    const flatOptions = useMemo(() => flattenOptions(sourceOptions), [sourceOptions]);
+    const flatOptions = useMemo(
+      () => flattenOptions(sourceOptions),
+      [sourceOptions],
+    );
     const [open, setOpen] = useState(false);
     const [searchValue, setSearchValue] = useState("");
-    const [internalValue, setInternalValue] = useState<SelectValue | SelectValue[] | undefined>(
-      multiple ? normalizeMultiValue(defaultValue) : normalizeSingleValue(defaultValue),
+    const [internalValue, setInternalValue] = useState<
+      SelectValue | SelectValue[] | undefined
+    >(
+      multiple
+        ? normalizeMultiValue(defaultValue)
+        : normalizeSingleValue(defaultValue),
     );
     const controlled = value !== undefined;
     const currentValue = controlled ? value : internalValue;
@@ -211,7 +223,11 @@ const SelectRoot = forwardRef<HTMLDivElement, SelectProps>(
           label: selectedValue,
         },
     );
-    const visibleOptions = filterOptions(sourceOptions, searchValue, filterOption);
+    const visibleOptions = filterOptions(
+      sourceOptions,
+      searchValue,
+      filterOption,
+    );
     const hasValue = selectedValues.length > 0;
     const searchable = showSearch || mode === "tags";
 
@@ -322,15 +338,13 @@ const SelectRoot = forwardRef<HTMLDivElement, SelectProps>(
       });
     }
 
-    const selection = multiple ? (
-      selectedOptions.map((option) => (
-        <span key={valueKey(option.value)} className={selectTagClass}>
-          {renderValue(option)}
-        </span>
-      ))
-    ) : (
-      renderValue(selectedOptions[0])
-    );
+    const selection = multiple
+      ? selectedOptions.map((option) => (
+          <span key={valueKey(option.value)} className={selectTagClass}>
+            {renderValue(option)}
+          </span>
+        ))
+      : renderValue(selectedOptions[0]);
 
     return (
       <div
@@ -359,26 +373,33 @@ const SelectRoot = forwardRef<HTMLDivElement, SelectProps>(
               <span className={selectPlaceholderClass}>{placeholder}</span>
             )}
           </span>
-          {allowClear && hasValue && !disabled && !loading ? (
-            <span
-              className={selectClearClass}
-              aria-label="Clear selection"
-              onClick={clearValue}
-            >
-              x
-            </span>
-          ) : null}
           <span className={selectIconClass} aria-hidden="true">
             v
           </span>
         </button>
+        {allowClear && hasValue && !disabled && !loading ? (
+          <button
+            type="button"
+            className={selectClearClass}
+            aria-label="Clear selection"
+            onClick={clearValue}
+          >
+            x
+          </button>
+        ) : null}
         {open ? (
-          <div className={selectDropdownClass} role="listbox" aria-multiselectable={multiple || undefined}>
+          <div
+            className={selectDropdownClass}
+            role="listbox"
+            aria-multiselectable={multiple || undefined}
+          >
             {searchable ? (
               <input
                 className={selectSearchClass}
                 value={searchValue}
-                placeholder={typeof placeholder === "string" ? placeholder : undefined}
+                placeholder={
+                  typeof placeholder === "string" ? placeholder : undefined
+                }
                 onChange={(event) => setSearchValue(event.currentTarget.value)}
                 onKeyDown={(event) => {
                   if (event.key === "Enter") {

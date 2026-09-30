@@ -65,8 +65,10 @@ export const Affix = forwardRef<HTMLDivElement, AffixProps>(
         className={getAffixClasses({ fixed, className })}
         style={{
           position: fixed ? "fixed" : undefined,
-          top: fixed && offsetBottom === undefined ? offsetTop ?? 0 : undefined,
-          bottom: fixed && offsetBottom !== undefined ? offsetBottom : undefined,
+          top:
+            fixed && offsetBottom === undefined ? (offsetTop ?? 0) : undefined,
+          bottom:
+            fixed && offsetBottom !== undefined ? offsetBottom : undefined,
           ...style,
         }}
       >

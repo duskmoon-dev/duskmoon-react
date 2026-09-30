@@ -21,10 +21,7 @@ export type TourPlacement =
   | "rightBottom";
 
 export type TourTarget =
-  | HTMLElement
-  | null
-  | string
-  | (() => HTMLElement | null);
+  HTMLElement | null | string | (() => HTMLElement | null);
 
 export interface TourMaskConfig {
   className?: string;
@@ -47,8 +44,10 @@ export interface TourStep {
   onClose?: (current: number) => void;
 }
 
-export interface TourProps
-  extends Omit<ComponentProps<"div">, "children" | "title" | "onChange"> {
+export interface TourProps extends Omit<
+  ComponentProps<"div">,
+  "children" | "title" | "onChange"
+> {
   steps?: TourStep[];
   open?: boolean;
   defaultOpen?: boolean;

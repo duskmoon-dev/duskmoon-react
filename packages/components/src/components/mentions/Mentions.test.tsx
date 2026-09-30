@@ -152,7 +152,9 @@ describe("Mentions", () => {
   });
 
   test("supports disabled state", () => {
-    render(<Mentions disabled options={[{ value: "alice", label: "Alice" }]} />);
+    render(
+      <Mentions disabled options={[{ value: "alice", label: "Alice" }]} />,
+    );
 
     const textarea = screen.getByRole("combobox") as HTMLTextAreaElement;
 

@@ -6,7 +6,12 @@ export type TimelineColor =
   | "primary"
   | "secondary"
   | "tertiary"
+  | "accent"
+  | "neutral"
+  | "base"
+  | "info"
   | "success"
+  | "warning"
   | "error";
 
 export type TimelineSize = "sm" | "md" | "lg";

@@ -1,16 +1,12 @@
 import type { ForwardRefExoticComponent, RefAttributes } from "react";
-import type {
-  DatePickerProps,
-  RangePickerProps,
-} from "../date-picker";
+import type { DatePickerProps, RangePickerProps } from "../date-picker";
 
 export type DmDatePickerProps = DatePickerProps;
 export type DmRangePickerProps = RangePickerProps;
 
-export interface DmDatePickerComponent
-  extends ForwardRefExoticComponent<
-    DmDatePickerProps & RefAttributes<HTMLDivElement>
-  > {
+export interface DmDatePickerComponent extends ForwardRefExoticComponent<
+  DmDatePickerProps & RefAttributes<HTMLDivElement>
+> {
   RangePicker: ForwardRefExoticComponent<
     DmRangePickerProps & RefAttributes<HTMLDivElement>
   >;

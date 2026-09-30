@@ -18,13 +18,17 @@ describe("Upload", () => {
       </Upload>,
     );
 
-    const input = document.querySelector("input[type='file']") as HTMLInputElement;
+    const input = document.querySelector(
+      "input[type='file']",
+    ) as HTMLInputElement;
 
     expect(screen.getByText("Pick file")).toBeTruthy();
     expect(input.hidden).toBe(true);
     expect(input.accept).toBe(".txt");
     expect(screen.getByText("readme.txt")).toBeTruthy();
-    expect(screen.getByRole("progressbar").getAttribute("aria-valuenow")).toBe("40");
+    expect(screen.getByRole("progressbar").getAttribute("aria-valuenow")).toBe(
+      "40",
+    );
   });
 
   test("adds selected files and emits onChange", async () => {
@@ -41,7 +45,9 @@ describe("Upload", () => {
       </Upload>,
     );
 
-    const input = document.querySelector("input[type='file']") as HTMLInputElement;
+    const input = document.querySelector(
+      "input[type='file']",
+    ) as HTMLInputElement;
     fireEvent.change(input, {
       target: { files: [makeFile("alpha.txt"), makeFile("beta.txt")] },
     });
@@ -60,7 +66,9 @@ describe("Upload", () => {
       />,
     );
 
-    const input = document.querySelector("input[type='file']") as HTMLInputElement;
+    const input = document.querySelector(
+      "input[type='file']",
+    ) as HTMLInputElement;
     fireEvent.change(input, {
       target: { files: [makeFile("keep.txt"), makeFile("skip.tmp")] },
     });
@@ -80,11 +88,17 @@ describe("Upload", () => {
       />,
     );
 
-    const input = document.querySelector("input[type='file']") as HTMLInputElement;
-    fireEvent.change(input, { target: { files: [makeFile("photo.png", "image/png")] } });
+    const input = document.querySelector(
+      "input[type='file']",
+    ) as HTMLInputElement;
+    fireEvent.change(input, {
+      target: { files: [makeFile("photo.png", "image/png")] },
+    });
 
     await screen.findByText("photo.png");
-    expect(screen.getByRole("progressbar").getAttribute("aria-valuenow")).toBe("100");
+    expect(screen.getByRole("progressbar").getAttribute("aria-valuenow")).toBe(
+      "100",
+    );
   });
 
   test("calls preview and removes files", async () => {

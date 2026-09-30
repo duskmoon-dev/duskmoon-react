@@ -21,7 +21,7 @@ describe("Card", () => {
     const { container } = render(
       <Card appearance="outline" padding="lg">
         Custom
-      </Card>
+      </Card>,
     );
     const card = container.firstChild as HTMLElement;
     expect(card.className).toContain("card-outline");
@@ -29,7 +29,9 @@ describe("Card", () => {
   });
 
   test("applies custom className", () => {
-    const { container } = render(<Card className="my-custom-class">Custom class</Card>);
+    const { container } = render(
+      <Card className="my-custom-class">Custom class</Card>,
+    );
     const card = container.firstChild as HTMLElement;
     expect(card.className).toContain("my-custom-class");
   });

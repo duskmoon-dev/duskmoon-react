@@ -39,7 +39,9 @@ function installMatchMedia(matchesByQuery: Record<string, boolean>) {
       },
       removeEventListener: (_event: "change", listener: MatchMediaListener) => {
         if (listener) {
-          entry.listeners.delete(listener as (event: MediaQueryListEvent) => void);
+          entry.listeners.delete(
+            listener as (event: MediaQueryListEvent) => void,
+          );
         }
       },
       addListener: (listener: MatchMediaListener) => {
@@ -49,7 +51,9 @@ function installMatchMedia(matchesByQuery: Record<string, boolean>) {
       },
       removeListener: (listener: MatchMediaListener) => {
         if (listener) {
-          entry.listeners.delete(listener as (event: MediaQueryListEvent) => void);
+          entry.listeners.delete(
+            listener as (event: MediaQueryListEvent) => void,
+          );
         }
       },
       dispatchEvent: () => true,
@@ -75,16 +79,14 @@ function installMatchMedia(matchesByQuery: Record<string, boolean>) {
 function BreakpointProbe() {
   const screens = useBreakpoint();
 
-  return (
-    <output aria-label="screens">
-      {JSON.stringify(screens)}
-    </output>
-  );
+  return <output aria-label="screens">{JSON.stringify(screens)}</output>;
 }
 
 function WatchProbe() {
   const md = Grid.useWatch("md");
-  const desktop = useWatch((screens) => screens.lg || screens.xl || screens.xxl);
+  const desktop = useWatch(
+    (screens) => screens.lg || screens.xl || screens.xxl,
+  );
 
   return (
     <>

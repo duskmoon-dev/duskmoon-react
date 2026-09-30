@@ -1,9 +1,4 @@
-import React, {
-  createContext,
-  forwardRef,
-  useContext,
-  useMemo,
-} from "react";
+import React, { createContext, forwardRef, useContext, useMemo } from "react";
 import { getConfigProviderClasses } from "../../classes/config-provider";
 import type {
   ConfigProviderComponent,
@@ -20,8 +15,9 @@ const defaultConfig: ConfigProviderContextValue = {
 
 let globalConfig: Partial<ConfigProviderContextValue> = {};
 
-export const ConfigContext =
-  createContext<ConfigProviderContextValue | undefined>(undefined);
+export const ConfigContext = createContext<
+  ConfigProviderContextValue | undefined
+>(undefined);
 
 const ConfigProviderBase = forwardRef<HTMLElement, ConfigProviderProps>(
   (
@@ -42,10 +38,15 @@ const ConfigProviderBase = forwardRef<HTMLElement, ConfigProviderProps>(
     },
     ref,
   ) => {
-    const parent = useContext(ConfigContext) ?? {
-      ...defaultConfig,
-      ...globalConfig,
-    };
+    const context = useContext(ConfigContext);
+    const parent = useMemo(
+      () =>
+        context ?? {
+          ...defaultConfig,
+          ...globalConfig,
+        },
+      [context],
+    );
     const value = useMemo<ConfigProviderContextValue>(
       () => ({
         ...defaultConfig,
@@ -111,8 +112,7 @@ const ConfigProviderBase = forwardRef<HTMLElement, ConfigProviderProps>(
 
 ConfigProviderBase.displayName = "ConfigProvider";
 
-export const ConfigProvider =
-  ConfigProviderBase as ConfigProviderComponent;
+export const ConfigProvider = ConfigProviderBase as ConfigProviderComponent;
 
 ConfigProvider.ConfigContext =
   ConfigContext as React.Context<ConfigProviderContextValue>;

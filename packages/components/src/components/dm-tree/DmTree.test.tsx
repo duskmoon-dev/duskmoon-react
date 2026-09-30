@@ -26,7 +26,9 @@ describe("DmTree", () => {
         treeData={[...treeData]}
         selectedKey="alpha"
         fieldNames={{ key: "id", title: "name", children: "children" }}
-        onChange={(item, key, before) => changes.push([item?.name, key, before])}
+        onChange={(item, key, before) =>
+          changes.push([item?.name, key, before])
+        }
       />,
     );
 
@@ -48,8 +50,16 @@ describe("DmTree", () => {
         fieldNames={{ key: "id", title: "name", children: "children" }}
         showSearch
         allItem={{ value: "all", label: "Everything" }}
-        itemToolbar={[{ icon: "Edit", title: "Edit item", onClick: (item) => actions.push(String(item.name)) }]}
-        onChange={(item, key, before) => changes.push([item?.name, key, before])}
+        itemToolbar={[
+          {
+            icon: "Edit",
+            title: "Edit item",
+            onClick: (item) => actions.push(String(item.name)),
+          },
+        ]}
+        onChange={(item, key, before) =>
+          changes.push([item?.name, key, before])
+        }
       />,
     );
 

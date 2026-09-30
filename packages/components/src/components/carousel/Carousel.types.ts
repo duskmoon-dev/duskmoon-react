@@ -8,8 +8,10 @@ import type {
 export type CarouselEffect = "scrollx" | "fade";
 export type CarouselDotPosition = "top" | "bottom" | "left" | "right";
 
-export interface CarouselProps
-  extends Omit<ComponentPropsWithoutRef<"div">, "onChange"> {
+export interface CarouselProps extends Omit<
+  ComponentPropsWithoutRef<"div">,
+  "onChange"
+> {
   children?: ReactNode;
   activeIndex?: number;
   defaultActiveIndex?: number;

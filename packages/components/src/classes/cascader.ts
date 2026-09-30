@@ -1,5 +1,8 @@
 import { cn } from "../utils";
-import type { CascaderSize, CascaderStatus } from "../components/cascader/Cascader.types";
+import type {
+  CascaderSize,
+  CascaderStatus,
+} from "../components/cascader/Cascader.types";
 
 export const cascaderContainerClass = "cascader-container";
 export const cascaderBaseClass = "cascader";

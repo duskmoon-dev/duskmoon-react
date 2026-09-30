@@ -1,13 +1,11 @@
-import type {
-  ComponentPropsWithoutRef,
-  ReactNode,
-  UIEvent,
-} from "react";
+import type { ComponentPropsWithoutRef, ReactNode, UIEvent } from "react";
 
 export type DmScrollThreshold = number | `${number}px` | string;
 
-export interface DmInfiniteScrollProps
-  extends Omit<ComponentPropsWithoutRef<"div">, "children" | "onScroll"> {
+export interface DmInfiniteScrollProps extends Omit<
+  ComponentPropsWithoutRef<"div">,
+  "children" | "onScroll"
+> {
   id: string;
   prefix?: string;
   children?: ReactNode;
@@ -23,4 +21,3 @@ export interface DmInfiniteScrollProps
   initialScrollY?: number;
   onScroll?: (event: UIEvent<HTMLDivElement>) => void;
 }
-

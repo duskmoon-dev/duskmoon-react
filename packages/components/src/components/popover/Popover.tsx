@@ -1,8 +1,11 @@
 import React, {
+  cloneElement,
   forwardRef,
+  isValidElement,
   useId,
   useState,
   type MouseEvent,
+  type ReactElement,
 } from "react";
 import {
   getPopoverClasses,
@@ -18,6 +21,15 @@ interface PopoverTriggerHandlers {
   onFocus?: () => void;
   onBlur?: () => void;
   onContextMenu?: (event: MouseEvent<HTMLElement>) => void;
+}
+
+type TriggerElementProps = React.HTMLAttributes<HTMLElement>;
+
+function callHandler<Event>(
+  handler: ((event: Event) => void) | undefined,
+  event: Event,
+) {
+  handler?.(event);
 }
 
 function getHandlersByTrigger(
@@ -80,7 +92,8 @@ export const Popover = forwardRef<HTMLSpanElement, PopoverProps>(
   ) => {
     const isControlled = open !== undefined;
     const [internalOpen, setInternalOpen] = useState(Boolean(defaultOpen));
-    const tooltipId = id ? `${id}-popover` : useId();
+    const generatedId = useId();
+    const tooltipId = id ? `${id}-popover` : generatedId;
     const visible = isControlled ? open : internalOpen;
 
     function updateOpen(nextOpen: boolean) {
@@ -135,26 +148,52 @@ export const Popover = forwardRef<HTMLSpanElement, PopoverProps>(
     const hasContent = Boolean(content || title);
     const shouldRenderContent = !destroyTooltipOnHide || visible;
 
+    const triggerProps = {
+      "aria-describedby": hasContent && visible ? tooltipId : undefined,
+      onMouseEnter: triggerHandlers.onMouseEnter ? handleMouseEnter : undefined,
+      onMouseLeave: triggerHandlers.onMouseLeave ? handleMouseLeave : undefined,
+      onFocus: triggerHandlers.onFocus ? handleFocus : undefined,
+      onBlur: triggerHandlers.onBlur ? handleBlur : undefined,
+      onContextMenu: triggerHandlers.onContextMenu
+        ? handleContextMenu
+        : undefined,
+      onClick: triggerHandlers.onClick ? handleClick : undefined,
+    };
+    const triggerNode = isValidElement<TriggerElementProps>(children)
+      ? cloneElement(children as ReactElement<TriggerElementProps>, {
+          "aria-describedby":
+            triggerProps["aria-describedby"] ??
+            children.props["aria-describedby"],
+          onMouseEnter: (event) => {
+            callHandler(children.props.onMouseEnter, event);
+            triggerProps.onMouseEnter?.(event);
+          },
+          onMouseLeave: (event) => {
+            callHandler(children.props.onMouseLeave, event);
+            triggerProps.onMouseLeave?.(event);
+          },
+          onFocus: (event) => {
+            callHandler(children.props.onFocus, event);
+            triggerProps.onFocus?.(event);
+          },
+          onBlur: (event) => {
+            callHandler(children.props.onBlur, event);
+            triggerProps.onBlur?.(event);
+          },
+          onContextMenu: (event) => {
+            callHandler(children.props.onContextMenu, event);
+            triggerProps.onContextMenu?.(event);
+          },
+          onClick: (event) => {
+            callHandler(children.props.onClick, event);
+            triggerProps.onClick?.(event);
+          },
+        })
+      : children;
+
     return (
-      <span
-        {...props}
-        ref={ref}
-        className={popoverWrapperClass}
-        aria-describedby={hasContent && visible ? tooltipId : undefined}
-        onMouseEnter={
-          triggerHandlers.onMouseEnter ? handleMouseEnter : undefined
-        }
-        onMouseLeave={
-          triggerHandlers.onMouseLeave ? handleMouseLeave : undefined
-        }
-        onFocus={triggerHandlers.onFocus ? handleFocus : undefined}
-        onBlur={triggerHandlers.onBlur ? handleBlur : undefined}
-        onContextMenu={
-          triggerHandlers.onContextMenu ? handleContextMenu : undefined
-        }
-        onClick={triggerHandlers.onClick ? handleClick : undefined}
-      >
-        {children}
+      <span {...props} ref={ref} className={popoverWrapperClass}>
+        {triggerNode}
         {shouldRenderContent ? (
           <span
             id={tooltipId}

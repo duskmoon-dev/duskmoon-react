@@ -23,7 +23,11 @@ function previewConfig(preview: ImagePreview | undefined) {
 }
 
 function renderPlaceholder(placeholder: ImageProps["placeholder"]) {
-  if (placeholder === false || placeholder === undefined || placeholder === null) {
+  if (
+    placeholder === false ||
+    placeholder === undefined ||
+    placeholder === null
+  ) {
     return null;
   }
 

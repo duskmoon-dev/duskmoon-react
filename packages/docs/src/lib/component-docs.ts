@@ -1,5 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
+import {
+  componentPageContentFor,
+  type ComponentPageContent,
+} from "./component-page-content";
+import { docsPath } from "./paths";
 
 type Target = {
   id: string;
@@ -9,6 +14,8 @@ type Target = {
   directory: string | null;
   packageSubpath: string | null;
   status: string;
+  packageName?: "components" | "art-components";
+  manualScenarios?: string[];
 };
 
 type Manifest = {
@@ -36,9 +43,12 @@ export type ComponentDoc = Target & {
   route: string;
   category: string;
   intro: string;
+  pageContent: ComponentPageContent;
   importPath: string;
   typeFile: string | null;
   testFile: string | null;
+  apiSource: string | null;
+  testSource: string | null;
   scenarios: string[];
   keyProps: string[];
   api: ApiSection[];
@@ -49,14 +59,101 @@ export type DemoSpec = {
   title: string;
   description: string;
   code: string;
+  source: "authored" | "test-backed" | "type-driven";
 };
 
-const repoRoot = path.resolve(import.meta.dirname, "../../../..");
+function findRepoRoot() {
+  const candidates = [
+    path.resolve(import.meta.dirname, "../../../.."),
+    path.resolve(import.meta.dirname, "../../../../.."),
+    path.resolve(process.cwd(), "../.."),
+    process.cwd(),
+  ];
+
+  return (
+    candidates.find((candidate) =>
+      fs.existsSync(
+        path.join(
+          candidate,
+          "packages/components/scripts/parity/component-api.manifest.json",
+        ),
+      ),
+    ) ?? path.resolve(import.meta.dirname, "../../../..")
+  );
+}
+
+const repoRoot = findRepoRoot();
 const manifestPath = path.join(
   repoRoot,
   "packages/components/scripts/parity/component-api.manifest.json",
 );
-const componentsRoot = path.join(repoRoot, "packages/components/src/components");
+const componentsRoot = path.join(
+  repoRoot,
+  "packages/components/src/components",
+);
+const artComponentsRoot = path.join(repoRoot, "packages/art-components/src");
+const artComponentsTest = path.join(
+  repoRoot,
+  "packages/art-components/tests/art-components.test.tsx",
+);
+
+function artTarget(
+  id: string,
+  exportName: string,
+  manualScenarios: string[],
+): Target {
+  return {
+    id,
+    kind: "art-component",
+    source: "art-components",
+    exportName,
+    directory: null,
+    packageSubpath: null,
+    status: "implemented",
+    packageName: "art-components",
+    manualScenarios,
+  };
+}
+
+const artComponentTargets: Target[] = [
+  artTarget("art-moon", "ArtMoon", ["Renders crescent and glow variants"]),
+  artTarget("art-sun", "ArtSun", ["Renders rays, sunset, and pulse variants"]),
+  artTarget("art-atom", "ArtAtom", ["Renders electron orbit structure"]),
+  artTarget("art-eclipse", "ArtEclipse", ["Renders layered eclipse structure"]),
+  artTarget("art-mountain", "ArtMountain", [
+    "Renders mountain, tree, and borealis layers",
+  ]),
+  artTarget("art-snowflake", "ArtSnowflake", [
+    "Supports unicode and falling snowflake variants",
+  ]),
+  artTarget("art-plasma-ball", "ArtPlasmaBall", [
+    "Renders interactive plasma rays and switch state",
+  ]),
+  artTarget("art-circular-gallery", "ArtCircularGallery", [
+    "Renders targetable gallery cards",
+  ]),
+  artTarget("art-cat-stargazer", "ArtCatStargazer", [
+    "Renders the stargazing scene structure",
+  ]),
+  artTarget("art-flower-animation", "ArtFlowerAnimation", [
+    "Renders flowers, grass, and animated bubbles",
+  ]),
+  artTarget("art-color-spin", "ArtColorSpin", [
+    "Renders generated color spin segments",
+  ]),
+  artTarget("art-synthwave-starfield", "ArtSynthwaveStarfield", [
+    "Supports pausing the starfield animation",
+  ]),
+  artTarget("art-csswitch", "ArtCsswitch", [
+    "Renders the console body and joycon controls",
+  ]),
+  artTarget("art-snowball-preloader", "ArtSnowballPreloader", [
+    "Renders snowball preloader rings and track",
+  ]),
+  artTarget("art-gemini-input", "ArtGeminiInput", [
+    "Renders textarea controls and action buttons",
+  ]),
+];
 
 function readManifest(): Manifest {
   return JSON.parse(fs.readFileSync(manifestPath, "utf8")) as Manifest;
@@ -78,10 +175,11 @@ function componentName(target: Target) {
 }
 
 function categoryFor(kind: string) {
+  if (kind === "art-component") return "CSS Art";
   if (kind === "dm-workflow-component") return "DuskMoon workflow";
   if (kind === "infrastructure-export") return "Infrastructure";
   if (kind === "internal-component") return "Internal";
-  return "Ant-compatible";
+  return "Standard";
 }
 
 function sentenceCase(text: string) {
@@ -96,12 +194,49 @@ function humanList(items: string[]) {
   return `${items.slice(0, -1).join(", ")}, and ${items.at(-1)}`;
 }
 
+const semanticColors = [
+  "primary",
+  "secondary",
+  "tertiary",
+  "accent",
+  "neutral",
+  "base",
+  "info",
+  "success",
+  "warning",
+  "error",
+] as const;
+
+const semanticColorComponentIds = new Set([
+  "alert",
+  "auto-complete",
+  "badge",
+  "button",
+  "chat",
+  "checkbox",
+  "divider",
+  "progress",
+  "radio",
+  "rate",
+  "slider",
+  "switch",
+  "tag",
+  "timeline",
+]);
+
+function semanticColorsDeclaration() {
+  return `const colors = [\n${semanticColors.map((color) => `  "${color}"`).join(",\n")}\n] as const;`;
+}
+
 function scenarioPhrase(scenarios: string[]) {
   return scenarios
     .slice(0, 3)
     .map((scenario) =>
       scenario
-        .replace(/^(renders|supports|applies|exposes|uses|calls|adds|maps|binds|validates)\s+/i, "")
+        .replace(
+          /^(renders|supports|applies|exposes|uses|calls|adds|maps|binds|validates)\s+/i,
+          "",
+        )
         .replace(/\.$/, ""),
     )
     .map(sentenceCase);
@@ -122,7 +257,11 @@ function introFor(
     : "";
 
   if (target.kind === "dm-workflow-component") {
-    return `${name} is a DuskMoon-prefixed workflow component derived from ${target.source} behavior and adapted to this React package without reusing z-design source code.${featureText}${propText}`;
+    return `${name} is a DuskMoon-prefixed workflow component exported by this React package.${featureText}${propText}`;
+  }
+
+  if (target.kind === "art-component") {
+    return `${name} wraps a @duskmoon-dev/css-art illustration as a typed React component. Import the art component styles once in the application entry before rendering it.${featureText}${propText}`;
   }
 
   if (target.kind === "internal-component") {
@@ -133,10 +272,14 @@ function introFor(
     return `${name} is a compatibility export for theme, render, or helper behavior expected by component consumers.${featureText}${propText}`;
   }
 
-  return `${name} is an Ant Design-compatible component implemented with DuskMoon React primitives and exported as part of the component library.${featureText}${propText}`;
+  return `${name} is a standard DuskMoon React component exported as part of the component library.${featureText}${propText}`;
 }
 
 function findTypeFile(target: Target, name: string) {
+  if (target.packageName === "art-components") {
+    return path.join(artComponentsRoot, "index.tsx");
+  }
+
   if (!target.directory) return null;
 
   const componentDir = path.join(componentsRoot, target.directory);
@@ -145,15 +288,24 @@ function findTypeFile(target: Target, name: string) {
   const direct = path.join(componentDir, `${name}.types.ts`);
   if (fs.existsSync(direct)) return direct;
 
-  return (
-    fs
-      .readdirSync(componentDir)
-      .find((file) => file.endsWith(".types.ts"))
-      ?.replace(/^/, `${componentDir}/`) ?? null
-  );
+  const generatedTypes = fs
+    .readdirSync(componentDir)
+    .find((file) => file.endsWith(".types.ts"));
+  if (generatedTypes) return path.join(componentDir, generatedTypes);
+
+  for (const extension of [".tsx", ".ts"]) {
+    const implementation = path.join(componentDir, `${name}${extension}`);
+    if (fs.existsSync(implementation)) return implementation;
+  }
+
+  return null;
 }
 
 function findTestFile(target: Target, name: string) {
+  if (target.packageName === "art-components") {
+    return artComponentsTest;
+  }
+
   if (!target.directory) return null;
 
   const componentDir = path.join(componentsRoot, target.directory);
@@ -260,12 +412,20 @@ function parseApi(typeFile: string | null, name: string): ApiSection[] {
     source.matchAll(/export\s+type\s+([A-Za-z_$][\w$]*)\s*=\s*([^;]+);/g),
     (match) => ({ name: match[1], definition: compactType(match[2]) }),
   );
-  const orderedInterfaceNames = [
-    ...preferredNames.filter((item) => interfaceNames.includes(item)),
-    ...interfaceNames.filter((item) => !preferredNames.includes(item)),
-  ];
+  const isArtTypeFile = typeFile.startsWith(artComponentsRoot);
+  const orderedInterfaceNames = isArtTypeFile
+    ? preferredNames.filter((item) => interfaceNames.includes(item))
+    : [
+        ...preferredNames.filter((item) => interfaceNames.includes(item)),
+        ...interfaceNames.filter((item) => !preferredNames.includes(item)),
+      ];
+  const orderedTypeNames = isArtTypeFile
+    ? preferredNames.flatMap((item) =>
+        typeNames.filter((typeInfo) => typeInfo.name === item),
+      )
+    : typeNames;
 
-  for (const interfaceName of orderedInterfaceNames.slice(0, 8)) {
+  for (const interfaceName of orderedInterfaceNames) {
     const parsed = splitInterfaceBody(source, interfaceName);
     if (!parsed) continue;
 
@@ -277,7 +437,7 @@ function parseApi(typeFile: string | null, name: string): ApiSection[] {
     });
   }
 
-  for (const typeInfo of typeNames.slice(0, 8)) {
+  for (const typeInfo of orderedTypeNames) {
     if (sections.some((section) => section.name === typeInfo.name)) continue;
     sections.push({
       name: typeInfo.name,
@@ -363,7 +523,10 @@ function propsObjectFromApi(api: ApiSection[], target: Target) {
   if (propNames.includes("color")) {
     props.push('color="primary"');
   }
-  if (propNames.includes("appearance")) {
+  if (
+    propNames.includes("appearance") &&
+    !["alert", "button", "card"].includes(target.id)
+  ) {
     props.push('appearance="tonal"');
   }
   if (propNames.includes("onChange")) {
@@ -395,14 +558,87 @@ function propsObjectFromApi(api: ApiSection[], target: Target) {
   if (target.id === "alert") {
     props.push('color="success"', 'appearance="tonal"');
   }
+  if (target.id === "card") {
+    props.push('appearance="elevated"');
+  }
   if (target.id === "upload") {
     props.push('action="/api/upload"');
   }
   if (target.id === "form") {
-    props.push('onFinish={(values) => console.log(values)}');
+    props.push("onFinish={(values) => console.log(values)}");
   }
 
   return Array.from(new Set(props)).slice(0, 6);
+}
+
+function artDemoCode(target: Target, name: string) {
+  switch (target.id) {
+    case "art-moon":
+      return `<${name} size="lg" crescent glow />`;
+    case "art-sun":
+      return `<${name} size="lg" rays pulse />`;
+    case "art-atom":
+      return `<${name} size="sm" />`;
+    case "art-eclipse":
+      return `<${name} size="sm" />`;
+    case "art-mountain":
+      return `<${name} size="sm" />`;
+    case "art-snowflake":
+      return `<${name}
+  unicode
+  fall
+  style={{
+    "--art-snowflake-size": "32px",
+    "--art-snowflake-color": "#76d7ff"
+  }}
+/>`;
+    case "art-plasma-ball":
+      return `<${name} size="sm" defaultChecked />`;
+    case "art-circular-gallery":
+      return `<${name}
+  title="Moons"
+  size="sm"
+  items={[
+    { title: "Crater", src: "https://picsum.photos/seed/dm-art-1/160/220" },
+    { title: "Orbit", src: "https://picsum.photos/seed/dm-art-2/160/220" },
+    { title: "Lunar", src: "https://picsum.photos/seed/dm-art-3/160/220" },
+    { title: "Night", src: "https://picsum.photos/seed/dm-art-4/160/220" }
+  ]}
+/>`;
+    case "art-cat-stargazer":
+      return `<${name} size="sm" />`;
+    case "art-flower-animation":
+      return `<${name} size="sm" />`;
+    case "art-color-spin":
+      return `<${name} size="sm" />`;
+    case "art-synthwave-starfield":
+      return `<${name} size="sm" />`;
+    case "art-csswitch":
+      return `<${name} size="sm" />`;
+    case "art-snowball-preloader":
+      return `<${name} size="sm" />`;
+    case "art-gemini-input":
+      return `<${name}
+  size="lg"
+  placeholder="Ask DuskMoon"
+  defaultValue="Pure CSS art"
+  rows={2}
+/>`;
+    default:
+      return `<${name} />`;
+  }
+}
+
+function accessibleArtDemoCode(target: Target, name: string) {
+  const label = `${titleCase(target.id)} illustration`;
+  const usage = artDemoCode(target, name);
+  const accessibleProps = `\n  decorative={false}\n  aria-label="${label}"`;
+
+  if (usage.endsWith("\n/>")) {
+    return usage.replace(/\n\/>$/, `${accessibleProps}\n/>`);
+  }
+
+  return usage.replace(/\s\/>$/, `${accessibleProps} />`);
 }
 
 function demoCode(
@@ -411,6 +647,10 @@ function demoCode(
   api: ApiSection[],
   scenario?: string,
 ) {
+  if (target.kind === "art-component") {
+    return artDemoCode(target, name);
+  }
+
   const props = propsObjectFromApi(api, target);
   const scenarioComment = scenario ? `  // ${scenario}\n` : "";
   const noChildrenComponents = [
@@ -429,7 +669,6 @@ function demoCode(
     "table",
     "dm-table",
     "dm-pro-table",
-    "dm-pro-table-inner",
     "dm-query",
     "dm-search",
     "pagination",
@@ -439,22 +678,72 @@ function demoCode(
     ? ""
     : `\n  DuskMoon ${titleCase(target.id)}\n`;
 
+  if (target.id === "chat") {
+    return `<${name} aria-live="polite">
+  <${name}.Avatar>
+    <span className="avatar avatar-sm avatar-info">AI</span>
+  </${name}.Avatar>
+  <${name}.Header>Assistant · just now</${name}.Header>
+  <${name}.Reasoning open>
+    <summary>Thinking (2s)</summary>
+    <div>Reviewing the component API before answering.</div>
+  </${name}.Reasoning>
+  <${name}.Tool status="success" open>
+    <${name}.ToolHeader>
+      <span>search_components</span>
+      <${name}.ToolStatus>Done</${name}.ToolStatus>
+    </${name}.ToolHeader>
+    <${name}.ToolCall>{'{"query":"chat"}'}</${name}.ToolCall>
+    <${name}.ToolResult>Found the DuskMoon Chat primitives.</${name}.ToolResult>
+  </${name}.Tool>
+  <${name}.Bubble color="primary" streaming>
+    Chat is ready for React.
+  </${name}.Bubble>
+  <${name}.Footer>Delivered</${name}.Footer>
+</${name}>`;
+  }
+
   if (target.id === "button") {
     return `<${name} color="primary">Save changes</${name}>`;
   }
 
   if (target.id === "alert") {
-    return `<${name} color="success" appearance="tonal">Saved successfully</${name}>`;
+    return `<${name} color="success" appearance="tonal">
+  Release checks passed.
+</${name}>`;
+  }
+
+  if (target.id === "auto-complete") {
+    return `<${name}
+  color="primary"
+  allowClear
+  defaultOpen
+  defaultValue="re"
+  options={[
+    { value: "react", label: "React" },
+    { value: "remix", label: "Remix" },
+    { value: "astro", label: "Astro" }
+  ]}
+/>`;
   }
 
   if (target.id === "dm-table" || target.id === "table") {
     return `<${name}
-  columns={[{ title: "Name", dataIndex: "name", key: "name" }]}
-  dataSource={[{ key: 1, name: "DuskMoon" }]}
+  columns={[
+    { title: "Name", dataIndex: "name", key: "name" },
+    { title: "Status", dataIndex: "status", key: "status" },
+    { title: "Owner", dataIndex: "owner", key: "owner" }
+  ]}
+  dataSource={[
+    { key: 1, name: "Design tokens", status: "Ready", owner: "Luna" },
+    { key: 2, name: "Components", status: "Review", owner: "Kai" }
+  ]}
+  pagination={false}
+  bordered
 />`;
   }
 
-  if (target.id === "dm-pro-table" || target.id === "dm-pro-table-inner") {
+  if (target.id === "dm-pro-table") {
     return `<${name}
   columns={[{ title: "Name", dataIndex: "name", key: "name" }]}
   rowData={[{ key: 1, name: "DuskMoon" }]}
@@ -485,6 +774,37 @@ function demoCode(
 />`;
   }
 
+  if (target.id === "tree") {
+    return `<${name}
+  checkable
+  showLine
+  showIcon
+  defaultExpandAll
+  defaultSelectedKeys={["tokens"]}
+  defaultCheckedKeys={["components"]}
+  treeData={[
+    {
+      key: "workspace",
+      title: "Workspace",
+      icon: "W",
+      children: [
+        { key: "tokens", title: "Design tokens", icon: "T" },
+        { key: "components", title: "Components", icon: "C" },
+        {
+          key: "release",
+          title: "Release",
+          icon: "R",
+          children: [
+            { key: "notes", title: "Notes" },
+            { key: "qa", title: "Visual QA" }
+          ]
+        }
+      ]
+    }
+  ]}
+/>`;
+  }
+
   if (target.id === "dm-tree" || target.id === "tree") {
     return `<${name}
   treeData={[
@@ -502,6 +822,482 @@ function demoCode(
 
   if (target.id.includes("pagination")) {
     return `<${name} total={120} current={1} pageSize={10} />`;
+  }
+
+  if (target.id === "anchor") {
+    return `<${name}
+  affix={false}
+  showInkInFixed
+  items={[
+    {
+      href: "#intro",
+      title: "Intro",
+      children: [{ href: "#demos", title: "Demos" }]
+    }
+  ]}
+/>`;
+  }
+
+  if (target.id === "avatar") {
+    return `<${name} className="avatar-primary">DM</${name}>`;
+  }
+
+  if (target.id === "back-top") {
+    return `<${name} visibilityHeight={0}>Back to top</${name}>`;
+  }
+
+  if (target.id === "breadcrumb") {
+    return `<${name}
+  items={[
+    { title: "Home", href: "/" },
+    { title: "Components", href: "/components" },
+    { title: "Breadcrumb" }
+  ]}
+/>`;
+  }
+
+  if (target.id === "carousel") {
+    return `<${name} arrows>
+  <div>Research</div>
+  <div>Design</div>
+  <div>Ship</div>
+</${name}>`;
+  }
+
+  if (target.id === "cascader") {
+    return `<${name}
+  options={[
+    {
+      label: "Design",
+      value: "design",
+      children: [{ label: "Components", value: "components" }]
+    },
+    {
+      label: "Engineering",
+      value: "engineering",
+      children: [{ label: "Release", value: "release" }]
+    }
+  ]}
+  placeholder="Select workflow"
+/>`;
+  }
+
+  if (target.id === "col") {
+    return `<${name}
+  span={12}
+  style={{
+    width: "50%",
+    padding: "12px",
+    background: "var(--color-primary-container)",
+    color: "var(--color-primary)",
+    borderRadius: "6px",
+    fontWeight: 700
+  }}
+>
+  span 12
+</${name}>`;
+  }
+
+  if (target.id === "collapse") {
+    return `<${name}
+  defaultActiveKey="intro"
+  items={[
+    {
+      key: "intro",
+      label: "What is DuskMoon?",
+      children: "DuskMoon React components provide typed, themeable UI primitives."
+    }
+  ]}
+/>`;
+  }
+
+  if (target.id === "descriptions") {
+    return `<${name}
+  title="Release summary"
+  bordered
+  column={2}
+  items={[
+    { key: "status", label: "Status", children: "Ready" },
+    { key: "owner", label: "Owner", children: "DuskMoon" },
+    { key: "version", label: "Version", children: "0.1.2" },
+    { key: "channel", label: "Channel", children: "Stable" }
+  ]}
+/>`;
+  }
+
+  if (target.id === "dropdown") {
+    return `<${name}
+  defaultOpen
+  trigger={["click"]}
+  menu={{
+    items: [
+      { key: "edit", label: "Edit" },
+      { key: "divider", type: "divider" },
+      { key: "delete", label: "Delete", danger: true }
+    ]
+  }}
+>
+  Actions
+</${name}>`;
+  }
+
+  if (target.id === "flex") {
+    return `<${name} gap="middle" wrap align="center">
+  <span>Alpha</span>
+  <span>Beta</span>
+  <span>Gamma</span>
+</${name}>`;
+  }
+
+  if (target.id === "row") {
+    return `<${name} gutter={[12, 12]} align="middle" justify="space-between">
+  <div style={{ flex: "0 0 29.167%" }}>span 7</div>
+  <div style={{ flex: "0 0 29.167%" }}>span 7</div>
+  <div style={{ flex: "0 0 29.167%" }}>span 7</div>
+</${name}>`;
+  }
+
+  if (target.id === "float-button") {
+    return `<${name} type="primary" icon="+" tooltip="Create" />`;
+  }
+
+  if (target.id === "form") {
+    return `<${name}
+  layout="vertical"
+  initialValues={{ project: "DuskMoon" }}
+  onFinish={(values) => console.log(values)}
+>
+  <${name}.Item
+    name="project"
+    label="Project"
+    rules={[{ required: true, message: "Project is required" }]}
+    extra="The name shown in dashboards."
+  >
+    <input placeholder="Project name" />
+  </${name}.Item>
+  <${name}.Item>
+    <button type="submit">Save</button>
+  </${name}.Item>
+</${name}>`;
+  }
+
+  if (target.id === "date-picker") {
+    return `<${name}
+  defaultValue="2026-05-25"
+  size="lg"
+  status="success"
+  onChange={(value) => console.log(value)}
+/>`;
+  }
+
+  if (target.id === "color-picker") {
+    return `<${name}
+  defaultValue="#1677ff"
+  size="large"
+  format="hex"
+  showText
+  onChange={(value, css) => console.log(value, css)}
+/>`;
+  }
+
+  if (target.id === "popover") {
+    return `<${name}
+  title="DuskMoon"
+  content="Popover content"
+  placement="bottom"
+  open
+>
+  Hover target
+</${name}>`;
+  }
+
+  if (target.id === "image") {
+    return `<${name}
+  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='100' viewBox='0 0 160 100'%3E%3Crect width='160' height='100' rx='12' fill='%23e58f00'/%3E%3Ccircle cx='118' cy='34' r='20' fill='%23fff7d6'/%3E%3Cpath d='M24 72h112' stroke='%23fff7d6' stroke-width='8' stroke-linecap='round'/%3E%3C/svg%3E"
+  alt="DuskMoon preview"
+  width={160}
+  height={100}
+  placeholder="Loading image"
+/>`;
+  }
+
+  if (target.id === "input-number") {
+    return `<${name}
+  defaultValue={24}
+  min={0}
+  max={100}
+  step={1}
+  status="success"
+/>`;
+  }
+
+  if (target.id === "layout") {
+    return `<${name} style={{ width: "100%", maxWidth: 640 }}>
+  <${name}.Header>Header</${name}.Header>
+  <${name} hasSider>
+    <${name}.Sider width={160}>Sider</${name}.Sider>
+    <${name}.Content>Content</${name}.Content>
+  </${name}>
+  <${name}.Footer>Footer</${name}.Footer>
+</${name}>`;
+  }
+
+  if (target.id === "list") {
+    return `<${name} bordered>
+  {[
+    { title: "Design tokens", description: "Updated color and spacing scale" },
+    { title: "Components", description: "Reviewed visual states" },
+    { title: "Release", description: "Ready for package validation" }
+  ].map((item) => (
+    <${name}.Item key={item.title} extra="Open">
+      <${name}.Item.Meta
+        title={item.title}
+        description={item.description}
+      />
+    </${name}.Item>
+  ))}
+</${name}>`;
+  }
+
+  if (target.id === "mentions") {
+    return `<${name}
+  defaultValue="@design"
+  placeholder="Mention a teammate"
+  options={[
+    { value: "design", label: "Design team" },
+    { value: "engineering", label: "Engineering" },
+    { value: "release", label: "Release desk" }
+  ]}
+/>`;
+  }
+
+  if (target.id === "menu") {
+    return `<${name}
+  defaultSelectedKeys={["overview"]}
+  defaultOpenKeys={["workspace"]}
+  items={[
+    { key: "overview", label: "Overview", extra: "⌘1" },
+    {
+      key: "workspace",
+      label: "Workspace",
+      children: [
+        { key: "tasks", label: "Tasks" },
+        { key: "reports", label: "Reports" }
+      ]
+    },
+    { type: "divider" },
+    { key: "settings", label: "Settings" }
+  ]}
+/>`;
+  }
+
+  if (target.id === "modal") {
+    return `<${name}
+  open
+  title="Release checklist"
+  width={420}
+  onOk={() => console.log("ok")}
+  onCancel={() => console.log("cancel")}
+>
+  Review component styles before publishing the package.
+</${name}>`;
+  }
+
+  if (target.id === "progress") {
+    return `<${name}
+  percent={68}
+  showInfo
+  color="success"
+  size="lg"
+/>`;
+  }
+
+  if (target.id === "qr-code") {
+    return `<${name}
+  value="https://duskmoon.dev/components"
+  size={160}
+  color="#111827"
+  bgColor="#ffffff"
+/>`;
+  }
+
+  if (target.id === "rate") {
+    return `<${name}
+  defaultValue={3.5}
+  allowHalf
+  color="warning"
+  size="lg"
+/>`;
+  }
+
+  if (target.id === "segmented") {
+    return `<${name}
+  options={["Overview", "Usage", "API"]}
+  defaultValue="Usage"
+  size="lg"
+/>`;
+  }
+
+  if (target.id === "select") {
+    return `<${name}
+  options={[
+    { label: "React", value: "react" },
+    { label: "Astro", value: "astro" },
+    { label: "TypeScript", value: "typescript" }
+  ]}
+  defaultValue="react"
+  placeholder="Select a stack"
+  allowClear
+/>`;
+  }
+
+  if (target.id === "slider") {
+    return `<${name}
+  defaultValue={48}
+  marks={{ 0: "0", 50: "50", 100: "100" }}
+  tooltip={{ open: true }}
+  color="secondary"
+/>`;
+  }
+
+  if (target.id === "space") {
+    return `<${name} size="middle" wrap split="|">
+  <span>Design</span>
+  <span>Build</span>
+  <span>Ship</span>
+</${name}>`;
+  }
+
+  if (target.id === "statistic") {
+    return `<${name}
+  title="Uptime"
+  value={98.6}
+  precision={1}
+  suffix="%"
+/>`;
+  }
+
+  if (target.id === "steps") {
+    return `<${name}
+  current={1}
+  items={[
+    { title: "Plan", description: "Define scope" },
+    { title: "Build", description: "Implement UI" },
+    { title: "Ship", description: "Release" }
+  ]}
+/>`;
+  }
+
+  if (target.id === "switch") {
+    return `<${name}
+  defaultChecked
+  checkedChildren="On"
+  unCheckedChildren="Off"
+/>`;
+  }
+
+  if (target.id === "tabs") {
+    return `<${name}
+  defaultActiveKey="usage"
+  items={[
+    { key: "overview", label: "Overview", children: "Component status overview." },
+    { key: "usage", label: "Usage", children: "Tabs organize related views." },
+    { key: "api", label: "API", children: "Document props and events." }
+  ]}
+/>`;
+  }
+
+  if (target.id === "time-picker") {
+    return `<${name}
+  defaultValue="09:30:00"
+  format="HH:mm:ss"
+  allowClear
+/>`;
+  }
+
+  if (target.id === "tooltip") {
+    return `<${name}
+  title="Review details"
+  placement="bottom"
+  size="lg"
+  open
+>
+  Hover for details
+</${name}>`;
+  }
+
+  if (target.id === "timeline") {
+    return `<${name}
+  items={[
+    { label: "09:00", children: "Kickoff and scope review", color: "primary" },
+    { label: "11:30", children: "Design QA completed", color: "success" },
+    { label: "14:00", children: "Release notes prepared", color: "secondary" }
+  ]}
+/>`;
+  }
+
+  if (target.id === "skeleton") {
+    return `<${name}
+  active
+  avatar
+  paragraph={{ rows: 3 }}
+  style={{ width: "420px", maxWidth: "100%" }}
+/>`;
+  }
+
+  if (target.id === "splitter") {
+    return `<${name}
+  defaultSizes={[180, "1fr"]}
+  style={{ width: "100%" }}
+>
+  <${name}.Panel>Navigation</${name}.Panel>
+  <${name}.Panel>Workspace</${name}.Panel>
+</${name}>`;
+  }
+
+  if (target.id === "dm-splitter") {
+    return `<${name}
+  defaultSizes={[180, "1fr"]}
+  gap={8}
+  style={{ width: "100%" }}
+>
+  <${name}.Panel>Navigation</${name}.Panel>
+  <${name}.Panel>Workspace</${name}.Panel>
+</${name}>`;
+  }
+
+  if (target.id === "tour") {
+    return `<${name}
+  open
+  mask={false}
+  steps={[
+    {
+      title: "Welcome",
+      description: "Review the highlighted workflow.",
+      style: {
+        position: "static",
+        left: "auto",
+        top: "auto",
+        transform: "none"
+      }
+    }
+  ]}
+/>`;
+  }
+
+  if (target.id === "transfer") {
+    return `<${name}
+  dataSource={[
+    { key: "tokens", title: "Design tokens", description: "Theme primitives" },
+    { key: "docs", title: "Docs site", description: "Examples and API pages" },
+    { key: "qa", title: "Visual QA", description: "Review queue" },
+    { key: "release", title: "Release notes", description: "Publish checklist" }
+  ]}
+  defaultTargetKeys={["release"]}
+  defaultSelectedKeys={["tokens"]}
+  titles={["Available", "Selected"]}
+  showSearch
+/>`;
   }
 
   if (noChildrenComponents.includes(target.id)) {
@@ -522,41 +1318,291 @@ ${scenarioComment}${props.map((prop) => `  ${prop}`).join("\n")}
 >${childText}</${name}>`;
 }
 
+function importPathForTarget(target: Target) {
+  if (target.packageName === "art-components") {
+    return "@duskmoon-dev/art-components";
+  }
+
+  return target.packageSubpath
+    ? `@duskmoon-dev/components/${target.packageSubpath.slice(2)}`
+    : "@duskmoon-dev/components";
+}
+
+function relativeSource(filePath: string | null) {
+  return filePath ? path.relative(repoRoot, filePath) : null;
+}
+
+function colorDemoBody(target: Target, name: string) {
+  switch (target.id) {
+    case "alert":
+      return `<div style={{ display: "grid", gap: 12 }}>
+  {(["filled", "outline", "tonal"] as const).map((appearance) => (
+    <section key={appearance} style={{ display: "grid", gap: 8 }}>
+      {colors.map((color) => (
+        <${name} key={color} color={color} appearance={appearance}>
+          {color} alert
+        </${name}>
+      ))}
+    </section>
+  ))}
+</div>`;
+    case "auto-complete":
+      return `<div style={{ display: "grid", gap: 10 }}>
+  {colors.map((color) => (
+    <${name}
+      key={color}
+      color={color}
+      placeholder={\`\${color} search\`}
+      options={options}
+    />
+  ))}
+</div>`;
+    case "badge":
+      return `<div style={{ display: "grid", gap: 12 }}>
+  {(["filled", "outline", "tonal", "ghost"] as const).map((appearance) => (
+    <div key={appearance} style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+      {colors.map((color) => (
+        <${name} key={color} color={color} appearance={appearance}>
+          {color}
+        </${name}>
+      ))}
+    </div>
+  ))}
+</div>`;
+    case "button":
+      return `<div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+  {colors.map((color) => (
+    <${name} key={color} color={color}>
+      {color}
+    </${name}>
+  ))}
+</div>`;
+    case "chat":
+      return `<div style={{ display: "grid", gap: 10 }}>
+  {colors.map((color) => (
+    <${name} key={color}>
+      <${name}.Bubble color={color}>{color} response</${name}.Bubble>
+    </${name}>
+  ))}
+</div>`;
+    case "checkbox":
+      return `<div style={{ display: "grid", gap: 8 }}>
+  {colors.map((color) => (
+    <${name} key={color} color={color} defaultChecked>
+      {color}
+    </${name}>
+  ))}
+</div>`;
+    case "divider":
+      return `<div style={{ display: "grid", gap: 14 }}>
+  {colors.map((color) => (
+    <${name} key={color} color={color}>
+      {color}
+    </${name}>
+  ))}
+</div>`;
+    case "progress":
+      return `<div style={{ display: "grid", gap: 10 }}>
+  {colors.map((color) => (
+    <${name} key={color} color={color} percent={72} showInfo />
+  ))}
+</div>`;
+    case "radio":
+      return `<div style={{ display: "grid", gap: 8 }}>
+  {colors.map((color) => (
+    <${name} key={color} name={\`radio-\${color}\`} color={color} defaultChecked>
+      {color}
+    </${name}>
+  ))}
+</div>`;
+    case "rate":
+      return `<div style={{ display: "grid", gap: 10 }}>
+  {colors.map((color) => (
+    <${name} key={color} color={color} defaultValue={4} readOnly />
+  ))}
+</div>`;
+    case "slider":
+      return `<div style={{ display: "grid", gap: 14 }}>
+  {colors.map((color) => (
+    <${name} key={color} color={color} defaultValue={64} tooltip={{ open: true }} />
+  ))}
+</div>`;
+    case "switch":
+      return `<div style={{ display: "grid", gap: 10 }}>
+  {colors.map((color) => (
+    <${name}
+      key={color}
+      color={color}
+      defaultChecked
+      checkedChildren={color.slice(0, 2)}
+      unCheckedChildren={color.slice(0, 2)}
+    />
+  ))}
+</div>`;
+    case "tag":
+      return `<div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+  {colors.map((color) => (
+    <${name} key={color} color={color}>
+      {color}
+    </${name}>
+  ))}
+</div>`;
+    case "timeline":
+      return `<${name}
+  items={colors.map((color, index) => ({
+    label: \`\${index + 1}\`,
+    children: \`\${color} milestone\`,
+    color
+  }))}
+/>`;
+    default:
+      return null;
+  }
+}
+
+function colorDemoFor(
+  target: Target,
+  name: string,
+  importLine: string,
+  componentStyleImport: string,
+): DemoSpec | null {
+  if (!semanticColorComponentIds.has(target.id)) return null;
+
+  const body = colorDemoBody(target, name);
+  if (!body) return null;
+
+  const options =
+    target.id === "auto-complete"
+      ? `\n\nconst options = [\n  { value: "react", label: "React" },\n  { value: "remix", label: "Remix" },\n  { value: "astro", label: "Astro" },\n  { value: "solid", label: "Solid" }\n];`
+      : "";
+
+  return {
+    title: target.id === "auto-complete" ? "Colors and matching" : "Colors",
+    description: `${name} supports the full semantic color palette: ${semanticColors.join(", ")}.`,
+    code: `${componentStyleImport}\n${importLine}\n\n${semanticColorsDeclaration()}${options}\n\nexport function ${name}ColorsDemo() {\n  return (${body});\n}`,
+    source: "authored",
+  };
+}
+
 function demosFor(
   target: Target,
   name: string,
   api: ApiSection[],
   scenarios: string[],
 ): DemoSpec[] {
-  const importPath = target.packageSubpath
-    ? `@duskmoon-dev/components/${target.packageSubpath.slice(2)}`
-    : "@duskmoon-dev/components";
+  const importPath = importPathForTarget(target);
+
+  if (target.id === "markdown") {
+    return [
+      {
+        title: "Front matter, color chips, and line breaks",
+        description:
+          "Render YAML front matter, preview inline CSS colors, and explicitly enable soft line breaks.",
+        code: `import "@duskmoon-dev/components/styles.css";
+import { Markdown } from "${importPath}";
+
+const source = \`---
+title: DmMarkdown feature showcase
+tags:
+  - react
+  - markdown
+accent: '#4C86FC'
+---
+# DmMarkdown rendering
+
+DuskMoon Markdown renders source text in the shared typography scope.
+This line demonstrates \\\`breaks={true}\\\`.
+
+## Inline color chips
+
+| Color | Inline code |
+| --- | --- |
+| Brand blue | \\\`#4C86FC\\\` |
+| White | \\\`#fff\\\` |
+| Black | \\\`#000\\\` |
+| Transparent red | \\\`#FF000080\\\` |
+\`;
+
+export function MarkdownFeaturesDemo() {
+  return (
+    <Markdown
+      markdown={source}
+      colorChips
+      frontMatter="render"
+      breaks={true}
+    />
+  );
+}`,
+        source: "authored",
+      },
+    ];
+  }
+
+  if (target.id === "breakpoint") {
+    return [
+      {
+        title: "Type usage",
+        description: `${name} is a TypeScript-only breakpoint union exported from the root package.`,
+        code: `import type { ${name} } from "${importPath}";\n\nconst compact: ${name} = "sm";\nconst desktop: ${name} = "lg";\n\nexport const responsiveBreakpoints: ${name}[] = [compact, desktop];`,
+        source: "type-driven",
+      },
+    ];
+  }
+
   const usage = demoCode(target, name, api);
   const importLine =
     target.kind === "internal-component"
       ? `// Internal component: packages/components/src/components/${target.id}`
       : `import { ${name} } from "${importPath}";`;
-  const scenarioDemos = scenarios.slice(0, 3).map((scenario) => {
+  const componentStyleImport = `import "@duskmoon-dev/components/styles.css";`;
+  const colorDemo = colorDemoFor(
+    target,
+    name,
+    importLine,
+    componentStyleImport,
+  );
+
+  if (target.kind === "art-component") {
+    return [
+      {
+        title: "Basic usage",
+        description: `Import ${name} and the art component stylesheet before rendering the CSS art scene.`,
+        code: `import "@duskmoon-dev/art-components/styles.css";\n${importLine}\n\nexport function Example() {\n  return (${usage});\n}`,
+        source: "authored",
+      },
+      {
+        title: "Accessible art",
+        description: `Use ${name} as decorative output by default, or pass accessible labeling when the scene is meaningful.`,
+        code: `import "@duskmoon-dev/art-components/styles.css";\n${importLine}\n\nexport function AccessibleArt() {\n  return (${accessibleArtDemoCode(target, name)});\n}`,
+        source: "authored",
+      },
+    ];
+  }
+
+  const scenarioDemos = scenarios.map((scenario) => {
     const scenarioUsage = demoCode(target, name, api, scenario);
 
     return {
       title: scenario,
       description: `${name} scenario from the component test coverage: ${scenario.toLowerCase()}.`,
-      code: `${importLine}\n\nexport function ${name}${scenario
+      code: `${componentStyleImport}\n${importLine}\n\nexport function ${name}${scenario
         .replace(/[^A-Za-z0-9]+/g, " ")
         .trim()
         .split(" ")
         .slice(0, 4)
         .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
         .join("")}Demo() {\n  return (${scenarioUsage});\n}`,
+      source: "test-backed",
     };
   });
 
   return [
+    ...(colorDemo ? [colorDemo] : []),
     {
       title: "Basic usage",
-      description: `Import ${name} from its package subpath and render it with the core props.`,
-      code: `${importLine}\n\nexport function Example() {\n  return (${usage});\n}`,
+      description: `Import the component stylesheet and ${name} from its package subpath, then render it with the core props.`,
+      code: `${componentStyleImport}\n${importLine}\n\nexport function Example() {\n  return (${usage});\n}`,
+      source: "authored",
     },
     ...scenarioDemos,
     {
@@ -564,6 +1610,7 @@ function demosFor(
       description:
         "Docs previews inherit the DuskMoon data-theme value. Use the header switch to compare light and dark rendering.",
       code: `<div data-theme="sunshine">\n  ${usage}\n</div>\n\n<div data-theme="moonlight">\n  ${usage}\n</div>`,
+      source: "authored",
     },
   ];
 }
@@ -573,20 +1620,32 @@ function toDoc(target: Target): ComponentDoc {
   const typeFile = findTypeFile(target, name);
   const testFile = findTestFile(target, name);
   const api = parseApi(typeFile, name);
-  const scenarios = scenariosFromTest(testFile);
+  const scenarios =
+    target.manualScenarios?.map(sentenceCase) ?? scenariosFromTest(testFile);
   const keyProps = keyPropsFromApi(api);
+  const category = categoryFor(target.kind);
+  const pageContent = componentPageContentFor({
+    id: target.id,
+    name,
+    kind: target.kind,
+    category,
+    source: target.source,
+    scenarios,
+    keyProps,
+  });
 
   return {
     ...target,
     title: name,
-    route: `/components/${target.id}`,
-    category: categoryFor(target.kind),
-    intro: introFor(target, name, scenarios, keyProps),
-    importPath: target.packageSubpath
-      ? `@duskmoon-dev/components/${target.packageSubpath.slice(2)}`
-      : "@duskmoon-dev/components",
+    route: docsPath(`/components/${target.id}`),
+    category,
+    intro: pageContent.summary || introFor(target, name, scenarios, keyProps),
+    pageContent,
+    importPath: importPathForTarget(target),
     typeFile,
     testFile,
+    apiSource: relativeSource(typeFile),
+    testSource: relativeSource(testFile),
     scenarios,
     keyProps,
     api,
@@ -596,7 +1655,11 @@ function toDoc(target: Target): ComponentDoc {
 
 export function getComponentDocs() {
   const manifest = readManifest();
-  return [...manifest.publicTargets, ...manifest.internalTargets]
+  return [
+    ...manifest.publicTargets,
+    ...manifest.internalTargets,
+    ...artComponentTargets,
+  ]
     .filter((target) => target.status === "implemented")
     .map(toDoc)
     .sort((a, b) => a.id.localeCompare(b.id));

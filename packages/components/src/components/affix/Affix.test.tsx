@@ -13,9 +13,13 @@ describe("Affix", () => {
     });
 
     const { container } = render(
-      <Affix offsetTop={10} target={() => target} onChange={(fixed) => {
-        changed = fixed;
-      }}>
+      <Affix
+        offsetTop={10}
+        target={() => target}
+        onChange={(fixed) => {
+          changed = fixed;
+        }}
+      >
         <button type="button">Pinned</button>
       </Affix>,
     );

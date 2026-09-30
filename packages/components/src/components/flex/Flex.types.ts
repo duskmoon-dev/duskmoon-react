@@ -10,12 +10,7 @@ export type FlexJustify =
   | "space-evenly";
 
 export type FlexAlign =
-  | "normal"
-  | "start"
-  | "end"
-  | "center"
-  | "baseline"
-  | "stretch";
+  "normal" | "start" | "end" | "center" | "baseline" | "stretch";
 
 export type FlexGap = "small" | "middle" | "large" | number;
 

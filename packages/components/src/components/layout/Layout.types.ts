@@ -27,10 +27,9 @@ export interface LayoutSiderProps extends LayoutSectionProps {
   breakpoint?: LayoutBreakpoint;
 }
 
-export interface LayoutComponent
-  extends ForwardRefExoticComponent<
-    LayoutProps & RefAttributes<HTMLDivElement>
-  > {
+export interface LayoutComponent extends ForwardRefExoticComponent<
+  LayoutProps & RefAttributes<HTMLDivElement>
+> {
   Header: ForwardRefExoticComponent<
     LayoutSectionProps & RefAttributes<HTMLDivElement>
   >;

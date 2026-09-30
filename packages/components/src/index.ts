@@ -14,10 +14,28 @@ import {
   usePersistedPageSize,
   version,
 } from "./infrastructure";
+
+type DuskMoonReactGlobals = {
+  __duskmoon_react_version?: typeof version;
+  __duskmoon_react_theme?: typeof theme;
+  __duskmoon_react_helpers?: {
+    getDmDatePickerLocale: typeof getDmDatePickerLocale;
+    getDmTheme: typeof getDmTheme;
+    getUnstableRender: typeof getUnstableRender;
+    onDmThemeUpdate: typeof onDmThemeUpdate;
+    setDmDatePickerLocale: typeof setDmDatePickerLocale;
+    setDmPrefixCls: typeof setDmPrefixCls;
+    setDmPrimaryColor: typeof setDmPrimaryColor;
+    unstableSetRender: typeof unstableSetRender;
+    usePersistedPageSize: typeof usePersistedPageSize;
+  };
+};
+
 if (typeof window !== "undefined") {
-  (window as any).__duskmoon_react_version = version;
-  (window as any).__duskmoon_react_theme = theme;
-  (window as any).__duskmoon_react_helpers = {
+  const duskmoonWindow = window as Window & DuskMoonReactGlobals;
+  duskmoonWindow.__duskmoon_react_version = version;
+  duskmoonWindow.__duskmoon_react_theme = theme;
+  duskmoonWindow.__duskmoon_react_helpers = {
     getDmDatePickerLocale,
     getDmTheme,
     getUnstableRender,
@@ -48,6 +66,7 @@ export type { Breakpoint } from "./components/grid";
 export * from "./components/button";
 export * from "./components/calendar";
 export * from "./components/card";
+export * from "./components/chat";
 export * from "./components/carousel";
 export * from "./components/cascader";
 export * from "./components/badge";
@@ -135,5 +154,6 @@ export * from "./components/transfer";
 export * from "./components/tree";
 export * from "./components/tree-select";
 export * from "./components/typography";
+export * from "./components/markdown";
 export * from "./components/upload";
 export * from "./components/watermark";

@@ -1,6 +1,8 @@
 import React from "react";
 import { describe, expect, test } from "bun:test";
 import { fireEvent, render, screen } from "@testing-library/react";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { AutoComplete } from "./AutoComplete";
 import type { AutoCompleteOptionType } from "./AutoComplete.types";
 
@@ -23,6 +25,40 @@ describe("AutoComplete", () => {
     expect(input.getAttribute("aria-expanded")).toBe("true");
     expect(screen.getByRole("listbox")).toBeTruthy();
     expect(screen.getByRole("option", { name: "Alpha" })).toBeTruthy();
+  });
+
+  test("supports all color classes", () => {
+    const colors = [
+      "primary",
+      "secondary",
+      "tertiary",
+      "accent",
+      "neutral",
+      "base",
+      "info",
+      "success",
+      "warning",
+      "error",
+    ] as const;
+
+    const { container } = render(
+      <div>
+        {colors.map((color) => (
+          <AutoComplete
+            key={color}
+            color={color}
+            aria-label={`${color} autocomplete`}
+          />
+        ))}
+      </div>,
+    );
+
+    for (const color of colors) {
+      expect(
+        container.querySelector(`[aria-label="${color} autocomplete"]`)
+          ?.className,
+      ).toContain(`autocomplete-${color}`);
+    }
   });
 
   test("supports uncontrolled search and filtering", () => {
@@ -148,5 +184,16 @@ describe("AutoComplete", () => {
     const input = screen.getByRole("combobox");
     expect(input).toHaveProperty("disabled", true);
     expect(input.getAttribute("aria-disabled")).toBe("true");
+  });
+
+  test("includes component stylesheet rules", () => {
+    const styles = readFileSync(join(import.meta.dir, "../../styles.css"), {
+      encoding: "utf8",
+    });
+
+    expect(styles).toContain(".autocomplete-input-wrapper");
+    expect(styles).toContain(".autocomplete-toggle");
+    expect(styles).toContain(".autocomplete-option-selected");
+    expect(styles).toContain(".autocomplete-no-options");
   });
 });

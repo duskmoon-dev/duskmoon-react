@@ -107,7 +107,7 @@ export const Collapse = forwardRef<HTMLDivElement, CollapseProps>(
               </button>
               {open ? (
                 <div id={contentId} className={collapseContentClass}>
-                  {item.children}
+                  <div>{item.children}</div>
                 </div>
               ) : null}
             </div>

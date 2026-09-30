@@ -36,9 +36,9 @@ function hasTrigger(
 function isPromiseLike(value: unknown): value is Promise<unknown> {
   return Boolean(
     value &&
-      (typeof value === "object" || typeof value === "function") &&
-      "then" in value &&
-      typeof (value as Promise<unknown>).then === "function",
+    (typeof value === "object" || typeof value === "function") &&
+    "then" in value &&
+    typeof (value as Promise<unknown>).then === "function",
   );
 }
 
@@ -75,7 +75,7 @@ export const Popconfirm = forwardRef<HTMLSpanElement, PopconfirmProps>(
       ...props
     },
     ref,
-    ) => {
+  ) => {
     const [internalOpen, setInternalOpen] = useState(Boolean(defaultOpen));
     const [confirmLoading, setConfirmLoading] = useState(false);
     const generatedPopupId = useId();
@@ -151,7 +151,10 @@ export const Popconfirm = forwardRef<HTMLSpanElement, PopconfirmProps>(
 
     function handleContextMenu(event: MouseEvent<HTMLSpanElement>) {
       onContextMenu?.(event);
-      if (hasTrigger(trigger, "contextMenu") || hasTrigger(trigger, "contextmenu")) {
+      if (
+        hasTrigger(trigger, "contextMenu") ||
+        hasTrigger(trigger, "contextmenu")
+      ) {
         event.preventDefault();
         setVisible(!visible);
       }
@@ -200,7 +203,9 @@ export const Popconfirm = forwardRef<HTMLSpanElement, PopconfirmProps>(
             })}
           >
             <span className={popconfirmBodyClass}>
-              {icon ? <span className={popconfirmIconClass}>{icon}</span> : null}
+              {icon ? (
+                <span className={popconfirmIconClass}>{icon}</span>
+              ) : null}
               <span className={popconfirmContentClass}>
                 {title ? (
                   <span className={popconfirmTitleClass}>{title}</span>

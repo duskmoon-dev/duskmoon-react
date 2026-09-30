@@ -1,36 +1,39 @@
 # Component API Inventory
 
-Snapshot date: 2026-05-25
+Snapshot date: 2026-07-03
 
 This inventory defines what `@duskmoon-dev/components` should implement in this
-repo. z-design and Ant Design are API and behavior references only. Do not copy
-their source code into this repo.
+repo.
+
+Current parity status: 105/105 public targets complete, split across 71
+standard components, 21 DuskMoon workflow components, and 13 infrastructure
+exports.
 
 ## Implementation Policy
 
 - Implement components in this repo as DuskMoon React components.
-- Use `@duskmoon-dev/design` generated tokens as the token source of truth.
-- Use DuskMoon UI/Core class recipes where they exist.
-- Do not source-port z-design implementation files.
-- Do not expose z-design `Z*` names as the primary public API. Map them to `Dm*`.
-- Do not rely on `export * from 'antd'` as the final solution. The target package
-  should own its public exports, tests, docs, and package subpaths.
+- Use DuskMoon design tokens through `@duskmoon-dev/core` and the local CSS
+  variable/class contract.
+- Use DuskMoon Core class recipes where they exist.
+- Implement DuskMoon-owned component files instead of source-porting another
+  package.
+- Keep DuskMoon workflow component names prefixed with `Dm`.
+- Own the package public exports, tests, docs, and package subpaths directly.
 - A behavior dependency can be considered per component, but it must be an
   explicit dependency decision, not a copied implementation.
 
 ## Target Export Layers
 
-1. Ant Design-compatible generic components:
+1. Standard generic components:
    `Button`, `Input`, `Table`, `Modal`, `Select`, etc.
-2. DuskMoon-prefixed workflow components mapped from z-design:
+2. DuskMoon-prefixed workflow components:
    `DmLayout`, `DmSearch`, `DmTable`, `DmProTable`, etc.
 3. Provider and infrastructure APIs:
    `DmProvider`, theme/token helpers, locale helpers, and service holders.
 
-## Ant Design-Compatible Components
+## Standard Components
 
-These are included because z-design re-exports all Ant Design APIs before
-overriding selected components. Target API names stay unprefixed.
+These unprefixed components make up the standard public DuskMoon React surface.
 
 | Component        | Feature API to Implement                                                                                                                                       |
 | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -106,7 +109,7 @@ overriding selected components. Target API names stay unprefixed.
 | `Upload`         | action, fileList, beforeUpload, customRequest, progress, preview/remove, list type, `Dragger`, `LIST_IGNORE`                                                   |
 | `Watermark`      | text/image content, font, gap, offset, rotate, zIndex, inherit container                                                                                       |
 
-## Ant Design Infrastructure Exports
+## Infrastructure Exports
 
 | Export              | Feature API to Implement                                                       |
 | ------------------- | ------------------------------------------------------------------------------ |
@@ -117,46 +120,37 @@ overriding selected components. Target API names stay unprefixed.
 
 ## DuskMoon-Prefixed Workflow Components
 
-These map z-design `Z*`/`z-*` concepts to DuskMoon `Dm*`/`dm-*` public APIs.
+These DuskMoon-prefixed components make up the workflow-oriented public APIs.
 
-| Target Component        | Source Reference         | Feature API to Implement                                                                             |
-| ----------------------- | ------------------------ | ---------------------------------------------------------------------------------------------------- |
-| `DmProvider`            | `CustomConfigProvider`   | prefix/theme/locale provider, service holders, token bridge, theme update callbacks                  |
-| `getDmTheme`            | `getZDesignTheme`        | current DuskMoon component theme config derived from design tokens                                   |
-| `onDmThemeUpdate`       | `onThemeUpdate`          | subscribe/unsubscribe API for provider theme changes                                                 |
-| `setDmPrefixCls`        | `setZDesignPrefixCls`    | update runtime class prefix when compatibility mode needs it                                         |
-| `setDmPrimaryColor`     | `setZDesignPrimaryColor` | update runtime primary color/token bridge state                                                      |
-| `DmLayout`              | `ZLayout`                | app shell, sider/header/content layout, menu integration, breadcrumb integration, collapsed state    |
-| `DmMenu`                | `ZMenu`                  | `IMenu` schema, selected/open keys, sub-router filtering, icons, controlled/uncontrolled state       |
-| `DmBreadcrumb`          | `ZBreadcrumb`            | menu-derived breadcrumbs, history storage, dropdown menus, custom home/item rendering                |
-| `DmAuxiliary`           | `ZAuxiliary`             | auxiliary/help panel, HTML content rendering policy, close/hide behavior                             |
-| `DmQuery`               | `ZQuery`                 | query form schema, imperative ref methods, input/select/date field mapping                           |
-| `DmSearch`              | `ZSearch`                | search item schema, compact/collapsed modes, fast filters, date ranges, search/reset callbacks       |
-| `DmDrawer`              | `ZDrawer`                | custom drawer close/footer behavior, submit/cancel actions, inherited drawer props                   |
-| `DmTable`               | `ZTable`                 | search + table composition, derived search items, column settings, pagination, page-size persistence |
-| `usePersistedPageSize`  | `usePersistedPageSize`   | local page-size persistence with `_pageSize` suffix                                                  |
-| `DmPagination`          | `ZPagination`            | pagination display wrapper, page-size behavior, locale-aware labels                                  |
-| `DmDatePicker`          | `ZDatePicker`            | default formats, range/month/year/week pickers, moment/dayjs conversion semantics                    |
-| `setDmDatePickerLocale` | `setZDatePickerLocale`   | date picker locale setter mapped to the DuskMoon public API                                          |
-| `DmProTable`            | `ZProTable`              | ag-grid style table API, Ant-style column conversion, toolbar, persisted column state                |
-| `DmTree`                | `ZTree`                  | common tree and option/tab tree modes, toolbar, empty state, auto/fixed width behavior               |
-| `DmTabs`                | `ZTabs`                  | tabs wrapper, item normalization, z-design tab behavior mapped to DuskMoon styling                   |
-| `DmMessage`             | `ZMessage`               | message rendering surface, service API integration, DuskMoon provider context                        |
-| `DmPageHeader`          | `ZPageHeader`            | title/subtitle, toolbar integration, back action, title form content                                 |
-| `DmSplitter`            | `ZSplitter`              | `DmSplitter.Panel`, resizable panels, collapse/reset, flat mode, local/network persistence           |
-| `DmTruncate`            | `ZTruncate`              | measurement, tooltip, copy action, rows/width behavior, i18n strings                                 |
-| `DmInfiniteScroll`      | `ZInfiniteScroll`        | scroll target, load-more trigger, loading/end states                                                 |
-| `DmStatus`              | `ZStatus`                | loading/empty/error/success state rendering, spin props, retry/action slots                          |
-| `DmToolbar`             | `ZToolbar`               | primary action preservation, secondary overflow menu, resize observer behavior                       |
-
-## Internal Implementation Targets
-
-These are not primary public exports unless a later design decision promotes
-them.
-
-| Internal Target      | Source Reference    | Purpose                                       |
-| -------------------- | ------------------- | --------------------------------------------- |
-| `dm-pro-table-inner` | `z-pro-table-inner` | internal engine layer for `DmProTable` parity |
+| Target Component        | Feature API to Implement                                                                             |
+| ----------------------- | ---------------------------------------------------------------------------------------------------- |
+| `DmProvider`            | prefix/theme/locale provider, service holders, token bridge, theme update callbacks                  |
+| `getDmTheme`            | current DuskMoon component theme config derived from design tokens                                   |
+| `onDmThemeUpdate`       | subscribe/unsubscribe API for provider theme changes                                                 |
+| `setDmPrefixCls`        | update runtime class prefix when compatibility mode needs it                                         |
+| `setDmPrimaryColor`     | update runtime primary color/token bridge state                                                      |
+| `DmLayout`              | app shell, sider/header/content layout, menu integration, breadcrumb integration, collapsed state    |
+| `DmMenu`                | `IMenu` schema, selected/open keys, sub-router filtering, icons, controlled/uncontrolled state       |
+| `DmBreadcrumb`          | menu-derived breadcrumbs, history storage, dropdown menus, custom home/item rendering                |
+| `DmAuxiliary`           | auxiliary/help panel, HTML content rendering policy, close/hide behavior                             |
+| `DmQuery`               | query form schema, imperative ref methods, input/select/date field mapping                           |
+| `DmSearch`              | search item schema, compact/collapsed modes, fast filters, date ranges, search/reset callbacks       |
+| `DmDrawer`              | custom drawer close/footer behavior, submit/cancel actions, inherited drawer props                   |
+| `DmTable`               | search + table composition, derived search items, column settings, pagination, page-size persistence |
+| `usePersistedPageSize`  | local page-size persistence with `_pageSize` suffix                                                  |
+| `DmPagination`          | pagination display wrapper, page-size behavior, locale-aware labels                                  |
+| `DmDatePicker`          | default formats, range/month/year/week pickers, moment/dayjs conversion semantics                    |
+| `setDmDatePickerLocale` | date picker locale setter mapped to the DuskMoon public API                                          |
+| `DmProTable`            | ag-grid style table API, legacy column conversion, toolbar, persisted column state                   |
+| `DmTree`                | common tree and option/tab tree modes, toolbar, empty state, auto/fixed width behavior               |
+| `DmTabs`                | tabs wrapper, item normalization, DuskMoon styling                                                   |
+| `DmMessage`             | message rendering surface, service API integration, DuskMoon provider context                        |
+| `DmPageHeader`          | title/subtitle, toolbar integration, back action, title form content                                 |
+| `DmSplitter`            | `DmSplitter.Panel`, resizable panels, collapse/reset, flat mode, local/network persistence           |
+| `DmTruncate`            | measurement, tooltip, copy action, rows/width behavior, i18n strings                                 |
+| `DmInfiniteScroll`      | scroll target, load-more trigger, loading/end states                                                 |
+| `DmStatus`              | loading/empty/error/success state rendering, spin props, retry/action slots                          |
+| `DmToolbar`             | primary action preservation, secondary overflow menu, resize observer behavior                       |
 
 ## Shared Feature Requirements
 

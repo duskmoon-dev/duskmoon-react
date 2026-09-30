@@ -1,12 +1,7 @@
 import type { ComponentProps, ReactNode } from "react";
 
 export type SkeletonVariant =
-  | "text"
-  | "circle"
-  | "rect"
-  | "button"
-  | "input"
-  | "card";
+  "text" | "circle" | "rect" | "button" | "input" | "card";
 
 export type SkeletonAnimation = "pulse" | "wave" | "none";
 

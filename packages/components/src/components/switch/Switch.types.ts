@@ -2,7 +2,17 @@ import type { ChangeEvent, ComponentProps, ReactNode } from "react";
 
 export type SwitchSize = "sm" | "md" | "lg";
 
-export type SwitchColor = "primary" | "secondary" | "tertiary";
+export type SwitchColor =
+  | "primary"
+  | "secondary"
+  | "tertiary"
+  | "accent"
+  | "neutral"
+  | "base"
+  | "info"
+  | "success"
+  | "warning"
+  | "error";
 
 export type SwitchChangeEvent = ChangeEvent<HTMLInputElement>;
 

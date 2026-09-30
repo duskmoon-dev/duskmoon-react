@@ -18,5 +18,10 @@ export const themeScript = `
 `.trim();
 
 export const ThemeInitScript = () => {
-  return <script dangerouslySetInnerHTML={{ __html: themeScript }} suppressHydrationWarning />;
+  return (
+    <script
+      dangerouslySetInnerHTML={{ __html: themeScript }}
+      suppressHydrationWarning
+    />
+  );
 };

@@ -7,6 +7,7 @@ dist/
 dist-tsc/
 .next/
 out/
+*.tsbuildinfo
 
 # Environment
 .env*
@@ -20,4 +21,3 @@ Thumbs.db
 # Playwright
 playwright-report/
 test-results/
-

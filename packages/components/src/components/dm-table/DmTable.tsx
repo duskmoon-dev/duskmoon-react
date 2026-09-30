@@ -27,7 +27,9 @@ function mapAndFilter<T, R>(
   list: T[],
   mapper: (value: T, index: number) => R | false | null | undefined,
 ) {
-  return list.map(mapper).filter((item): item is R => item !== false && item != null);
+  return list
+    .map(mapper)
+    .filter((item): item is R => item !== false && item != null);
 }
 
 export function filterDmTableColumn<T>(
@@ -51,7 +53,9 @@ function filterSearchColumn<T>(
   return column.search ? column : false;
 }
 
-function flattenSearchColumns<T>(column: DmTableColumnType<T>): DmTableColumnType<T>[] {
+function flattenSearchColumns<T>(
+  column: DmTableColumnType<T>,
+): DmTableColumnType<T>[] {
   return Array.isArray(column.children)
     ? column.children.flatMap(flattenSearchColumns)
     : [column];
@@ -64,7 +68,11 @@ function searchItems<T>(columns: DmTableColumnsType<T>) {
       key: String(column.key ?? column.dataIndex),
       title: column.title,
       dataIndex: String(column.dataIndex ?? column.key),
-      search: column.search || { type: "input" as const, extraProps: {}, formProps: {} },
+      search: column.search || {
+        type: "input" as const,
+        extraProps: {},
+        formProps: {},
+      },
     }));
 }
 
@@ -94,7 +102,11 @@ export function DmTable<T extends TableRecord = TableRecord>({
     ? searchProps.items
     : searchItems(inputColumns);
   const paginationObj = typeof pagination === "object" ? pagination : undefined;
-  const { ref: _paginationRef, ...paginationProps } = paginationObj ?? {};
+  const paginationProps = paginationObj
+    ? Object.fromEntries(
+        Object.entries(paginationObj).filter(([key]) => key !== "ref"),
+      )
+    : {};
   const total = paginationObj?.total ?? dataSource?.length ?? 0;
   const selectedTotal = rowSelection?.selectedRowKeys?.length ?? 0;
 
@@ -113,7 +125,9 @@ export function DmTable<T extends TableRecord = TableRecord>({
           <DmSearch {...searchProps} items={items} />
         </Card>
       ) : null}
-      {indicators ? <div className={dmTableIndicatorsClass}>{indicators}</div> : null}
+      {indicators ? (
+        <div className={dmTableIndicatorsClass}>{indicators}</div>
+      ) : null}
       <Card className={dmTableCardClass} padding="md">
         {name || extra || columnSettingVisible ? (
           <div className={dmTableHeaderClass}>
@@ -141,7 +155,9 @@ export function DmTable<T extends TableRecord = TableRecord>({
             </Button>
           </div>
         ) : null}
-        {tableExtra ? <div className={dmTableTableExtraClass}>{tableExtra}</div> : null}
+        {tableExtra ? (
+          <div className={dmTableTableExtraClass}>{tableExtra}</div>
+        ) : null}
         <Table
           {...props}
           dataSource={dataSource}

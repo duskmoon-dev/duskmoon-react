@@ -10,10 +10,13 @@ export type TagColor =
   | "primary"
   | "secondary"
   | "tertiary"
+  | "accent"
+  | "neutral"
+  | "base"
+  | "info"
   | "success"
-  | "error"
   | "warning"
-  | "info";
+  | "error";
 
 export type TagType = TagColor | (string & {});
 

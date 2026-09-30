@@ -4,8 +4,11 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
-concurrency: ${{ github.workflow }}-${{ github.ref }}
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   release:
@@ -17,7 +20,7 @@ jobs:
       id-token: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -25,18 +28,83 @@ jobs:
         uses: oven-sh/setup-bun@v2
 
       - name: Install dependencies
-        run: bun install
+        run: bun install --frozen-lockfile
 
       - name: Build all packages
         run: bun run build:all
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
-        uses: changesets/action@v1
+        uses: changesets/action@v2
         with:
+          version: bun run release:version
           publish: bun run release
           commit: "chore(release): version packages"
           title: "chore(release): version packages"
+          createGithubReleases: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true
+
+      - name: Create version tag and GitHub release
+        if: steps.changesets.outputs.hasChangesets == 'false'
+        run: |
+          version="$(bun run --silent release:version-current)"
+          tag="v${version}"
+          mapfile -t package_names < <(
+            node <<'NODE'
+          const fs = require("node:fs");
+          const path = require("node:path");
+
+          for (const entry of fs.readdirSync("packages", { withFileTypes: true })) {
+            if (!entry.isDirectory()) {
+              continue;
+            }
+
+            const manifestPath = path.join("packages", entry.name, "package.json");
+            if (!fs.existsSync(manifestPath)) {
+              continue;
+            }
+
+            const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+            if (!manifest.private) {
+              console.log(manifest.name);
+            }
+          }
+          NODE
+          )
+
+          for package_name in "${package_names[@]}"; do
+            for attempt in {1..12}; do
+              if env -u NODE_AUTH_TOKEN npm view "${package_name}@${version}" version --registry https://registry.npmjs.org >/dev/null 2>&1; then
+                break
+              fi
+
+              if [[ "${attempt}" == "12" ]]; then
+                echo "${package_name}@${version} is not available on npm."
+                exit 1
+              fi
+
+              echo "Waiting for ${package_name}@${version} to become public on npm (${attempt}/12)."
+              sleep 10
+            done
+          done
+
+          if git ls-remote --exit-code --tags origin "refs/tags/${tag}" >/dev/null 2>&1; then
+            echo "${tag} already exists on origin."
+          else
+            if ! git rev-parse --verify --quiet "${tag}" >/dev/null; then
+              git tag "${tag}"
+            fi
+
+            git push origin "refs/tags/${tag}"
+          fi
+
+          if gh release view "${tag}" >/dev/null 2>&1; then
+            echo "GitHub release ${tag} already exists."
+          else
+            gh release create "${tag}" --verify-tag --title "${tag}" --generate-notes
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}

@@ -45,11 +45,10 @@ export interface CascaderSearchConfig {
   limit?: number | false;
 }
 
-export interface CascaderProps
-  extends Omit<
-    ComponentProps<"div">,
-    "children" | "defaultValue" | "onChange" | "onSelect"
-  > {
+export interface CascaderProps extends Omit<
+  ComponentProps<"div">,
+  "children" | "defaultValue" | "onChange" | "onSelect"
+> {
   allowClear?: boolean;
   changeOnSelect?: boolean;
   checkable?: boolean;
@@ -58,17 +57,26 @@ export interface CascaderProps
   defaultOpen?: boolean;
   defaultValue?: CascaderChangeValue;
   disabled?: boolean;
-  displayRender?: (labels: ReactNode[], selectedOptions?: CascaderOption[]) => ReactNode;
+  displayRender?: (
+    labels: ReactNode[],
+    selectedOptions?: CascaderOption[],
+  ) => ReactNode;
   expandTrigger?: CascaderExpandTrigger;
   fieldNames?: CascaderFieldNames;
   loadData?: (selectedOptions: CascaderOption[]) => void;
   multiple?: boolean;
   notFoundContent?: ReactNode;
-  onChange?: (value: CascaderChangeValue, selectedOptions?: CascaderOption[] | CascaderOption[][]) => void;
+  onChange?: (
+    value: CascaderChangeValue,
+    selectedOptions?: CascaderOption[] | CascaderOption[][],
+  ) => void;
   onDropdownVisibleChange?: (open: boolean) => void;
   onOpenChange?: (open: boolean) => void;
   onSearch?: (value: string) => void;
-  onSelect?: (value: CascaderSingleValue, selectedOptions?: CascaderOption[]) => void;
+  onSelect?: (
+    value: CascaderSingleValue,
+    selectedOptions?: CascaderOption[],
+  ) => void;
   open?: boolean;
   options?: CascaderOption[];
   placeholder?: ReactNode;

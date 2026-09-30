@@ -26,10 +26,15 @@ export const timelineSizeClasses: Record<TimelineSize, string> = {
 };
 
 export const timelineMarkerColorClasses: Record<TimelineColor, string> = {
-  primary: "",
+  primary: "timeline-marker-primary",
   secondary: "timeline-marker-secondary",
   tertiary: "timeline-marker-tertiary",
+  accent: "timeline-marker-accent",
+  neutral: "timeline-marker-neutral",
+  base: "timeline-marker-base",
+  info: "timeline-marker-info",
   success: "timeline-marker-success",
+  warning: "timeline-marker-warning",
   error: "timeline-marker-error",
 };
 

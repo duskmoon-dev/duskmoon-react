@@ -103,7 +103,9 @@ describe("notification", () => {
     expect(screen.queryByText("First")).toBeNull();
 
     await act(async () => {
-      fireEvent.click(screen.getByRole("button", { name: "Close notification" }));
+      fireEvent.click(
+        screen.getByRole("button", { name: "Close notification" }),
+      );
     });
 
     await waitFor(() => {

@@ -1,7 +1,6 @@
 import { useCallback, useState } from "react";
 import type { ComponentProps, ElementType, Ref } from "react";
-
-export const version = "0.1.0";
+export { version } from "./generated/version";
 
 export type GetProps<T extends ElementType> = ComponentProps<T>;
 export type GetProp<T, K extends keyof T> = T[K];
@@ -27,8 +26,7 @@ export const theme = {
 };
 
 let renderOverride:
-  | ((node: unknown, container: Element | DocumentFragment) => void)
-  | undefined;
+  ((node: unknown, container: Element | DocumentFragment) => void) | undefined;
 let primaryColor = "#0065ff";
 let prefixCls = "dm";
 let datePickerLocale: "zh" | "en" = "en";

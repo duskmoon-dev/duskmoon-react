@@ -78,11 +78,7 @@ const AppBase = forwardRef<HTMLElement, AppProps>(
     const Root = Component;
 
     return (
-      <Root
-        {...props}
-        ref={ref}
-        className={getAppClasses({ className })}
-      >
+      <Root {...props} ref={ref} className={getAppClasses({ className })}>
         {content}
       </Root>
     );
@@ -95,9 +91,6 @@ export const App = AppBase as AppComponent;
 App.Context = AppContext;
 App.useApp = () => useContext(AppContext);
 
-export function AppRoot({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+export function AppRoot({ className, ...props }: React.ComponentProps<"div">) {
   return <div {...props} className={getAppRootClasses({ className })} />;
 }

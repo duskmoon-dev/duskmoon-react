@@ -75,7 +75,9 @@ function normalizeMultiValue(value: TreeSelectRawValue | undefined) {
 }
 
 function uniqueValues(values: TreeSelectValue[]) {
-  return Array.from(new Map(values.map((value) => [valueKey(value), value])).values());
+  return Array.from(
+    new Map(values.map((value) => [valueKey(value), value])).values(),
+  );
 }
 
 function treeDataFromChildren(children: React.ReactNode): TreeSelectDataNode[] {
@@ -147,7 +149,9 @@ function flattenTree<T extends TreeSelectDataNode>(
   return nodes.flatMap((node) => [node, ...flattenTree(node.children)]);
 }
 
-function descendantKeys<T extends TreeSelectDataNode>(item: FlatTreeSelectNode<T>) {
+function descendantKeys<T extends TreeSelectDataNode>(
+  item: FlatTreeSelectNode<T>,
+) {
   return flattenTree(item.children).map((child) => child.key);
 }
 
@@ -182,9 +186,7 @@ function filterTree<T extends TreeSelectDataNode>(
     const children = filterTree(node.children, inputValue, filterTreeNode);
     const matched = defaultFilter(inputValue, node, filterTreeNode);
 
-    return matched || children.length > 0
-      ? [{ ...node, children }]
-      : [];
+    return matched || children.length > 0 ? [{ ...node, children }] : [];
   });
 }
 
@@ -220,11 +222,15 @@ function displayItems<T extends TreeSelectDataNode>(
   strategy: TreeSelectProps<T>["treeCheckedStrategy"],
 ) {
   if (strategy === SHOW_CHILD) {
-    return selectedItems.filter((item) => !hasCheckedAncestor(item, flatNodes, checkedKeys));
+    return selectedItems.filter(
+      (item) => !hasCheckedAncestor(item, flatNodes, checkedKeys),
+    );
   }
 
   if (strategy === SHOW_PARENT) {
-    return selectedItems.filter((item) => !hasCheckedDescendant(item, checkedKeys));
+    return selectedItems.filter(
+      (item) => !hasCheckedDescendant(item, checkedKeys),
+    );
   }
 
   return selectedItems;
@@ -296,8 +302,12 @@ function TreeSelectRoot<T extends TreeSelectDataNode>(
   const allKeys = useMemo(() => flatNodes.map((item) => item.key), [flatNodes]);
   const [internalOpen, setInternalOpen] = useState(Boolean(defaultOpen));
   const [internalSearch, setInternalSearch] = useState("");
-  const [internalValue, setInternalValue] = useState<TreeSelectRawValue | undefined>(
-    multi ? normalizeMultiValue(defaultValue) : normalizeSingleValue(defaultValue),
+  const [internalValue, setInternalValue] = useState<
+    TreeSelectRawValue | undefined
+  >(
+    multi
+      ? normalizeMultiValue(defaultValue)
+      : normalizeSingleValue(defaultValue),
   );
   const [internalExpandedKeys, setInternalExpandedKeys] = useState<string[]>(
     treeDefaultExpandAll
@@ -322,14 +332,16 @@ function TreeSelectRoot<T extends TreeSelectDataNode>(
   const selectedKeys = new Set(selectedValues.map(valueKey));
   const selectedItems = selectedValues.map((selectedValue) => {
     const found = flatNodes.find((item) => item.value === selectedValue);
-    return found ?? {
-      node: { value: selectedValue, title: selectedValue } as T,
-      value: selectedValue,
-      key: valueKey(selectedValue),
-      title: selectedValue,
-      children: [],
-      level: 0,
-    };
+    return (
+      found ?? {
+        node: { value: selectedValue, title: selectedValue } as T,
+        value: selectedValue,
+        key: valueKey(selectedValue),
+        title: selectedValue,
+        children: [],
+        level: 0,
+      }
+    );
   });
   const visibleTree = filterTree(tree, currentSearch, filterTreeNode);
   const visibleFlatNodes = flattenTree(visibleTree);
@@ -348,7 +360,10 @@ function TreeSelectRoot<T extends TreeSelectDataNode>(
     onDropdownVisibleChange?.(nextOpen);
   }
 
-  function setExpanded(nextExpandedKeys: string[], item: FlatTreeSelectNode<T>) {
+  function setExpanded(
+    nextExpandedKeys: string[],
+    item: FlatTreeSelectNode<T>,
+  ) {
     if (!controlledExpandedKeys) {
       setInternalExpandedKeys(nextExpandedKeys);
     }
@@ -367,7 +382,9 @@ function TreeSelectRoot<T extends TreeSelectDataNode>(
       ? uniqueValues(nextValues)
       : nextValues.slice(0, 1);
     const nextValue = multi ? normalizedValues : normalizedValues[0];
-    const labels = normalizedValues.map((item) => labelForValue(item, flatNodes));
+    const labels = normalizedValues.map((item) =>
+      labelForValue(item, flatNodes),
+    );
     const extra: TreeSelectChangeExtra<T> = {
       triggerValue: trigger.value,
       selected,
@@ -384,11 +401,7 @@ function TreeSelectRoot<T extends TreeSelectDataNode>(
       setInternalValue(nextValue);
     }
 
-    onChange?.(
-      nextValue,
-      multi ? labels : labels[0],
-      extra,
-    );
+    onChange?.(nextValue, multi ? labels : labels[0], extra);
   }
 
   function selectItem(item: FlatTreeSelectNode<T>) {
@@ -400,13 +413,17 @@ function TreeSelectRoot<T extends TreeSelectDataNode>(
     let nextValues: TreeSelectValue[];
 
     if (multi) {
-      const cascadeKeys = checkable ? [item.key, ...descendantKeys(item)] : [item.key];
+      const cascadeKeys = checkable
+        ? [item.key, ...descendantKeys(item)]
+        : [item.key];
       const cascadeValues = flatNodes
         .filter((node) => cascadeKeys.includes(node.key))
         .map((node) => node.value);
 
       nextValues = selected
-        ? selectedValues.filter((itemValue) => !cascadeKeys.includes(valueKey(itemValue)))
+        ? selectedValues.filter(
+            (itemValue) => !cascadeKeys.includes(valueKey(itemValue)),
+          )
         : [...selectedValues, ...cascadeValues];
     } else {
       nextValues = selected ? [] : [item.value];
@@ -510,15 +527,13 @@ function TreeSelectRoot<T extends TreeSelectDataNode>(
     selectedKeys,
     treeCheckedStrategy,
   );
-  const selection = multi ? (
-    renderedItems.map((item) => (
-      <span key={item.key} className={treeSelectTagClass}>
-        {item.title}
-      </span>
-    ))
-  ) : (
-    renderedItems[0]?.title
-  );
+  const selection = multi
+    ? renderedItems.map((item) => (
+        <span key={item.key} className={treeSelectTagClass}>
+          {item.title}
+        </span>
+      ))
+    : renderedItems[0]?.title;
 
   return (
     <div
@@ -566,7 +581,9 @@ function TreeSelectRoot<T extends TreeSelectDataNode>(
             <input
               className={treeSelectSearchClass}
               value={currentSearch}
-              placeholder={typeof placeholder === "string" ? placeholder : undefined}
+              placeholder={
+                typeof placeholder === "string" ? placeholder : undefined
+              }
               onChange={(event) => {
                 const nextSearch = event.currentTarget.value;
 
@@ -578,7 +595,11 @@ function TreeSelectRoot<T extends TreeSelectDataNode>(
               }}
             />
           ) : null}
-          <div className={treeSelectListClass} role="tree" aria-multiselectable={multi || undefined}>
+          <div
+            className={treeSelectListClass}
+            role="tree"
+            aria-multiselectable={multi || undefined}
+          >
             {visibleFlatNodes.length > 0 && visibleTree.length > 0 ? (
               visibleTree.map(renderNode)
             ) : (
@@ -591,7 +612,9 @@ function TreeSelectRoot<T extends TreeSelectDataNode>(
   );
 }
 
-export const TreeSelect = forwardRef(TreeSelectRoot) as unknown as TreeSelectComponent;
+export const TreeSelect = forwardRef(
+  TreeSelectRoot,
+) as unknown as TreeSelectComponent;
 TreeSelect.displayName = "TreeSelect";
 TreeSelect.TreeNode = TreeNode;
 TreeSelect.SHOW_ALL = SHOW_ALL;

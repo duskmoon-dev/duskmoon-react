@@ -21,20 +21,15 @@ export type PopconfirmPlacement =
   | "rightBottom";
 
 export type PopconfirmTrigger =
-  | "hover"
-  | "focus"
-  | "click"
-  | "contextMenu"
-  | "contextmenu";
+  "hover" | "focus" | "click" | "contextMenu" | "contextmenu";
 
 export type PopconfirmAction =
-  | void
-  | Promise<void>
-  | Promise<unknown>
-  | unknown;
+  void | Promise<void> | Promise<unknown> | unknown;
 
-export interface PopconfirmProps
-  extends Omit<ComponentProps<"span">, "children" | "title"> {
+export interface PopconfirmProps extends Omit<
+  ComponentProps<"span">,
+  "children" | "title"
+> {
   title?: ReactNode;
   description?: ReactNode;
   placement?: PopconfirmPlacement;

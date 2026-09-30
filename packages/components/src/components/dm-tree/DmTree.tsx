@@ -16,10 +16,7 @@ import { Input } from "../input";
 import { DmStatus } from "../dm-status";
 import { DmTabs } from "../dm-tabs";
 import { Tree } from "../tree";
-import type {
-  TreeKey,
-  TreeProps,
-} from "../tree/Tree.types";
+import type { TreeKey, TreeProps } from "../tree/Tree.types";
 import type {
   DmTreeCommonProps,
   DmTreeComponent,
@@ -89,7 +86,10 @@ function findNode<TDataNode extends DmTreeDataNode>(
   const queue = [...treeData];
 
   for (const node of queue) {
-    if ((node as Record<string, unknown>)[keyField] === key || node.key === key) {
+    if (
+      (node as Record<string, unknown>)[keyField] === key ||
+      node.key === key
+    ) {
       return node;
     }
 
@@ -127,7 +127,8 @@ function filterTreeData<TDataNode extends DmTreeDataNode>(
     return [
       {
         ...node,
-        [childrenField]: filteredChildren.length > 0 ? filteredChildren : undefined,
+        [childrenField]:
+          filteredChildren.length > 0 ? filteredChildren : undefined,
       },
     ];
   });
@@ -146,7 +147,9 @@ function parentKeys<TDataNode extends DmTreeDataNode>(
     nodes.forEach((node) => {
       const children = (node as Record<string, unknown>)[childrenField];
       if (Array.isArray(children) && children.length > 0) {
-        keys.push(((node as Record<string, unknown>)[keyField] ?? node.key) as TreeKey);
+        keys.push(
+          ((node as Record<string, unknown>)[keyField] ?? node.key) as TreeKey,
+        );
         visit(children as TDataNode[]);
       }
     });
@@ -233,8 +236,8 @@ function CommonDmTree<TDataNode extends DmTreeDataNode>({
   ...treeProps
 }: DmTreeCommonProps<TDataNode>) {
   const [searchValue, setSearchValue] = useState("");
-  const [internalExpandedKeys, setInternalExpandedKeys] = useState<TreeKey[]>(() =>
-    defaultExpandedKeys ?? parentKeys(treeData, fieldNames),
+  const [internalExpandedKeys, setInternalExpandedKeys] = useState<TreeKey[]>(
+    () => defaultExpandedKeys ?? parentKeys(treeData, fieldNames),
   );
   const filteredTree = useMemo(
     () =>
@@ -252,7 +255,8 @@ function CommonDmTree<TDataNode extends DmTreeDataNode>({
     [fieldNames, filteredTree],
   );
   const treeExpandedKeys =
-    expandedKeys ?? (searchValue && !customSearch ? searchExpandedKeys : internalExpandedKeys);
+    expandedKeys ??
+    (searchValue && !customSearch ? searchExpandedKeys : internalExpandedKeys);
   const selectedItem = () => findNode(treeData, selectedKey, fieldNames);
   const autoWidth = width === "auto";
   const mergedWidth = autoWidth ? "100%" : cssSize(width);
@@ -262,10 +266,7 @@ function CommonDmTree<TDataNode extends DmTreeDataNode>({
     customSearch?.(event);
   }
 
-  function commitSelection(
-    nextItem: TDataNode,
-    nextKey: TreeKey,
-  ) {
+  function commitSelection(nextItem: TDataNode, nextKey: TreeKey) {
     onChange?.(nextItem, nextKey, selectedKey);
   }
 
@@ -276,7 +277,10 @@ function CommonDmTree<TDataNode extends DmTreeDataNode>({
 
     const allowed = beforeSelect?.(nextItem, nextKey, selectedKey);
 
-    if (allowed && typeof (allowed as Promise<boolean | void>).then === "function") {
+    if (
+      allowed &&
+      typeof (allowed as Promise<boolean | void>).then === "function"
+    ) {
       void Promise.resolve(allowed).then((result) => {
         if (result !== false) commitSelection(nextItem, nextKey);
       });
@@ -292,32 +296,39 @@ function CommonDmTree<TDataNode extends DmTreeDataNode>({
     const source =
       (node.data as TDataNode | undefined) ?? (node as unknown as TDataNode);
     const titleField = fieldName(fieldNames, "title");
-    const title = (source as Record<string, unknown>)[titleField] ?? source.title;
+    const title =
+      (source as Record<string, unknown>)[titleField] ?? source.title;
     const actions =
       typeof itemToolbar === "function" ? (
         itemToolbar(source)
       ) : Array.isArray(itemToolbar) ? (
-        <span className={getDmTreeItemToolbarClasses({ alwaysShow: itemToolbarAlwaysShow })}>
-          {itemToolbar.filter((action) => shouldShowAction(action, source)).map((action, index) => {
-            const disabled = isActionDisabled(action, source);
-
-            return (
-              <button
-                key={index}
-                type="button"
-                className={dmTreeItemToolbarClass}
-                aria-label={action.title}
-                title={action.title}
-                disabled={disabled}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  if (!disabled) action.onClick?.(source);
-                }}
-              >
-                {action.icon}
-              </button>
-            );
+        <span
+          className={getDmTreeItemToolbarClasses({
+            alwaysShow: itemToolbarAlwaysShow,
           })}
+        >
+          {itemToolbar
+            .filter((action) => shouldShowAction(action, source))
+            .map((action, index) => {
+              const disabled = isActionDisabled(action, source);
+
+              return (
+                <button
+                  key={index}
+                  type="button"
+                  className={dmTreeItemToolbarClass}
+                  aria-label={action.title}
+                  title={action.title}
+                  disabled={disabled}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    if (!disabled) action.onClick?.(source);
+                  }}
+                >
+                  {action.icon}
+                </button>
+              );
+            })}
         </span>
       ) : null;
 
@@ -328,7 +339,9 @@ function CommonDmTree<TDataNode extends DmTreeDataNode>({
             {typeof beforeIcon === "function" ? beforeIcon(source) : beforeIcon}
           </span>
         ) : null}
-        <span style={{ minWidth: cssSize(minNodeWidth) }}>{title as React.ReactNode}</span>
+        <span style={{ minWidth: cssSize(minNodeWidth) }}>
+          {title as React.ReactNode}
+        </span>
         {actions}
       </span>
     );
@@ -393,7 +406,7 @@ function CommonDmTree<TDataNode extends DmTreeDataNode>({
               }}
             />
           ) : (
-            emptyNode ?? <DmStatus status="empty" />
+            (emptyNode ?? <DmStatus status="empty" />)
           )}
         </div>
       </div>
@@ -428,7 +441,10 @@ function OptionDmTree<TDataNode extends DmTreeDataNode>(
         onChange={(node, selected, before) => {
           if (clearOtherSelection) {
             items.forEach((other) => {
-              if (other.key !== key && other.TreeSetting.selectedKey !== undefined) {
+              if (
+                other.key !== key &&
+                other.TreeSetting.selectedKey !== undefined
+              ) {
                 other.TreeSetting.onChange?.(
                   undefined,
                   undefined,

@@ -43,7 +43,11 @@ export function getMentionsDropdownClasses({
   placement?: MentionsPlacement;
   className?: string;
 }) {
-  return cn(mentionsDropdownClass, mentionsPlacementClasses[placement], className);
+  return cn(
+    mentionsDropdownClass,
+    mentionsPlacementClasses[placement],
+    className,
+  );
 }
 
 export function getMentionsOptionClasses({

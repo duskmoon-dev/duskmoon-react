@@ -42,9 +42,9 @@ describe("Typography", () => {
     expect(screen.getByText("Body").className).toContain(
       "typography-secondary",
     );
-    expect(screen.getByRole("link", { name: "Docs" }).getAttribute("href")).toBe(
-      "/docs",
-    );
+    expect(
+      screen.getByRole("link", { name: "Docs" }).getAttribute("href"),
+    ).toBe("/docs");
   });
 
   test("supports copyable text", () => {

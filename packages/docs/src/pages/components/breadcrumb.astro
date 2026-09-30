@@ -1,0 +1,12 @@
+---
+import ComponentDocPage from "../../components/ComponentDocPage.astro";
+import { getComponentDoc } from "../../lib/component-docs";
+
+const component = getComponentDoc("breadcrumb");
+
+if (!component) {
+  throw new Error("Missing component docs for breadcrumb");
+}
+---
+
+<ComponentDocPage component={component} />

@@ -103,7 +103,9 @@ function getRecordKey<T>(
   }
 
   if (rowKey) {
-    const key = (record as Record<string | number, unknown>)[rowKey as string | number];
+    const key = (record as Record<string | number, unknown>)[
+      rowKey as string | number
+    ];
     return typeof key === "string" || typeof key === "number" ? key : index;
   }
 
@@ -120,7 +122,8 @@ function normalizeColumns<T>(
   prefix = "column",
 ): NormalizedColumn<T>[] {
   return columns.map((column, index) => {
-    const rawKey = column.key ?? dataIndexKey(column.dataIndex) ?? `${prefix}-${index}`;
+    const rawKey =
+      column.key ?? dataIndexKey(column.dataIndex) ?? `${prefix}-${index}`;
     return {
       ...column,
       columnKey: rawKey,
@@ -279,31 +282,33 @@ const Summary = Object.assign(
 Summary.displayName = "Table.Summary";
 
 function columnsFromChildren<T>(children: ReactNode): TableColumnsType<T> {
-  return React.Children.toArray(children).flatMap((child): TableColumnsType<T> => {
-    if (!React.isValidElement(child)) {
+  return React.Children.toArray(children).flatMap(
+    (child): TableColumnsType<T> => {
+      if (!React.isValidElement(child)) {
+        return [];
+      }
+
+      if (child.type === Column) {
+        const props = child.props as TableColumnProps<T>;
+        const { children: columnChildren, ...column } = props;
+        void columnChildren;
+        return [column];
+      }
+
+      if (child.type === ColumnGroup) {
+        const props = child.props as TableColumnGroupProps<T>;
+        const { children: groupChildren, ...column } = props;
+        return [
+          {
+            ...column,
+            children: columnsFromChildren<T>(groupChildren),
+          },
+        ];
+      }
+
       return [];
-    }
-
-    if (child.type === Column) {
-      const props = child.props as TableColumnProps<T>;
-      const { children: columnChildren, ...column } = props;
-      void columnChildren;
-      return [column];
-    }
-
-    if (child.type === ColumnGroup) {
-      const props = child.props as TableColumnGroupProps<T>;
-      const { children: groupChildren, ...column } = props;
-      return [
-        {
-          ...column,
-          children: columnsFromChildren<T>(groupChildren),
-        },
-      ];
-    }
-
-    return [];
-  });
+    },
+  );
 }
 
 function renderSummary<T>(
@@ -376,18 +381,28 @@ function TableRoot<T extends TableRecord = TableRecord>(
   }: TableProps<T>,
   ref: React.ForwardedRef<HTMLDivElement>,
 ) {
-  const childColumns = useMemo(() => columnsFromChildren<T>(children), [children]);
+  const childColumns = useMemo(
+    () => columnsFromChildren<T>(children),
+    [children],
+  );
   const normalizedColumns = useMemo(
     () => normalizeColumns(columns ?? childColumns),
     [childColumns, columns],
   );
-  const leaves = useMemo(() => leafColumns(normalizedColumns), [normalizedColumns]);
+  const leaves = useMemo(
+    () => leafColumns(normalizedColumns),
+    [normalizedColumns],
+  );
   const headerRows = useMemo(
     () => buildHeaderRows(normalizedColumns, getDepth(normalizedColumns)),
     [normalizedColumns],
   );
-  const [sortStates, setSortStates] = useState<Record<string, SortOrder | undefined>>({});
-  const [filterStates, setFilterStates] = useState<Record<string, FilterValue | null>>({});
+  const [sortStates, setSortStates] = useState<
+    Record<string, SortOrder | undefined>
+  >({});
+  const [filterStates, setFilterStates] = useState<
+    Record<string, FilterValue | null>
+  >({});
   const [internalCurrent, setInternalCurrent] = useState(1);
   const [internalPageSize, setInternalPageSize] = useState(defaultPageSize);
   const [internalSelectedKeys, setInternalSelectedKeys] = useState<TableKey[]>(
@@ -397,17 +412,21 @@ function TableRoot<T extends TableRecord = TableRecord>(
     expandable?.defaultExpandedRowKeys ?? [],
   );
 
-  const spinning = typeof loading === "object" ? loading.spinning : Boolean(loading);
+  const spinning =
+    typeof loading === "object" ? loading.spinning : Boolean(loading);
   const activeFilters = useMemo(() => {
-    return leaves.reduce<Record<string, FilterValue | null>>((result, column) => {
-      const value = filterValueFor(column, filterStates) ?? null;
+    return leaves.reduce<Record<string, FilterValue | null>>(
+      (result, column) => {
+        const value = filterValueFor(column, filterStates) ?? null;
 
-      if (value !== null) {
-        result[String(column.columnKey)] = value;
-      }
+        if (value !== null) {
+          result[String(column.columnKey)] = value;
+        }
 
-      return result;
-    }, {});
+        return result;
+      },
+      {},
+    );
   }, [filterStates, leaves]);
   const activeSorter = useMemo<SorterResult<T>>(() => {
     const column = leaves.find((item) => sortOrderFor(item, sortStates));
@@ -437,7 +456,9 @@ function TableRoot<T extends TableRecord = TableRecord>(
     }, dataSource);
   }, [dataSource, filterStates, leaves]);
   const sortedData = useMemo(() => {
-    const sorterColumn = leaves.find((column) => sortOrderFor(column, sortStates));
+    const sorterColumn = leaves.find((column) =>
+      sortOrderFor(column, sortStates),
+    );
     const order = sorterColumn ? sortOrderFor(sorterColumn, sortStates) : null;
     const compare = sorterColumn ? sortCompare(sorterColumn.sorter) : undefined;
 
@@ -462,7 +483,12 @@ function TableRoot<T extends TableRecord = TableRecord>(
     ),
   );
   const pageCount = paginationConfig
-    ? Math.max(1, Math.ceil(Math.max(0, paginationConfig.total ?? sortedData.length) / pageSize))
+    ? Math.max(
+        1,
+        Math.ceil(
+          Math.max(0, paginationConfig.total ?? sortedData.length) / pageSize,
+        ),
+      )
     : 1;
   const current = paginationConfig
     ? Math.min(
@@ -470,7 +496,10 @@ function TableRoot<T extends TableRecord = TableRecord>(
         Math.max(
           1,
           Math.floor(
-            paginationConfig.current ?? internalCurrent ?? paginationConfig.defaultCurrent ?? 1,
+            paginationConfig.current ??
+              internalCurrent ??
+              paginationConfig.defaultCurrent ??
+              1,
           ),
         ),
       )
@@ -598,7 +627,8 @@ function TableRoot<T extends TableRecord = TableRecord>(
     const normalizedNextKeys = Array.from(new Set(nextKeys.map(String)));
     const originalKeys = normalizedNextKeys.map((key) => {
       const index = dataSource.findIndex(
-        (record, itemIndex) => String(getRecordKey(record, itemIndex, rowKey)) === key,
+        (record, itemIndex) =>
+          String(getRecordKey(record, itemIndex, rowKey)) === key,
       );
       return index >= 0 ? getRecordKey(dataSource[index], index, rowKey) : key;
     });
@@ -611,7 +641,12 @@ function TableRoot<T extends TableRecord = TableRecord>(
     rowSelection.onChange?.(originalKeys, selectedRows);
 
     if (changedRecord && selected !== undefined) {
-      rowSelection.onSelect?.(changedRecord, selected, selectedRows, nativeEvent);
+      rowSelection.onSelect?.(
+        changedRecord,
+        selected,
+        selectedRows,
+        nativeEvent,
+      );
     }
 
     if (changedRows) {
@@ -619,7 +654,11 @@ function TableRoot<T extends TableRecord = TableRecord>(
     }
   }
 
-  function toggleRowSelection(record: T, index: number, event: ChangeEvent<HTMLInputElement>) {
+  function toggleRowSelection(
+    record: T,
+    index: number,
+    event: ChangeEvent<HTMLInputElement>,
+  ) {
     if (!rowSelection) {
       return;
     }
@@ -634,7 +673,9 @@ function TableRoot<T extends TableRecord = TableRecord>(
           : []
         : checked
           ? [...selectedKeys, key]
-          : selectedKeys.filter((selectedKey) => String(selectedKey) !== keyString);
+          : selectedKeys.filter(
+              (selectedKey) => String(selectedKey) !== keyString,
+            );
 
     commitSelection(nextKeys, event.nativeEvent, record, checked);
   }
@@ -647,7 +688,10 @@ function TableRoot<T extends TableRecord = TableRecord>(
     const checked = event.currentTarget.checked;
     const selectableRows = pageData.filter((record, index) => {
       const checkboxProps = rowSelection.getCheckboxProps?.(record);
-      return !checkboxProps?.disabled && getRecordKey(record, index, rowKey) !== undefined;
+      return (
+        !checkboxProps?.disabled &&
+        getRecordKey(record, index, rowKey) !== undefined
+      );
     });
     const pageKeys = selectableRows.map((record, index) =>
       getRecordKey(record, index, rowKey),
@@ -657,7 +701,13 @@ function TableRoot<T extends TableRecord = TableRecord>(
       ? [...selectedKeys, ...pageKeys]
       : selectedKeys.filter((key) => !pageKeySet.has(String(key)));
 
-    commitSelection(nextKeys, event.nativeEvent, undefined, checked, selectableRows);
+    commitSelection(
+      nextKeys,
+      event.nativeEvent,
+      undefined,
+      checked,
+      selectableRows,
+    );
   }
 
   function toggleExpand(record: T, index: number) {
@@ -693,7 +743,9 @@ function TableRoot<T extends TableRecord = TableRecord>(
       );
     }
 
-    const pageKeys = pageData.map((record, index) => getRecordKey(record, index, rowKey));
+    const pageKeys = pageData.map((record, index) =>
+      getRecordKey(record, index, rowKey),
+    );
     const allSelected =
       pageKeys.length > 0 &&
       pageKeys.every((key) => selectedKeySet.has(String(key)));
@@ -723,7 +775,11 @@ function TableRoot<T extends TableRecord = TableRecord>(
       <th
         {...headerProps}
         key={String(column.columnKey)}
-        className={cn(tableHeaderCellClass, column.className, headerProps.className)}
+        className={cn(
+          tableHeaderCellClass,
+          column.className,
+          headerProps.className,
+        )}
         colSpan={cell.colSpan}
         rowSpan={cell.rowSpan}
         style={{
@@ -740,7 +796,11 @@ function TableRoot<T extends TableRecord = TableRecord>(
             aria-label={`Sort ${textFromNode(title, String(column.columnKey))}`}
             onClick={() => changeSorter(column)}
           >
-            {sortOrder === "ascend" ? "Asc" : sortOrder === "descend" ? "Desc" : "Sort"}
+            {sortOrder === "ascend"
+              ? "Asc"
+              : sortOrder === "descend"
+                ? "Desc"
+                : "Sort"}
           </button>
         ) : null}
         {column.filters?.length ? (
@@ -755,7 +815,9 @@ function TableRoot<T extends TableRecord = TableRecord>(
             }
             onChange={(event) => changeFilter(column, event)}
           >
-            {column.filterMultiple === false ? <option value="">All</option> : null}
+            {column.filterMultiple === false ? (
+              <option value="">All</option>
+            ) : null}
             {optionValues(column.filters).map((filter) => (
               <option key={String(filter.value)} value={String(filter.value)}>
                 {filter.text}
@@ -767,7 +829,11 @@ function TableRoot<T extends TableRecord = TableRecord>(
     );
   }
 
-  function renderCell(record: T, recordIndex: number, column: NormalizedColumn<T>) {
+  function renderCell(
+    record: T,
+    recordIndex: number,
+    column: NormalizedColumn<T>,
+  ) {
     const value = getValue(record, column.dataIndex);
     const rendered = column.render
       ? column.render(value, record, recordIndex)
@@ -875,7 +941,10 @@ function TableRoot<T extends TableRecord = TableRecord>(
   }
 
   const tableNode = (
-    <table className={getTableClasses({ bordered, size })} style={{ tableLayout }}>
+    <table
+      className={getTableClasses({ bordered, size })}
+      style={{ tableLayout }}
+    >
       <thead>
         {headerRows.map((row, rowIndex) => (
           <tr key={rowIndex}>
@@ -943,10 +1012,13 @@ function TableRoot<T extends TableRecord = TableRecord>(
           </button>
           <span className={tablePaginationInfoClass}>
             {paginationConfig.showTotal
-              ? paginationConfig.showTotal(paginationConfig.total ?? sortedData.length, [
-                  bodyEmpty ? 0 : (current - 1) * pageSize + 1,
-                  Math.min(current * pageSize, sortedData.length),
-                ])
+              ? paginationConfig.showTotal(
+                  paginationConfig.total ?? sortedData.length,
+                  [
+                    bodyEmpty ? 0 : (current - 1) * pageSize + 1,
+                    Math.min(current * pageSize, sortedData.length),
+                  ],
+                )
               : `${current} / ${pageCount}`}
           </span>
           <button

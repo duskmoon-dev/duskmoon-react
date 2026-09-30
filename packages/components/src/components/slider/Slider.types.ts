@@ -9,7 +9,17 @@ export type SliderValue = number | [number, number];
 
 export type SliderSize = "sm" | "md" | "lg";
 
-export type SliderColor = "primary" | "secondary" | "tertiary";
+export type SliderColor =
+  | "primary"
+  | "secondary"
+  | "tertiary"
+  | "accent"
+  | "neutral"
+  | "base"
+  | "info"
+  | "success"
+  | "warning"
+  | "error";
 
 export interface SliderMarkConfig {
   label?: ReactNode;
@@ -29,9 +39,7 @@ export interface SliderTooltipConfig {
 }
 
 export type SliderTooltip =
-  | boolean
-  | SliderTooltipFormatter
-  | SliderTooltipConfig;
+  boolean | SliderTooltipFormatter | SliderTooltipConfig;
 
 export interface SliderRangeConfig {
   draggableTrack?: boolean;

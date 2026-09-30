@@ -27,8 +27,10 @@ export interface CalendarHeaderRenderProps {
   onTypeChange: (type: CalendarMode) => void;
 }
 
-export interface CalendarProps
-  extends Omit<ComponentProps<"div">, "defaultValue" | "onChange" | "onSelect"> {
+export interface CalendarProps extends Omit<
+  ComponentProps<"div">,
+  "defaultValue" | "onChange" | "onSelect"
+> {
   value?: CalendarValue;
   defaultValue?: CalendarValue;
   mode?: CalendarMode;

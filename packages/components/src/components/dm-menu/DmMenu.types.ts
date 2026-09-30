@@ -35,8 +35,10 @@ export interface DmMenuClickInfo extends MenuClickInfo {
   menu?: DmMenuSchema;
 }
 
-export interface DmMenuProps
-  extends Omit<MenuProps, "items" | "children" | "onClick" | "ref"> {
+export interface DmMenuProps extends Omit<
+  MenuProps,
+  "items" | "children" | "onClick" | "ref"
+> {
   menus?: DmMenuSchema[];
   items?: MenuProps["items"];
   hideProductHeader?: boolean;

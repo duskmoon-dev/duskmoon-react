@@ -1,6 +1,9 @@
 // GENERATED FILE. DO NOT EDIT.
 import { cn } from "../utils";
-import type { CardAppearance, CardPadding } from "../components/card/Card.types";
+import type {
+  CardAppearance,
+  CardPadding,
+} from "../components/card/Card.types";
 
 export const cardBaseClass = "card";
 
@@ -17,7 +20,6 @@ export const cardPaddingClasses: Record<CardPadding, string> = {
   lg: "card-padding-lg",
 };
 
-
 export function getCardClasses({
   appearance = "elevated",
   padding = "md",
@@ -31,6 +33,6 @@ export function getCardClasses({
     cardBaseClass,
     cardAppearanceClasses[appearance],
     cardPaddingClasses[padding],
-    className
+    className,
   );
 }

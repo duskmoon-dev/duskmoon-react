@@ -51,7 +51,9 @@ describe("DmTable", () => {
 
     expect(screen.getByText("New")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Columns" }));
-    expect(screen.getByRole("dialog", { name: "Column settings" })).toBeTruthy();
+    expect(
+      screen.getByRole("dialog", { name: "Column settings" }),
+    ).toBeTruthy();
     expect(document.querySelector(".dm-table-pagination")).toBeTruthy();
   });
 

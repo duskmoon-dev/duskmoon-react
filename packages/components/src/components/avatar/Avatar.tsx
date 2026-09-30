@@ -14,7 +14,7 @@ export const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(
       className,
       ...props
     },
-    ref
+    ref,
   ) => {
     const [hasError, setHasError] = useState(false);
 
@@ -34,7 +34,7 @@ export const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(
         )}
       </span>
     );
-  }
+  },
 );
 
 Avatar.displayName = "Avatar";

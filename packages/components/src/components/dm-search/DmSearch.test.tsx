@@ -26,12 +26,16 @@ const items = [
 describe("DmSearch", () => {
   test("submits values and toggles collapsed fields", () => {
     const searches: Array<Record<string, unknown>> = [];
-    render(<DmSearch items={items} onSearch={(values) => searches.push(values)} />);
+    render(
+      <DmSearch items={items} onSearch={(values) => searches.push(values)} />,
+    );
 
     expect(screen.getByText("Name")).toBeTruthy();
     expect(screen.queryByText("State")).toBeNull();
 
-    fireEvent.change(screen.getByRole("textbox"), { target: { value: "demo" } });
+    fireEvent.change(screen.getByRole("textbox"), {
+      target: { value: "demo" },
+    });
     fireEvent.click(screen.getByRole("button", { name: "Search" }));
     expect(searches.at(-1)).toMatchObject({ name: "demo" });
 
@@ -41,10 +45,14 @@ describe("DmSearch", () => {
 
   test("honors searchParams and imperative reset", () => {
     const ref = createRef<DmSearchRef>();
-    render(<DmSearch ref={ref} items={items} searchParams={{ name: "from-url" }} />);
+    render(
+      <DmSearch ref={ref} items={items} searchParams={{ name: "from-url" }} />,
+    );
 
     expect(screen.getByDisplayValue("from-url")).toBeTruthy();
-    fireEvent.change(screen.getByRole("textbox"), { target: { value: "changed" } });
+    fireEvent.change(screen.getByRole("textbox"), {
+      target: { value: "changed" },
+    });
     act(() => {
       ref.current?.onReset();
     });

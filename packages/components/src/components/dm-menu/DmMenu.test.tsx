@@ -104,4 +104,3 @@ describe("DmMenu", () => {
     expect(clickedName).toBe("Instances");
   });
 });
-

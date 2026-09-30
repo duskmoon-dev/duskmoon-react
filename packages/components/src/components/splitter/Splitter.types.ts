@@ -20,7 +20,10 @@ export interface SplitterProps extends Omit<ComponentProps<"div">, "onResize"> {
   onResize?: (sizes: SplitterSize[], info: SplitterResizeInfo) => void;
 }
 
-export interface SplitterPanelProps extends Omit<ComponentProps<"div">, "children"> {
+export interface SplitterPanelProps extends Omit<
+  ComponentProps<"div">,
+  "children"
+> {
   children?: ReactNode;
   defaultSize?: SplitterSize;
   size?: SplitterSize;

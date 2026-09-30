@@ -34,7 +34,9 @@ function reachedThreshold(
   }
 
   const ratio =
-    typeof threshold === "number" ? threshold : Number.parseFloat(String(threshold));
+    typeof threshold === "number"
+      ? threshold
+      : Number.parseFloat(String(threshold));
   const normalized = Number.isFinite(ratio) ? ratio : 0.8;
   const scrolledRatio = inverse
     ? 1 - scrollTop / Math.max(1, scrollHeight - clientHeight)
@@ -74,7 +76,8 @@ export const DmInfiniteScroll = forwardRef<
     const [actionTriggered, setActionTriggered] = useState(false);
     const scrollableTarget = `${prefix}-${id}`;
     const hasVisibleChildren =
-      hasChildren ?? (Array.isArray(children) ? children.length > 0 : Boolean(children));
+      hasChildren ??
+      (Array.isArray(children) ? children.length > 0 : Boolean(children));
 
     useEffect(() => {
       if (previousLengthRef.current !== dataLength) {
@@ -138,4 +141,3 @@ export const DmInfiniteScroll = forwardRef<
 );
 
 DmInfiniteScroll.displayName = "DmInfiniteScroll";
-

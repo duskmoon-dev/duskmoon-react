@@ -17,10 +17,16 @@ export const rateSizeClasses: Record<RateSize, string> = {
 };
 
 export const rateColorClasses: Record<RateColor, string> = {
-  primary: "",
+  primary: "rating-primary",
   secondary: "rating-secondary",
   tertiary: "rating-tertiary",
+  accent: "rating-accent",
+  neutral: "rating-neutral",
+  base: "rating-base",
+  info: "rating-info",
+  success: "rating-success",
   warning: "rating-warning",
+  error: "rating-error",
 };
 
 export function getRateClasses({

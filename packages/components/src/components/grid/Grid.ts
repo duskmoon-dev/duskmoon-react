@@ -34,7 +34,9 @@ function normalizeScreens(
 }
 
 function canUseMatchMedia() {
-  return typeof window !== "undefined" && typeof window.matchMedia === "function";
+  return (
+    typeof window !== "undefined" && typeof window.matchMedia === "function"
+  );
 }
 
 function getMediaQueries() {
@@ -50,7 +52,8 @@ function getMediaQueries() {
   mediaQueries = gridBreakpoints.reduce(
     (queries, breakpoint) => {
       queries[breakpoint] =
-        queries[breakpoint] ?? window.matchMedia(gridBreakpointQueries[breakpoint]);
+        queries[breakpoint] ??
+        window.matchMedia(gridBreakpointQueries[breakpoint]);
       return queries;
     },
     { ...mediaQueries },
@@ -128,9 +131,7 @@ export function useBreakpoint(
 }
 
 export function useWatch(breakpoint: Breakpoint): boolean;
-export function useWatch<T>(
-  selector: (screens: BreakpointScreenMap) => T,
-): T;
+export function useWatch<T>(selector: (screens: BreakpointScreenMap) => T): T;
 export function useWatch<T>(
   breakpointOrSelector: Breakpoint | ((screens: BreakpointScreenMap) => T),
 ) {

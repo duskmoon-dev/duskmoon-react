@@ -160,8 +160,7 @@ const Search = forwardRef<HTMLInputElement, SearchProps>(
 
     function emitSearch(
       event?:
-        | React.KeyboardEvent<HTMLInputElement>
-        | React.MouseEvent<HTMLElement>,
+        React.KeyboardEvent<HTMLInputElement> | React.MouseEvent<HTMLElement>,
     ) {
       onSearch?.(inputRef.current?.value ?? "", event);
     }

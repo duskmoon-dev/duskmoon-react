@@ -51,7 +51,9 @@ export const Col = forwardRef<HTMLDivElement, ColProps>(
           const value = toResponsiveObject(responsive[key]);
           return value ? [`data-${key}-span`, value.span] : undefined;
         })
-        .filter((entry): entry is [string, number | undefined] => Boolean(entry)),
+        .filter((entry): entry is [string, number | undefined] =>
+          Boolean(entry),
+        ),
     );
     const leftShift = push ? `${(push / 24) * 100}%` : undefined;
     const rightShift = pull ? `${(pull / 24) * 100}%` : undefined;

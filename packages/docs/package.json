@@ -1,6 +1,6 @@
 {
   "name": "@duskmoon-dev/docs",
-  "version": "0.0.0",
+  "version": "0.3.1",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,13 +9,14 @@
     "preview": "astro preview"
   },
   "dependencies": {
-    "@astrojs/react": "^5.0.5",
+    "@astrojs/react": "6.0.2",
+    "@duskmoon-dev/art-components": "workspace:*",
     "@duskmoon-dev/components": "workspace:*",
-    "@duskmoon-dev/core": "^1.16.1",
-    "@types/react": "^19.2.15",
-    "@types/react-dom": "^19.2.3",
-    "astro": "^5.1.1",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6"
+    "@duskmoon-dev/core": "1.19.9",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
+    "astro": "7.1.6",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
   }
 }

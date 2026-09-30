@@ -26,9 +26,16 @@ export const sliderSizeClasses: Record<SliderSize, string> = {
 };
 
 export const sliderColorClasses: Record<SliderColor, string> = {
-  primary: "",
+  primary: "slider-primary",
   secondary: "slider-secondary",
   tertiary: "slider-tertiary",
+  accent: "slider-accent",
+  neutral: "slider-neutral",
+  base: "slider-base",
+  info: "slider-info",
+  success: "slider-success",
+  warning: "slider-warning",
+  error: "slider-error",
 };
 
 export function getSliderClasses({

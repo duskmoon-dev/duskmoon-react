@@ -1,7 +1,17 @@
 // GENERATED FILE. DO NOT EDIT.
 import type { ComponentProps } from "react";
 
-export type BadgeColor = "primary" | "secondary" | "info" | "success" | "warning" | "error";
+export type BadgeColor =
+  | "primary"
+  | "secondary"
+  | "tertiary"
+  | "accent"
+  | "neutral"
+  | "base"
+  | "info"
+  | "success"
+  | "warning"
+  | "error";
 
 export type BadgeAppearance = "filled" | "outline" | "tonal" | "ghost";
 

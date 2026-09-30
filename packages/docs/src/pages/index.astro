@@ -1,6 +1,7 @@
 ---
 import DocsLayout from "../layouts/DocsLayout.astro";
 import { getDocsByCategory } from "../lib/component-docs";
+import { docsPath } from "../lib/paths";
 
 const categories = Array.from(getDocsByCategory().entries());
 const total = categories.reduce((count, [, docs]) => count + docs.length, 0);
@@ -17,8 +18,8 @@ const total = categories.reduce((count, [, docs]) => count + docs.length, 0);
       implemented component in the package.
     </p>
     <div class="hero-actions">
-      <a class="button-link" href="/components/button">Start with Button</a>
-      <a class="button-link" href="/components/dm-provider">Theme Provider</a>
+      <a class="button-link" href={docsPath("/components/button")}>Start with Button</a>
+      <a class="button-link" href={docsPath("/components/dm-provider")}>Theme Provider</a>
     </div>
   </section>
 

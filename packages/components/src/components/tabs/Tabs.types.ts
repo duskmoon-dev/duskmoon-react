@@ -17,8 +17,7 @@ export type TabsSize = "small" | "middle" | "large" | "sm" | "md" | "lg";
 export type TabsEditAction = "add" | "remove";
 
 export type TabsEditEvent =
-  | MouseEvent<HTMLElement>
-  | KeyboardEvent<HTMLElement>;
+  MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>;
 
 export type TabsOnEdit = (
   targetKey: TabsKey | TabsEditEvent,

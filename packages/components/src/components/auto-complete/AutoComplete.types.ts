@@ -7,6 +7,18 @@ import type {
 
 export type AutoCompleteSize = "sm" | "md" | "lg";
 
+export type AutoCompleteColor =
+  | "primary"
+  | "secondary"
+  | "tertiary"
+  | "accent"
+  | "neutral"
+  | "base"
+  | "info"
+  | "success"
+  | "warning"
+  | "error";
+
 export interface AutoCompleteOptionType {
   value: string;
   label?: ReactNode;
@@ -15,16 +27,15 @@ export interface AutoCompleteOptionType {
 }
 
 export type AutoCompleteFilterOption =
-  | boolean
-  | ((inputValue: string, option: AutoCompleteOptionType) => boolean);
+  boolean | ((inputValue: string, option: AutoCompleteOptionType) => boolean);
 
-export interface AutoCompleteProps
-  extends Omit<
-    ComponentProps<"div">,
-    "children" | "defaultValue" | "onChange" | "onSelect"
-  > {
+export interface AutoCompleteProps extends Omit<
+  ComponentProps<"div">,
+  "children" | "defaultValue" | "onChange" | "onSelect"
+> {
   allowClear?: boolean;
   children?: ReactNode;
+  color?: AutoCompleteColor;
   defaultOpen?: boolean;
   defaultValue?: string;
   disabled?: boolean;
@@ -40,8 +51,10 @@ export interface AutoCompleteProps
   value?: string;
 }
 
-export interface AutoCompleteOptionProps
-  extends Omit<ComponentProps<"div">, "children"> {
+export interface AutoCompleteOptionProps extends Omit<
+  ComponentProps<"div">,
+  "children"
+> {
   children?: ReactNode;
   disabled?: boolean;
   value: string;

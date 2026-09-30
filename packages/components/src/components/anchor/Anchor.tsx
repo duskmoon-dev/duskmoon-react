@@ -144,17 +144,20 @@ export const Anchor = forwardRef<HTMLElement, AnchorProps>(
       normalizeActiveHref(getCurrentHash(), getCurrentAnchor),
     );
 
-    const setActiveHref = useCallback((nextHref: string) => {
-      const normalized = normalizeActiveHref(nextHref, getCurrentAnchor);
+    const setActiveHref = useCallback(
+      (nextHref: string) => {
+        const normalized = normalizeActiveHref(nextHref, getCurrentAnchor);
 
-      setActiveHrefState((previous) => {
-        if (previous !== normalized) {
-          onChange?.(normalized);
-        }
+        setActiveHrefState((previous) => {
+          if (previous !== normalized) {
+            onChange?.(normalized);
+          }
 
-        return normalized;
-      });
-    }, [getCurrentAnchor, onChange]);
+          return normalized;
+        });
+      },
+      [getCurrentAnchor, onChange],
+    );
 
     const context = useMemo<AnchorContextValue>(
       () => ({

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
+import * as ArtComponents from "@duskmoon-dev/art-components";
 import * as DmComponents from "@duskmoon-dev/components";
 
 interface DemoRendererProps {
@@ -8,8 +9,839 @@ interface DemoRendererProps {
   demoCode: string;
 }
 
-function parsePropsText(propsText: string): Record<string, any> {
-  const props: Record<string, any> = {};
+type ParsedProps = Record<string, unknown>;
+
+const typeOnlyInfrastructureExports = new Set(["breakpoint"]);
+const semanticColors = [
+  "primary",
+  "secondary",
+  "tertiary",
+  "accent",
+  "neutral",
+  "base",
+  "info",
+  "success",
+  "warning",
+  "error",
+] as const;
+const alertColors = semanticColors;
+const alertAppearances = ["filled", "outline", "tonal"] as const;
+const badgeAppearances = ["filled", "outline", "tonal", "ghost"] as const;
+const autoCompleteColors = semanticColors;
+const semanticColorComponentIds = new Set([
+  "alert",
+  "auto-complete",
+  "badge",
+  "button",
+  "chat",
+  "checkbox",
+  "divider",
+  "progress",
+  "radio",
+  "rate",
+  "slider",
+  "switch",
+  "tag",
+  "timeline",
+]);
+const autoCompleteOptions = [
+  { value: "react", label: "React" },
+  { value: "remix", label: "Remix" },
+  { value: "astro", label: "Astro" },
+  { value: "solid", label: "Solid" },
+];
+const asyncAutoCompleteOptions = [
+  { value: "apollo", label: "Apollo" },
+  { value: "atlas", label: "Atlas" },
+  { value: "matrix", label: "Matrix" },
+  { value: "mercury", label: "Mercury" },
+];
+
+function AlertPreview() {
+  return (
+    <div
+      style={{
+        display: "grid",
+        gap: "14px",
+        width: "100%",
+      }}
+    >
+      {alertAppearances.map((appearance) => (
+        <section
+          key={appearance}
+          aria-label={`${appearance} alerts`}
+          style={{
+            display: "grid",
+            gap: "8px",
+          }}
+        >
+          <h4
+            style={{
+              margin: 0,
+              color: "var(--dm-muted)",
+              fontSize: "12px",
+              fontWeight: 700,
+              textTransform: "uppercase",
+            }}
+          >
+            {appearance}
+          </h4>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+              gap: "8px",
+            }}
+          >
+            {alertColors.map((color) => (
+              <DmComponents.Alert
+                key={`${appearance}-${color}`}
+                color={color}
+                appearance={appearance}
+              >
+                {color} alert
+              </DmComponents.Alert>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  );
+}
+
+function filterAutoCompleteOptions(
+  query: string,
+  options: typeof asyncAutoCompleteOptions,
+) {
+  const normalized = query.trim().toLowerCase();
+
+  if (!normalized) return options;
+
+  return options.filter((option) =>
+    option.label.toLowerCase().includes(normalized),
+  );
+}
+
+function AutoCompletePreview() {
+  const [asyncValue, setAsyncValue] = React.useState("ma");
+  const [asyncOptions, setAsyncOptions] = React.useState(() =>
+    filterAutoCompleteOptions("ma", asyncAutoCompleteOptions),
+  );
+  const [asyncLoading, setAsyncLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      setAsyncOptions(
+        filterAutoCompleteOptions(asyncValue, asyncAutoCompleteOptions),
+      );
+      setAsyncLoading(false);
+    }, 300);
+
+    return () => window.clearTimeout(timeout);
+  }, [asyncValue]);
+
+  const updateAsyncValue = (value: string) => {
+    setAsyncLoading(true);
+    setAsyncValue(value);
+  };
+
+  return (
+    <div
+      style={{
+        display: "grid",
+        gap: "18px",
+        paddingBottom: "110px",
+        width: "100%",
+      }}
+    >
+      <section style={{ display: "grid", gap: "10px" }}>
+        <h4
+          style={{
+            margin: 0,
+            color: "var(--dm-muted)",
+            fontSize: "12px",
+            fontWeight: 700,
+            textTransform: "uppercase",
+          }}
+        >
+          Colors
+        </h4>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+            gap: "10px",
+          }}
+        >
+          {autoCompleteColors.map((color) => (
+            <div key={color} style={{ display: "grid", gap: "5px" }}>
+              <span
+                style={{
+                  color: "var(--dm-muted)",
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  textTransform: "capitalize",
+                }}
+              >
+                {color}
+              </span>
+              <DmComponents.AutoComplete
+                color={color}
+                placeholder={`${color} search`}
+                options={autoCompleteOptions}
+              />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+          gap: "12px",
+        }}
+      >
+        <div style={{ display: "grid", gap: "8px" }}>
+          <h4
+            style={{
+              margin: 0,
+              color: "var(--dm-muted)",
+              fontSize: "12px",
+              fontWeight: 700,
+              textTransform: "uppercase",
+            }}
+          >
+            Match options
+          </h4>
+          <DmComponents.AutoComplete
+            defaultOpen
+            defaultValue="re"
+            color="primary"
+            options={autoCompleteOptions}
+            placeholder="Framework"
+          />
+        </div>
+
+        <div style={{ display: "grid", gap: "8px" }}>
+          <h4
+            style={{
+              margin: 0,
+              color: "var(--dm-muted)",
+              fontSize: "12px",
+              fontWeight: 700,
+              textTransform: "uppercase",
+            }}
+          >
+            Async match
+          </h4>
+          <DmComponents.AutoComplete
+            open
+            value={asyncValue}
+            color="info"
+            options={asyncOptions}
+            notFoundContent={asyncLoading ? "Loading matches" : "No matches"}
+            placeholder="Remote source"
+            onChange={updateAsyncValue}
+            onSearch={updateAsyncValue}
+          />
+        </div>
+
+        <div style={{ display: "grid", gap: "8px" }}>
+          <h4
+            style={{
+              margin: 0,
+              color: "var(--dm-muted)",
+              fontSize: "12px",
+              fontWeight: 700,
+              textTransform: "uppercase",
+            }}
+          >
+            Allow clear
+          </h4>
+          <DmComponents.AutoComplete
+            allowClear
+            defaultValue="astro"
+            color="success"
+            options={autoCompleteOptions}
+            placeholder="Clearable value"
+          />
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function colorDemoLabel(label: string) {
+  return (
+    <span
+      style={{
+        color: "var(--dm-muted)",
+        fontSize: "12px",
+        fontWeight: 700,
+        textTransform: "capitalize",
+      }}
+    >
+      {label}
+    </span>
+  );
+}
+
+function colorDemoGrid(
+  children: (color: (typeof semanticColors)[number]) => React.ReactNode,
+  minWidth = 160,
+) {
+  return (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: `repeat(auto-fit, minmax(${minWidth}px, 1fr))`,
+        gap: "10px",
+        width: "100%",
+      }}
+    >
+      {semanticColors.map((color) => (
+        <div key={color} style={{ display: "grid", gap: "6px" }}>
+          {colorDemoLabel(color)}
+          {children(color)}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function SemanticColorPreview({ componentId }: { componentId: string }) {
+  if (componentId === "alert") {
+    return <AlertPreview />;
+  }
+
+  if (componentId === "auto-complete") {
+    return <AutoCompletePreview />;
+  }
+
+  if (componentId === "badge") {
+    return (
+      <div style={{ display: "grid", gap: "14px", width: "100%" }}>
+        {badgeAppearances.map((appearance) => (
+          <section key={appearance} style={{ display: "grid", gap: "8px" }}>
+            {colorDemoLabel(appearance)}
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+              {semanticColors.map((color) => (
+                <DmComponents.Badge
+                  key={`${appearance}-${color}`}
+                  color={color}
+                  appearance={appearance}
+                >
+                  {color}
+                </DmComponents.Badge>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    );
+  }
+
+  if (componentId === "button") {
+    return colorDemoGrid((color) => (
+      <DmComponents.Button color={color}>{color}</DmComponents.Button>
+    ));
+  }
+
+  if (componentId === "chat") {
+    return colorDemoGrid(
+      (color) => (
+        <DmComponents.Chat>
+          <DmComponents.Chat.Bubble color={color}>
+            {color} response
+          </DmComponents.Chat.Bubble>
+        </DmComponents.Chat>
+      ),
+      200,
+    );
+  }
+
+  if (componentId === "checkbox") {
+    return colorDemoGrid((color) => (
+      <DmComponents.Checkbox color={color} defaultChecked>
+        {color}
+      </DmComponents.Checkbox>
+    ));
+  }
+
+  if (componentId === "divider") {
+    return (
+      <div style={{ display: "grid", gap: "14px", width: "100%" }}>
+        {semanticColors.map((color) => (
+          <DmComponents.Divider key={color} color={color}>
+            {color}
+          </DmComponents.Divider>
+        ))}
+      </div>
+    );
+  }
+
+  if (componentId === "progress") {
+    return colorDemoGrid(
+      (color) => <DmComponents.Progress color={color} percent={72} showInfo />,
+      180,
+    );
+  }
+
+  if (componentId === "radio") {
+    return colorDemoGrid((color) => (
+      <DmComponents.Radio
+        color={color}
+        name={`docs-radio-${color}`}
+        defaultChecked
+      >
+        {color}
+      </DmComponents.Radio>
+    ));
+  }
+
+  if (componentId === "rate") {
+    return colorDemoGrid((color) => (
+      <DmComponents.Rate color={color} defaultValue={4} readOnly />
+    ));
+  }
+
+  if (componentId === "slider") {
+    return colorDemoGrid(
+      (color) => (
+        <DmComponents.Slider
+          color={color}
+          defaultValue={64}
+          tooltip={{ open: true }}
+        />
+      ),
+      220,
+    );
+  }
+
+  if (componentId === "switch") {
+    return colorDemoGrid((color) => (
+      <DmComponents.Switch
+        color={color}
+        defaultChecked
+        checkedChildren={color.slice(0, 2)}
+        unCheckedChildren={color.slice(0, 2)}
+      />
+    ));
+  }
+
+  if (componentId === "tag") {
+    return (
+      <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+        {semanticColors.map((color) => (
+          <DmComponents.Tag key={color} color={color}>
+            {color}
+          </DmComponents.Tag>
+        ))}
+      </div>
+    );
+  }
+
+  if (componentId === "timeline") {
+    return (
+      <DmComponents.Timeline
+        items={semanticColors.map((color, index) => ({
+          label: `${index + 1}`,
+          children: `${color} milestone`,
+          color,
+        }))}
+      />
+    );
+  }
+
+  return null;
+}
+
+function ChatPreview() {
+  const transcriptStyle: React.CSSProperties = {
+    display: "grid",
+    gap: "14px",
+    width: "min(680px, 100%)",
+  };
+  const payloadStyle: React.CSSProperties = {
+    margin: 0,
+    whiteSpace: "pre-wrap",
+  };
+
+  return (
+    <div style={transcriptStyle} aria-label="Example chat transcript">
+      <DmComponents.Chat aria-live="polite">
+        <DmComponents.Chat.Avatar>
+          <DmComponents.Avatar
+            size="sm"
+            fallback="AI"
+            className="avatar-info"
+          />
+        </DmComponents.Chat.Avatar>
+        <DmComponents.Chat.Header>
+          Assistant · just now
+        </DmComponents.Chat.Header>
+        <DmComponents.Chat.Reasoning open>
+          <summary>Thinking (2s)</summary>
+          <div>Checking the component catalog before replying.</div>
+        </DmComponents.Chat.Reasoning>
+        <DmComponents.Chat.Tool status="success" open>
+          <DmComponents.Chat.ToolHeader>
+            <span>search_components</span>
+            <DmComponents.Chat.ToolStatus>Done</DmComponents.Chat.ToolStatus>
+          </DmComponents.Chat.ToolHeader>
+          <DmComponents.Chat.ToolCall>
+            <pre style={payloadStyle}>{'{"query":"chat"}'}</pre>
+          </DmComponents.Chat.ToolCall>
+          <DmComponents.Chat.ToolResult>
+            <pre style={payloadStyle}>Found the DuskMoon Chat primitives.</pre>
+          </DmComponents.Chat.ToolResult>
+        </DmComponents.Chat.Tool>
+        <DmComponents.Chat.Bubble color="info" streaming>
+          The React chat primitives are ready to compose.
+        </DmComponents.Chat.Bubble>
+        <DmComponents.Chat.Footer>Delivered</DmComponents.Chat.Footer>
+      </DmComponents.Chat>
+
+      <DmComponents.Chat placement="end">
+        <DmComponents.Chat.Avatar>
+          <DmComponents.Avatar size="sm" fallback="You" />
+        </DmComponents.Chat.Avatar>
+        <DmComponents.Chat.Header>You · just now</DmComponents.Chat.Header>
+        <DmComponents.Chat.Bubble color="primary" filled>
+          Show me the live response state.
+        </DmComponents.Chat.Bubble>
+        <DmComponents.Chat.Footer>Sent</DmComponents.Chat.Footer>
+      </DmComponents.Chat>
+
+      <DmComponents.Chat>
+        <DmComponents.Chat.Avatar>
+          <DmComponents.Avatar
+            size="sm"
+            fallback="AI"
+            className="avatar-info"
+          />
+        </DmComponents.Chat.Avatar>
+        <DmComponents.Chat.Bubble>
+          <DmComponents.Chat.Typing />
+        </DmComponents.Chat.Bubble>
+      </DmComponents.Chat>
+    </div>
+  );
+}
+
+function GridPreview() {
+  const screens = DmComponents.Grid.useBreakpoint();
+  const active = Object.entries(screens)
+    .filter(([, matches]) => matches)
+    .map(([breakpoint]) => breakpoint);
+
+  return (
+    <div
+      style={{
+        display: "grid",
+        gap: "10px",
+        width: "min(420px, 100%)",
+        padding: "12px",
+        background: "var(--dm-surface)",
+        border: "1px solid var(--dm-border)",
+        borderRadius: "8px",
+      }}
+    >
+      <strong style={{ fontSize: "14px" }}>Current breakpoints</strong>
+      <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+        {Object.entries(screens).map(([breakpoint, matches]) => (
+          <span
+            key={breakpoint}
+            style={{
+              padding: "4px 8px",
+              borderRadius: "999px",
+              background: matches
+                ? "var(--dm-primary-soft)"
+                : "var(--dm-surface-soft)",
+              color: matches ? "var(--dm-primary)" : "var(--dm-muted)",
+              border: "1px solid var(--dm-border)",
+              fontSize: "12px",
+              fontWeight: matches ? 700 : 500,
+            }}
+          >
+            {breakpoint}
+          </span>
+        ))}
+      </div>
+      <span style={{ color: "var(--dm-muted)", fontSize: "13px" }}>
+        {active.length ? `Active: ${active.join(", ")}` : "No active matches"}
+      </span>
+    </div>
+  );
+}
+
+function SplitterPreview({ variant }: { variant: "standard" | "dm" }) {
+  const Root =
+    variant === "dm" ? DmComponents.DmSplitter : DmComponents.Splitter;
+  const Panel = Root.Panel;
+  const panelStyle: React.CSSProperties = {
+    display: "grid",
+    minHeight: "92px",
+    placeItems: "center",
+    padding: "12px",
+    background: "var(--dm-surface)",
+    border: "1px solid var(--dm-border)",
+    borderRadius: "6px",
+    color: "var(--dm-text)",
+    fontWeight: 600,
+  };
+
+  return (
+    <div style={{ width: "min(560px, 100%)" }}>
+      <Root
+        defaultSizes={["34%", "66%"]}
+        gap={variant === "dm" ? 8 : undefined}
+        style={{ width: "100%" }}
+      >
+        <Panel style={panelStyle}>Navigation</Panel>
+        <Panel style={panelStyle}>Workspace</Panel>
+      </Root>
+    </div>
+  );
+}
+
+function FlexPreview() {
+  const itemStyle: React.CSSProperties = {
+    padding: "10px 14px",
+    background: "var(--color-primary-container)",
+    color: "var(--color-primary)",
+    borderRadius: "6px",
+    fontWeight: 700,
+  };
+
+  return (
+    <DmComponents.Flex
+      gap="middle"
+      wrap
+      align="center"
+      style={{ width: "100%" }}
+    >
+      <span style={itemStyle}>Alpha</span>
+      <span style={itemStyle}>Beta</span>
+      <span style={itemStyle}>Gamma</span>
+    </DmComponents.Flex>
+  );
+}
+
+function FormPreview() {
+  return (
+    <DmComponents.Form
+      layout="vertical"
+      initialValues={{ project: "DuskMoon" }}
+      style={{ width: "min(420px, 100%)" }}
+      onFinish={(values) => console.log(values)}
+    >
+      <DmComponents.Form.Item
+        name="project"
+        label="Project"
+        rules={[{ required: true, message: "Project is required" }]}
+        extra="The name shown in dashboards."
+      >
+        <DmComponents.Input placeholder="Project name" />
+      </DmComponents.Form.Item>
+      <DmComponents.Form.Item>
+        <DmComponents.Button color="primary">Save</DmComponents.Button>
+      </DmComponents.Form.Item>
+    </DmComponents.Form>
+  );
+}
+
+function LayoutPreview() {
+  return (
+    <DmComponents.Layout style={{ width: "min(640px, 100%)" }}>
+      <DmComponents.Layout.Header>Header</DmComponents.Layout.Header>
+      <DmComponents.Layout hasSider>
+        <DmComponents.Layout.Sider width={160}>Sider</DmComponents.Layout.Sider>
+        <DmComponents.Layout.Content>Content</DmComponents.Layout.Content>
+      </DmComponents.Layout>
+      <DmComponents.Layout.Footer>Footer</DmComponents.Layout.Footer>
+    </DmComponents.Layout>
+  );
+}
+
+function RowPreview() {
+  const cellStyle: React.CSSProperties = {
+    display: "grid",
+    minHeight: "56px",
+    placeItems: "center",
+    color: "var(--color-primary)",
+    fontSize: "13px",
+    fontWeight: 800,
+    background: "var(--color-primary-container)",
+    border: "1px solid var(--color-outline-variant)",
+    borderRadius: "6px",
+  };
+
+  return (
+    <DmComponents.Row
+      gutter={[12, 12]}
+      align="middle"
+      justify="space-between"
+      style={{ width: "100%" }}
+    >
+      <DmComponents.Col span={7}>
+        <div style={cellStyle}>span 7</div>
+      </DmComponents.Col>
+      <DmComponents.Col span={7}>
+        <div style={cellStyle}>span 7</div>
+      </DmComponents.Col>
+      <DmComponents.Col span={7}>
+        <div style={cellStyle}>span 7</div>
+      </DmComponents.Col>
+    </DmComponents.Row>
+  );
+}
+
+function SpacePreview() {
+  const itemStyle: React.CSSProperties = {
+    display: "inline-flex",
+    alignItems: "center",
+    padding: "8px 12px",
+    color: "var(--color-primary)",
+    fontSize: "13px",
+    fontWeight: 800,
+    background: "var(--color-primary-container)",
+    border: "1px solid var(--color-outline-variant)",
+    borderRadius: "6px",
+  };
+
+  return (
+    <DmComponents.Space size="middle" wrap split="|">
+      <span style={itemStyle}>Design</span>
+      <span style={itemStyle}>Build</span>
+      <span style={itemStyle}>Ship</span>
+    </DmComponents.Space>
+  );
+}
+
+function ListPreview() {
+  const items = [
+    { title: "Design tokens", description: "Updated color and spacing scale" },
+    { title: "Components", description: "Reviewed visual states" },
+    { title: "Release", description: "Ready for package validation" },
+  ];
+
+  return (
+    <DmComponents.List bordered style={{ width: "min(520px, 100%)" }}>
+      {items.map((item) => (
+        <DmComponents.List.Item key={item.title} extra="Open">
+          <DmComponents.List.Item.Meta
+            title={item.title}
+            description={item.description}
+          />
+        </DmComponents.List.Item>
+      ))}
+    </DmComponents.List>
+  );
+}
+
+function ModalPreview() {
+  const [open, setOpen] = React.useState(false);
+
+  return (
+    <div style={{ display: "grid", gap: "12px" }}>
+      <DmComponents.Button color="primary" onClick={() => setOpen(true)}>
+        Open modal
+      </DmComponents.Button>
+      <DmComponents.Modal
+        open={open}
+        title="Release checklist"
+        width={420}
+        onCancel={() => setOpen(false)}
+        onOk={() => setOpen(false)}
+      >
+        Review component styles before publishing the package.
+      </DmComponents.Modal>
+    </div>
+  );
+}
+
+function AffixPreview() {
+  const scrollTargetRef = React.useRef<HTMLDivElement>(null);
+  const getScrollTarget = React.useCallback(() => scrollTargetRef.current, []);
+
+  return (
+    <div
+      style={{
+        display: "grid",
+        gap: "12px",
+        width: "100%",
+      }}
+    >
+      <div
+        ref={scrollTargetRef}
+        style={{
+          display: "grid",
+          gridTemplateColumns: "minmax(0, 1fr) auto",
+          gap: "12px",
+          alignItems: "start",
+          width: "min(560px, 100%)",
+          minHeight: "148px",
+          border: "1px solid var(--dm-border)",
+          borderRadius: "8px",
+          background: "var(--dm-surface)",
+          padding: "14px",
+        }}
+      >
+        <div style={{ display: "grid", gap: "8px" }}>
+          {["Header", "Content", "Details"].map((label) => (
+            <div
+              key={label}
+              style={{
+                height: "28px",
+                borderRadius: "6px",
+                background:
+                  label === "Content"
+                    ? "var(--color-primary-container)"
+                    : "var(--dm-surface-soft)",
+                color:
+                  label === "Content"
+                    ? "var(--color-primary)"
+                    : "var(--dm-muted)",
+                display: "grid",
+                placeItems: "center",
+                fontSize: "12px",
+                fontWeight: 700,
+              }}
+            >
+              {label}
+            </div>
+          ))}
+        </div>
+        <DmComponents.Affix offsetTop={12} target={getScrollTarget}>
+          <div
+            style={{
+              minWidth: "126px",
+              border: "1px solid var(--color-primary)",
+              borderRadius: "8px",
+              background: "var(--color-primary-container)",
+              color: "var(--color-primary)",
+              padding: "10px 12px",
+              fontSize: "13px",
+              fontWeight: 800,
+              textAlign: "center",
+              boxShadow: "var(--shadow-sm)",
+            }}
+          >
+            Sticky action
+          </div>
+        </DmComponents.Affix>
+      </div>
+      <span style={{ color: "var(--dm-muted)", fontSize: "13px" }}>
+        Scroll-bound content with a visible affixed action target.
+      </span>
+    </div>
+  );
+}
+
+function parsePropsText(propsText: string): ParsedProps {
+  const props: ParsedProps = {};
   let i = 0;
   const len = propsText.length;
 
@@ -21,26 +853,43 @@ function parsePropsText(propsText: string): Record<string, any> {
         continue;
       }
       // Check for single-line comment
-      if (char === '/' && i + 1 < len && propsText[i + 1] === '/') {
+      if (char === "/" && i + 1 < len && propsText[i + 1] === "/") {
         i += 2;
-        while (i < len && propsText[i] !== '\n') {
+        while (i < len && propsText[i] !== "\n") {
           i++;
         }
         continue;
       }
       // Check for multi-line comment
-      if (char === '/' && i + 1 < len && propsText[i + 1] === '*') {
+      if (char === "/" && i + 1 < len && propsText[i + 1] === "*") {
         i += 2;
-        while (i < len && !(propsText[i] === '*' && i + 1 < len && propsText[i + 1] === '/')) {
+        while (
+          i < len &&
+          !(propsText[i] === "*" && i + 1 < len && propsText[i + 1] === "/")
+        ) {
           i++;
         }
         if (i < len) i += 2; // skip '*/'
         continue;
       }
       // Check for JSX style comment {/* ... */}
-      if (char === '{' && i + 2 < len && propsText[i + 1] === '/' && propsText[i + 2] === '*') {
+      if (
+        char === "{" &&
+        i + 2 < len &&
+        propsText[i + 1] === "/" &&
+        propsText[i + 2] === "*"
+      ) {
         i += 3;
-        while (i < len && !(propsText[i] === '*' && i + 1 < len && propsText[i + 1] === '/' && i + 2 < len && propsText[i + 2] === '}')) {
+        while (
+          i < len &&
+          !(
+            propsText[i] === "*" &&
+            i + 1 < len &&
+            propsText[i + 1] === "/" &&
+            i + 2 < len &&
+            propsText[i + 2] === "}"
+          )
+        ) {
           i++;
         }
         if (i < len) i += 3; // skip '*/}'
@@ -55,8 +904,8 @@ function parsePropsText(propsText: string): Record<string, any> {
     if (i >= len) break;
 
     // Read prop name (alphanumeric, -, etc.)
-    let nameStart = i;
-    while (i < len && /[a-zA-Z0-9_\-]/.test(propsText[i])) {
+    const nameStart = i;
+    while (i < len && /[a-zA-Z0-9_-]/.test(propsText[i])) {
       i++;
     }
     const propName = propsText.slice(nameStart, i);
@@ -68,7 +917,7 @@ function parsePropsText(propsText: string): Record<string, any> {
 
     skipWhitespaceAndComments();
 
-    if (i < len && propsText[i] === '=') {
+    if (i < len && propsText[i] === "=") {
       i++; // skip '='
       skipWhitespaceAndComments();
       if (i >= len) {
@@ -81,9 +930,9 @@ function parsePropsText(propsText: string): Record<string, any> {
         // String literal
         const quote = char;
         i++; // skip quote
-        let valStart = i;
+        const valStart = i;
         while (i < len && propsText[i] !== quote) {
-          if (propsText[i] === '\\' && i + 1 < len) {
+          if (propsText[i] === "\\" && i + 1 < len) {
             i += 2;
           } else {
             i++;
@@ -92,11 +941,11 @@ function parsePropsText(propsText: string): Record<string, any> {
         const val = propsText.slice(valStart, i);
         if (i < len) i++; // skip ending quote
         props[propName] = val;
-      } else if (char === '{') {
+      } else if (char === "{") {
         // Braced expression
         i++; // skip '{'
         let braceCount = 1;
-        let valStart = i;
+        const valStart = i;
         let inDoubleQuote = false;
         let inSingleQuote = false;
         let inBacktick = false;
@@ -104,36 +953,36 @@ function parsePropsText(propsText: string): Record<string, any> {
         while (i < len && braceCount > 0) {
           const c = propsText[i];
           if (inDoubleQuote) {
-            if (c === '\\' && i + 1 < len) i += 2;
+            if (c === "\\" && i + 1 < len) i += 2;
             else {
               if (c === '"') inDoubleQuote = false;
               i++;
             }
           } else if (inSingleQuote) {
-            if (c === '\\' && i + 1 < len) i += 2;
+            if (c === "\\" && i + 1 < len) i += 2;
             else {
               if (c === "'") inSingleQuote = false;
               i++;
             }
           } else if (inBacktick) {
-            if (c === '\\' && i + 1 < len) i += 2;
+            if (c === "\\" && i + 1 < len) i += 2;
             else {
-              if (c === '`') inBacktick = false;
+              if (c === "`") inBacktick = false;
               i++;
             }
           } else {
             if (c === '"') inDoubleQuote = true;
             else if (c === "'") inSingleQuote = true;
-            else if (c === '`') inBacktick = true;
-            else if (c === '{') braceCount++;
-            else if (c === '}') braceCount--;
+            else if (c === "`") inBacktick = true;
+            else if (c === "{") braceCount++;
+            else if (c === "}") braceCount--;
             i++;
           }
         }
-        
+
         // braceCount should be 0 here, unless malformed
         const bracesVal = propsText.slice(valStart, i - 1);
-        
+
         // Evaluate the bracesVal
         const trimmed = bracesVal.trim();
         if (trimmed === "true") props[propName] = true;
@@ -142,28 +991,32 @@ function parsePropsText(propsText: string): Record<string, any> {
         else if (trimmed.startsWith("[") || trimmed.startsWith("{")) {
           try {
             props[propName] = new Function(`return (${trimmed})`)();
-          } catch (e) {
-            console.error("Failed to parse prop value:", trimmed, e);
+          } catch (error) {
+            console.error("Failed to parse prop value:", trimmed, error);
           }
-        } else if (trimmed.startsWith("(") || trimmed.includes("=>") || trimmed.startsWith("function")) {
+        } else if (
+          trimmed.startsWith("(") ||
+          trimmed.includes("=>") ||
+          trimmed.startsWith("function")
+        ) {
           try {
             props[propName] = new Function(`return (${trimmed})`)();
-          } catch (e) {
+          } catch {
             // Fallback for callback/function
-            props[propName] = (...args: any[]) => {
+            props[propName] = (...args: unknown[]) => {
               console.log(`Triggered function for ${propName}`, args);
             };
           }
         } else {
           try {
             props[propName] = new Function(`return (${trimmed})`)();
-          } catch (e) {
+          } catch {
             props[propName] = trimmed;
           }
         }
       } else {
         // Unquoted value or something else, read until next whitespace
-        let valStart = i;
+        const valStart = i;
         while (i < len && !/\s/.test(propsText[i])) {
           i++;
         }
@@ -181,14 +1034,70 @@ function parsePropsText(propsText: string): Record<string, any> {
 
 function parseJsx(code: string, componentName: string) {
   const normalizedComponentName = componentName.trim();
-  
-  // Match <ComponentName ...>...</ComponentName> or <ComponentName ... />
-  const jsxRegex = new RegExp(`<${normalizedComponentName}\\b([\\s\\S]*?)(?:>([\\s\\S]*?)<\/${normalizedComponentName}>|\\/>)`);
-  const match = code.match(jsxRegex);
-  if (!match) return null;
+  const openTag = `<${normalizedComponentName}`;
+  const openStart = code.indexOf(openTag);
 
-  const propsText = match[1];
-  const childrenText = match[2] || "";
+  if (openStart === -1) return null;
+
+  let i = openStart + openTag.length;
+  let braceDepth = 0;
+  let quote: '"' | "'" | "`" | null = null;
+  let openingEnd = -1;
+
+  while (i < code.length) {
+    const char = code[i];
+
+    if (quote) {
+      if (char === "\\" && i + 1 < code.length) {
+        i += 2;
+        continue;
+      }
+      if (char === quote) {
+        quote = null;
+      }
+      i += 1;
+      continue;
+    }
+
+    if (char === '"' || char === "'" || char === "`") {
+      quote = char;
+      i += 1;
+      continue;
+    }
+
+    if (char === "{") {
+      braceDepth += 1;
+      i += 1;
+      continue;
+    }
+
+    if (char === "}") {
+      braceDepth = Math.max(0, braceDepth - 1);
+      i += 1;
+      continue;
+    }
+
+    if (char === ">" && braceDepth === 0) {
+      openingEnd = i;
+      break;
+    }
+
+    i += 1;
+  }
+
+  if (openingEnd === -1) return null;
+
+  const rawPropsText = code.slice(openStart + openTag.length, openingEnd);
+  const selfClosing = rawPropsText.trimEnd().endsWith("/");
+  const propsText = selfClosing
+    ? rawPropsText.replace(/\/\s*$/, "")
+    : rawPropsText;
+  const closeTag = `</${normalizedComponentName}>`;
+  const closeStart = selfClosing ? -1 : code.indexOf(closeTag, openingEnd + 1);
+  const childrenText =
+    selfClosing || closeStart === -1
+      ? ""
+      : code.slice(openingEnd + 1, closeStart);
 
   const props = parsePropsText(propsText);
 
@@ -202,34 +1111,82 @@ export default function DemoRenderer({
   demoCode,
 }: DemoRendererProps) {
   // Handle special case utility/hook/types
-  const isHook = componentId.startsWith("use-") || componentName.startsWith("use");
+  const isArtComponent = componentId.startsWith("art-");
+  const isTypeOnlyInfrastructure =
+    typeOnlyInfrastructureExports.has(componentId);
+  const isHook =
+    componentId.startsWith("use-") || componentName.startsWith("use");
   const isUtility =
+    isTypeOnlyInfrastructure ||
     componentId.startsWith("get-") ||
     componentId.startsWith("set-") ||
     componentId.startsWith("on-") ||
     componentId.startsWith("unstable-") ||
     componentId === "version" ||
-    componentId === "theme" ||
-    componentId === "grid";
+    componentId === "theme";
 
   if (isHook) {
     return (
-      <div style={{ padding: "8px 12px", background: "var(--dm-surface)", borderRadius: "6px", fontSize: "14px", color: "var(--dm-muted)", border: "1px dashed var(--dm-border)" }}>
+      <div
+        style={{
+          padding: "8px 12px",
+          background: "var(--dm-surface)",
+          borderRadius: "6px",
+          fontSize: "14px",
+          color: "var(--dm-muted)",
+          border: "1px dashed var(--dm-border)",
+        }}
+      >
         React Hook (no visual preview)
       </div>
     );
   }
 
   if (isUtility) {
+    if (isTypeOnlyInfrastructure) {
+      return (
+        <div
+          style={{
+            padding: "8px 12px",
+            background: "var(--dm-surface)",
+            borderRadius: "6px",
+            fontSize: "14px",
+            color: "var(--dm-muted)",
+            border: "1px dashed var(--dm-border)",
+          }}
+        >
+          Type-only export (no visual preview)
+        </div>
+      );
+    }
+
     if (componentId === "version") {
       return (
-        <div style={{ padding: "8px 12px", background: "var(--dm-surface)", borderRadius: "6px", fontSize: "14px", fontWeight: "bold", border: "1px solid var(--dm-border)" }}>
+        <div
+          style={{
+            padding: "8px 12px",
+            background: "var(--dm-surface)",
+            borderRadius: "6px",
+            fontSize: "14px",
+            fontWeight: "bold",
+            border: "1px solid var(--dm-border)",
+          }}
+        >
           DuskMoon SDK Version: {DmComponents.version}
         </div>
       );
     }
     return (
-      <div style={{ padding: "8px 12px", background: "var(--dm-surface)", borderRadius: "6px", fontSize: "14px", color: "var(--dm-muted)", border: "1px dashed var(--dm-border)" }}>
+      <div
+        style={{
+          padding: "8px 12px",
+          background: "var(--dm-surface)",
+          borderRadius: "6px",
+          fontSize: "14px",
+          color: "var(--dm-muted)",
+          border: "1px dashed var(--dm-border)",
+        }}
+      >
         Utility Function / Configuration Helper (no visual preview)
       </div>
     );
@@ -241,13 +1198,27 @@ export default function DemoRenderer({
       <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
         <DmComponents.DmMessageHolder />
         <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-          <DmComponents.Button onClick={() => DmComponents.DmMessage.info("Info message triggered!")}>
+          <DmComponents.Button
+            onClick={() =>
+              DmComponents.DmMessage.info("Info message triggered!")
+            }
+          >
             Info Message
           </DmComponents.Button>
-          <DmComponents.Button color="success" onClick={() => DmComponents.DmMessage.success("Action completed successfully!")}>
+          <DmComponents.Button
+            color="success"
+            onClick={() =>
+              DmComponents.DmMessage.success("Action completed successfully!")
+            }
+          >
             Success Message
           </DmComponents.Button>
-          <DmComponents.Button color="error" onClick={() => DmComponents.DmMessage.error("An error has occurred!")}>
+          <DmComponents.Button
+            color="error"
+            onClick={() =>
+              DmComponents.DmMessage.error("An error has occurred!")
+            }
+          >
             Error Message
           </DmComponents.Button>
         </div>
@@ -260,13 +1231,21 @@ export default function DemoRenderer({
       <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
         <DmComponents.MessageHolder />
         <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-          <DmComponents.Button onClick={() => DmComponents.message.info("Info notification!")}>
+          <DmComponents.Button
+            onClick={() => DmComponents.message.info("Info notification!")}
+          >
             Info
           </DmComponents.Button>
-          <DmComponents.Button color="success" onClick={() => DmComponents.message.success("Success!")}>
+          <DmComponents.Button
+            color="success"
+            onClick={() => DmComponents.message.success("Success!")}
+          >
             Success
           </DmComponents.Button>
-          <DmComponents.Button color="warning" onClick={() => DmComponents.message.warning("Warning alert!")}>
+          <DmComponents.Button
+            color="warning"
+            onClick={() => DmComponents.message.warning("Warning alert!")}
+          >
             Warning
           </DmComponents.Button>
         </div>
@@ -281,7 +1260,8 @@ export default function DemoRenderer({
           onClick={() =>
             DmComponents.notification.open({
               message: "Notification",
-              description: "This is a global notification triggered dynamically.",
+              description:
+                "This is a global notification triggered dynamically.",
             })
           }
         >
@@ -291,8 +1271,111 @@ export default function DemoRenderer({
     );
   }
 
+  if (componentId === "markdown") {
+    return (
+      <DmComponents.Markdown
+        markdown={`---
+title: DmMarkdown feature showcase
+tags:
+  - react
+  - markdown
+accent: '#4C86FC'
+---
+# DmMarkdown rendering
+
+DuskMoon Markdown renders source text in the shared typography scope.
+This line demonstrates \`breaks={true}\`.
+
+## Inline color chips
+
+| Color | Inline code |
+| --- | --- |
+| Brand blue | \`#4C86FC\` |
+| White | \`#fff\` |
+| Black | \`#000\` |
+| Transparent red | \`#FF000080\` |`}
+        colorChips
+        frontMatter="render"
+        breaks={true}
+      />
+    );
+  }
+
+  if (
+    demoTitle.toLowerCase().includes("color") &&
+    semanticColorComponentIds.has(componentId)
+  ) {
+    const colorPreview = <SemanticColorPreview componentId={componentId} />;
+    if (colorPreview) return colorPreview;
+  }
+
+  if (componentId === "chat") {
+    return <ChatPreview />;
+  }
+
+  if (componentId === "grid") {
+    return <GridPreview />;
+  }
+
+  if (componentId === "flex") {
+    return <FlexPreview />;
+  }
+
+  if (componentId === "form") {
+    return <FormPreview />;
+  }
+
+  if (componentId === "layout") {
+    return <LayoutPreview />;
+  }
+
+  if (componentId === "row") {
+    return <RowPreview />;
+  }
+
+  if (componentId === "space") {
+    return <SpacePreview />;
+  }
+
+  if (componentId === "list") {
+    return <ListPreview />;
+  }
+
+  if (componentId === "modal") {
+    return <ModalPreview />;
+  }
+
+  if (componentId === "affix") {
+    return <AffixPreview />;
+  }
+
+  if (componentId === "carousel") {
+    return (
+      <DmComponents.Carousel arrows>
+        <div>Research</div>
+        <div>Design</div>
+        <div>Ship</div>
+      </DmComponents.Carousel>
+    );
+  }
+
+  if (componentId === "splitter") {
+    return <SplitterPreview variant="standard" />;
+  }
+
+  if (componentId === "dm-splitter") {
+    return <SplitterPreview variant="dm" />;
+  }
+
   // Handle standard React component rendering
-  const Component = (DmComponents as any)[componentName];
+  const componentPackage = isArtComponent ? ArtComponents : DmComponents;
+  const Component = (
+    componentPackage as Record<
+      string,
+      | React.ComponentType<ParsedProps & { children?: React.ReactNode }>
+      | undefined
+    >
+  )[componentName];
   if (!Component) {
     return (
       <div style={{ color: "red", fontSize: "14px" }}>
@@ -302,12 +1385,17 @@ export default function DemoRenderer({
   }
 
   // Check if it's a theme-aware comparison demo
-  if (demoCode.includes('data-theme="sunshine"') || demoCode.includes('data-theme="moonlight"')) {
+  if (
+    demoCode.includes('data-theme="sunshine"') ||
+    demoCode.includes('data-theme="moonlight"')
+  ) {
     // Extract JSX code from within data-theme block to parse
-    const match = demoCode.match(/<div data-theme="sunshine">([\s\S]*?)<\/div>/);
+    const match = demoCode.match(
+      new RegExp('<div data-theme="sunshine">([\\s\\S]*?)</div>'),
+    );
     const innerCode = match ? match[1] : demoCode;
     const parsed = parseJsx(innerCode, componentName);
-    
+
     if (!parsed) {
       return (
         <div style={{ color: "red", fontSize: "14px" }}>
@@ -317,17 +1405,50 @@ export default function DemoRenderer({
     }
 
     return (
-      <div style={{ display: "flex", flexDirection: "column", gap: "16px", width: "100%" }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px", border: "1px solid var(--dm-border)", borderRadius: "8px", padding: "16px", background: "#fff" }} data-theme="sunshine">
-          <div style={{ fontSize: "12px", color: "#666", marginBottom: "4px" }}>Sunshine Theme</div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "16px",
+          width: "100%",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+            border: "1px solid var(--dm-border)",
+            borderRadius: "8px",
+            padding: "16px",
+            background: "#fff",
+          }}
+          data-theme="sunshine"
+        >
+          <div style={{ fontSize: "12px", color: "#666", marginBottom: "4px" }}>
+            Sunshine Theme
+          </div>
           <div>
             <Component {...parsed.props}>
               {parsed.children || undefined}
             </Component>
           </div>
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px", border: "1px dashed #30384d", borderRadius: "8px", padding: "16px", background: "#171b25" }} data-theme="moonlight">
-          <div style={{ fontSize: "12px", color: "#aaa", marginBottom: "4px" }}>Moonlight Theme</div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+            border: "1px dashed #30384d",
+            borderRadius: "8px",
+            padding: "16px",
+            background: "#171b25",
+          }}
+          data-theme="moonlight"
+        >
+          <div style={{ fontSize: "12px", color: "#aaa", marginBottom: "4px" }}>
+            Moonlight Theme
+          </div>
           <div>
             <Component {...parsed.props}>
               {parsed.children || undefined}
@@ -349,10 +1470,19 @@ export default function DemoRenderer({
   }
 
   return (
-    <div style={{ padding: "8px 0" }}>
-      <Component {...parsed.props}>
-        {parsed.children || undefined}
-      </Component>
+    <div
+      style={
+        isArtComponent
+          ? {
+              display: "grid",
+              placeItems: "center",
+              width: "100%",
+              padding: "12px 0",
+            }
+          : { width: "100%", padding: "8px 0" }
+      }
+    >
+      <Component {...parsed.props}>{parsed.children || undefined}</Component>
     </div>
   );
 }

@@ -30,8 +30,10 @@ export interface ColorPreset {
   colors: ColorValue[];
 }
 
-export interface ColorPickerProps
-  extends Omit<ComponentPropsWithoutRef<"div">, "children" | "defaultValue" | "onChange"> {
+export interface ColorPickerProps extends Omit<
+  ComponentPropsWithoutRef<"div">,
+  "children" | "defaultValue" | "onChange"
+> {
   value?: ColorValue;
   defaultValue?: ColorValue;
   format?: ColorPickerFormat;

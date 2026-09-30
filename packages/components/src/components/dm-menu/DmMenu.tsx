@@ -9,10 +9,16 @@ import {
 } from "../../classes/dm-menu";
 import { Menu } from "../menu";
 import type { MenuItemType } from "../menu/Menu.types";
-import type { DmMenuClickInfo, DmMenuProps, DmMenuSchema } from "./DmMenu.types";
+import type {
+  DmMenuClickInfo,
+  DmMenuProps,
+  DmMenuSchema,
+} from "./DmMenu.types";
 
 function getMenuLabel(menu: DmMenuSchema, locale?: string) {
-  return locale === "en-US" && menu.menuNameEn ? menu.menuNameEn : menu.menuName;
+  return locale === "en-US" && menu.menuNameEn
+    ? menu.menuNameEn
+    : menu.menuName;
 }
 
 function renderIcon(icon: React.ReactNode) {
@@ -143,4 +149,3 @@ export const DmMenu = forwardRef<HTMLDivElement, DmMenuProps>(
 );
 
 DmMenu.displayName = "DmMenu";
-

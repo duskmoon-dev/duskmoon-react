@@ -1,10 +1,19 @@
 // GENERATED FILE. DO NOT EDIT.
 import { cn } from "../utils";
-import type { AlertColor, AlertAppearance } from "../components/alert/Alert.types";
+import type {
+  AlertColor,
+  AlertAppearance,
+} from "../components/alert/Alert.types";
 
 export const alertBaseClass = "alert";
 
 export const alertColorClasses: Record<AlertColor, string> = {
+  primary: "alert-primary",
+  secondary: "alert-secondary",
+  tertiary: "alert-tertiary",
+  accent: "alert-accent",
+  neutral: "alert-neutral",
+  base: "alert-base",
   info: "alert-info",
   success: "alert-success",
   warning: "alert-warning",
@@ -12,11 +21,10 @@ export const alertColorClasses: Record<AlertColor, string> = {
 };
 
 export const alertAppearanceClasses: Record<AlertAppearance, string> = {
-  filled: "",
-  outline: "alert-outline",
-  tonal: "alert-tonal",
+  filled: "alert-filled",
+  outline: "alert-outlined",
+  tonal: "",
 };
-
 
 export function getAlertClasses({
   color = "info",
@@ -31,6 +39,6 @@ export function getAlertClasses({
     alertBaseClass,
     alertColorClasses[color],
     alertAppearanceClasses[appearance],
-    className
+    className,
   );
 }

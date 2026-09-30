@@ -15,7 +15,10 @@ export const notificationDescriptionClass = "notification-description";
 export const notificationActionsClass = "notification-actions";
 export const notificationCloseClass = "notification-close";
 
-export const notificationPlacementClasses: Record<NotificationPlacement, string> = {
+export const notificationPlacementClasses: Record<
+  NotificationPlacement,
+  string
+> = {
   top: "notification-top",
   topLeft: "notification-top-left",
   topRight: "notification-top-right",

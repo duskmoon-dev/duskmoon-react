@@ -1,4 +1,12 @@
-import React, { forwardRef, useId, useState } from "react";
+import React, {
+  cloneElement,
+  forwardRef,
+  isValidElement,
+  useId,
+  useState,
+  type KeyboardEvent,
+  type ReactElement,
+} from "react";
 import {
   dropdownArrowClass,
   dropdownButtonClass,
@@ -20,6 +28,15 @@ function hasTrigger(triggers: DropdownProps["trigger"], trigger: string) {
   return (triggers ?? ["hover"]).includes(trigger as never);
 }
 
+type TriggerElementProps = React.HTMLAttributes<HTMLElement>;
+
+function callHandler<Event>(
+  handler: ((event: Event) => void) | undefined,
+  event: Event,
+) {
+  handler?.(event);
+}
+
 function renderMenuItem(
   item: DropdownMenuItem,
   onClick: NonNullable<DropdownProps["menu"]>["onClick"] | undefined,
@@ -33,7 +50,11 @@ function renderMenuItem(
     <li key={String(item.key)}>
       <button
         type="button"
-        className={cn(menuItemClass, item.danger && "menu-item-danger", item.className)}
+        className={cn(
+          menuItemClass,
+          item.danger && "menu-item-danger",
+          item.className,
+        )}
         disabled={item.disabled}
         onClick={(event) => {
           onClick?.({ key: String(item.key), item, domEvent: event });
@@ -87,6 +108,7 @@ const DropdownRoot = forwardRef<HTMLSpanElement, DropdownProps>(
     }
 
     const close = () => setVisible(false);
+    const toggleVisible = () => setVisible(!visible);
     const menuNode =
       overlay ??
       (menu?.items ? (
@@ -96,35 +118,87 @@ const DropdownRoot = forwardRef<HTMLSpanElement, DropdownProps>(
       ) : null);
     const popup = dropdownRender ? dropdownRender(menuNode) : menuNode;
     const shouldRenderPopup = !destroyPopupOnHide || visible;
-
-    return (
-      <span
-        {...props}
-        ref={ref}
-        className={dropdownWrapperClass}
-        aria-controls={visible ? overlayId : undefined}
-        aria-expanded={visible || undefined}
-        onMouseEnter={(event) => {
+    const triggerProps = {
+      "aria-controls": visible ? overlayId : undefined,
+      "aria-expanded": visible || undefined,
+      onMouseEnter: hasTrigger(trigger, "hover")
+        ? () => setVisible(true)
+        : undefined,
+      onMouseLeave: hasTrigger(trigger, "hover")
+        ? () => setVisible(false)
+        : undefined,
+      onClick: hasTrigger(trigger, "click") ? toggleVisible : undefined,
+      onContextMenu: hasTrigger(trigger, "contextMenu")
+        ? (event: React.MouseEvent<HTMLElement>) => {
+            event.preventDefault();
+            toggleVisible();
+          }
+        : undefined,
+    };
+    const triggerNode = isValidElement<TriggerElementProps>(children) ? (
+      cloneElement(children as ReactElement<TriggerElementProps>, {
+        "aria-controls":
+          triggerProps["aria-controls"] ?? children.props["aria-controls"],
+        "aria-expanded":
+          triggerProps["aria-expanded"] ?? children.props["aria-expanded"],
+        onMouseEnter: (event) => {
+          callHandler(children.props.onMouseEnter, event);
+          triggerProps.onMouseEnter?.();
           onMouseEnter?.(event);
-          if (hasTrigger(trigger, "hover")) setVisible(true);
+        },
+        onMouseLeave: (event) => {
+          callHandler(children.props.onMouseLeave, event);
+          triggerProps.onMouseLeave?.();
+          onMouseLeave?.(event);
+        },
+        onClick: (event) => {
+          callHandler(children.props.onClick, event);
+          triggerProps.onClick?.();
+          onClick?.(event);
+        },
+        onContextMenu: (event) => {
+          callHandler(children.props.onContextMenu, event);
+          triggerProps.onContextMenu?.(event);
+          onContextMenu?.(event);
+        },
+      })
+    ) : (
+      <span
+        role="button"
+        tabIndex={disabled ? -1 : 0}
+        aria-disabled={disabled || undefined}
+        aria-controls={triggerProps["aria-controls"]}
+        aria-expanded={triggerProps["aria-expanded"]}
+        onMouseEnter={(event) => {
+          triggerProps.onMouseEnter?.();
+          onMouseEnter?.(event);
         }}
         onMouseLeave={(event) => {
+          triggerProps.onMouseLeave?.();
           onMouseLeave?.(event);
-          if (hasTrigger(trigger, "hover")) setVisible(false);
         }}
         onClick={(event) => {
+          triggerProps.onClick?.();
           onClick?.(event);
-          if (hasTrigger(trigger, "click")) setVisible(!visible);
+        }}
+        onKeyDown={(event: KeyboardEvent<HTMLElement>) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            triggerProps.onClick?.();
+          }
         }}
         onContextMenu={(event) => {
+          triggerProps.onContextMenu?.(event);
           onContextMenu?.(event);
-          if (hasTrigger(trigger, "contextMenu")) {
-            event.preventDefault();
-            setVisible(!visible);
-          }
         }}
       >
         {children}
+      </span>
+    );
+
+    return (
+      <span {...props} ref={ref} className={dropdownWrapperClass}>
+        {triggerNode}
         {shouldRenderPopup ? (
           <span
             id={overlayId}

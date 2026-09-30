@@ -1,10 +1,4 @@
-import React, {
-  forwardRef,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, KeyboardEvent, ReactNode } from "react";
 import {
   getTypographyClasses,
@@ -77,7 +71,9 @@ function normalizeEllipsis(
   return ellipsis === true ? {} : ellipsis;
 }
 
-function shouldShowEditText(triggerType: TypographyEditableConfig["triggerType"]) {
+function shouldShowEditText(
+  triggerType: TypographyEditableConfig["triggerType"],
+) {
   if (!triggerType) {
     return false;
   }
