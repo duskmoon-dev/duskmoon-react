@@ -161,6 +161,8 @@ const purposeById: Record<string, string> = {
   "back-top": "gives long pages a persistent return-to-top affordance.",
   badge:
     "adds short status, count, or classification markers around nearby content.",
+  breakpoint:
+    "names the responsive screen sizes used by Grid hooks and queries.",
   breadcrumb:
     "shows the current location in a nested route or information hierarchy.",
   button: "triggers primary, secondary, destructive, or icon-only actions.",
@@ -184,6 +186,47 @@ const purposeById: Record<string, string> = {
   descriptions:
     "presents labeled record fields for summaries, details, and review screens.",
   divider: "separates dense content while preserving visual rhythm.",
+  "dm-auxiliary":
+    "shows supporting content with optional actions and a close control.",
+  "dm-breadcrumb":
+    "shows page location with compact trails and optional stored navigation history.",
+  "dm-date-picker":
+    "selects dates or ranges through day, week, month, quarter, and year picker variants.",
+  "dm-drawer":
+    "opens a side panel with configurable footer and submit controls.",
+  "dm-infinite-scroll":
+    "loads more content as a scroll container approaches its threshold.",
+  "dm-layout":
+    "combines menus, breadcrumbs, and collapsible navigation in an application shell.",
+  "dm-menu":
+    "renders navigation from menu schemas with product branding and click callbacks.",
+  "dm-message":
+    "shows transient success, error, warning, info, and loading feedback.",
+  "dm-page-header":
+    "frames a page title with breadcrumbs, back navigation, and extra actions.",
+  "dm-pagination":
+    "moves through result pages with optional refresh, selection totals, and responsive controls.",
+  "dm-pro-table":
+    "presents records with a title bar, toolbar actions, and column controls.",
+  "dm-provider":
+    "applies shared theme, locale, direction, and component configuration to a subtree.",
+  "dm-query":
+    "builds a query form from field definitions with search and reset controls.",
+  "dm-search":
+    "collects table filters across text, choice, date, and custom fields.",
+  "dm-splitter": "resizes panels with optional saved sizes and reset controls.",
+  "dm-status":
+    "shows empty, loading, error, or success content in a consistent status panel.",
+  "dm-table":
+    "presents typed tabular records with search, pagination, and column controls.",
+  "dm-tabs":
+    "switches among related panels with optional paths and card styling.",
+  "dm-toolbar":
+    "groups primary and secondary actions, including overflow menus.",
+  "dm-tree":
+    "browses hierarchical records with selection and contextual toolbar actions.",
+  "dm-truncate":
+    "shortens long text with overflow details, tooltips, and optional copying.",
   drawer: "opens side-panel workflows without replacing the underlying screen.",
   dropdown: "attaches contextual action menus to a compact trigger.",
   empty: "explains an empty content state and gives the user a next step.",
@@ -191,6 +234,11 @@ const purposeById: Record<string, string> = {
   "float-button":
     "keeps a high-priority shortcut available over the page content.",
   form: "coordinates form state, validation, field layout, and submit handling.",
+  "get-dm-theme":
+    "reads the current DuskMoon prefix, color tokens, and component theme values.",
+  "get-prop": "extracts the type of a named property from another type.",
+  "get-props": "infers the React props type accepted by a component.",
+  "get-ref": "infers the ref target type accepted by a component.",
   grid: "exposes responsive breakpoint information for adaptive layouts.",
   image: "renders images with preview and placeholder behavior.",
   input: "captures short text, search, password, and textarea input.",
@@ -205,6 +253,8 @@ const purposeById: Record<string, string> = {
   message: "shows transient global feedback after user actions.",
   modal: "blocks for confirmation, focused forms, and critical decisions.",
   notification: "shows global notices that need more context than a message.",
+  "on-dm-theme-update":
+    "subscribes to theme changes and returns a function to unsubscribe.",
   pagination: "moves through large result sets with page and size controls.",
   popconfirm: "asks for confirmation around a risky inline action.",
   popover: "shows rich contextual content attached to a trigger.",
@@ -216,6 +266,12 @@ const purposeById: Record<string, string> = {
   row: "creates guttered horizontal grid layouts.",
   segmented: "switches between a small number of sibling modes.",
   select: "chooses one or more values from a bounded option set.",
+  "set-dm-date-picker-locale":
+    "sets the shared date picker locale to English or Chinese.",
+  "set-dm-prefix-cls":
+    "sets the DuskMoon CSS class prefix and notifies theme listeners.",
+  "set-dm-primary-color":
+    "sets the primary color token and notifies theme listeners.",
   skeleton:
     "shows a stable loading placeholder that matches the future content shape.",
   slider: "captures a value or range on a continuous scale.",
@@ -229,6 +285,8 @@ const purposeById: Record<string, string> = {
     "renders structured data with columns, sorting, filters, selection, and pagination.",
   tabs: "switches between related content panels in the same context.",
   tag: "labels records with compact metadata or removable filters.",
+  theme:
+    "exposes default tokens, theme algorithms, and current design token helpers.",
   "time-picker": "captures time values with typed parsing and status state.",
   timeline: "shows ordered events, milestones, or audit history.",
   tooltip: "adds short explanatory text to compact controls.",
@@ -238,8 +296,13 @@ const purposeById: Record<string, string> = {
   "tree-select": "combines tree selection with compact form input behavior.",
   typography:
     "standardizes text, title, paragraph, link, copy, edit, and ellipsis behavior.",
+  "unstable-set-render":
+    "registers an override for rendering content into a DOM container.",
   upload:
     "collects files with validation, file-list management, and custom request hooks.",
+  "use-persisted-page-size":
+    "manages page size state and optionally saves it in local storage.",
+  version: "provides the current DuskMoon React package version.",
   watermark: "adds repeated ownership or confidentiality marks behind content.",
 };
 

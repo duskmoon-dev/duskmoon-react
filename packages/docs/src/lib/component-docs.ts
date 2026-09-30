@@ -4,6 +4,11 @@ import {
   componentPageContentFor,
   type ComponentPageContent,
 } from "./component-page-content";
+import {
+  categoryForTarget,
+  DOC_CATEGORIES,
+  type DocCategoryId,
+} from "./docs-categories";
 import { docsPath } from "./paths";
 
 type Target = {
@@ -41,6 +46,7 @@ export type ApiSection = {
 export type ComponentDoc = Target & {
   title: string;
   route: string;
+  categoryId: DocCategoryId;
   category: string;
   intro: string;
   pageContent: ComponentPageContent;
@@ -172,14 +178,6 @@ function componentName(target: Target) {
     .split("-")
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join("");
-}
-
-function categoryFor(kind: string) {
-  if (kind === "art-component") return "CSS Art";
-  if (kind === "dm-workflow-component") return "DuskMoon workflow";
-  if (kind === "infrastructure-export") return "Infrastructure";
-  if (kind === "internal-component") return "Internal";
-  return "Standard";
 }
 
 function sentenceCase(text: string) {
@@ -1623,7 +1621,8 @@ function toDoc(target: Target): ComponentDoc {
   const scenarios =
     target.manualScenarios?.map(sentenceCase) ?? scenariosFromTest(testFile);
   const keyProps = keyPropsFromApi(api);
-  const category = categoryFor(target.kind);
+  const categoryId = categoryForTarget(target);
+  const category = DOC_CATEGORIES.find(({ id }) => id === categoryId)!.title;
   const pageContent = componentPageContentFor({
     id: target.id,
     name,
@@ -1638,6 +1637,7 @@ function toDoc(target: Target): ComponentDoc {
     ...target,
     title: name,
     route: docsPath(`/components/${target.id}`),
+    categoryId,
     category,
     intro: pageContent.summary || introFor(target, name, scenarios, keyProps),
     pageContent,
@@ -1670,5 +1670,15 @@ export function getComponentDoc(id: string) {
 }
 
 export function getDocsByCategory() {
-  return Map.groupBy(getComponentDocs(), (component) => component.category);
+  const docsByCategory = new Map<string, ComponentDoc[]>();
+  const docs = getComponentDocs();
+
+  for (const { title } of DOC_CATEGORIES) {
+    const categoryDocs = docs.filter(
+      (component) => component.category === title,
+    );
+    if (categoryDocs.length > 0) docsByCategory.set(title, categoryDocs);
+  }
+
+  return docsByCategory;
 }
