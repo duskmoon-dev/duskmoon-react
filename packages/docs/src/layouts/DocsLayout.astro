@@ -3,6 +3,7 @@
 import "@duskmoon-dev/components/styles.css";
 import "@duskmoon-dev/art-components/styles.css";
 import "../styles/docs.css";
+import packageJson from "../../../../package.json";
 import { docsPath } from "../lib/paths";
 
 interface Props {
@@ -11,6 +12,7 @@ interface Props {
 }
 
 const { title, description = "DuskMoon React component documentation" } = Astro.props;
+const version = packageJson.version;
 ---
 
 <!doctype html>
@@ -35,9 +37,10 @@ const { title, description = "DuskMoon React component documentation" } = Astro.
   </head>
   <body>
     <header class="site-header">
-      <a class="brand" href={docsPath("/")}>
+      <a class="brand" href={docsPath("/")} aria-label={`DuskMoon React version ${version}`}>
         <span class="brand-mark">Dm</span>
         <span>DuskMoon React</span>
+        <span class="brand-version" aria-hidden="true">v{version}</span>
       </a>
       <nav class="top-nav" aria-label="Primary">
         <a href={docsPath("/")}>Components</a>

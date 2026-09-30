@@ -57,6 +57,7 @@ a {
 }
 
 .brand {
+  flex-wrap: wrap;
   font-weight: 700;
   text-decoration: none;
   color: var(--color-primary-content);
@@ -64,12 +65,24 @@ a {
 
 .brand-mark {
   display: inline-grid;
+  flex: none;
   width: 34px;
   height: 34px;
   place-items: center;
   border-radius: 8px;
   background: var(--color-primary-content);
   color: var(--color-primary);
+}
+
+.brand-version {
+  border-radius: 999px;
+  background: var(--color-secondary);
+  color: var(--color-on-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+  padding: 4px 8px;
+  white-space: nowrap;
 }
 
 .top-nav a {
