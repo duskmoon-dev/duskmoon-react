@@ -1,5 +1,14 @@
 # @duskmoon-dev/docs
 
+## 0.3.3
+
+### Patch Changes
+
+- Show the root package release version in the documentation app bar.
+- Updated dependencies
+  - @duskmoon-dev/components@0.3.3
+  - @duskmoon-dev/art-components@0.3.3
+
 ## 0.3.2
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @duskmoon-dev/components
 
+## 0.3.3
+
+### Patch Changes
+
+- Align the package version with the coordinated 0.3.3 workspace release.
+
 ## 0.3.2
 
 ### Patch Changes
