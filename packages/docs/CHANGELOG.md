@@ -1,5 +1,14 @@
 # @duskmoon-dev/docs
 
+## 0.3.2
+
+### Patch Changes
+
+- Organize documentation categories, navigation, and search, and show the release version in the app bar from the root package manifest.
+- Updated dependencies
+  - @duskmoon-dev/components@0.3.2
+  - @duskmoon-dev/art-components@0.3.2
+
 ## 0.3.1
 
 ### Patch Changes

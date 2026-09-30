@@ -1,5 +1,11 @@
 # @duskmoon-dev/components
 
+## 0.3.2
+
+### Patch Changes
+
+- Align the package version with the 0.3.2 workspace release and documentation app bar version.
+
 ## 0.3.1
 
 ### Patch Changes
