@@ -1,3 +1,4 @@
+---
 name: cmd-update-project-docs
 disable-model-invocation: true
 description: Update project docs and skills
