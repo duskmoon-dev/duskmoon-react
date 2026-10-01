@@ -33,7 +33,7 @@ export const buttonAppearanceClasses: Record<ButtonAppearance, string> = {
 
 export const buttonShapeClasses: Record<ButtonShape, string> = {
   rect: "",
-  circle: "btn-circle",
+  circle: "btn-circle btn-icon",
   square: "btn-square",
 };
 
@@ -70,6 +70,9 @@ export function getButtonClasses({
     buttonAppearanceClasses[appearance],
     buttonShapeClasses[shape],
     buttonSizeClasses[size],
+    shape === "circle" && size === "xs" && "btn-icon-sm",
+    shape === "circle" && size === "sm" && "btn-icon-sm",
+    shape === "circle" && size === "lg" && "btn-icon-lg",
     block && buttonBlockClass,
     isLoading && buttonIsLoadingClass,
     className,

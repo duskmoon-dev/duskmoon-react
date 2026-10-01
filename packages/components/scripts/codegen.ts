@@ -12,6 +12,7 @@ interface ComponentSpec {
   baseClass: string;
   axes: Record<string, SpecAxis>;
   booleanModifiers: Record<string, string>;
+  compoundModifiers?: { when: Record<string, string>; className: string }[];
   reactProps: string[];
 }
 
@@ -133,6 +134,12 @@ async function generateClasses(spec: ComponentSpec, lowerName: string) {
   for (const axisName of Object.keys(spec.axes)) {
     const mapName = `${lowerName}${capitalize(axisName)}Classes`;
     classesContent += `    ${mapName}[${axisName}],\n`;
+  }
+  for (const modifier of spec.compoundModifiers ?? []) {
+    const condition = Object.entries(modifier.when)
+      .map(([axisName, value]) => `${axisName} === "${value}"`)
+      .join(" && ");
+    classesContent += `    ${condition} && "${modifier.className}",\n`;
   }
   for (const mod of Object.keys(spec.booleanModifiers)) {
     const mapName = `${lowerName}${capitalize(mod)}Class`;

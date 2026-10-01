@@ -1482,6 +1482,73 @@ function colorDemoFor(
   };
 }
 
+function buttonFeatureDemos(
+  importPath: string,
+  componentStyleImport: string,
+): DemoSpec[] {
+  const imports = `${componentStyleImport}\nimport { Button } from "${importPath}";`;
+  const appearances = `const appearances = ["filled", "outline", "tonal", "ghost", "text"] as const;`;
+
+  return [
+    {
+      title: "Appearances",
+      description:
+        "Compare the five Button appearances, including outline and ghost treatments.",
+      code: `${imports}\n\n${appearances}\n\nexport function ButtonAppearancesDemo() {\n  return (\n    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>\n      {appearances.map((appearance) => (\n        <Button key={appearance} appearance={appearance}>\n          {appearance}\n        </Button>\n      ))}\n    </div>\n  );\n}`,
+      source: "authored",
+    },
+    {
+      title: "Loading states",
+      description:
+        "Loading adds a spinner and disables the button while preserving each appearance and size.",
+      code: `${imports}\n\n${appearances}\n\nexport function ButtonLoadingDemo() {\n  return (\n    <div style={{ display: "grid", gap: 12 }}>\n      {appearances.map((appearance) => (\n        <div key={appearance} style={{ display: "flex", gap: 8, alignItems: "center" }}>\n          <span style={{ minWidth: 68 }}>{appearance}</span>\n          <Button appearance={appearance} isLoading>Saving</Button>\n          <Button appearance={appearance} size="sm" isLoading>Saving</Button>\n          <Button appearance={appearance} size="lg" isLoading>Saving</Button>\n        </div>\n      ))}\n    </div>\n  );\n}`,
+      source: "authored",
+    },
+    {
+      title: "Interactive loading",
+      description:
+        "Click Save to show the loading state briefly; the button is disabled until it finishes.",
+      code: `${componentStyleImport}\nimport { useEffect, useRef, useState } from "react";\nimport { Button } from "${importPath}";\n\nexport function InteractiveLoadingDemo() {\n  const [isLoading, setIsLoading] = useState(false);\n  const timeoutRef = useRef<number | null>(null);\n\n  useEffect(() => () => {\n    if (timeoutRef.current !== null) window.clearTimeout(timeoutRef.current);\n  }, []);\n\n  function save() {\n    setIsLoading(true);\n    timeoutRef.current = window.setTimeout(() => {\n      timeoutRef.current = null;\n      setIsLoading(false);\n    }, 900);\n  }\n\n  return (\n    <div style={{ display: "grid", gap: 8, justifyItems: "start" }}>\n      <Button isLoading={isLoading} onClick={save}>Save changes</Button>\n      <span role="status">{isLoading ? "Saving changes…" : "Ready to save"}</span>\n    </div>\n  );\n}`,
+      source: "authored",
+    },
+    {
+      title: "Disabled states",
+      description:
+        "Use the native disabled prop to prevent interaction across Button appearances.",
+      code: `${imports}\n\n${appearances}\n\nexport function DisabledButtonsDemo() {\n  return (\n    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>\n      {appearances.map((appearance) => (\n        <Button key={appearance} appearance={appearance} disabled>\n          {appearance}\n        </Button>\n      ))}\n    </div>\n  );\n}`,
+      source: "authored",
+    },
+    {
+      title: "Icon buttons",
+      description:
+        "Use leftIcon or rightIcon beside text, and give icon-only buttons an accessible label. Circular buttons use fixed icon sizes.",
+      code: `${imports}\n\nexport function ButtonIconsDemo() {\n  const addIcon = <svg aria-hidden="true" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" d="M12 5v14M5 12h14" /></svg>;\n  const downloadIcon = <svg aria-hidden="true" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v12m-4-4 4 4 4-4M4 17v3h16v-3" /></svg>;\n  const closeIcon = <svg aria-hidden="true" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" d="M6 6l12 12M18 6 6 18" /></svg>;\n\n  return (\n    <div style={{ display: "grid", gap: 12 }}>\n      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>\n        <Button leftIcon={addIcon}>Add item</Button>\n        <Button appearance="outline" rightIcon={downloadIcon}>\n          Download\n        </Button>\n      </div>\n      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>\n        <Button shape="circle" aria-label="Close">{closeIcon}</Button>\n        <Button shape="circle" size="sm" appearance="outline" aria-label="Add">{addIcon}</Button>\n        <Button shape="circle" size="lg" appearance="tonal" aria-label="Close">{closeIcon}</Button>\n        <Button shape="square" appearance="outline" aria-label="Add">{addIcon}</Button>\n      </div>\n    </div>\n  );\n}`,
+      source: "authored",
+    },
+    {
+      title: "Tooltip composition",
+      description:
+        "Wrap a Button with Tooltip to show help on hover or focus.",
+      code: `${componentStyleImport}\nimport { Button } from "${importPath}";\nimport { Tooltip } from "@duskmoon-dev/components";\n\nexport function TooltipButtonDemo() {\n  return (\n    <Tooltip id="save-help" title="Save your changes" defaultOpen>\n      <Button>Save</Button>\n    </Tooltip>\n  );\n}`,
+      source: "authored",
+    },
+    {
+      title: "Confirmation popover form",
+      description:
+        "The action callback runs only after confirmation; cancelling leaves the confirmed count unchanged.",
+      code: `${componentStyleImport}\nimport { useState } from "react";\nimport { Button } from "${importPath}";\n\nexport function ConfirmButtonDemo() {\n  const [deletedCount, setDeletedCount] = useState(0);\n\n  return (\n    <div style={{ display: "grid", gap: 8, justifyItems: "start" }}>\n      <Button\n        color="error"\n        confirm={{\n          title: "Delete this item?",\n          message: "This action cannot be undone.",\n          confirmText: "Delete",\n          cancelText: "Cancel",\n        }}\n        onClick={() => setDeletedCount((count) => count + 1)}\n      >\n        Delete item\n      </Button>\n      <span role="status">Confirmed deletions: {deletedCount}</span>\n    </div>\n  );\n}`,
+      source: "authored",
+    },
+    {
+      title: "Custom confirmation content",
+      description:
+        "Pass a component without its own form as confirmation body content; Button keeps the confirmation controls and runs the action only after approval.",
+      code: `${componentStyleImport}\nimport { useState } from "react";\nimport { Button } from "${importPath}";\n\nfunction DeleteConfirmContent() {\n  return <p>Delete this draft and discard its unsaved changes?</p>;\n}\n\nexport function CustomConfirmButtonDemo() {\n  const [deletedCount, setDeletedCount] = useState(0);\n\n  return (\n    <div style={{ display: "grid", gap: 8, justifyItems: "start" }}>\n      <Button\n        color="error"\n        confirm={{ component: <DeleteConfirmContent /> }}\n        onClick={() => setDeletedCount((count) => count + 1)}\n      >\n        Delete draft\n      </Button>\n      <span role="status">Confirmed draft deletions: {deletedCount}</span>\n    </div>\n  );\n}`,
+      source: "authored",
+    },
+  ];
+}
+
 function demosFor(
   target: Target,
   name: string,
@@ -1688,6 +1755,26 @@ export function ConsolePageDemo() {
     importLine,
     componentStyleImport,
   );
+
+  if (target.id === "button") {
+    return [
+      ...(colorDemo ? [colorDemo] : []),
+      {
+        title: "Basic usage",
+        description: `Import the component stylesheet and ${name} from its package subpath, then render it with the core props.`,
+        code: `${componentStyleImport}\n${importLine}\n\nexport function Example() {\n  return (${usage});\n}`,
+        source: "authored",
+      },
+      ...buttonFeatureDemos(importPath, componentStyleImport),
+      {
+        title: "Theme aware",
+        description:
+          "Docs previews inherit the DuskMoon data-theme value. Use the header switch to compare light and dark rendering.",
+        code: `<div data-theme="sunshine">\n  ${usage}\n</div>\n\n<div data-theme="moonlight">\n  ${usage}\n</div>`,
+        source: "authored",
+      },
+    ];
+  }
 
   if (target.kind === "art-component") {
     return [

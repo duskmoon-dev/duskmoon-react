@@ -29,4 +29,5 @@ export interface ButtonProps extends ComponentProps<"button"> {
   isLoading?: boolean;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
+  confirm?: boolean | { title?: React.ReactNode; component?: React.ReactElement; message?: React.ReactNode; description?: React.ReactNode; confirmText?: React.ReactNode; cancelText?: React.ReactNode };
 }

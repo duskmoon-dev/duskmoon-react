@@ -1,6 +1,7 @@
 import React from "react";
 import * as ArtComponents from "@duskmoon-dev/art-components";
 import * as DmComponents from "@duskmoon-dev/components";
+import { ButtonPreview, isButtonPreviewDemo } from "./ButtonPreviews";
 import {
   ConsolePagePreview,
   FabPreview,
@@ -1314,6 +1315,10 @@ This line demonstrates \`breaks={true}\`.
   ) {
     const colorPreview = <SemanticColorPreview componentId={componentId} />;
     if (colorPreview) return colorPreview;
+  }
+
+  if (componentId === "button" && isButtonPreviewDemo(demoTitle)) {
+    return <ButtonPreview demoTitle={demoTitle} />;
   }
 
   if (componentId === "chat") {

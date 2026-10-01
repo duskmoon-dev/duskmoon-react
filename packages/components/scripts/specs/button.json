@@ -28,7 +28,7 @@
     "shape": {
       "values": {
         "rect": "",
-        "circle": "btn-circle",
+        "circle": "btn-circle btn-icon",
         "square": "btn-square"
       },
       "default": "rect"
@@ -47,5 +47,14 @@
     "block": "btn-block",
     "isLoading": "btn-loading"
   },
-  "reactProps": ["leftIcon?: React.ReactNode", "rightIcon?: React.ReactNode"]
+  "compoundModifiers": [
+    { "when": { "shape": "circle", "size": "xs" }, "className": "btn-icon-sm" },
+    { "when": { "shape": "circle", "size": "sm" }, "className": "btn-icon-sm" },
+    { "when": { "shape": "circle", "size": "lg" }, "className": "btn-icon-lg" }
+  ],
+  "reactProps": [
+    "leftIcon?: React.ReactNode",
+    "rightIcon?: React.ReactNode",
+    "confirm?: boolean | { title?: React.ReactNode; component?: React.ReactElement; message?: React.ReactNode; description?: React.ReactNode; confirmText?: React.ReactNode; cancelText?: React.ReactNode }"
+  ]
 }
