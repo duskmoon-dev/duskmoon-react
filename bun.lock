@@ -45,7 +45,7 @@
       "name": "@duskmoon-dev/art-components",
       "version": "0.3.3",
       "devDependencies": {
-        "@duskmoon-dev/css-art": "1.19.9",
+        "@duskmoon-dev/css-art": "1.20.0",
         "@testing-library/react": "16.3.2",
         "@types/react": "19.2.18",
         "@types/react-dom": "19.2.4",
@@ -67,14 +67,14 @@
         "remark-gfm": "^4.0.1",
       },
       "devDependencies": {
-        "@duskmoon-dev/core": "1.19.9",
+        "@duskmoon-dev/core": "1.20.0",
         "@testing-library/react": "16.3.2",
         "@types/react": "19.2.18",
         "@types/react-dom": "19.2.4",
         "happy-dom": "20.11.1",
       },
       "peerDependencies": {
-        "@duskmoon-dev/core": ">=1.17.0",
+        "@duskmoon-dev/core": ">=1.20.0",
         "react": ">=19.0.0",
         "react-dom": ">=19.0.0",
       },
@@ -86,7 +86,7 @@
         "@astrojs/react": "6.0.2",
         "@duskmoon-dev/art-components": "workspace:*",
         "@duskmoon-dev/components": "workspace:*",
-        "@duskmoon-dev/core": "1.19.9",
+        "@duskmoon-dev/core": "1.20.0",
         "@types/react": "19.2.18",
         "@types/react-dom": "19.2.4",
         "astro": "7.1.6",
@@ -232,9 +232,9 @@
 
     "@duskmoon-dev/components": ["@duskmoon-dev/components@workspace:packages/components"],
 
-    "@duskmoon-dev/core": ["@duskmoon-dev/core@1.19.9", "", { "peerDependencies": { "tailwindcss": "^4.0.0" } }, "sha512-2SyrspWSPy/iUQe5iAHSWpPQCBfXyCwO+Qbz8tup7u2zWW+GyqskrhPSSVfSD6RdJLQzxAZOE37DnyXC2R7Clw=="],
+    "@duskmoon-dev/core": ["@duskmoon-dev/core@1.20.0", "", { "peerDependencies": { "tailwindcss": "^4.0.0" } }, "sha512-NeAnFxpougdoCHnOX3J17y3+ivg98qQpOYRbw5Aqg6VEzs77/lFgDDY0hbcGWZYJl86+LuV5x3FXD74y33gYPQ=="],
 
-    "@duskmoon-dev/css-art": ["@duskmoon-dev/css-art@1.19.9", "", {}, "sha512-uVuyrete+nQIor53daKST3q+wVSCJTFKAFqbuPcReXsDSmAPpm6KWDhN5WoTHRHEtuerDJR60GjKJXhZYBDIMA=="],
+    "@duskmoon-dev/css-art": ["@duskmoon-dev/css-art@1.20.0", "", {}, "sha512-96YhXuda1Hso/AvWvMbfe1oasOsbFbhHcgr7bLpqa95JP4ZYRYrdeMof0FrwCL1tK7XdkzaH90rFOYz/kZibjg=="],
 
     "@duskmoon-dev/docs": ["@duskmoon-dev/docs@workspace:packages/docs"],
 

@@ -1536,6 +1536,135 @@ export function MarkdownFeaturesDemo() {
     ];
   }
 
+  const nativeDemos: Record<string, { description: string; code: string }> = {
+    "otp-input": {
+      description:
+        "Type or paste a code into one native input; reset returns the form value to empty.",
+      code: `import { useState } from "react";
+import "@duskmoon-dev/components/styles.css";
+import { OtpInput } from "@duskmoon-dev/components/otp-input";
+
+export function OtpInputDemo() {
+  const [code, setCode] = useState("");
+  return <form onReset={() => setCode("")}>
+    <label htmlFor="demo-otp">Verification code</label>
+    <OtpInput id="demo-otp" name="code" length={6} required
+      aria-describedby="demo-otp-help" onChange={(event) => setCode(event.currentTarget.value)} />
+    <p id="demo-otp-help">Entered {code.length} of 6 digits</p>
+    <button type="reset">Reset</button>
+  </form>;
+}`,
+    },
+    swap: {
+      description:
+        "The native checkbox drives both the visual slot and a visible preference value.",
+      code: `import { useState } from "react";
+import "@duskmoon-dev/components/styles.css";
+import { Swap } from "@duskmoon-dev/components/swap";
+
+export function SwapDemo() {
+  const [dark, setDark] = useState(false);
+  return <div>
+    <Swap aria-label="Use dark appearance" checked={dark}
+      onChange={(event) => setDark(event.currentTarget.checked)}
+      off="☀️" on="🌙" rotate />
+    <p>Appearance: {dark ? "Dark" : "Light"}</p>
+  </div>;
+}`,
+    },
+    fab: {
+      description:
+        "Open the browser-managed action panel and choose a real action.",
+      code: `import { useState } from "react";
+import "@duskmoon-dev/components/styles.css";
+import { Fab, Button } from "@duskmoon-dev/components";
+
+export function FabDemo() {
+  const [action, setAction] = useState("None");
+  return <div style={{ position: "relative", minHeight: 220 }}>
+    <Fab contained speedDial>
+      <Fab.Trigger aria-label="Create" shape="square">+</Fab.Trigger>
+      <Fab.Actions>
+        <Fab.Action><Fab.Label>New message</Fab.Label>
+          <Button type="button" aria-label="New message" onClick={() => setAction("Message")}>✉</Button>
+        </Fab.Action>
+        <Fab.Action><Fab.Label>New note</Fab.Label>
+          <Button type="button" aria-label="New note" onClick={() => setAction("Note")}>✎</Button>
+        </Fab.Action>
+      </Fab.Actions>
+    </Fab>
+    <p>Selected action: {action}</p>
+  </div>;
+}`,
+    },
+    megamenu: {
+      description:
+        "Each trigger opens its own native popover; Escape and light dismissal are browser-managed.",
+      code: `import "@duskmoon-dev/components/styles.css";
+import { Megamenu } from "@duskmoon-dev/components/megamenu";
+
+export function MegamenuDemo() {
+  return <Megamenu aria-label="Product navigation">
+    <Megamenu.Bar>
+      <Megamenu.Item>
+        <Megamenu.Trigger>Products</Megamenu.Trigger>
+        <Megamenu.Panel>
+          <Megamenu.Heading>Products</Megamenu.Heading>
+          <Megamenu.Grid><Megamenu.Group>
+            <a className="link" href="#components">Components</a>
+          </Megamenu.Group></Megamenu.Grid>
+        </Megamenu.Panel>
+      </Megamenu.Item>
+      <li><a className="link" href="#components">All products</a></li>
+    </Megamenu.Bar>
+    <Megamenu.Mobile summary="Products">
+      <a className="link" href="#components">Components</a>
+    </Megamenu.Mobile>
+  </Megamenu>;
+}`,
+    },
+    "console-page": {
+      description:
+        "Cycle three sidebar states and open the native mobile navigation on narrow screens.",
+      code: `import { useState } from "react";
+import "@duskmoon-dev/components/styles.css";
+import { ConsolePage } from "@duskmoon-dev/components/console-page";
+
+export function ConsolePageDemo() {
+  const [state, setState] = useState<"expanded" | "compact" | "hidden">("expanded");
+  const next = { expanded: "compact", compact: "hidden", hidden: "expanded" } as const;
+  return <ConsolePage sidebarState={state}>
+    <ConsolePage.Frame>
+      <ConsolePage.Appbar>
+        <ConsolePage.SidebarToggle onClick={() => setState(next[state])}>☰</ConsolePage.SidebarToggle>
+        <ConsolePage.MobileTrigger aria-label="Open navigation">☰</ConsolePage.MobileTrigger>
+        <ConsolePage.MobileMenu aria-label="Mobile navigation">
+          <a className="menu-item" href="#overview">Overview</a>
+        </ConsolePage.MobileMenu>
+        <strong>Operations</strong>
+      </ConsolePage.Appbar>
+      <ConsolePage.Sidebar><ConsolePage.SidebarBody aria-label="Sections">
+        <a className="drawer-item" href="#overview">Overview</a>
+      </ConsolePage.SidebarBody></ConsolePage.Sidebar>
+      <ConsolePage.Main id="overview">Workspace · {state}</ConsolePage.Main>
+    </ConsolePage.Frame>
+  </ConsolePage>;
+}`,
+    },
+  };
+
+  const nativeDemo = nativeDemos[target.id];
+  if (nativeDemo) {
+    return [
+      {
+        title: "Interactive usage",
+        description: nativeDemo.description,
+        code: nativeDemo.code,
+        source: "authored",
+      },
+    ];
+  }
+
   if (target.id === "breakpoint") {
     return [
       {

@@ -399,6 +399,26 @@
       "import": "./dist/components/watermark/index.js",
       "types": "./dist/components/watermark/index.d.ts"
     },
+    "./console-page": {
+      "import": "./dist/components/console-page/index.js",
+      "types": "./dist/components/console-page/index.d.ts"
+    },
+    "./fab": {
+      "import": "./dist/components/fab/index.js",
+      "types": "./dist/components/fab/index.d.ts"
+    },
+    "./megamenu": {
+      "import": "./dist/components/megamenu/index.js",
+      "types": "./dist/components/megamenu/index.d.ts"
+    },
+    "./otp-input": {
+      "import": "./dist/components/otp-input/index.js",
+      "types": "./dist/components/otp-input/index.d.ts"
+    },
+    "./swap": {
+      "import": "./dist/components/swap/index.js",
+      "types": "./dist/components/swap/index.d.ts"
+    },
     "./styles.css": "./dist/styles.css"
   },
   "files": [
@@ -448,7 +468,7 @@
     }
   ],
   "peerDependencies": {
-    "@duskmoon-dev/core": ">=1.17.0",
+    "@duskmoon-dev/core": ">=1.20.0",
     "react": ">=19.0.0",
     "react-dom": ">=19.0.0"
   },
@@ -459,7 +479,7 @@
     "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
-    "@duskmoon-dev/core": "1.19.9",
+    "@duskmoon-dev/core": "1.20.0",
     "@testing-library/react": "16.3.2",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.4",

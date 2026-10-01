@@ -41,14 +41,19 @@ import { Button, DmTable, theme } from "@duskmoon-dev/components";
 
 ## Public Surface
 
-- 73 standard components such as `Button`, `Chat`, `Table`, `Modal`, `Select`,
-  and `Typography`.
+- 78 standard components such as `Button`, `Chat`, `OtpInput`, `Swap`, `Fab`,
+  `Megamenu`, `ConsolePage`, `Table`, `Modal`, `Select`, and `Typography`.
 - 21 DuskMoon workflow components such as `DmLayout`, `DmSearch`, `DmTable`,
   `DmProTable`, and `DmToolbar`.
 - 13 infrastructure exports including `theme`, `version`,
   `unstableSetRender`, `GetProps`, `GetRef`, and DuskMoon theme helpers.
 - Component subpath exports follow `@duskmoon-dev/components/{component-id}`,
   for example `@duskmoon-dev/components/date-picker`.
+
+`OtpInput` uses one native input with decorative slots. `Swap` uses a native
+checkbox. `Fab`, `Megamenu`, and the mobile menu in `ConsolePage` use the
+browser's Popover API for opening, Escape dismissal, and focus restoration.
+These components require `@duskmoon-dev/core` 1.20.0 or newer.
 
 ## Development
 

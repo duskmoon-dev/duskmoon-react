@@ -95,6 +95,7 @@ const formIds = new Set([
   "date-picker",
   "form",
   "input",
+  "otp-input",
   "input-number",
   "mentions",
   "radio",
@@ -103,6 +104,7 @@ const formIds = new Set([
   "select",
   "slider",
   "switch",
+  "swap",
   "time-picker",
   "tree-select",
   "upload",
@@ -116,6 +118,7 @@ const layoutIds = new Set([
   "flex",
   "grid",
   "layout",
+  "console-page",
   "row",
   "space",
   "splitter",
@@ -132,6 +135,8 @@ const navigationIds = new Set([
   "carousel",
   "dropdown",
   "float-button",
+  "fab",
+  "megamenu",
   "menu",
   "pagination",
   "steps",
@@ -170,6 +175,8 @@ const purposeById: Record<string, string> = {
     "renders date-oriented browsing and selection with month and year modes.",
   card: "groups related content and actions into a small self-contained surface.",
   chat: "composes conversational turns with message bubbles, reasoning traces, tool calls, and live response states.",
+  "console-page":
+    "arranges an app bar, sidebar, workspace, and native mobile navigation in a responsive shell.",
   carousel:
     "cycles through a limited set of panels while keeping one panel in focus.",
   cascader:
@@ -233,6 +240,7 @@ const purposeById: Record<string, string> = {
   flex: "arranges inline or wrapping content with a small layout API.",
   "float-button":
     "keeps a high-priority shortcut available over the page content.",
+  fab: "places a primary action or native popover speed dial near a viewport edge.",
   form: "coordinates form state, validation, field layout, and submit handling.",
   "get-dm-theme":
     "reads the current DuskMoon prefix, color tokens, and component theme values.",
@@ -242,6 +250,8 @@ const purposeById: Record<string, string> = {
   grid: "exposes responsive breakpoint information for adaptive layouts.",
   image: "renders images with preview and placeholder behavior.",
   input: "captures short text, search, password, and textarea input.",
+  "otp-input":
+    "captures an OTP or PIN through one native text input and decorative slots.",
   "input-number": "captures bounded numeric values with step controls.",
   layout:
     "composes application shells with header, sider, content, and footer regions.",
@@ -250,6 +260,7 @@ const purposeById: Record<string, string> = {
     "renders Markdown content with GitHub-flavored syntax, front matter, color previews, and configurable soft line breaks.",
   mentions: "captures text input with mention suggestions.",
   menu: "renders structured navigation or action lists.",
+  megamenu: "groups navigation links in browser-managed popover panels.",
   message: "shows transient global feedback after user actions.",
   modal: "blocks for confirmation, focused forms, and critical decisions.",
   notification: "shows global notices that need more context than a message.",
@@ -266,6 +277,7 @@ const purposeById: Record<string, string> = {
   row: "creates guttered horizontal grid layouts.",
   segmented: "switches between a small number of sibling modes.",
   select: "chooses one or more values from a bounded option set.",
+  swap: "switches between two decorative indicators using one native checkbox.",
   "set-dm-date-picker-locale":
     "sets the shared date picker locale to English or Chinese.",
   "set-dm-prefix-cls":

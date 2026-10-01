@@ -56,6 +56,8 @@ export type DocCategoryId = (typeof DOC_CATEGORIES)[number]["id"];
 const targetCategories: Record<string, DocCategoryId> = {
   button: "actions",
   "float-button": "actions",
+  fab: "actions",
+  swap: "actions",
   dropdown: "actions",
   "dm-toolbar": "actions",
 
@@ -63,6 +65,7 @@ const targetCategories: Record<string, DocCategoryId> = {
   flex: "layout",
   grid: "layout",
   layout: "layout",
+  "console-page": "layout",
   row: "layout",
   space: "layout",
   splitter: "layout",
@@ -76,6 +79,7 @@ const targetCategories: Record<string, DocCategoryId> = {
   "back-top": "navigation",
   breadcrumb: "navigation",
   menu: "navigation",
+  megamenu: "navigation",
   pagination: "navigation",
   steps: "navigation",
   tabs: "navigation",
@@ -91,6 +95,7 @@ const targetCategories: Record<string, DocCategoryId> = {
   "date-picker": "data-entry",
   form: "data-entry",
   input: "data-entry",
+  "otp-input": "data-entry",
   "input-number": "data-entry",
   mentions: "data-entry",
   radio: "data-entry",

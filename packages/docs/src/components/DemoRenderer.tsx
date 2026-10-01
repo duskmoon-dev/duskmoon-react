@@ -1,6 +1,13 @@
 import React from "react";
 import * as ArtComponents from "@duskmoon-dev/art-components";
 import * as DmComponents from "@duskmoon-dev/components";
+import {
+  ConsolePagePreview,
+  FabPreview,
+  MegamenuPreview,
+  OtpInputPreview,
+  SwapPreview,
+} from "./NativeSyncPreviews";
 
 interface DemoRendererProps {
   componentId: string;
@@ -1312,6 +1319,12 @@ This line demonstrates \`breaks={true}\`.
   if (componentId === "chat") {
     return <ChatPreview />;
   }
+
+  if (componentId === "otp-input") return <OtpInputPreview />;
+  if (componentId === "swap") return <SwapPreview />;
+  if (componentId === "fab") return <FabPreview />;
+  if (componentId === "megamenu") return <MegamenuPreview />;
+  if (componentId === "console-page") return <ConsolePagePreview />;
 
   if (componentId === "grid") {
     return <GridPreview />;

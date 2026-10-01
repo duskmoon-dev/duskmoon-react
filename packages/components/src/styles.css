@@ -5990,40 +5990,9 @@
     );
   }
 
-  /* WORKAROUND(upstream): duskmoon-dev/duskmoonui#50 keeps the tail and caret separate. */
-  .chat-bubble-streaming::after {
+  /* React's compatibility caret follows compound bubble content; core owns the tail. */
+  .chat-bubble.chat-bubble-streaming:has(> .chat-streaming-caret)::after {
     content: none;
-  }
-
-  .chat-start .chat-bubble-streaming::after {
-    content: "";
-    position: absolute;
-    top: 1px;
-    left: -0.5rem;
-    display: block;
-    width: calc(1rem - 2px);
-    height: calc(1rem - 2px);
-    margin-left: 0;
-    background-color: var(--chat-bubble-bg);
-    clip-path: polygon(0 0, 100% 0, 100% 100%);
-    vertical-align: initial;
-    animation: none;
-  }
-
-  .chat-end .chat-bubble-streaming::after {
-    content: "";
-    position: absolute;
-    top: 1px;
-    right: -0.5rem;
-    display: block;
-    width: calc(1rem - 2px);
-    height: calc(1rem - 2px);
-    margin-left: 0;
-    background-color: var(--chat-bubble-bg);
-    clip-path: polygon(0 0, 100% 0, 100% 100%);
-    vertical-align: initial;
-    transform: scaleX(-1);
-    animation: none;
   }
 
   .chat-streaming-caret {

@@ -75,18 +75,14 @@ describe("Chat class integration", () => {
     }
   });
 
-  test("keeps the streaming caret separate from directional tails", () => {
+  test("uses the existing caret adapter without overriding core's tail", () => {
     const css = localCss();
 
     expect(css).toMatch(
-      /\.chat-bubble-streaming::after\s*\{[^}]*content:\s*none/s,
+      /\.chat-bubble\.chat-bubble-streaming:has\(> \.chat-streaming-caret\)::after\s*\{[^}]*content:\s*none/s,
     );
-    expect(css).toMatch(
-      /\.chat-start \.chat-bubble-streaming::after\s*\{[^}]*content:\s*""[^}]*animation:\s*none/s,
-    );
-    expect(css).toMatch(
-      /\.chat-end \.chat-bubble-streaming::after\s*\{[^}]*content:\s*""[^}]*animation:\s*none/s,
-    );
+    expect(css).not.toMatch(/\.chat-start \.chat-bubble-streaming::after\s*\{/);
+    expect(css).not.toMatch(/\.chat-end \.chat-bubble-streaming::after\s*\{/);
     expect(css).toMatch(
       /\.chat-streaming-caret\s*\{[^}]*animation:\s*chat-stream-caret/s,
     );
