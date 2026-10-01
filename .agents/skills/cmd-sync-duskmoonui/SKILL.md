@@ -1,7 +1,6 @@
 ---
 name: cmd-sync-duskmoonui
-description: Update DuskMoonUI dependencies in duskmoon-react and sync affected React components, art wrappers, CSS, and docs with the upstream public API.
-disable-model-invocation: true
+description: Update DuskMoonUI dependencies in duskmoon-react and align React components, art wrappers, CSS, and docs with the target version's public API, design principles, markup, and interaction contracts.
 ---
 
 # Sync DuskMoonUI with duskmoon-react
@@ -27,7 +26,25 @@ The `peerDependencies` in the two library manifests express the oldest supported
 
 Before implementation, compare the old and target public package contracts, plus upstream documentation and examples. Inspect the full target inventory and changes in public package exports, component CSS and class names, art classes and variants, design tokens, markup guidance, interaction guidance, and deprecations. Use published package contents, release notes, documentation, examples, or corresponding source tags as evidence. When using Git tags, verify both tags exist and find the actual source directories before constructing a path-limited diff. Record unavailable or unverified evidence explicitly.
 
+Use evidence for the exact target version: inspect the published package and documentation/source at its verified tag or commit. A local upstream checkout or the live documentation site may describe another version; record its revision and do not use it to override the target contract. If published CSS, versioned docs, and examples disagree, record the conflict and resolve which contract applies before implementing that surface; do not silently select the older or easier implementation.
+
 Inventory actual local root and subpath exports, build entries and output, wrappers, CSS, docs, and tests. Include public surfaces discovered in package contents even when absent from a manifest: the parity manifest is not exhaustive. Compare both the old-to-new upstream delta and the target-to-local gaps, even when the versions match or are both pinned to `latest`; this detects additions missed by earlier syncs. Neither a manifest nor a successful build proves parity.
+
+### Required design-contract review
+
+Review every upstream component/art family in the selected package's target inventory, including unchanged families and existing wrappers. Inventory presence alone is not a design review. Record the following contract checks per family in the mapping or an accompanying table:
+
+| Contract check | Required comparison |
+| --- | --- |
+| Design principles | Explicit requirements, breaking-change notices, intended use, and supported browser capabilities; distinguish requirements from recommendations and illustrative examples |
+| Markup and styling | Element hierarchy, semantic elements, required attributes/selectors, classes, variants, tokens, positioning, and deprecated structures |
+| Interaction | Required native APIs, triggers, state transitions, dismissal, form submission, loading/disabled behavior, and lifecycle cleanup where applicable |
+| Accessibility | Roles and trigger associations, keyboard/focus behavior, and permitted interactive content |
+| Local compatibility | Public React props/refs/callbacks, local overrides/adapters, migration needs, and docs/demo coverage |
+
+Give each check a source reference and a result: `ALIGNED_SOURCE`, `GAP`, `CONFLICT`, `UNKNOWN`, or `N/A` with a reason. `ALIGNED_SOURCE` means source agreement only, not runtime validation. Unavailable evidence is `UNKNOWN`, never assumed parity. A discovered mismatch needs its own mapping disposition and follow-up task even if it predates this version update.
+
+For example, Core `1.20.0` explicitly replaces the old Tooltip wrapper/content structure with `popover="hint"`, Interest Invokers, and CSS Anchor Positioning. Check the local Tooltip markup, opening mechanism, positioning, arrow policy, accessibility, and overrides against that version's contract. Retaining a `.tooltip-show` adapter is a recorded design gap, not proof of alignment. This example is version-specific; derive each future target's requirements from its own evidence rather than mandating one mechanism for all versions or overlay families.
 
 Persist a readable mapping at `docs/superpowers/plans/YYYY-MM-DD-duskmoonui-sync.md`, using the run date. Preparation-only work may write this planning document while leaving package and integration files untouched. Include one row for every discovered difference, with these columns:
 
@@ -54,11 +71,17 @@ The manifest at `packages/components/scripts/parity/component-api.manifest.json`
 
 For each added upstream component, require a meaningful React contract and map its props, classes, root and subpath exports, build entry, parity manifest, docs, and tests. Keep upstream CSS/HTML contract decisions distinct from React API design. Adapt markup, styles, and behavior only as the public contract requires, including event/state behavior, controlled or uncontrolled use, focus and keyboard behavior, accessibility, and overlay lifecycle cleanup. Do not copy upstream implementation code wholesale. Treat a docs preview as explanatory only: generic callback stubs and snippets that do not execute are not proof of package behavior.
 
+Apply the same design-contract checks to existing components. Preserving public React APIs does not justify preserving obsolete DOM, CSS overrides, or interaction mechanisms. Where compatible, keep the public API and adapt the implementation to the target contract. If that is not possible within authorized scope, record the specific conflict, compatibility reason, affected surfaces, migration/deprecation path, and an actionable deferred or blocked task. Do not classify an implementation that contradicts an upstream requirement as aligned merely because it is intentional or currently renders. Browser fallbacks or polyfills absent from upstream are consumer-owned compatibility choices: document their differences and scope rather than claiming they implement the upstream design.
+
+Map documented states and behaviors to meaningful React demos, including loading, disabled, visual variants, icon-only controls, and overlays where the component supports them. Separate upstream requirements from local enhancements: a confirmation form composed from Button and Popover is not an upstream Button API unless the target evidence says so. Interactive confirmation belongs in an appropriate popover/dialog, not a non-interactive tooltip.
+
 Add or update art wrappers and variants when public art classes or documented variants change; update art tests and docs. Do not create `art-elements/` or individual art packages. Review local CSS overrides against the new upstream CSS and remove an override only after proving the upstream behavior now covers it.
 
 ## 4. Create future audit tasks from the mapping
 
 After the mapping is complete, create one independently actionable future audit task for each affected component or component family. Include public subcomponents and deduplicate aliases. Each task must identify a stable task ID, exact upstream source or docs evidence, setup, action, observable expected outcome based on the public contract, and planned validation. Mark every task `NOT_RUN` until it has actually been executed. A rendered docs preview, generic callback stub, or nonexecuted snippet cannot receive `PASS`; verify actual state changes and event outcomes where the public contract defines them.
+
+Include design and behavior gaps found in existing components, not only newly added components. Deferred tasks do not satisfy the sync's acceptance criteria; keep them visible as remaining work. The existence of a task or passing export parity cannot stand in for contract alignment.
 
 ## 5. Update selected dependencies and React integration
 
@@ -69,3 +92,5 @@ Edit only the selected upstream package pins, keeping their existing version sty
 Run checks relevant to the selected packages and changed surfaces. At minimum, run selected package builds, tests, and typechecks; run `bun run parity:components` when core or component wiring changed. Run the docs build when docs, component exports, or CSS imports changed. Inspect built `dist` output for changed exports and CSS; use a browser check for visual or interactive behavior changes. Run root `bun run build:all`, `bun run test`, and `bun run typecheck` when syncing both packages. Resolve regressions caused by this update, then check `git diff --check` and the final scoped diff. If verification is paused, do not run tests or other verification commands and leave their status pending.
 
 Report old and new versions, each mapping row's disposition, affected React and art APIs, retained/deprecated/removed APIs and migration rationale, actual or proposed deprecation versions and removal thresholds with the release history supporting them, and checks with their outcomes. Separate completed checks from `NOT_RUN` and `BLOCKED` work. Do not claim full parity while any row remains unresolved or evidence is unverified, or claim a complete sync while required verification remains pending. Do not publish or change this repo's release version as part of a dependency sync unless requested.
+
+Report dependency updates, component inventory coverage, design/markup alignment, interaction/accessibility alignment, docs/demo coverage, and runtime verification separately. State which target families have not received the required contract review. Use `PARTIAL` when any required gap is deferred, retained as a divergent compatibility adapter, blocked, or unknown; use `IMPLEMENTED_UNVERIFIED` when all required source changes are implemented but validation is pending. Claim complete design synchronization only when every selected target family has been reviewed, required contract gaps are resolved, and required checks pass. Do not describe a version bump plus new wrappers as a complete design sync.
