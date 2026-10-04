@@ -10,6 +10,7 @@ import {
   type DocCategoryId,
 } from "./docs-categories";
 import { docsPath } from "./paths";
+import { chatDemoExamples } from "./chat-demo-examples";
 
 type Target = {
   id: string;
@@ -681,23 +682,63 @@ function demoCode(
   <${name}.Avatar>
     <span className="avatar avatar-sm avatar-info">AI</span>
   </${name}.Avatar>
-  <${name}.Header>Assistant · just now</${name}.Header>
-  <${name}.Reasoning open>
-    <summary>Thinking (2s)</summary>
-    <div>Reviewing the component API before answering.</div>
-  </${name}.Reasoning>
-  <${name}.Tool status="success" open>
-    <${name}.ToolHeader>
-      <span>search_components</span>
-      <${name}.ToolStatus>Done</${name}.ToolStatus>
-    </${name}.ToolHeader>
-    <${name}.ToolCall>{'{"query":"chat"}'}</${name}.ToolCall>
-    <${name}.ToolResult>Found the DuskMoon Chat primitives.</${name}.ToolResult>
-  </${name}.Tool>
-  <${name}.Bubble color="primary" streaming>
-    Chat is ready for React.
+  <${name}.Header>Assistant - 2:18 PM</${name}.Header>
+  <${name}.Bubble>
+    <${name}.Reasoning open>
+      <summary>Thinking (3s)</summary>
+      <div className="chat-reasoning-body">
+        <div>I should call the weather tool, then summarize the result in one sentence.</div>
+        <${name}.Tool status="running" open>
+          <${name}.ToolHeader>
+            <span>get_weather</span>
+            <${name}.ToolStatus>Running...</${name}.ToolStatus>
+          </${name}.ToolHeader>
+          <${name}.ToolCall>
+            <div className="code-block code-block-compact">
+              <div className="code-header">
+                <span className="code-title">Call</span>
+                <span className="code-language">json</span>
+              </div>
+              <div className="code-content">
+                <pre tabIndex={0} aria-label="Call JSON payload"><code>{'{"city":"Tokyo"}'}</code></pre>
+              </div>
+            </div>
+          </${name}.ToolCall>
+        </${name}.Tool>
+        <div>Tool returned cloudy at 18 C. Drafting the final answer.</div>
+      </div>
+    </${name}.Reasoning>
+    <${name}.Tool status="success" open>
+      <${name}.ToolHeader>
+        <span>get_weather</span>
+        <${name}.ToolStatus>Done</${name}.ToolStatus>
+      </${name}.ToolHeader>
+      <${name}.ToolCall>
+        <div className="code-block code-block-compact">
+          <div className="code-header">
+            <span className="code-title">Call</span>
+            <span className="code-language">json</span>
+          </div>
+          <div className="code-content">
+            <pre tabIndex={0} aria-label="Call JSON payload"><code>{'{"city":"Tokyo"}'}</code></pre>
+          </div>
+        </div>
+      </${name}.ToolCall>
+      <${name}.ToolResult>
+        <div className="code-block code-block-compact">
+          <div className="code-header">
+            <span className="code-title">Result</span>
+            <span className="code-language">json</span>
+          </div>
+          <div className="code-content">
+            <pre tabIndex={0} aria-label="Result JSON payload"><code>{'{"temperature":"18 C","condition":"cloudy"}'}</code></pre>
+          </div>
+        </div>
+      </${name}.ToolResult>
+    </${name}.Tool>
+    <div className="chat-bubble-content chat-bubble-streaming">It is 18 C and cloudy in Tokyo right now.</div>
   </${name}.Bubble>
-  <${name}.Footer>Delivered</${name}.Footer>
+  <${name}.Footer>Streaming</${name}.Footer>
 </${name}>`;
   }
 
@@ -1091,11 +1132,11 @@ function demoCode(
 
   if (target.id === "modal") {
     return `<${name}
-  open
+  defaultOpen
   title="Release checklist"
   width={420}
   onOk={() => console.log("ok")}
-  onCancel={() => console.log("cancel")}
+  onCancel={() => console.log("closed")}
 >
   Review component styles before publishing the package.
 </${name}>`;
@@ -1755,6 +1796,20 @@ export function ConsolePageDemo() {
     importLine,
     componentStyleImport,
   );
+
+  if (target.id === "chat") {
+    return chatDemoExamples.map((example) => ({ ...example }));
+  }
+
+  if (target.id === "modal") {
+    return [{
+      title: "Controlled native modal",
+      description:
+        "Modal uses native showModal and close. A controlled onCancel must update open; its ref and div props remain on the inner modal box. Apply maskClassName to the dialog for ::backdrop styling. Static Modal.confirm/info/success/error/warning handles are retained but do not render a service surface yet.",
+      code: `${componentStyleImport}\nimport { useState } from "react";\n${importLine}\n\nexport function ReleaseChecklist() {\n  const [open, setOpen] = useState(false);\n  return (\n    <>\n      <button type="button" onClick={() => setOpen(true)}>Review release</button>\n      <${name}\n        open={open}\n        title="Release checklist"\n        onCancel={() => setOpen(false)}\n        onOk={() => setOpen(false)}\n        maskClassName="release-mask"\n      >\n        Review component styles before publishing.\n      </${name}>\n    </>\n  );\n}`,
+      source: "authored",
+    }];
+  }
 
   if (target.id === "button") {
     return [

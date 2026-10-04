@@ -651,6 +651,15 @@ main {
     var(--dm-surface-soft);
 }
 
+.demo-preview:has(.chat-demo) {
+  min-height: 200px;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 2rem;
+  background: var(--dm-bg);
+}
+
 .demo-preview .skeleton {
   display: block;
   background-color: color-mix(
@@ -803,6 +812,20 @@ code {
   font-size: 13px;
 }
 
+.demo-preview .chat-demo pre {
+  overflow-x: revert-layer;
+  margin: revert-layer;
+  border-radius: revert-layer;
+  background: revert-layer;
+  color: revert-layer;
+  padding: revert-layer;
+}
+
+.demo-preview .chat-demo code {
+  font-family: revert-layer;
+  font-size: revert-layer;
+}
+
 .api-card {
   margin-top: 16px;
   overflow: hidden;
@@ -898,5 +921,11 @@ code {
   .doc-stats,
   .usage-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .demo-preview:has(.chat-demo) {
+    padding: 1rem;
   }
 }
