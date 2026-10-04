@@ -6,6 +6,7 @@ import React, {
   useContext,
   useEffect,
   useImperativeHandle,
+  useId,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -385,6 +386,7 @@ const FormItem = forwardRef<HTMLDivElement, FormItemProps>(
       className,
       extra,
       help,
+      htmlFor,
       label,
       name,
       noStyle,
@@ -397,9 +399,19 @@ const FormItem = forwardRef<HTMLDivElement, FormItemProps>(
     ref,
   ) => {
     const context = useContext(FormContext);
+    const generatedId = useId();
     useFormVersion(context?.form);
     const fieldErrors = name && context ? context.getFieldError(name) : [];
     const ruleRequired = required ?? rules.some((rule) => rule.required);
+    const child =
+      isValidElement(children) && children.type !== React.Fragment
+        ? children
+        : null;
+    const childProps = child?.props as Record<string, unknown> | undefined;
+    const controlId =
+      label && !noStyle && htmlFor === undefined && child
+        ? ((childProps?.id as string | undefined) ?? generatedId)
+        : undefined;
 
     useEffect(() => {
       if (!name || !context) {
@@ -410,17 +422,26 @@ const FormItem = forwardRef<HTMLDivElement, FormItemProps>(
     }, [context, name, rules]);
 
     function renderControl() {
-      if (!name || !context || !isValidElement(children)) {
+      if (!child || !childProps) {
         return children;
+      }
+
+      const associationProps =
+        controlId && childProps.id == null ? { id: controlId } : {};
+
+      if (!name || !context) {
+        return controlId && childProps.id == null
+          ? React.cloneElement(child, associationProps)
+          : children;
       }
 
       const key = nameKey(name);
       const value = context.form.getFieldValue(name);
-      const childProps = children.props as Record<string, unknown>;
       const originalTrigger = childProps[trigger] as
         ((...args: unknown[]) => void) | undefined;
 
-      return React.cloneElement(children, {
+      return React.cloneElement(child, {
+        ...associationProps,
         [valuePropName]:
           valuePropName === "checked" ? Boolean(value) : (value ?? ""),
         disabled: childProps.disabled ?? context.disabled,
@@ -454,7 +475,11 @@ const FormItem = forwardRef<HTMLDivElement, FormItemProps>(
           className,
         })}
       >
-        {label ? <label className={formItemLabelClass}>{label}</label> : null}
+        {label ? (
+          <label className={formItemLabelClass} htmlFor={htmlFor ?? controlId}>
+            {label}
+          </label>
+        ) : null}
         <div className={formItemControlClass}>{renderControl()}</div>
         {extra ? <div className={formItemExtraClass}>{extra}</div> : null}
         {help || fieldErrors.length > 0 ? (

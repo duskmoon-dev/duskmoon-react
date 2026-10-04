@@ -76,6 +76,7 @@ export interface FormItemProps extends Omit<
   children?: ReactNode;
   name?: FormNamePath;
   label?: ReactNode;
+  htmlFor?: string;
   rules?: FormRule[];
   required?: boolean;
   valuePropName?: string;

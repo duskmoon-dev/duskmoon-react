@@ -17,7 +17,7 @@
     "appearance": {
       "values": {
         "filled": "",
-        "outline": "badge-outline",
+        "outline": "badge-outlined badge-outline",
         "tonal": "badge-tonal",
         "ghost": "badge-ghost"
       },

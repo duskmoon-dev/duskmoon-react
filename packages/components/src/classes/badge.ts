@@ -23,7 +23,7 @@ export const badgeColorClasses: Record<BadgeColor, string> = {
 
 export const badgeAppearanceClasses: Record<BadgeAppearance, string> = {
   filled: "",
-  outline: "badge-outline",
+  outline: "badge-outlined badge-outline",
   tonal: "badge-tonal",
   ghost: "badge-ghost",
 };
