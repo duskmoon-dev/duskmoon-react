@@ -2,13 +2,13 @@ import React, {
   forwardRef,
   useCallback,
   useEffect,
+  useId,
   useRef,
   useState,
   type CSSProperties,
   type MouseEvent,
 } from "react";
 import {
-  getModalBackdropClasses,
   getModalClasses,
   modalBodyClass,
   modalCloseClass,
@@ -16,6 +16,7 @@ import {
   modalHeaderClass,
   modalTitleClass,
 } from "../../classes/modal";
+import { cn } from "../../utils";
 import type {
   ModalComponent,
   ModalFuncHandle,
@@ -54,6 +55,12 @@ function getModalStyle({
   };
 }
 
+function showNativeModal(dialog: HTMLDialogElement) {
+  if (!dialog.isConnected || dialog.matches(":modal")) return;
+  if (dialog.open) dialog.close();
+  dialog.showModal();
+}
+
 const ModalBase = forwardRef<HTMLDivElement, ModalProps>(
   (
     {
@@ -78,7 +85,7 @@ const ModalBase = forwardRef<HTMLDivElement, ModalProps>(
       maskClassName,
       closeIcon = defaultCloseIcon,
       style,
-      role = "dialog",
+      role,
       ...props
     },
     ref,
@@ -87,8 +94,36 @@ const ModalBase = forwardRef<HTMLDivElement, ModalProps>(
     const [innerOpen, setInnerOpen] = useState(defaultOpen);
     const mergedOpen = controlled ? Boolean(open) : innerOpen;
     const previousOpen = useRef(mergedOpen);
+    const desiredOpen = useRef(mergedOpen);
+    desiredOpen.current = mergedOpen;
+    const dialogRef = useRef<HTMLDialogElement>(null);
+    const cancelRequestRef = useRef<HTMLButtonElement>(null);
+    const programmaticClose = useRef(false);
+    const titleId = useId();
+    const surfaceWidth = width ?? style?.width;
+    const callerNamed = props["aria-label"] != null || props["aria-labelledby"] != null;
     const showClose = closable && closeIcon !== null && closeIcon !== false;
     const body = children ?? content;
+
+    useEffect(() => {
+      const dialog = dialogRef.current;
+      if (!dialog) return;
+
+      if (mergedOpen) {
+        programmaticClose.current = false;
+        showNativeModal(dialog);
+      } else if (dialog.open) {
+        programmaticClose.current = true;
+        dialog.close();
+      }
+
+      return () => {
+        if (dialog.open) {
+          programmaticClose.current = true;
+          dialog.close();
+        }
+      };
+    }, [mergedOpen]);
 
     useEffect(() => {
       if (previousOpen.current === mergedOpen) {
@@ -117,44 +152,77 @@ const ModalBase = forwardRef<HTMLDivElement, ModalProps>(
       [onOk],
     );
 
-    const handleMaskClick = useCallback(
-      (event: MouseEvent<HTMLDivElement>) => {
-        if (event.target !== event.currentTarget || !maskClosable) {
-          return;
-        }
+    const requestCancel = useCallback(() => {
+      cancelRequestRef.current?.click();
+    }, []);
 
-        close(event);
-      },
-      [close, maskClosable],
-    );
+    const handleNativeClose = useCallback(() => {
+      const dialog = dialogRef.current;
+      if (!dialog || dialog.open || programmaticClose.current) {
+        programmaticClose.current = false;
+        return;
+      }
+
+      if (desiredOpen.current) {
+        requestCancel();
+        if (controlled) {
+          queueMicrotask(() => {
+            if (desiredOpen.current) {
+              showNativeModal(dialog);
+            }
+          });
+        }
+      }
+    }, [controlled, requestCancel]);
 
     if (!mergedOpen && destroyOnClose) {
       return null;
     }
 
     return (
-      <div
-        aria-hidden={mergedOpen ? undefined : true}
-        role="presentation"
-        className={getModalBackdropClasses({
-          open: mergedOpen,
-          centered,
-          className: maskClassName,
-        })}
-        onMouseDown={handleMaskClick}
+      <dialog
+        ref={dialogRef}
+        role={role === "alertdialog" ? role : undefined}
+        aria-label={props["aria-label"] ?? (!callerNamed && title == null ? "Modal" : undefined)}
+        aria-labelledby={props["aria-labelledby"] ?? (!callerNamed && title != null ? titleId : undefined)}
+        aria-describedby={props["aria-describedby"]}
+        className={getModalClasses({ className: cn(maskClassName, centered ? "modal-middle" : "modal-top") })}
+        style={surfaceWidth !== undefined ? { width: surfaceWidth, maxWidth: surfaceWidth } : undefined}
+        onCancel={(event) => {
+          event.preventDefault();
+          requestCancel();
+        }}
+        onClose={handleNativeClose}
+        onMouseDown={(event) => {
+          if (!maskClosable || event.target !== event.currentTarget) return;
+          const { left, right, top, bottom } = event.currentTarget.getBoundingClientRect();
+          if (
+            event.clientX < left || event.clientX > right ||
+            event.clientY < top || event.clientY > bottom
+          ) {
+            requestCancel();
+          }
+        }}
       >
+        <button
+          ref={cancelRequestRef}
+          type="button"
+          hidden
+          tabIndex={-1}
+          aria-hidden="true"
+          onClick={close}
+        />
         <div
           {...props}
           ref={ref}
           role={role}
-          aria-modal={mergedOpen ? true : undefined}
-          className={getModalClasses({ className })}
+          className={cn("modal-box", "react-modal-box", className)}
           style={getModalStyle({ width, style })}
         >
           {title !== undefined || showClose ? (
             <div className={modalHeaderClass}>
               {title !== undefined ? (
-                <h2 className={modalTitleClass}>{title}</h2>
+                <h2 id={titleId} className={modalTitleClass}>{title}</h2>
               ) : null}
               {showClose ? (
                 <button
@@ -191,7 +259,7 @@ const ModalBase = forwardRef<HTMLDivElement, ModalProps>(
             </div>
           )}
         </div>
-      </div>
+      </dialog>
     );
   },
 );

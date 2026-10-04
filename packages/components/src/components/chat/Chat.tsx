@@ -3,6 +3,15 @@ import {
   chatAvatarClass,
   chatFooterClass,
   chatHeaderClass,
+  chatStatusClass,
+  chatStatusItemClass,
+  chatStatusValueClass,
+  chatActionsClass,
+  chatActionsHoverClass,
+  chatScrollClass,
+  chatScrollBodyClass,
+  chatScrollTrackClass,
+  chatScrollIndicatorClass,
   chatReasoningClass,
   chatStreamingCaretClass,
   chatToolCallClass,
@@ -20,6 +29,14 @@ import type {
   ChatBubbleProps,
   ChatComponent,
   ChatFooterProps,
+  ChatStatusProps,
+  ChatStatusItemProps,
+  ChatStatusValueProps,
+  ChatActionsProps,
+  ChatScrollProps,
+  ChatScrollBodyProps,
+  ChatScrollTrackProps,
+  ChatScrollIndicatorProps,
   ChatHeaderProps,
   ChatProps,
   ChatReasoningProps,
@@ -80,6 +97,108 @@ export const ChatFooter = forwardRef<HTMLDivElement, ChatFooterProps>(
 );
 
 ChatFooter.displayName = "Chat.Footer";
+
+export const ChatStatus = forwardRef<HTMLDivElement, ChatStatusProps>(
+  ({ className, ...props }, ref) => (
+    <div {...props} ref={ref} className={cn(chatStatusClass, className)} />
+  ),
+);
+ChatStatus.displayName = "Chat.Status";
+
+export const ChatStatusItem = forwardRef<HTMLSpanElement, ChatStatusItemProps>(
+  ({ className, ...props }, ref) => (
+    <span {...props} ref={ref} className={cn(chatStatusItemClass, className)} />
+  ),
+);
+ChatStatusItem.displayName = "Chat.StatusItem";
+
+export const ChatStatusValue = forwardRef<HTMLSpanElement, ChatStatusValueProps>(
+  ({ className, ...props }, ref) => (
+    <span {...props} ref={ref} className={cn(chatStatusValueClass, className)} />
+  ),
+);
+ChatStatusValue.displayName = "Chat.StatusValue";
+
+export const ChatActions = forwardRef<HTMLDivElement, ChatActionsProps>(
+  ({ hover, className, ...props }, ref) => (
+    <div
+      {...props}
+      ref={ref}
+      className={cn(chatActionsClass, hover && chatActionsHoverClass, className)}
+    />
+  ),
+);
+ChatActions.displayName = "Chat.Actions";
+
+export const ChatScroll = forwardRef<HTMLDivElement, ChatScrollProps>(
+  ({ className, ...props }, ref) => (
+    <div {...props} ref={ref} className={cn(chatScrollClass, className)} />
+  ),
+);
+ChatScroll.displayName = "Chat.Scroll";
+
+export const ChatScrollBody = forwardRef<HTMLDivElement, ChatScrollBodyProps>(
+  ({ className, ...props }, ref) => (
+    <div {...props} ref={ref} className={cn(chatScrollBodyClass, className)} />
+  ),
+);
+ChatScrollBody.displayName = "Chat.ScrollBody";
+
+export const ChatScrollTrack = forwardRef<HTMLDivElement, ChatScrollTrackProps>(
+  ({ className, ...props }, ref) => (
+    <div {...props} ref={ref} className={cn(chatScrollTrackClass, className)} />
+  ),
+);
+ChatScrollTrack.displayName = "Chat.ScrollTrack";
+
+export const ChatScrollIndicator = forwardRef<
+  HTMLButtonElement,
+  ChatScrollIndicatorProps
+>(
+  (
+    { targetId, timeline, type = "button", className, onClick, ...props },
+    ref,
+  ) => (
+    <button
+      {...props}
+      ref={ref}
+      type={type}
+      data-chat-target={targetId}
+      data-chat-tl={timeline}
+      aria-label={
+        props["aria-label"] ??
+        (props["aria-labelledby"]
+          ? undefined
+          : `Jump to assistant reply ${timeline}`)
+      }
+      className={cn(chatScrollIndicatorClass, className)}
+      onClick={(event) => {
+        onClick?.(event);
+        if (event.defaultPrevented) return;
+        const scroller = event.currentTarget.closest<HTMLElement>(
+          `.${chatScrollClass}`,
+        );
+        const target = Array.from(
+          scroller?.querySelectorAll<HTMLElement>("[id]") ?? [],
+        ).find(
+          (element) =>
+            element.id === targetId &&
+            element.closest(`.${chatScrollClass}`) === scroller,
+        );
+        if (!scroller || !target) return;
+        const top =
+          scroller.scrollTop +
+          target.getBoundingClientRect().top -
+          scroller.getBoundingClientRect().top;
+        const reducedMotion = scroller.ownerDocument.defaultView?.matchMedia?.(
+          "(prefers-reduced-motion: reduce)",
+        ).matches;
+        scroller.scrollTo({ top, behavior: reducedMotion ? "auto" : "smooth" });
+      }}
+    />
+  ),
+);
+ChatScrollIndicator.displayName = "Chat.ScrollIndicator";
 
 export const ChatReasoning = forwardRef<HTMLDetailsElement, ChatReasoningProps>(
   ({ className, ...props }, ref) => (
@@ -166,10 +285,11 @@ export const ChatTyping = forwardRef<HTMLSpanElement, ChatTypingProps>(
 ChatTyping.displayName = "Chat.Typing";
 
 const ChatRoot = forwardRef<HTMLDivElement, ChatProps>(
-  ({ placement = "start", className, ...props }, ref) => (
+  ({ placement = "start", timeline, className, ...props }, ref) => (
     <div
       {...props}
       ref={ref}
+      data-chat-tl={timeline ?? props["data-chat-tl"]}
       className={getChatClasses({ placement, className })}
     />
   ),
@@ -182,6 +302,14 @@ export const Chat = Object.assign(ChatRoot, {
   Header: ChatHeader,
   Bubble: ChatBubble,
   Footer: ChatFooter,
+  Status: ChatStatus,
+  StatusItem: ChatStatusItem,
+  StatusValue: ChatStatusValue,
+  Actions: ChatActions,
+  Scroll: ChatScroll,
+  ScrollBody: ChatScrollBody,
+  ScrollTrack: ChatScrollTrack,
+  ScrollIndicator: ChatScrollIndicator,
   Reasoning: ChatReasoning,
   Tool: ChatTool,
   ToolHeader: ChatToolHeader,

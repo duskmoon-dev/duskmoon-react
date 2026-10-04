@@ -13,6 +13,7 @@ export const avatarSizeClasses: Record<AvatarSize, string> = {
   md: "avatar-md",
   lg: "avatar-lg",
   xl: "avatar-xl",
+  "2xl": "avatar-2xl",
 };
 
 export const avatarShapeClasses: Record<AvatarShape, string> = {

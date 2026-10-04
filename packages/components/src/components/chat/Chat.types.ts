@@ -5,6 +5,9 @@ import type {
 } from "react";
 
 export type ChatPlacement = "start" | "end";
+export type ChatTimeline =
+  | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
+  | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24;
 
 export type ChatBubbleColor =
   | "primary"
@@ -25,11 +28,28 @@ export type ChatToolState = "pending" | "running" | "success" | "error";
 export interface ChatProps extends ComponentProps<"div"> {
   /** Position the turn at the start or end of the conversation row. */
   placement?: ChatPlacement;
+  /** Pair an assistant row with a scroll indicator (slots 1–24). */
+  timeline?: ChatTimeline;
+  "data-chat-tl"?: string | number;
 }
 
 export type ChatAvatarProps = ComponentProps<"div">;
 export type ChatHeaderProps = ComponentProps<"div">;
 export type ChatFooterProps = ComponentProps<"div">;
+export type ChatStatusProps = ComponentProps<"div">;
+export type ChatStatusItemProps = ComponentProps<"span">;
+export type ChatStatusValueProps = ComponentProps<"span">;
+export interface ChatActionsProps extends ComponentProps<"div"> {
+  /** Reveal actions on message hover or keyboard focus. */
+  hover?: boolean;
+}
+export type ChatScrollProps = ComponentProps<"div">;
+export type ChatScrollBodyProps = ComponentProps<"div">;
+export type ChatScrollTrackProps = ComponentProps<"div">;
+export interface ChatScrollIndicatorProps extends ComponentProps<"button"> {
+  targetId: string;
+  timeline: ChatTimeline;
+}
 
 export interface ChatBubbleProps extends ComponentProps<"div"> {
   /** Apply a semantic DuskMoon color to the bubble. */
@@ -65,6 +85,14 @@ export type ChatComponent = ChatPartComponent<HTMLDivElement, ChatProps> & {
   Header: ChatPartComponent<HTMLDivElement, ChatHeaderProps>;
   Bubble: ChatPartComponent<HTMLDivElement, ChatBubbleProps>;
   Footer: ChatPartComponent<HTMLDivElement, ChatFooterProps>;
+  Status: ChatPartComponent<HTMLDivElement, ChatStatusProps>;
+  StatusItem: ChatPartComponent<HTMLSpanElement, ChatStatusItemProps>;
+  StatusValue: ChatPartComponent<HTMLSpanElement, ChatStatusValueProps>;
+  Actions: ChatPartComponent<HTMLDivElement, ChatActionsProps>;
+  Scroll: ChatPartComponent<HTMLDivElement, ChatScrollProps>;
+  ScrollBody: ChatPartComponent<HTMLDivElement, ChatScrollBodyProps>;
+  ScrollTrack: ChatPartComponent<HTMLDivElement, ChatScrollTrackProps>;
+  ScrollIndicator: ChatPartComponent<HTMLButtonElement, ChatScrollIndicatorProps>;
   Reasoning: ChatPartComponent<HTMLDetailsElement, ChatReasoningProps>;
   Tool: ChatPartComponent<HTMLDetailsElement, ChatToolProps>;
   ToolHeader: ChatPartComponent<HTMLElement, ChatToolHeaderProps>;

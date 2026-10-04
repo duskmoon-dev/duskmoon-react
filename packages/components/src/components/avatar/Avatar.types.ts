@@ -1,7 +1,7 @@
 // GENERATED FILE. DO NOT EDIT.
 import type { ComponentProps } from "react";
 
-export type AvatarSize = "xs" | "sm" | "md" | "lg" | "xl";
+export type AvatarSize = "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
 
 export type AvatarShape = "circle" | "square";
 
