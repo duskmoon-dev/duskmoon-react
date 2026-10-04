@@ -50,6 +50,19 @@ export function Demo() {
 `ArtCircularGalleryItem` is exported as the item type for
 `ArtCircularGallery`.
 
+`ArtCircularGallery` keeps its image links accessible by default. Use
+`decorative` only when the gallery is purely visual; its links are then removed
+from keyboard tab order. An explicit `aria-hidden` value on the root takes
+precedence.
+
+`ArtCsswitch` buttons are keyboard accessible and named by default. Set
+`decorative` when the console is only an illustration; its buttons then leave
+the tab order. An explicit root `aria-hidden` value takes precedence.
+
+`ArtGeminiInput` names its default `+` and `>` buttons Add and Send. When
+replacing either glyph with custom icon content, provide an accessible button
+name through `beforeButtonProps` or `afterButtonProps` if the content has none.
+
 Most decorative components accept `size="sm" | "default" | "lg"`; `ArtMoon`
 and `ArtSun` also accept `size="xl"`. Components forward refs to their root
 element, accept `className`, `style`, and DuskMoon CSS custom properties through
