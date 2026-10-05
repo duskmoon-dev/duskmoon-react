@@ -1590,6 +1590,70 @@ function buttonFeatureDemos(
   ];
 }
 
+function dropdownFeatureDemos(
+  importLine: string,
+  componentStyleImport: string,
+): DemoSpec[] {
+  const imports = `${componentStyleImport}\nimport React from "react";\n${importLine}\nimport { Button, Tooltip } from "@duskmoon-dev/components";`;
+  const iconsAndMenu = `function UserIcon() {
+  return <svg aria-hidden="true" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.25" /><path strokeLinecap="round" d="M5.5 20a6.5 6.5 0 0 1 13 0" /></svg>;
+}
+
+const actionMenu = {
+  items: [
+    { key: "overview", label: "Overview", icon: <UserIcon /> },
+    { key: "members", label: "Members", icon: <UserIcon /> },
+    { key: "delete", label: "Delete workspace", danger: true, icon: <UserIcon /> },
+    { key: "invite", label: "Invite member", disabled: true, icon: <UserIcon /> },
+  ]
+};`;
+
+  return [
+    {
+      title: "Split buttons",
+      description:
+        "Use the split button for a primary action alongside a menu of related workspace actions.",
+      code: `${imports}\n\n${iconsAndMenu}\n\nexport function DropdownSplitButtonsDemo() {\n  return (\n    <Dropdown.Button appearance="outline" color="base" menu={actionMenu}>\n      Actions\n    </Dropdown.Button>\n  );\n}`,
+      source: "authored",
+    },
+    {
+      title: "Custom trigger icon",
+      description:
+        "Replace the split button trigger content with a custom icon while preserving its click behavior.",
+      code: `${imports}\n\n${iconsAndMenu}\n\nexport function DropdownCustomTriggerIconDemo() {\n  return (\n    <Dropdown.Button\n      appearance="outline"\n      color="base"\n      buttonsRender={(buttons) => [\n        buttons[0],\n        React.cloneElement(buttons[1] as React.ReactElement<{ children?: React.ReactNode }>, { children: <UserIcon /> }),\n      ]}\n      menu={actionMenu}\n    >\n      Actions\n    </Dropdown.Button>\n  );\n}`,
+      source: "authored",
+    },
+    {
+      title: "Disabled split button",
+      description:
+        "Disable both parts of the split button when the action menu is unavailable.",
+      code: `${imports}\n\n${iconsAndMenu}\n\nexport function DisabledDropdownSplitButtonDemo() {\n  return (\n    <Dropdown.Button appearance="outline" color="base" disabled menu={actionMenu}>\n      Actions\n    </Dropdown.Button>\n  );\n}`,
+      source: "authored",
+    },
+    {
+      title: "Tooltip on trigger",
+      description:
+        "Wrap only the menu trigger with a Tooltip to explain where it leads.",
+      code: `${imports}\n\n${iconsAndMenu}\n\nexport function DropdownTooltipTriggerDemo() {\n  return (\n    <Dropdown.Button\n      appearance="outline"\n      color="base"\n      buttonsRender={(buttons) => [\n        buttons[0],\n        <Tooltip key="trigger" id="dropdown-trigger-help" title="Open workspace actions">\n          {buttons[1]}\n        </Tooltip>,\n      ]}\n      menu={actionMenu}\n    >\n      Actions\n    </Dropdown.Button>\n  );\n}`,
+      source: "authored",
+    },
+    {
+      title: "Button and danger",
+      description:
+        "Use a regular Button as a dropdown trigger, and reserve the error color for destructive split actions.",
+      code: `${imports}\n\n${iconsAndMenu}\n\nfunction ChevronDownIcon() {\n  return <svg aria-hidden="true" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m6 9 6 6 6-6" /></svg>;\n}\n\nexport function DropdownButtonAndDangerDemo() {\n  return (\n    <div className="dropdown-button-danger-preview" style={{ display: "flex", flexWrap: "wrap", gap: 16, alignItems: "flex-start" }}>\n      <Dropdown trigger={["click"]} menu={actionMenu}>\n        <Button appearance="outline" color="base" rightIcon={<ChevronDownIcon />}>\n          Actions\n        </Button>\n      </Dropdown>\n      <Dropdown.Button appearance="outline" color="error" menu={actionMenu}>\n        Delete\n      </Dropdown.Button>\n    </div>\n  );\n}`,
+      source: "authored",
+    },
+    {
+      title: "Menu item states",
+      description:
+        "Combine regular, destructive, and unavailable menu items in one open menu preview.",
+      code: `${imports}\n\n${iconsAndMenu}\n\nexport function DropdownMenuItemStatesDemo() {\n  return (\n    <Dropdown.Button\n      appearance="outline"\n      color="base"\n      defaultOpen\n      menu={actionMenu}\n    >\n      Actions\n    </Dropdown.Button>\n  );\n}`,
+      source: "authored",
+    },
+  ];
+}
+
 function demosFor(
   target: Target,
   name: string,
@@ -1864,6 +1928,26 @@ export function ConsolePageDemo() {
       source: "test-backed",
     };
   });
+
+  if (target.id === "dropdown") {
+    return [
+      {
+        title: "Basic usage",
+        description: `Import the component stylesheet and ${name} from its package subpath, then render it with the core props.`,
+        code: `${componentStyleImport}\n${importLine}\n\nexport function Example() {\n  return (${usage});\n}`,
+        source: "authored",
+      },
+      ...scenarioDemos,
+      ...dropdownFeatureDemos(importLine, componentStyleImport),
+      {
+        title: "Theme aware",
+        description:
+          "Docs previews inherit the DuskMoon data-theme value. Use the header switch to compare light and dark rendering.",
+        code: `<div data-theme="sunshine">\n  ${usage}\n</div>\n\n<div data-theme="moonlight">\n  ${usage}\n</div>`,
+        source: "authored",
+      },
+    ];
+  }
 
   return [
     ...(colorDemo ? [colorDemo] : []),

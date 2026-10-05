@@ -651,6 +651,15 @@ main {
     var(--dm-surface-soft);
 }
 
+.demo-preview.dropdown-demo-preview {
+  align-items: flex-start;
+  min-height: 260px;
+}
+
+.demo-preview.dropdown-demo-preview:has(.dropdown-button-danger-preview) {
+  min-height: 300px;
+}
+
 .demo-preview:has(.chat-demo) {
   min-height: 200px;
   justify-content: center;

@@ -113,7 +113,7 @@ const apiTypeCount = component.api.length;
                 <div class="demo-panel demo-panel-preview">
                   <div class="demo-panel-label">Preview</div>
                   <div
-                    class={`demo-preview ${component.category === "CSS Art" ? "art-demo-preview" : ""}`}
+                    class={`demo-preview ${component.id === "dropdown" ? "dropdown-demo-preview" : ""} ${component.category === "CSS Art" ? "art-demo-preview" : ""}`}
                   >
                     <DemoRenderer
                       componentId={component.id}

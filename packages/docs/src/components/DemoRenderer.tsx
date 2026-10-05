@@ -3,6 +3,7 @@ import * as ArtComponents from "@duskmoon-dev/art-components";
 import * as DmComponents from "@duskmoon-dev/components";
 import { ButtonPreview, isButtonPreviewDemo } from "./ButtonPreviews";
 import { chatShowcasePreviews } from "./ChatPreviews";
+import { DropdownPreview, isDropdownPreviewDemo } from "./DropdownPreviews";
 import {
   ConsolePagePreview,
   FabPreview,
@@ -1240,6 +1241,10 @@ This line demonstrates \`breaks={true}\`.
   if (componentId === "chat") {
     const preview = chatShowcasePreviews[demoTitle as keyof typeof chatShowcasePreviews];
     return preview ? React.createElement(preview) : null;
+  }
+
+  if (componentId === "dropdown" && isDropdownPreviewDemo(demoTitle)) {
+    return <DropdownPreview demoTitle={demoTitle} />;
   }
 
   if (
