@@ -230,30 +230,70 @@ const DropdownButton = forwardRef<HTMLSpanElement, DropdownButtonProps>(
       menu,
       onClick,
       trigger = ["click"],
+      color = "base",
+      appearance = "outline",
+      size,
+      shape,
+      block,
+      isLoading,
+      leftIcon,
+      rightIcon,
+      confirm,
       ...props
     },
     ref,
   ) => {
+    const buttonStyle = { color, appearance, size, shape };
     const buttons = [
-      <Button key="primary" disabled={disabled} onClick={onClick}>
+      <Button
+        key="primary"
+        {...buttonStyle}
+        disabled={disabled}
+        isLoading={isLoading}
+        leftIcon={leftIcon}
+        rightIcon={rightIcon}
+        confirm={confirm}
+        onClick={onClick}
+      >
         {children}
       </Button>,
-      <Button key="trigger" aria-label="Open dropdown" disabled={disabled}>
-        v
+      <Button
+        key="trigger"
+        {...buttonStyle}
+        type="button"
+        aria-label="Open dropdown"
+        disabled={disabled || isLoading}
+      >
+        <svg
+          aria-hidden="true"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <circle cx="5" cy="12" r="1.75" />
+          <circle cx="12" cy="12" r="1.75" />
+          <circle cx="19" cy="12" r="1.75" />
+        </svg>
       </Button>,
     ];
     const renderedButtons = buttonsRender ? buttonsRender(buttons) : buttons;
 
     return (
-      <DropdownRoot
-        {...props}
+      <span
         ref={ref}
-        menu={menu}
-        trigger={trigger}
-        disabled={disabled}
+        className={cn(dropdownButtonClass, block && "dropdown-button-block")}
       >
-        <span className={dropdownButtonClass}>{renderedButtons}</span>
-      </DropdownRoot>
+        {renderedButtons[0]}
+        <DropdownRoot
+          {...props}
+          menu={menu}
+          trigger={trigger}
+          disabled={disabled || isLoading}
+        >
+          {renderedButtons[1]}
+        </DropdownRoot>
+      </span>
     );
   },
 );
