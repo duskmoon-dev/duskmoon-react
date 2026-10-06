@@ -1,0 +1,277 @@
+---
+import DocsLayout from "../layouts/DocsLayout.astro";
+import DocsNavigation from "./DocsNavigation.astro";
+import { JsonSchemaFormDemo } from "./JsonSchemaFormDemo";
+import { categoriesForSection } from "../lib/docs-sections";
+import { getComponentDocs } from "../lib/component-docs";
+import { docsPath } from "../lib/paths";
+import { JSON_FORM_PRESETS, type JsonFormPresetId } from "../lib/json-form-presets";
+
+const { presetId } = Astro.props as { presetId?: JsonFormPresetId };
+const preset = JSON_FORM_PRESETS.find((entry) => entry.id === presetId);
+const categories = categoriesForSection("utilities", getComponentDocs());
+const controlGuides = [
+  {
+    id: "cascader",
+    title: "Cascader",
+    output: "Array of string or numeric node values",
+    contract: "Complete enabled path to a leaf; items.enum covers every node.",
+  },
+  {
+    id: "checkbox",
+    title: "Checkbox",
+    output: "Boolean",
+    contract: "Boolean schema; enum may require true.",
+  },
+  {
+    id: "color-picker",
+    title: "ColorPicker",
+    output: "String",
+    contract: "Six-digit #RRGGBB hex color.",
+  },
+  {
+    id: "date-picker",
+    title: "DatePicker",
+    output: "String",
+    contract: "Real calendar date in YYYY-MM-DD.",
+  },
+  {
+    id: "dm-date-picker",
+    title: "DmDatePicker",
+    output: "String",
+    contract: "Same date contract with Dm presentation.",
+  },
+  {
+    id: "input",
+    demoId: "string",
+    title: "Input",
+    output: "String",
+    contract: "String without enum; schema text constraints apply.",
+  },
+  {
+    id: "input-number",
+    demoId: "number",
+    title: "InputNumber",
+    output: "Number or integer",
+    contract:
+      "Numeric schema without enum; empty numeric properties are omitted.",
+  },
+  {
+    id: "mentions",
+    title: "Mentions",
+    output: "String",
+    contract:
+      "Full text, including mentions; optional flat string suggestions.",
+  },
+  {
+    id: "otp-input",
+    title: "OtpInput",
+    output: "String",
+    contract: "Exactly length digits; preserve leading zeroes.",
+  },
+  {
+    id: "radio",
+    title: "Radio",
+    output: "Primitive enum value",
+    contract: "One original string, number, integer, or boolean enum value.",
+  },
+  {
+    id: "rate",
+    title: "Rate",
+    output: "Number or integer",
+    contract: "count stars; allowHalf is supported only for number schemas.",
+  },
+  {
+    id: "segmented",
+    title: "Segmented",
+    output: "Primitive enum value",
+    contract: "At least one enabled enum option.",
+  },
+  {
+    id: "select",
+    title: "Select",
+    output: "Primitive value or unique primitive array",
+    contract: "Scalar enum or uniqueItems array with items.enum.",
+  },
+  {
+    id: "slider",
+    title: "Slider",
+    output: "Number or integer",
+    contract:
+      "Finite min < max and positive step; integer schemas use integer settings.",
+  },
+  {
+    id: "switch",
+    title: "Switch",
+    output: "Boolean",
+    contract: "Boolean schema; existing enum restrictions remain enforced.",
+  },
+  {
+    id: "time-picker",
+    title: "TimePicker",
+    output: "String",
+    contract: "Local 24-hour HH:mm:ss; no timezone conversion.",
+  },
+  {
+    id: "transfer",
+    title: "Transfer",
+    output: "Unique string array",
+    contract: "String item enum supplies selected keys.",
+  },
+  {
+    id: "tree-select",
+    title: "TreeSelect",
+    output: "String or number, or unique array of those values",
+    contract:
+      "Hierarchy with exact enum coverage; multiple values are independent selections.",
+  },
+  {
+    id: "upload",
+    title: "Upload",
+    output: "Unique array of metadata objects",
+    contract: "Local chooser; name, size, type, lastModified only.",
+  },
+];
+const uploadExample = JSON.stringify(
+  JSON_FORM_PRESETS.find(({ id }) => id === "upload")!.schema,
+  null,
+  2,
+);
+---
+
+<DocsLayout
+  title={preset ? `${preset.title} JSON Form` : "JSON Schema Form"}
+  description={preset?.description ?? "Generate and submit an interactive form from supported JSON Schema fields."}
+  section="utilities"
+>
+  <div class="doc-shell json-schema-page" data-docs-browser>
+    <DocsNavigation categories={categories} section="utilities" currentTool={preset?.id ?? "json-schema-form"} />
+    <article class="doc-content">
+      <header class="docs-hero">
+        <h1>{preset ? `${preset.title} JSON Form` : "JSON Schema Form"}</h1>
+        <p>{preset?.description ?? "Edit a JSON Schema, generate a form, and inspect the submitted JSON."}</p>
+      </header>
+      {preset ? (
+        <section class="section" aria-labelledby="preset-guide">
+          <h2 id="preset-guide">How this example works</h2>
+          <p>{preset.detail}</p>
+          <p><a href={docsPath("/utilities/form/")}>Read the supported schema guide</a></p>
+        </section>
+      ) : (
+        <>
+          <section class="section" aria-labelledby="form-workflow">
+            <h2 id="form-workflow">Use the form generator</h2>
+            <ol>
+              <li>Choose an example or edit the JSON Schema in the editor.</li>
+              <li>Select <strong>Generate form</strong> to compile the edited schema. Invalid JSON or unsupported schema features show an error and keep the last generated form.</li>
+              <li>Fill the preview and select <strong>Submit</strong>. Validation errors appear beside fields; valid values appear in Submitted JSON.</li>
+              <li>Select <strong>Reset form</strong> to restore schema defaults and clear the submitted result. Selecting another example regenerates the form and clears prior input and output.</li>
+            </ol>
+            <p>The generator accepts a root <code>type: "object"</code> schema. It supports JSON Schema draft 2020-12; when <code>$schema</code> is present, it must name that draft.</p>
+          </section>
+          <section class="section" aria-labelledby="form-fields">
+            <h2 id="form-fields">Fields and submitted values</h2>
+            <div class="api-card"><table class="api-table">
+              <thead><tr><th>Schema type</th><th>Rendered control</th><th>Submitted JSON</th></tr></thead>
+              <tbody>
+                <tr><td><code>string</code></td><td>Text input</td><td>String; <code>format</code> validates text but does not change the input type.</td></tr>
+                <tr><td><code>number</code></td><td>Number input accepting decimals</td><td>Number</td></tr>
+                <tr><td><code>integer</code></td><td>Number input with step 1</td><td>Integer</td></tr>
+                <tr><td><code>boolean</code></td><td>Checkbox</td><td>Boolean</td></tr>
+                <tr><td><code>boolean</code> with <code>x-widget: "switch"</code></td><td>Switch</td><td>Boolean</td></tr>
+                <tr><td>Primitive <code>enum</code></td><td>Select with a choice prompt</td><td>The option's original string, number, integer, or boolean type</td></tr>
+                <tr><td>Primitive <code>enum</code> with <code>x-widget: "radio-group"</code></td><td>Radio group for one choice</td><td>The option's original string, number, integer, or boolean type</td></tr>
+                <tr><td><code>object</code></td><td>Grouped fields, including nested objects</td><td>Object</td></tr>
+                <tr><td><code>array</code></td><td>Add and remove controls for homogeneous primitive or object items</td><td>Array</td></tr>
+                <tr><td><code>array</code> with <code>x-widget: "checkbox-group"</code></td><td>Checkbox group for multiple choices from the item enum</td><td>Array of the options' original primitive values</td></tr>
+              </tbody>
+            </table></div>
+            <p>Untouched optional text and number properties without defaults are initially omitted. Clearing an entered text property leaves an empty string; clearing a numeric property or leaving an enum unchosen omits that property. In an array, clearing a numeric or enum entry keeps its row, and the empty entry must be corrected before submitting; Remove deletes the row. Booleans start as <code>false</code>, arrays start empty, and objects initialize recursively unless a <code>default</code> overrides them. The output is the submitted JSON value, with no string conversion of numeric or boolean controls.</p>
+          </section>
+          <section class="section" aria-labelledby="schema-keywords">
+            <h2 id="schema-keywords">Supported schema keywords</h2>
+            <div class="api-card"><table class="api-table">
+              <thead><tr><th>Keyword</th><th>Behavior</th></tr></thead>
+              <tbody>
+                <tr><td><code>type</code>, <code>properties</code>, <code>items</code></td><td>Define the root object, named object fields, and one homogeneous array item schema.</td></tr>
+                <tr><td><code>title</code>, <code>description</code></td><td>Supply labels and field help text.</td></tr>
+                <tr><td><code>required</code></td><td>List rendered object properties that must be present. Validation runs on submit.</td></tr>
+                <tr><td><code>default</code></td><td>Initialize a matching JSON value. Defaults may still fail other constraints; reset restores them.</td></tr>
+                <tr><td><code>enum</code></td><td>Provide nonempty choices matching one primitive field type.</td></tr>
+                <tr><td><code>x-widget</code></td><td>Select a compatible property control listed below. Some widgets enforce additional value contracts as well as the JSON Schema constraints.</td></tr>
+                <tr><td><code>x-options</code></td><td>Supply validated option values, labels, optional disabled states, and supported hierarchy children.</td></tr>
+                <tr><td><code>x-widget-options</code></td><td>Supply choice-group orientation, OTP length, Rate count/half-star settings, or Slider bounds/step.</td></tr>
+                <tr><td><code>minLength</code>, <code>maxLength</code>, <code>pattern</code>, <code>format</code></td><td>Validate strings on submit; <code>format</code> uses supported draft format validation while rendering a text input.</td></tr>
+                <tr><td><code>minimum</code>, <code>maximum</code>, <code>exclusiveMinimum</code>, <code>exclusiveMaximum</code>, <code>multipleOf</code></td><td>Validate numeric values on submit.</td></tr>
+                <tr><td><code>minItems</code>, <code>maxItems</code>, <code>uniqueItems</code></td><td>Validate arrays; <code>maxItems</code> also disables Add at the limit.</td></tr>
+                <tr><td><code>minProperties</code>, <code>maxProperties</code></td><td>Validate the number of object properties on submit.</td></tr>
+                <tr><td><code>additionalProperties: false</code></td><td>Reject additional object properties. Other values are unsupported.</td></tr>
+                <tr><td><code>$schema</code>, <code>$id</code>, <code>$comment</code></td><td>Accepted metadata; <code>$schema</code>, if specified, must be the draft 2020-12 URL.</td></tr>
+              </tbody>
+            </table></div>
+            <p>Only this rendering subset is accepted. Union or nullable types, <code>$ref</code>, <code>oneOf</code>, <code>anyOf</code>, <code>allOf</code>, conditional schemas, tuple arrays, free-form object properties, and other unlisted keywords are unsupported. Object and array enums are unsupported. Property names <code>__proto__</code>, <code>prototype</code>, and <code>constructor</code> are rejected.</p>
+          </section>
+          <section class="section" aria-labelledby="form-widgets">
+            <h2 id="form-widgets">Choose a form control</h2>
+            <p>Add <code>x-widget</code> to a property schema to choose a control. Without it, the default controls above remain in use: <code>format</code> validates a plain string and does not automatically select a date or time picker. Unknown annotations, unsupported options, and incompatible schemas fail generation with their schema location.</p>
+            <div class="api-card"><table class="api-table">
+              <thead><tr><th>Control demo</th><th>Submitted JSON</th><th>Schema and value contract</th></tr></thead>
+              <tbody>{controlGuides.map((control) => (
+                <tr>
+                  <td><a href={docsPath(`/utilities/form/${control.demoId ?? control.id}/`)}>{control.title}</a><br /><code>{`x-widget: "${control.id}"`}</code></td>
+                  <td>{control.output}</td>
+                  <td>{control.contract}</td>
+                </tr>
+              ))}</tbody>
+            </table></div>
+            <p>The existing <a href={docsPath("/utilities/form/radio-group/")}>Radio group</a> annotation selects one primitive enum value. <a href={docsPath("/utilities/form/checkbox-group/")}>Checkbox group</a> requires an array with <code>uniqueItems: true</code> and primitive <code>items.enum</code>. Place choice annotations on the array itself; its item schema must not contain widget annotations. All selections preserve the original enum types.</p>
+            <p>Radio group and Checkbox group support <code>orientation</code> in <code>x-widget-options</code>: <code>"horizontal"</code> places options side by side and wraps them on narrow screens; <code>"vertical"</code> stacks them. Omitting orientation uses vertical. Both example pages show the two directions.</p>
+            <pre><code>{JSON.stringify({ type: "string", title: "Delivery", "x-widget": "radio-group", "x-widget-options": { orientation: "horizontal" }, enum: ["daily", "weekly", "monthly"], default: "weekly" }, null, 2)}</code></pre>
+            <p>Widget contracts apply alongside Ajv validation. Color requires six hex digits; date pickers require real calendar dates; TimePicker requires a complete local 24-hour time; OTP requires exactly its configured number of digits; Cascader requires a complete enabled path to a leaf. An empty Cascader path is valid unless array constraints such as <code>minItems</code> prohibit it. Required fields, enums, numeric bounds, and array constraints remain enforced.</p>
+          </section>
+          <section class="section" aria-labelledby="form-options">
+            <h2 id="form-options">Labels and control options</h2>
+            <p>Use <code>x-options</code> with Radio, Radio group, Checkbox group, Segmented, Select, Transfer, TreeSelect, Cascader, or Mentions. Each option has <code>value</code>, a string <code>label</code>, and optional boolean <code>disabled</code>. Values must match the scalar or array item type and be globally unique; choice options must cover the corresponding enum exactly. Mentions instead accepts optional string suggestions on a string field without enum.</p>
+            <pre><code>{JSON.stringify({ type: "integer", title: "Priority", "x-widget": "radio", enum: [1, 2], "x-options": [{ value: 1, label: "Normal" }, { value: 2, label: "High" }], default: 1 }, null, 2)}</code></pre>
+            <p>Only Cascader and TreeSelect accept <code>children</code> arrays, and both require <code>x-options</code> describing their hierarchy. Cascader submits one ordered path; TreeSelect submits a scalar node value or independent selected nodes in a unique array. Choosing a parent in multiple TreeSelect mode does not select its descendants.</p>
+            <div class="api-card"><table class="api-table">
+              <thead><tr><th>Widget options</th><th>Accepted settings</th></tr></thead>
+              <tbody>
+                <tr><td><code>radio-group</code>, <code>checkbox-group</code></td><td><code>orientation</code>: <code>"horizontal"</code> or <code>"vertical"</code>, default vertical. Horizontal options wrap when needed.</td></tr>
+                <tr><td><code>otp-input</code></td><td><code>length</code>: integer 1–8, default 6.</td></tr>
+                <tr><td><code>rate</code></td><td><code>count</code>: integer 1–20, default 5. <code>allowHalf</code>: boolean, default false; integer Rate schemas cannot enable it.</td></tr>
+                <tr><td><code>slider</code></td><td>Finite <code>min</code>, <code>max</code>, and positive <code>step</code>, with min below max. Defaults use <code>minimum ?? 0</code>, <code>maximum ?? 100</code>, and <code>multipleOf ?? 1</code>. Integer Slider settings must all be integers.</td></tr>
+              </tbody>
+            </table></div>
+            <p>Put these settings in <code>x-widget-options</code>. Other configuration keys and settings on other controls are rejected. Function callbacks, arbitrary component props, remote requests, and JSX option labels are not schema options.</p>
+          </section>
+          <section class="section" aria-labelledby="form-presentation">
+            <h2 id="form-presentation">Form presentation</h2>
+            <p>The generator renders a native form with vertical Form.Item labels and help text. It keeps one authoritative JSON value store and uses Ajv validation, preserving typed values and nested objects without a second named-field store.</p>
+            <p>Submit validates the current values and displays Submitted JSON. Reset form restores schema defaults, clears validation errors, and clears the submitted output.</p>
+          </section>
+          <section class="section" aria-labelledby="form-defaults">
+            <h2 id="form-defaults">Defaults, empty values, and reset</h2>
+            <p>Explicit defaults are copied into JSON state and restored on reset. Their types must match the schema, including descendants, but they may still fail other constraints and remain editable. Without explicit defaults, Rate starts at 0, Slider at its minimum, Segmented at its first enabled choice, and ColorPicker at <code>#000000</code>. Booleans, arrays, and objects keep their existing false, empty-array, and recursive defaults.</p>
+            <p>An ancestor object default is authoritative. If it omits a child, the renderer does not inject that child's natural control value; controls that need a value show a Set action until you act. Normalized or blank control displays do not silently coerce or discard invalid stored defaults. When a control cannot show its candidate faithfully, the raw value is disclosed so it can be corrected before submitting.</p>
+            <p>Text and mention clearing leaves an empty string. Clearing scalar numeric, date, time, or enum values omits that property; missing required properties must be corrected. Clearing an array entry keeps its row for validation; Remove deletes a row. Empty selections in multiple controls remain arrays. Reset clears validation errors and Submitted JSON.</p>
+          </section>
+          <section class="section" aria-labelledby="form-upload">
+            <h2 id="form-upload">Upload metadata schema</h2>
+            <p>Upload is a local chooser and submits file metadata. No file contents are serialized and no network upload is performed. Use a unique array of objects with exactly these four required property schemas: string <code>name</code>, integer <code>size</code>, string <code>type</code>, and integer <code>lastModified</code>. The lastModified value is the file's timestamp in milliseconds.</p>
+            <pre><code>{uploadExample}</code></pre>
+            <p>Extra property schemas or widget annotations within the metadata item are unsupported. The demo rejects additional metadata properties with <code>additionalProperties: false</code>. Choose or remove files to edit the metadata array; reset restores its empty default.</p>
+          </section>
+          <section class="section" aria-labelledby="form-examples">
+            <h2 id="form-examples">Examples</h2>
+            <p>Open an example page to start its schema directly, then change the selector or editor to explore other fields.</p>
+            <ul>{JSON_FORM_PRESETS.map((entry) => <li><a href={docsPath(`/utilities/form/${entry.id}/`)}>{entry.title}</a> — {entry.description}</li>)}</ul>
+          </section>
+        </>
+      )}
+      <section class="section" aria-label="JSON Schema form demo">
+        <JsonSchemaFormDemo initialPreset={preset?.id} client:load />
+      </section>
+    </article>
+  </div>
+</DocsLayout>

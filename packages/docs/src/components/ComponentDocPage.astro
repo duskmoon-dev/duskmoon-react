@@ -2,10 +2,12 @@
 import DemoRenderer from "./DemoRenderer";
 import DocsNavigation from "./DocsNavigation.astro";
 import DocsLayout from "../layouts/DocsLayout.astro";
-import { getDocsByCategory, type ComponentDoc } from "../lib/component-docs";
+import { getComponentDocs, type ComponentDoc } from "../lib/component-docs";
+import { categoriesForSection, sectionForCategory } from "../lib/docs-sections";
 
 const { component } = Astro.props as { component: ComponentDoc };
-const categories = Array.from(getDocsByCategory().entries());
+const section = sectionForCategory(component.categoryId);
+const categories = categoriesForSection(section, getComponentDocs());
 const apiPropCount = component.api.reduce(
   (count, section) => count + section.props.length,
   0,
@@ -13,9 +15,9 @@ const apiPropCount = component.api.reduce(
 const apiTypeCount = component.api.length;
 ---
 
-<DocsLayout title={component.title} description={component.intro}>
+<DocsLayout title={component.title} description={component.intro} section={section}>
   <div class="doc-shell" data-docs-browser>
-    <DocsNavigation categories={categories} currentId={component.id} />
+    <DocsNavigation categories={categories} currentId={component.id} section={section} />
 
     <article class="doc-content">
       <header id="overview" class="doc-title">

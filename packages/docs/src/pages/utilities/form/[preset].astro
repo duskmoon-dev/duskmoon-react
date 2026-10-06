@@ -1,0 +1,12 @@
+---
+import JsonFormDocPage from "../../../components/JsonFormDocPage.astro";
+import { JSON_FORM_PRESETS, type JsonFormPresetId } from "../../../lib/json-form-presets";
+
+export function getStaticPaths() {
+  return JSON_FORM_PRESETS.map(({ id }) => ({ params: { preset: id } }));
+}
+
+const presetId = Astro.params.preset as JsonFormPresetId;
+---
+
+<JsonFormDocPage presetId={presetId} />

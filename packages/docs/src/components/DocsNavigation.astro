@@ -2,13 +2,22 @@
 import type { ComponentDoc } from "../lib/component-docs";
 import { DOC_CATEGORIES } from "../lib/docs-categories";
 import { docsPath } from "../lib/paths";
+import {
+  sectionById,
+  UTILITY_TOOLS,
+  type DocSectionId,
+  type UtilityToolId,
+} from "../lib/docs-sections";
 
 interface Props {
   categories: [string, ComponentDoc[]][];
   currentId?: string;
+  currentTool?: UtilityToolId;
+  section: DocSectionId;
 }
 
-const { categories, currentId } = Astro.props;
+const { categories, currentId, currentTool, section } = Astro.props;
+const sectionPath = docsPath(sectionById(section).path);
 ---
 
 <aside class="side-nav" aria-label="Documentation navigation" data-docs-navigation>
@@ -22,7 +31,7 @@ const { categories, currentId } = Astro.props;
         <a href="#api">API</a>
       </nav>
     )}
-    <a href={docsPath("/")}>All documentation</a>
+    <a href={sectionPath}>Overview</a>
   </div>
 
   <div class="doc-search">
@@ -45,7 +54,7 @@ const { categories, currentId } = Astro.props;
       const category = DOC_CATEGORIES.find((item) => item.title === title)!;
       return (
         <div class="nav-group" data-doc-nav-group>
-          <a class="nav-group-title" href={`${docsPath("/")}#${category.id}`}>
+          <a class="nav-group-title" href={`${sectionPath}#${category.id}`}>
             {title}
           </a>
           <div class="nav-group-items">
@@ -67,6 +76,24 @@ const { categories, currentId } = Astro.props;
         </div>
       );
     })}
+    {section === "utilities" && (
+      <div class="nav-group" data-doc-nav-group>
+        <span class="nav-group-title">JSON Form</span>
+        <div class="nav-group-items">
+          {UTILITY_TOOLS.map((tool) => (
+            <a
+              href={docsPath(tool.path)}
+              class={`nav-item ${tool.id === currentTool ? "active" : ""}`}
+              aria-current={tool.id === currentTool ? "page" : undefined}
+              data-doc-nav-entry
+              data-search-text={`${tool.title} ${tool.id}`}
+            >
+              {tool.title}
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
     <p class="nav-no-results" role="status" data-doc-nav-empty hidden>
       No matching documentation.
     </p>
