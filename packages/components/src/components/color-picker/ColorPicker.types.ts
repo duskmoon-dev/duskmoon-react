@@ -1,4 +1,5 @@
 import type {
+  ComponentProps,
   ComponentPropsWithoutRef,
   ForwardRefExoticComponent,
   ReactNode,
@@ -34,6 +35,7 @@ export interface ColorPickerProps extends Omit<
   ComponentPropsWithoutRef<"div">,
   "children" | "defaultValue" | "onChange"
 > {
+  triggerProps?: ComponentProps<"button">;
   value?: ColorValue;
   defaultValue?: ColorValue;
   format?: ColorPickerFormat;
