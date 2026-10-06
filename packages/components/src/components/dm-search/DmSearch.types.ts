@@ -41,6 +41,9 @@ export interface DmSearchRef {
 
 export interface DmSearchProps extends RefAttributes<DmSearchRef> {
   items?: DmSearchItem[];
+  values?: Record<string, unknown>;
+  onValuesChange?: (values: Record<string, unknown>) => void;
+  onReset?: (values: Record<string, unknown>) => void;
   onSearch?: (values: Record<string, unknown>) => void;
   extra?: ReactNode;
   fastFilterItem?: DmSearchItem;
@@ -49,6 +52,7 @@ export interface DmSearchProps extends RefAttributes<DmSearchRef> {
   compact?: boolean;
   searchParams?: Record<string, unknown>;
   loading?: boolean;
+  noValidate?: boolean;
   enableDefaultPlaceHolder?: boolean;
   className?: string;
   inputProps?: Partial<InputProps>;

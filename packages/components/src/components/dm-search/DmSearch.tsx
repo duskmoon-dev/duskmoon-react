@@ -160,6 +160,9 @@ export const DmSearch = forwardRef<DmSearchRef, DmSearchProps>(
   (
     {
       items = [],
+      values: controlledValues,
+      onValuesChange,
+      onReset,
       onSearch,
       extra,
       fastFilterItem,
@@ -168,6 +171,7 @@ export const DmSearch = forwardRef<DmSearchRef, DmSearchProps>(
       compact = false,
       searchParams,
       loading = false,
+      noValidate,
       enableDefaultPlaceHolder = false,
       className,
     },
@@ -178,18 +182,22 @@ export const DmSearch = forwardRef<DmSearchRef, DmSearchProps>(
       [fastFilterItem, items],
     );
     const [collapsed, setCollapsed] = useState(defaultCollapsed);
-    const [values, setValues] = useState(() =>
+    const [internalValues, setValues] = useState(() =>
       initialValues(allItems, searchParams),
     );
+    const controlled = controlledValues !== undefined;
+    const values = controlled ? controlledValues : internalValues;
     const visibleItems = collapsed ? allItems.slice(0, 1) : allItems;
 
     useEffect(() => {
-      setValues(initialValues(allItems, searchParams));
-    }, [allItems, searchParams]);
+      if (!controlled) setValues(initialValues(allItems, searchParams));
+    }, [allItems, searchParams, controlled]);
 
     function reset(useSearchParams = false) {
       const nextValues = initialValues(allItems, searchParams, useSearchParams);
-      setValues(nextValues);
+      if (!controlled) setValues(nextValues);
+      if (onReset) onReset(nextValues);
+      else if (controlled) onValuesChange?.(nextValues);
       return nextValues;
     }
 
@@ -201,6 +209,7 @@ export const DmSearch = forwardRef<DmSearchRef, DmSearchProps>(
 
     return (
       <form
+        noValidate={noValidate}
         id="searchForm"
         className={getDmSearchClasses({ compact, collapsed, className })}
         onSubmit={(event) => {
@@ -212,22 +221,25 @@ export const DmSearch = forwardRef<DmSearchRef, DmSearchProps>(
           <div className={dmSearchFastFilterClass}>{fastFilterItem.title}</div>
         ) : null}
         <div className={dmSearchFieldsClass}>
-          {visibleItems.map((item) => (
-            <label key={item.key} className={dmSearchFieldClass}>
-              {compact ? null : <span>{item.title}</span>}
-              {renderField({
-                item,
-                value: values[item.dataIndex],
-                loading,
-                enableDefaultPlaceHolder,
-                setValue: (value) =>
-                  setValues((current) => ({
-                    ...current,
-                    [item.dataIndex]: value,
-                  })),
-              })}
-            </label>
-          ))}
+          {visibleItems.map((item) => {
+            const Field = item.search.type === "custom" ? "div" : "label";
+            return (
+              <Field key={item.key} className={dmSearchFieldClass}>
+                {compact ? null : <span>{item.title}</span>}
+                {renderField({
+                  item,
+                  value: values[item.dataIndex],
+                  loading,
+                  enableDefaultPlaceHolder,
+                  setValue: (value) => {
+                    const nextValues = { ...values, [item.dataIndex]: value };
+                    if (!controlled) setValues(nextValues);
+                    onValuesChange?.(nextValues);
+                  },
+                })}
+              </Field>
+            );
+          })}
         </div>
         <div className={dmSearchActionsClass}>
           <Button type="submit" isLoading={loading}>
@@ -237,7 +249,10 @@ export const DmSearch = forwardRef<DmSearchRef, DmSearchProps>(
             type="button"
             color="secondary"
             appearance="outline"
-            onClick={() => onSearch?.(reset(false))}
+            onClick={() => {
+              const nextValues = reset(false);
+              if (!onReset) onSearch?.(nextValues);
+            }}
           >
             Reset
           </Button>
@@ -248,7 +263,8 @@ export const DmSearch = forwardRef<DmSearchRef, DmSearchProps>(
               appearance="text"
               onClick={() => {
                 setCollapsed((current) => !current);
-                setValues(initialValues(allItems, searchParams));
+                if (!controlled)
+                  setValues(initialValues(allItems, searchParams));
               }}
             >
               {collapsed ? "Expand" : "Collapse"}
