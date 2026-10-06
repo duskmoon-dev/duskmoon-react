@@ -24,6 +24,7 @@ export interface TimePickerProps extends Omit<
   ComponentProps<"div">,
   "children" | "defaultValue" | "onBlur" | "onChange" | "onFocus"
 > {
+  inputProps?: ComponentProps<"input">;
   value?: TimePickerValue;
   defaultValue?: TimePickerValue;
   format?: string;

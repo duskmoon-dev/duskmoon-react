@@ -26,6 +26,7 @@ export interface DatePickerProps extends Omit<
   ComponentProps<"div">,
   "children" | "defaultValue" | "onBlur" | "onChange" | "onFocus"
 > {
+  inputProps?: ComponentProps<"input">;
   value?: DatePickerValue;
   defaultValue?: DatePickerValue;
   onChange?: (value: DatePickerValue | undefined, dateString: string) => void;

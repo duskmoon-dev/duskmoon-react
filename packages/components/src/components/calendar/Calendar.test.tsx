@@ -4,6 +4,56 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { Calendar } from "./Calendar";
 
 describe("Calendar", () => {
+  test("places accessible icon navigation around the title and mode controls", () => {
+    const { container } = render(<Calendar defaultValue="2026-05-25" />);
+    const previous = screen.getByRole("button", { name: "Previous panel" });
+    const next = screen.getByRole("button", { name: "Next panel" });
+    const header = container.querySelector(".calendar-header")!;
+    expect(previous.textContent).toBe("");
+    expect(next.textContent).toBe("");
+    expect(previous.querySelector('svg[aria-hidden="true"]')).toBeTruthy();
+    expect(next.querySelector('svg[aria-hidden="true"]')).toBeTruthy();
+    expect(header.firstElementChild).toBe(previous);
+    expect(header.lastElementChild).toBe(next);
+    expect(
+      header.children[1].querySelector(".calendar-title")?.textContent,
+    ).toBe("May 2026");
+    expect(header.children[1].querySelector(".calendar-mode")).toBeTruthy();
+  });
+
+  test("keeps controlled mode authoritative and preserves custom header actions", () => {
+    const changes: string[] = [];
+    const { container, rerender } = render(
+      <Calendar
+        mode="month"
+        defaultValue="2026-05-25"
+        onPanelChange={(date, mode) => changes.push(`${mode}:${date}`)}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Year" }));
+    expect(changes).toEqual(["year:2026-05-25"]);
+    expect(container.querySelector(".calendar-date-grid")).toBeTruthy();
+    expect(container.querySelector(".calendar-month-grid")).toBeNull();
+    rerender(
+      <Calendar
+        defaultValue="2026-05-25"
+        headerRender={({ onChange, onTypeChange }) => (
+          <button
+            onClick={() => {
+              onChange("2027-01-01");
+              onTypeChange("year");
+            }}
+          >
+            Custom header
+          </button>
+        )}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Custom header" }));
+    expect(container.querySelector(".calendar-month-grid")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "2027-01-01" })).toBeTruthy();
+  });
+
   test("renders controlled value with fullscreen and custom classes", () => {
     const { container } = render(
       <Calendar

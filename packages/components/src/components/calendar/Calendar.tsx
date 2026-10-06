@@ -137,38 +137,36 @@ function Header({
 
   return (
     <div className={calendarHeaderClass}>
-      <div className={calendarTitleClass}>{title}</div>
+      <button
+        type="button"
+        className={calendarNavClass}
+        aria-label="Previous panel"
+        onClick={() =>
+          setPanelDate(
+            mode === "year"
+              ? addYears(panelDate, -1)
+              : addMonths(panelDate, -1),
+            mode,
+          )
+        }
+      >
+        <svg
+          aria-hidden="true"
+          focusable="false"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="m15 18-6-6 6-6" />
+        </svg>
+      </button>
       <div className={calendarControlsClass}>
-        <div className={calendarNavClass}>
-          <button
-            type="button"
-            aria-label="Previous panel"
-            onClick={() =>
-              setPanelDate(
-                mode === "year"
-                  ? addYears(panelDate, -1)
-                  : addMonths(panelDate, -1),
-                mode,
-              )
-            }
-          >
-            Previous
-          </button>
-          <button
-            type="button"
-            aria-label="Next panel"
-            onClick={() =>
-              setPanelDate(
-                mode === "year"
-                  ? addYears(panelDate, 1)
-                  : addMonths(panelDate, 1),
-                mode,
-              )
-            }
-          >
-            Next
-          </button>
-        </div>
+        <div className={calendarTitleClass}>{title}</div>
         <div className={calendarModeClass}>
           <button
             type="button"
@@ -186,6 +184,32 @@ function Header({
           </button>
         </div>
       </div>
+      <button
+        type="button"
+        className={calendarNavClass}
+        aria-label="Next panel"
+        onClick={() =>
+          setPanelDate(
+            mode === "year" ? addYears(panelDate, 1) : addMonths(panelDate, 1),
+            mode,
+          )
+        }
+      >
+        <svg
+          aria-hidden="true"
+          focusable="false"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="m9 18 6-6-6-6" />
+        </svg>
+      </button>
     </div>
   );
 }
