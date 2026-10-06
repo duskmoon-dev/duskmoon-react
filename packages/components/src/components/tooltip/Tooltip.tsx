@@ -46,6 +46,7 @@ export const Tooltip = forwardRef<HTMLSpanElement, TooltipProps>(
     useEffect(() => {
       const surface = surfaceRef.current;
       if (!surface) return;
+      const tooltipSurface = surface;
 
       function handleToggle(event: Event) {
         if (
@@ -53,7 +54,7 @@ export const Tooltip = forwardRef<HTMLSpanElement, TooltipProps>(
           !visibleRef.current ||
           isControlled ||
           isControlled !== controlledRef.current ||
-          surface.matches(":popover-open")
+          tooltipSurface.matches(":popover-open")
         ) {
           return;
         }
@@ -84,6 +85,7 @@ export const Tooltip = forwardRef<HTMLSpanElement, TooltipProps>(
       if (!isControlled || !visible || !hasTitle) return;
       const wrapper = surfaceRef.current?.parentElement;
       if (!wrapper) return;
+      const tooltipWrapper = wrapper;
 
       function requestDismiss() {
         hoveredRef.current = false;
@@ -93,7 +95,7 @@ export const Tooltip = forwardRef<HTMLSpanElement, TooltipProps>(
       }
 
       function handlePointerDown(event: PointerEvent) {
-        if (!wrapper.contains(event.target as Node)) requestDismiss();
+        if (!tooltipWrapper.contains(event.target as Node)) requestDismiss();
       }
 
       function handleKeyDown(event: KeyboardEvent) {
