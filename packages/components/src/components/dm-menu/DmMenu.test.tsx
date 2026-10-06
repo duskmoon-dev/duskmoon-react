@@ -103,4 +103,66 @@ describe("DmMenu", () => {
     expect(clickedKey).toBe("/cloud/instances");
     expect(clickedName).toBe("Instances");
   });
+
+  test("uses a square ghost icon control while preserving collapse semantics", () => {
+    let calls = 0;
+    const { rerender } = render(<DmMenu onCollapsed={() => calls++} />);
+    const collapse = screen.getByRole("button", { name: "Collapse menu" });
+    expect(collapse.classList.contains("btn-ghost")).toBe(true);
+    expect(collapse.classList.contains("btn-square")).toBe(true);
+    expect(collapse.textContent).toBe("");
+    expect(collapse.querySelector('svg[aria-hidden="true"]')).toBeTruthy();
+    fireEvent.click(collapse);
+    expect(calls).toBe(1);
+    rerender(<DmMenu inlineCollapsed onCollapsed={() => calls++} />);
+    fireEvent.click(screen.getByRole("button", { name: "Expand menu" }));
+    expect(calls).toBe(2);
+  });
+
+  test("compact product and custom menu items keep full names with supplied icons or initials", () => {
+    const title = "A very long product title";
+    const clicked: string[] = [];
+    const { container, rerender } = render(
+      <DmMenu
+        inlineCollapsed
+        productTitle={title}
+        productIcon={<svg data-testid="brand-icon" />}
+        items={[
+          { key: "activity", label: "Activity overview" },
+          {
+            key: "settings",
+            label: "Settings and preferences",
+            icon: <svg data-testid="settings-icon" />,
+          },
+        ]}
+        onClick={(info) => clicked.push(info.key)}
+      />,
+    );
+    expect(screen.getByRole("menuitem", { name: title })).toBeTruthy();
+    expect(screen.getByTestId("brand-icon")).toBeTruthy();
+    const activity = screen.getByRole("menuitem", {
+      name: "Activity overview",
+    });
+    expect(activity.querySelector(".dm-menu-item-initial")?.textContent).toBe(
+      "A",
+    );
+    expect(activity.querySelector('[aria-hidden="true"]')).toBeTruthy();
+    expect(
+      screen
+        .getByRole("menuitem", { name: "Settings and preferences" })
+        .querySelector(".dm-menu-item-initial"),
+    ).toBeNull();
+    expect(screen.getByTestId("settings-icon")).toBeTruthy();
+    fireEvent.keyDown(activity, { key: "Enter" });
+    expect(clicked).toEqual(["activity"]);
+    rerender(<DmMenu inlineCollapsed productTitle={title} />);
+    expect(
+      screen
+        .getByRole("menuitem", { name: title })
+        .querySelector(".dm-menu-item-initial")?.textContent,
+    ).toBe("A");
+    expect(container.querySelector(".dm-menu-item-label")?.textContent).toBe(
+      title,
+    );
+  });
 });

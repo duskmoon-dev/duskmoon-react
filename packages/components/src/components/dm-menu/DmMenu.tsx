@@ -8,6 +8,7 @@ import {
   getDmMenuClasses,
 } from "../../classes/dm-menu";
 import { Menu } from "../menu";
+import { Button } from "../button";
 import type { MenuItemType } from "../menu/Menu.types";
 import type {
   DmMenuClickInfo,
@@ -65,6 +66,28 @@ export function createDmMenuItems(
   return toMenuItems(menus, locale);
 }
 
+function presentMenuItem(
+  item: MenuItemType,
+  collapsed?: boolean,
+): MenuItemType {
+  if (item.type === "divider") return item;
+  const label = item.label ?? item.title;
+  const initial = typeof label === "string" ? label.trim().slice(0, 1) : "";
+  return {
+    ...item,
+    label: <span className="dm-menu-item-label">{label}</span>,
+    icon:
+      item.icon || collapsed ? (
+        <span aria-hidden="true" className="dm-menu-item-symbol">
+          {item.icon || (
+            <span className="dm-menu-item-initial">{initial || "•"}</span>
+          )}
+        </span>
+      ) : undefined,
+    children: item.children?.map((child) => presentMenuItem(child, collapsed)),
+  };
+}
+
 export const DmMenu = forwardRef<HTMLDivElement, DmMenuProps>(
   (
     {
@@ -87,7 +110,9 @@ export const DmMenu = forwardRef<HTMLDivElement, DmMenuProps>(
       menuByKey.clear();
       return toMenuItems(menus, locale, menuByKey);
     }, [locale, menuByKey, menus]);
-    const contentItems = items ?? schemaItems;
+    const contentItems = (items ?? schemaItems).map((item) =>
+      presentMenuItem(item, inlineCollapsed),
+    );
 
     function handleClick(info: DmMenuClickInfo) {
       onClick?.({
@@ -112,12 +137,15 @@ export const DmMenu = forwardRef<HTMLDivElement, DmMenuProps>(
               inlineCollapsed={inlineCollapsed}
               selectable={false}
               items={[
-                {
-                  key: "__product",
-                  label: productTitle,
-                  title: productTitle,
-                  icon: renderIcon(productIcon),
-                },
+                presentMenuItem(
+                  {
+                    key: "__product",
+                    label: productTitle,
+                    title: productTitle,
+                    icon: renderIcon(productIcon),
+                  },
+                  inlineCollapsed,
+                ),
               ]}
             />
           </div>
@@ -133,14 +161,33 @@ export const DmMenu = forwardRef<HTMLDivElement, DmMenuProps>(
         </div>
         {onCollapsed ? (
           <div className={dmMenuFooterClass}>
-            <button
+            <Button
               type="button"
+              color="base"
+              appearance="ghost"
+              shape="square"
+              size="sm"
               className={dmMenuCollapseButtonClass}
               aria-label={inlineCollapsed ? "Expand menu" : "Collapse menu"}
               onClick={onCollapsed}
             >
-              {inlineCollapsed ? ">" : "<"}
-            </button>
+              <svg
+                aria-hidden="true"
+                focusable="false"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path
+                  d={inlineCollapsed ? "m9 18 6-6-6-6" : "m15 18-6-6 6-6"}
+                />
+              </svg>
+            </Button>
           </div>
         ) : null}
       </div>

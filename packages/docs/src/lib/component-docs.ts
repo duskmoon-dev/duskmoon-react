@@ -11,6 +11,7 @@ import {
 } from "./docs-categories";
 import { docsPath } from "./paths";
 import { chatDemoExamples } from "./chat-demo-examples";
+import { dmLayoutDemoExamples } from "./dm-layout-demo-examples";
 
 type Target = {
   id: string;
@@ -1863,6 +1864,10 @@ export function ConsolePageDemo() {
 
   if (target.id === "chat") {
     return chatDemoExamples.map((example) => ({ ...example }));
+  }
+
+  if (target.id === "dm-layout") {
+    return dmLayoutDemoExamples.map((example) => ({ ...example }));
   }
 
   if (target.id === "modal") {

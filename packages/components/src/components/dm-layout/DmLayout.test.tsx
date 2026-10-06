@@ -99,4 +99,34 @@ describe("DmLayout", () => {
     fireEvent.click(screen.getByRole("button", { name: "Collapse menu" }));
     expect(collapsed).toBe(true);
   });
+
+  test("controlled collapse keeps its width and full accessible names until rerender", () => {
+    const changes: boolean[] = [];
+    const { container, rerender } = render(
+      <DmLayout
+        menus={menus}
+        productTitle="Workspace navigation"
+        collapsed={false}
+        onCollapse={(next) => changes.push(next)}
+      >
+        Content
+      </DmLayout>,
+    );
+    const sider = container.querySelector(".dm-layout-sider") as HTMLElement;
+    expect(sider.style.width).toBe("230px");
+    fireEvent.click(screen.getByRole("button", { name: "Collapse menu" }));
+    expect(changes).toEqual([true]);
+    expect(sider.style.width).toBe("230px");
+    rerender(
+      <DmLayout menus={menus} productTitle="Workspace navigation" collapsed>
+        Content
+      </DmLayout>,
+    );
+    expect(sider.style.width).toBe("60px");
+    expect(
+      screen.getByRole("menuitem", { name: "Workspace navigation" }),
+    ).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Cloud" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Expand menu" })).toBeTruthy();
+  });
 });
