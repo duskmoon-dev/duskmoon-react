@@ -927,8 +927,6 @@ function demoCode(
 
   if (target.id === "dropdown") {
     return `<${name}
-  defaultOpen
-  trigger={["click"]}
   menu={{
     items: [
       { key: "edit", label: "Edit" },
@@ -937,7 +935,7 @@ function demoCode(
     ]
   }}
 >
-  Actions
+  <button type="button">Actions</button>
 </${name}>`;
   }
 
@@ -1024,9 +1022,9 @@ function demoCode(
   title="DuskMoon"
   content="Popover content"
   placement="bottom"
-  open
+  trigger="click"
 >
-  Hover target
+  <button type="button">Open popover</button>
 </${name}>`;
   }
 

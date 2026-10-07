@@ -1359,6 +1359,34 @@ This line demonstrates \`breaks={true}\`.
     );
   }
 
+  if (componentId === "dropdown") {
+    return (
+      <DmComponents.Dropdown
+        menu={{
+          items: [
+            { key: "edit", label: "Edit" },
+            { key: "delete", label: "Delete" },
+          ],
+        }}
+      >
+        <button type="button">Actions</button>
+      </DmComponents.Dropdown>
+    );
+  }
+
+  if (componentId === "popover") {
+    return (
+      <DmComponents.Popover
+        title="DuskMoon"
+        content="Popover content"
+        placement="bottom"
+        trigger="click"
+      >
+        <button type="button">Open popover</button>
+      </DmComponents.Popover>
+    );
+  }
+
   if (componentId === "swap") {
     return (
       <DmComponents.Swap

@@ -3,6 +3,8 @@ import React, {
   forwardRef,
   isValidElement,
   useId,
+  useLayoutEffect,
+  useRef,
   useState,
   type MouseEvent,
   type ReactElement,
@@ -94,7 +96,20 @@ export const Popover = forwardRef<HTMLSpanElement, PopoverProps>(
     const [internalOpen, setInternalOpen] = useState(Boolean(defaultOpen));
     const generatedId = useId();
     const tooltipId = id ? `${id}-popover` : generatedId;
+    const anchorName = `--dm-popover-${generatedId.replace(/[^a-zA-Z0-9_-]/g, "")}`;
+    const popoverRef = useRef<HTMLSpanElement>(null);
     const visible = isControlled ? open : internalOpen;
+
+    useLayoutEffect(() => {
+      const popover = popoverRef.current;
+      if (!popover || typeof popover.showPopover !== "function") return;
+
+      if (visible && !popover.matches(":popover-open")) {
+        popover.showPopover();
+      } else if (!visible && popover.matches(":popover-open")) {
+        popover.hidePopover();
+      }
+    }, [visible, destroyTooltipOnHide]);
 
     function updateOpen(nextOpen: boolean) {
       if (!isControlled) {
@@ -192,15 +207,26 @@ export const Popover = forwardRef<HTMLSpanElement, PopoverProps>(
       : children;
 
     return (
-      <span {...props} ref={ref} className={popoverWrapperClass}>
+      <span
+        {...props}
+        ref={ref}
+        className={popoverWrapperClass}
+        style={{ ...props.style, anchorName } as React.CSSProperties}
+      >
         {triggerNode}
         {shouldRenderContent ? (
           <span
+            ref={popoverRef}
             id={tooltipId}
+            popover="auto"
             role="tooltip"
+            style={{ positionAnchor: anchorName } as React.CSSProperties}
+            onToggle={(event) => {
+              const nextOpen = event.newState === "open";
+              if (nextOpen !== visible) updateOpen(nextOpen);
+            }}
             className={getPopoverClasses({
               placement,
-              open: visible,
               arrow,
               className,
             })}

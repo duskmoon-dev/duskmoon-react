@@ -1020,115 +1020,6 @@
     background-color: var(--color-tertiary);
   }
 
-  .dropdown-wrapper {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    vertical-align: middle;
-  }
-
-  .dropdown-wrapper > [role="button"] {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 2.25rem;
-    padding: 0 0.875rem;
-    color: var(--color-on-surface);
-    font: inherit;
-    font-size: 0.875rem;
-    font-weight: 600;
-    line-height: 1;
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-outline-variant);
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    transition:
-      background-color 150ms ease-in-out,
-      border-color 150ms ease-in-out,
-      color 150ms ease-in-out;
-  }
-
-  .dropdown-wrapper > [role="button"]:hover,
-  .dropdown-wrapper > [role="button"]:focus-visible {
-    color: var(--color-primary);
-    background-color: var(--color-surface-container);
-    border-color: var(--color-primary);
-    outline: none;
-  }
-
-  .dropdown-wrapper > .popover.dropdown {
-    position: absolute;
-    z-index: 1050;
-    display: block;
-    min-width: 12rem;
-    max-width: calc(100vw - 2rem);
-    padding: 0.375rem;
-    color: var(--color-on-surface);
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-outline-variant);
-    border-radius: var(--radius-md);
-    box-shadow:
-      0 4px 12px rgb(15 23 42 / 0.1),
-      0 16px 40px rgb(15 23 42 / 0.12);
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-0.25rem);
-    transition:
-      opacity 150ms ease-out,
-      visibility 150ms ease-out,
-      transform 150ms ease-out;
-  }
-
-  .dropdown-wrapper > .popover.dropdown.dropdown-open {
-    opacity: 1;
-    visibility: visible;
-    transform: none;
-  }
-
-  .dropdown-wrapper > .popover.dropdown.dropdown-bottom,
-  .dropdown-wrapper > .popover.dropdown.dropdown-bottom-left {
-    top: calc(100% + 0.5rem);
-    left: 0;
-  }
-
-  .dropdown-wrapper > .popover.dropdown.dropdown-bottom-right {
-    top: calc(100% + 0.5rem);
-    right: 0;
-    left: auto;
-  }
-
-  .dropdown-wrapper > .popover.dropdown.dropdown-top,
-  .dropdown-wrapper > .popover.dropdown.dropdown-top-left {
-    bottom: calc(100% + 0.5rem);
-    left: 0;
-  }
-
-  .dropdown-wrapper > .popover.dropdown.dropdown-top-right {
-    right: 0;
-    bottom: calc(100% + 0.5rem);
-    left: auto;
-  }
-
-  .dropdown-wrapper > .popover.dropdown.dropdown-left {
-    top: 50%;
-    right: calc(100% + 0.5rem);
-    transform: translate(0.25rem, -50%);
-  }
-
-  .dropdown-wrapper > .popover.dropdown.dropdown-left.dropdown-open {
-    transform: translateY(-50%);
-  }
-
-  .dropdown-wrapper > .popover.dropdown.dropdown-right {
-    top: 50%;
-    left: calc(100% + 0.5rem);
-    transform: translate(-0.25rem, -50%);
-  }
-
-  .dropdown-wrapper > .popover.dropdown.dropdown-right.dropdown-open {
-    transform: translateY(-50%);
-  }
-
   .dropdown-menu {
     display: grid;
     gap: 0.125rem;
@@ -1180,7 +1071,7 @@
     border-end-end-radius: 0;
   }
 
-  .dropdown-button > *:last-child {
+  .dropdown-button > .dropdown > button {
     margin-left: -1px;
     border-start-start-radius: 0;
     border-end-start-radius: 0;
@@ -2777,124 +2668,18 @@
     vertical-align: middle;
   }
 
-  .popover-wrapper > .popover {
-    position: absolute;
-    z-index: 1050;
-    min-width: 12rem;
+  .popover-wrapper > .popover[popover] {
     max-width: min(20rem, calc(100vw - 2rem));
-    padding: 0.875rem 1rem;
     color: var(--color-on-surface);
     font-size: 0.875rem;
     line-height: 1.375rem;
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-outline-variant);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-lg);
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transition:
-      opacity 150ms ease-out,
-      visibility 150ms ease-out,
-      transform 150ms ease-out;
   }
 
-  .popover-wrapper > .popover.popover-show {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-  }
-
-  .popover-wrapper > .popover strong {
+  .popover-wrapper > .popover > strong {
     display: block;
     margin-bottom: 0.25rem;
     color: var(--color-on-surface);
     font-weight: 600;
-  }
-
-  .popover-wrapper > .popover-top {
-    bottom: calc(100% + 0.75rem);
-    left: 50%;
-    transform: translateX(-50%) translateY(0.25rem);
-  }
-
-  .popover-wrapper > .popover-top.popover-show {
-    transform: translateX(-50%);
-  }
-
-  .popover-wrapper > .popover-bottom {
-    top: calc(100% + 0.75rem);
-    left: 50%;
-    transform: translateX(-50%) translateY(-0.25rem);
-  }
-
-  .popover-wrapper > .popover-bottom.popover-show {
-    transform: translateX(-50%);
-  }
-
-  .popover-wrapper > .popover-left {
-    top: 50%;
-    right: calc(100% + 0.75rem);
-    transform: translate(0.25rem, -50%);
-  }
-
-  .popover-wrapper > .popover-left.popover-show {
-    transform: translateY(-50%);
-  }
-
-  .popover-wrapper > .popover-right {
-    top: 50%;
-    left: calc(100% + 0.75rem);
-    transform: translate(-0.25rem, -50%);
-  }
-
-  .popover-wrapper > .popover-right.popover-show {
-    transform: translateY(-50%);
-  }
-
-  .popover-wrapper > .popover > .popover-arrow {
-    position: absolute;
-    width: 0.75rem;
-    height: 0.75rem;
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-outline-variant);
-    transform: rotate(45deg);
-  }
-
-  .popover-wrapper > .popover-top > .popover-arrow {
-    bottom: -0.4375rem;
-    left: 50%;
-    border-top: 0;
-    border-left: 0;
-    transform: translateX(-50%) rotate(45deg);
-  }
-
-  .popover-wrapper > .popover-bottom > .popover-arrow {
-    top: -0.4375rem;
-    left: 50%;
-    border-right: 0;
-    border-bottom: 0;
-    transform: translateX(-50%) rotate(45deg);
-  }
-
-  .popover-wrapper > .popover-left > .popover-arrow {
-    top: 50%;
-    right: -0.4375rem;
-    border-bottom: 0;
-    border-left: 0;
-    transform: translateY(-50%) rotate(45deg);
-  }
-
-  .popover-wrapper > .popover-right > .popover-arrow {
-    top: 50%;
-    left: -0.4375rem;
-    border-top: 0;
-    border-right: 0;
-    transform: translateY(-50%) rotate(45deg);
-  }
-
-  .popover-wrapper > .popover-no-arrow > .popover-arrow {
-    display: none;
   }
 
   .popconfirm {

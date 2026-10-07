@@ -2,15 +2,17 @@ import React, {
   cloneElement,
   forwardRef,
   isValidElement,
+  useEffect,
   useId,
+  useRef,
   useState,
-  type KeyboardEvent,
   type ReactElement,
 } from "react";
 import {
   dropdownArrowClass,
   dropdownButtonClass,
   dropdownMenuClass,
+  dropdownPlacementClasses,
   dropdownWrapperClass,
   getDropdownClasses,
 } from "../../classes/dropdown";
@@ -24,11 +26,7 @@ import type {
   DropdownProps,
 } from "./Dropdown.types";
 
-function hasTrigger(triggers: DropdownProps["trigger"], trigger: string) {
-  return (triggers ?? ["hover"]).includes(trigger as never);
-}
-
-type TriggerElementProps = React.HTMLAttributes<HTMLElement>;
+type TriggerProps = React.ComponentProps<"button">;
 
 function callHandler<Event>(
   handler: ((event: Event) => void) | undefined,
@@ -93,22 +91,33 @@ const DropdownRoot = forwardRef<HTMLSpanElement, DropdownProps>(
     ref,
   ) => {
     const [internalOpen, setInternalOpen] = useState(Boolean(defaultOpen));
-    const isControlled = open !== undefined;
-    const visible = isControlled ? open : internalOpen;
-    const overlayId = useId();
+    const [nativeOpen, setNativeOpen] = useState(Boolean(open ?? defaultOpen));
+    const visible = open ?? internalOpen;
+    const popupRef = useRef<HTMLSpanElement>(null);
+    const popupId = useId();
+    // TODO(upstream): duskmoon-dev/duskmoonui#66
+    // WORKAROUND(upstream): duskmoon-dev/duskmoonui#66 needs explicit anchors for documented placement.
+    const anchorName = `--dm-dropdown-${popupId.replace(/[^a-zA-Z0-9_-]/g, "")}`;
+    const clickTrigger = trigger.includes("click") || trigger.includes("hover");
+
+    useEffect(() => {
+      const popup = popupRef.current;
+      if (!popup?.showPopover || !popup?.hidePopover) return;
+      if (visible && !popup.matches(":popover-open")) popup.showPopover();
+      if (!visible && popup.matches(":popover-open")) popup.hidePopover();
+    }, [visible]);
 
     function setVisible(nextOpen: boolean) {
-      if (disabled) return;
-
-      if (!isControlled) {
-        setInternalOpen(nextOpen);
-      }
-
+      if (open === undefined) setInternalOpen(nextOpen);
       onOpenChange?.(nextOpen);
     }
 
-    const close = () => setVisible(false);
-    const toggleVisible = () => setVisible(!visible);
+    function close() {
+      const popup = popupRef.current;
+      if (popup?.matches(":popover-open")) popup.hidePopover();
+      else setVisible(false);
+    }
+
     const menuNode =
       overlay ??
       (menu?.items ? (
@@ -117,103 +126,117 @@ const DropdownRoot = forwardRef<HTMLSpanElement, DropdownProps>(
         </ul>
       ) : null);
     const popup = dropdownRender ? dropdownRender(menuNode) : menuNode;
-    const shouldRenderPopup = !destroyPopupOnHide || visible;
-    const triggerProps = {
-      "aria-controls": visible ? overlayId : undefined,
-      "aria-expanded": visible || undefined,
-      onMouseEnter: hasTrigger(trigger, "hover")
-        ? () => setVisible(true)
-        : undefined,
-      onMouseLeave: hasTrigger(trigger, "hover")
-        ? () => setVisible(false)
-        : undefined,
-      onClick: hasTrigger(trigger, "click") ? toggleVisible : undefined,
-      onContextMenu: hasTrigger(trigger, "contextMenu")
-        ? (event: React.MouseEvent<HTMLElement>) => {
-            event.preventDefault();
-            toggleVisible();
-          }
-        : undefined,
+    const show = () => !disabled && popupRef.current?.showPopover?.();
+    const hide = () => !disabled && popupRef.current?.hidePopover?.();
+    const toggle = () => {
+      if (disabled) return;
+      if (popupRef.current?.matches(":popover-open")) hide();
+      else show();
     };
-    const triggerNode = isValidElement<TriggerElementProps>(children) ? (
-      cloneElement(children as ReactElement<TriggerElementProps>, {
-        "aria-controls":
-          triggerProps["aria-controls"] ?? children.props["aria-controls"],
-        "aria-expanded":
-          triggerProps["aria-expanded"] ?? children.props["aria-expanded"],
+
+    const childIsButton =
+      isValidElement(children) &&
+      (children.type === "button" || children.type === Button);
+    const triggerNode = childIsButton ? (
+      cloneElement(children as ReactElement<TriggerProps>, {
+        popoverTarget: clickTrigger && !disabled ? popupId : undefined,
+        style: {
+          ...(children as ReactElement<TriggerProps>).props.style,
+          anchorName,
+        } as React.CSSProperties,
+        "aria-controls": popupId,
+        "aria-expanded": nativeOpen,
+        disabled:
+          disabled || (children as ReactElement<TriggerProps>).props.disabled,
         onMouseEnter: (event) => {
-          callHandler(children.props.onMouseEnter, event);
-          triggerProps.onMouseEnter?.();
+          callHandler(
+            (children as ReactElement<TriggerProps>).props.onMouseEnter,
+            event,
+          );
+          if (trigger.includes("hover")) show();
           onMouseEnter?.(event);
         },
         onMouseLeave: (event) => {
-          callHandler(children.props.onMouseLeave, event);
-          triggerProps.onMouseLeave?.();
+          callHandler(
+            (children as ReactElement<TriggerProps>).props.onMouseLeave,
+            event,
+          );
           onMouseLeave?.(event);
         },
         onClick: (event) => {
-          callHandler(children.props.onClick, event);
-          triggerProps.onClick?.();
+          callHandler(
+            (children as ReactElement<TriggerProps>).props.onClick,
+            event,
+          );
           onClick?.(event);
         },
         onContextMenu: (event) => {
-          callHandler(children.props.onContextMenu, event);
-          triggerProps.onContextMenu?.(event);
+          callHandler(
+            (children as ReactElement<TriggerProps>).props.onContextMenu,
+            event,
+          );
+          if (trigger.includes("contextMenu")) {
+            event.preventDefault();
+            toggle();
+          }
           onContextMenu?.(event);
         },
       })
     ) : (
-      <span
-        role="button"
-        tabIndex={disabled ? -1 : 0}
-        aria-disabled={disabled || undefined}
-        aria-controls={triggerProps["aria-controls"]}
-        aria-expanded={triggerProps["aria-expanded"]}
+      <button
+        type="button"
+        disabled={disabled}
+        popoverTarget={clickTrigger && !disabled ? popupId : undefined}
+        style={{ anchorName } as React.CSSProperties}
+        aria-controls={popupId}
+        aria-expanded={nativeOpen}
         onMouseEnter={(event) => {
-          triggerProps.onMouseEnter?.();
+          if (trigger.includes("hover")) show();
           onMouseEnter?.(event);
         }}
         onMouseLeave={(event) => {
-          triggerProps.onMouseLeave?.();
           onMouseLeave?.(event);
         }}
-        onClick={(event) => {
-          triggerProps.onClick?.();
-          onClick?.(event);
-        }}
-        onKeyDown={(event: KeyboardEvent<HTMLElement>) => {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            triggerProps.onClick?.();
-          }
-        }}
+        onClick={onClick}
         onContextMenu={(event) => {
-          triggerProps.onContextMenu?.(event);
+          if (trigger.includes("contextMenu")) {
+            event.preventDefault();
+            toggle();
+          }
           onContextMenu?.(event);
         }}
       >
         {children}
-      </span>
+      </button>
     );
 
     return (
-      <span {...props} ref={ref} className={dropdownWrapperClass}>
+      <span
+        {...props}
+        ref={ref}
+        className={cn(
+          dropdownWrapperClass,
+          dropdownPlacementClasses[placement],
+        )}
+        onMouseLeave={trigger.includes("hover") ? hide : undefined}
+      >
         {triggerNode}
-        {shouldRenderPopup ? (
-          <span
-            id={overlayId}
-            role="menu"
-            className={getDropdownClasses({
-              placement,
-              open: visible,
-              arrow,
-              className,
-            })}
-          >
-            {popup}
-            {arrow ? <span className={dropdownArrowClass} /> : null}
-          </span>
-        ) : null}
+        <span
+          id={popupId}
+          ref={popupRef}
+          popover="auto"
+          style={{ positionAnchor: anchorName } as React.CSSProperties}
+          className={getDropdownClasses({ className, arrow })}
+          onToggle={(event) => {
+            if (event.target !== event.currentTarget) return;
+            const nextOpen = event.nativeEvent.newState === "open";
+            setNativeOpen(nextOpen);
+            setVisible(nextOpen);
+          }}
+        >
+          {!destroyPopupOnHide || visible ? popup : null}
+          {arrow ? <span className={dropdownArrowClass} /> : null}
+        </span>
       </span>
     );
   },
@@ -245,15 +268,18 @@ const DropdownButton = forwardRef<HTMLSpanElement, DropdownButtonProps>(
     const renderedButtons = buttonsRender ? buttonsRender(buttons) : buttons;
 
     return (
-      <DropdownRoot
-        {...props}
-        ref={ref}
-        menu={menu}
-        trigger={trigger}
-        disabled={disabled}
-      >
-        <span className={dropdownButtonClass}>{renderedButtons}</span>
-      </DropdownRoot>
+      <span className={dropdownButtonClass}>
+        {renderedButtons[0]}
+        <DropdownRoot
+          {...props}
+          ref={ref}
+          menu={menu}
+          trigger={trigger}
+          disabled={disabled}
+        >
+          {renderedButtons[1]}
+        </DropdownRoot>
+      </span>
     );
   },
 );
