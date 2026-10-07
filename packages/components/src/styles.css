@@ -4000,7 +4000,6 @@
   .tab:hover:not(:disabled),
   .tab:focus-visible {
     color: var(--color-primary);
-    outline: none;
   }
 
   .tab-active,
