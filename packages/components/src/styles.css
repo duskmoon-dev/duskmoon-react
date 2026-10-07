@@ -5692,6 +5692,7 @@
     border-right-color: var(--dm-color-solid);
   }
 
+  /* WORKAROUND(upstream): duskmoon-dev/duskmoonui#65 adds the missing accent, neutral, and base timeline marker classes. */
   :is(
     .timeline-marker-primary,
     .timeline-marker-secondary,

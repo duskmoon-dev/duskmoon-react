@@ -64,6 +64,7 @@ export const Timeline = forwardRef<HTMLDivElement, TimelineProps>(
               item.className,
             )}
           >
+            {/* TODO(upstream): duskmoon-dev/duskmoonui#65 */}
             <span
               className={getTimelineMarkerClasses({
                 color: item.color,
