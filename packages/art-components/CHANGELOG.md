@@ -1,5 +1,14 @@
 # @duskmoon-dev/art-components
 
+## 0.4.0
+
+### Patch Changes
+
+- 537c9ae: Expose the CSSwitch controls to keyboard users by default and name the default Gemini Input actions. Decorative CSSwitch controls remain outside the tab order. Parent disabled state cannot be re-enabled through child button props.
+- 537c9ae: Align Mountain, Flower Animation, Circular Gallery, Gemini Input, Color Spin,
+  and Snowball Preloader markup with DuskMoonUI CSS Art 1.20.0. Keep Circular
+  Gallery links accessible by default and preserve explicit accessibility props.
+
 ## 0.3.3
 
 ### Patch Changes
