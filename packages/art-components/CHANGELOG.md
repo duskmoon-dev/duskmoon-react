@@ -1,5 +1,11 @@
 # @duskmoon-dev/art-components
 
+## 0.4.1
+
+### Patch Changes
+
+- Keep the CSS Art package version aligned with the components 0.4.1 patch release.
+
 ## 0.4.0
 
 ### Patch Changes

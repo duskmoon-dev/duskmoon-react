@@ -1,5 +1,11 @@
 # @duskmoon-dev/components
 
+## 0.4.1
+
+### Patch Changes
+
+- Expose JSON Schema forms through the dedicated json-schema-form package subpath, with controlled values, backend errors, typed submission, widget contracts, and packaged layout styles. Associate Select labels and validation errors with the focusable trigger in single and multiple modes.
+
 ## 0.4.0
 
 ### Minor Changes
