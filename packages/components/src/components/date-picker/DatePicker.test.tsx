@@ -8,7 +8,6 @@ describe("DatePicker", () => {
     const { rerender } = render(<DatePicker />);
     const trigger = screen.getByRole("button", {
       name: "Open date picker",
-      exact: true,
     });
     const icon = trigger.querySelector("svg")!;
     expect(icon).toBeTruthy();

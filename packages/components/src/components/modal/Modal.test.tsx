@@ -13,10 +13,10 @@ describe("Modal", () => {
 
     expect(screen.getByText("Test modal")).toBeTruthy();
     expect(screen.getByText("Modal content")).toBeTruthy();
-    expect(screen.getByRole("dialog").className).toContain("modal");
-    expect(document.querySelector(".modal-backdrop")?.className).toContain(
-      "modal-open",
-    );
+    const dialog = screen.getByRole("dialog") as HTMLDialogElement;
+    expect(dialog.tagName).toBe("DIALOG");
+    expect(dialog.className).toContain("modal");
+    expect(dialog.open).toBe(true);
   });
 
   test("supports uncontrolled defaultOpen and close button", () => {
@@ -27,12 +27,11 @@ describe("Modal", () => {
       </Modal>,
     );
 
+    const dialog = screen.getByRole("dialog") as HTMLDialogElement;
     fireEvent.click(screen.getByRole("button", { name: "Close" }));
 
     expect(cancelCount).toBe(1);
-    expect(document.querySelector(".modal-backdrop")?.className).not.toContain(
-      "modal-open",
-    );
+    expect(dialog.open).toBe(false);
   });
 
   test("calls ok and cancel callbacks from default footer", () => {
@@ -71,13 +70,13 @@ describe("Modal", () => {
     );
 
     const dialog = screen.getByRole("dialog");
-    const backdrop = document.querySelector(".modal-backdrop");
+    const box = dialog.querySelector(".modal-box") as HTMLDivElement;
     expect(screen.getByText("Content prop")).toBeTruthy();
     expect(screen.getByText("Custom action")).toBeTruthy();
     expect(dialog.style.width).toBe("420px");
-    expect(dialog.className).toContain("custom-modal");
-    expect(backdrop?.className).toContain("modal-backdrop-center");
-    expect(backdrop?.className).toContain("custom-mask");
+    expect(box.className).toContain("custom-modal");
+    expect(dialog.className).toContain("modal-middle");
+    expect(dialog.className).toContain("custom-mask");
   });
 
   test("honors maskClosable and closable flags", () => {
@@ -94,8 +93,36 @@ describe("Modal", () => {
     );
 
     expect(screen.queryByRole("button", { name: "Close" })).toBeNull();
-    fireEvent.click(document.querySelector(".modal-backdrop") as Element);
+    fireEvent.mouseDown(screen.getByRole("dialog"), {
+      clientX: -1,
+      clientY: -1,
+    });
     expect(cancelCount).toBe(0);
+  });
+
+  test("closes through native cancel and clicks outside the dialog bounds", () => {
+    let cancelCount = 0;
+    const { rerender } = render(
+      <Modal defaultOpen onCancel={() => cancelCount++}>
+        Content
+      </Modal>,
+    );
+    const dialog = screen.getByRole("dialog") as HTMLDialogElement;
+    const cancel = new Event("cancel", { cancelable: true });
+    fireEvent(dialog, cancel);
+
+    expect(cancel.defaultPrevented).toBe(true);
+    expect(cancelCount).toBe(1);
+    expect(dialog.open).toBe(false);
+
+    rerender(
+      <Modal open onCancel={() => cancelCount++}>
+        Content
+      </Modal>,
+    );
+    fireEvent.mouseDown(dialog, { clientX: -1, clientY: -1 });
+    expect(cancelCount).toBe(2);
+    expect(dialog.open).toBe(true);
   });
 
   test("supports destroyOnClose and afterOpenChange", () => {

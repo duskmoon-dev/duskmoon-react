@@ -65,6 +65,8 @@ describe("Dropdown", () => {
     ).toBe("true");
     fireEvent.click(screen.getByRole("button", { name: "Edit" }));
     expect(selectedKey).toBe("edit");
+    expect(popup.matches(":popover-open")).toBe(false);
+    sendToggle(popup, "closed");
     expect(popup.querySelector(".menu-item")).toBeNull();
 
     expect(transitions).toEqual([true, false]);

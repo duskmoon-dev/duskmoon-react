@@ -51,6 +51,7 @@ describe("DmTruncate", () => {
     });
 
     fireEvent.mouseEnter(screen.getByLabelText("Text overflow"));
+    expect(screen.getByRole("tooltip").matches(":popover-open")).toBe(true);
     expect(screen.getByRole("tooltip").textContent).toContain(
       "Full: Long content",
     );
@@ -77,6 +78,7 @@ describe("DmTruncate", () => {
     fireEvent.mouseEnter(
       container.querySelector(".tooltip-wrapper") as HTMLElement,
     );
+    expect(screen.getByRole("tooltip").matches(":popover-open")).toBe(true);
     expect(screen.getByRole("tooltip").textContent).toContain(
       "Hidden full text",
     );

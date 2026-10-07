@@ -58,8 +58,10 @@ describe("Button classes integration with @duskmoon-dev/core", () => {
 
   test("all shape classes exist in core CSS", () => {
     for (const shape of Object.keys(buttonShapeClasses) as ButtonShape[]) {
-      const className = buttonShapeClasses[shape];
-      if (className) expect(availableClasses.has(className)).toBe(true);
+      const classNames = buttonShapeClasses[shape];
+      for (const className of classNames.split(/\s+/).filter(Boolean)) {
+        expect(availableClasses.has(className), className).toBe(true);
+      }
     }
   });
 

@@ -25,7 +25,11 @@ describe("Tooltip", () => {
 
     expect(screen.getByText("Button")).toBeTruthy();
     expect(tooltip.textContent).toContain("Tool tip");
-    expect(tooltip.className).toContain("tooltip-show");
+    expect(tooltip.matches(":popover-open")).toBe(true);
+    expect(tooltip.getAttribute("popover")).toBe("hint");
+    expect(screen.getByRole("button").getAttribute("aria-describedby")).toBe(
+      tooltip.id,
+    );
   });
 
   test("supports placement, size, arrow, and custom className", () => {
@@ -58,13 +62,40 @@ describe("Tooltip", () => {
     const wrapper = container.querySelector(".tooltip-wrapper") as HTMLElement;
     const tooltip = screen.getByRole("tooltip");
 
-    expect(tooltip.className).not.toContain("tooltip-show");
+    expect(tooltip.matches(":popover-open")).toBe(false);
 
     fireEvent.mouseEnter(wrapper);
-    expect(tooltip.className).toContain("tooltip-show");
+    expect(tooltip.matches(":popover-open")).toBe(true);
 
     fireEvent.mouseLeave(wrapper);
-    expect(tooltip.className).not.toContain("tooltip-show");
+    expect(tooltip.matches(":popover-open")).toBe(false);
+  });
+
+  test("reports native dismissal and can reopen on the next hover", () => {
+    const changes: boolean[] = [];
+    const { container } = render(
+      <Tooltip title="Tip" onOpenChange={(open) => changes.push(open)}>
+        <button type="button">Trigger</button>
+      </Tooltip>,
+    );
+    const wrapper = container.querySelector(".tooltip-wrapper") as HTMLElement;
+    const tooltip = screen.getByRole("tooltip");
+
+    fireEvent.mouseEnter(wrapper);
+    tooltip.hidePopover();
+    fireEvent(
+      tooltip,
+      Object.assign(new Event("toggle"), {
+        oldState: "open",
+        newState: "closed",
+      }),
+    );
+    expect(tooltip.matches(":popover-open")).toBe(false);
+    expect(changes).toEqual([true, false]);
+
+    fireEvent.mouseEnter(wrapper);
+    expect(tooltip.matches(":popover-open")).toBe(true);
+    expect(changes).toEqual([true, false, true]);
   });
 
   test("forwards wrapper ref", () => {

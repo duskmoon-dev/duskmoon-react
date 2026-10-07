@@ -31,7 +31,7 @@ describe("OtpInput", () => {
         (slot) => slot.getAttribute("aria-hidden") === "true",
       ),
     ).toBe(true);
-    expect(input).toBe(ref.current);
+    expect(input === ref.current).toBe(true);
     expect(new FormData(form as HTMLFormElement).getAll("code")).toEqual([
       "0012",
     ]);
