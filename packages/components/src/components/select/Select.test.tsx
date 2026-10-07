@@ -1,10 +1,115 @@
 import React from "react";
 import { describe, expect, test } from "bun:test";
 import { fireEvent, render, screen } from "@testing-library/react";
+import { Form } from "../form";
 import { Select } from "./Select";
-import type { SelectChangeValue, SelectOptionType } from "./Select.types";
+import type {
+  SelectChangeValue,
+  SelectMode,
+  SelectOptionType,
+} from "./Select.types";
 
 describe("Select", () => {
+  test.each([undefined, "multiple"] as const)(
+    "forwards control ID and ARIA attributes to the trigger in %s mode",
+    (mode) => {
+      const ref = React.createRef<HTMLDivElement>();
+      const { container } = render(
+        <>
+          <span id="role-description">Choose a role</span>
+          <span id="role-errors">Role is required</span>
+          <Select
+            ref={ref}
+            id="role-select"
+            mode={mode}
+            aria-label="Role"
+            aria-describedby="role-description"
+            aria-errormessage="role-errors"
+            aria-invalid="true"
+            className="custom-select"
+            data-testid="select-wrapper"
+            options={[{ label: "Editor", value: "editor" }]}
+          />
+        </>,
+      );
+
+      const trigger = screen.getByRole("button", {
+        name: "Role",
+        description: "Choose a role",
+      });
+      const root = screen.getByTestId("select-wrapper");
+
+      expect(trigger.id).toBe("role-select");
+      expect(trigger.getAttribute("aria-errormessage")).toBe("role-errors");
+      expect(trigger.getAttribute("aria-invalid")).toBe("true");
+      expect(container.querySelectorAll("#role-select")).toHaveLength(1);
+      expect(root.id).toBe("");
+      expect(root.hasAttribute("aria-label")).toBe(false);
+      expect(root.hasAttribute("aria-describedby")).toBe(false);
+      expect(root.hasAttribute("aria-errormessage")).toBe(false);
+      expect(root.hasAttribute("aria-invalid")).toBe(false);
+      expect(root.className).toContain("custom-select");
+      expect(ref.current).toBe(root as HTMLDivElement);
+    },
+  );
+
+  test("uses aria-labelledby as the trigger's accessible name", () => {
+    render(
+      <>
+        <span id="roles-label">Available roles</span>
+        <Select
+          aria-labelledby="roles-label"
+          defaultValue="editor"
+          options={[{ label: "Editor", value: "editor" }]}
+        />
+      </>,
+    );
+
+    expect(
+      screen.getByRole("button", { name: "Available roles" }),
+    ).toBeTruthy();
+  });
+
+  test.each([
+    { mode: undefined, id: undefined },
+    { mode: undefined, id: "explicit-role" },
+    { mode: "multiple", id: undefined },
+    { mode: "multiple", id: "explicit-roles" },
+  ] as { mode?: SelectMode; id?: string }[])(
+    "associates Form.Item labels and server errors with the trigger (%j)",
+    ({ mode, id }) => {
+      render(
+        <Form.Item
+          label="Role"
+          help={<Form.ErrorList id="role-errors" errors={["Choose a role"]} />}
+        >
+          <Select
+            id={id}
+            mode={mode}
+            aria-invalid="true"
+            aria-describedby="role-errors"
+            options={[{ label: "Editor", value: "editor" }]}
+          />
+        </Form.Item>,
+      );
+
+      const trigger = screen.getByRole("button", {
+        name: "Role",
+        description: "Choose a role",
+      });
+      const label = screen.getByText("Role") as HTMLLabelElement;
+
+      expect(screen.getByLabelText("Role")).toBe(trigger);
+      expect(label.control).toBe(trigger as HTMLButtonElement);
+      expect(label.htmlFor).toBe(trigger.id);
+      expect(trigger.id).not.toBe("");
+      if (id) {
+        expect(trigger.id).toBe(id);
+      }
+      expect(trigger.getAttribute("aria-invalid")).toBe("true");
+    },
+  );
+
   test("renders options, placeholder, size, status, loading, and disabled classes", () => {
     const { container } = render(
       <Select

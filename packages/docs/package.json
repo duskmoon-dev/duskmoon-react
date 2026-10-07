@@ -15,8 +15,6 @@
     "@duskmoon-dev/core": "1.20.3",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.4",
-    "ajv": "^8.20.0",
-    "ajv-formats": "^3.0.1",
     "astro": "7.1.6",
     "react": "19.2.8",
     "react-dom": "19.2.8"

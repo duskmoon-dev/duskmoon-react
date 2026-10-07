@@ -1242,6 +1242,17 @@
       "packageSubpath": "./swap",
       "buildEntrypoint": "src/components/swap/index.ts",
       "status": "implemented"
+    },
+    {
+      "id": "json-schema-form",
+      "kind": "standard-component",
+      "source": "duskmoon",
+      "exportName": "JsonSchemaForm",
+      "directory": "json-schema-form",
+      "rootExport": null,
+      "packageSubpath": "./json-schema-form",
+      "buildEntrypoint": "src/components/json-schema-form/index.ts",
+      "status": "implemented"
     }
   ],
   "internalTargets": []

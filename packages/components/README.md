@@ -41,7 +41,7 @@ import { Button, DmTable, theme } from "@duskmoon-dev/components";
 
 ## Public Surface
 
-- 78 standard components such as `Button`, `Chat`, `OtpInput`, `Swap`, `Fab`,
+- 79 standard components such as `Button`, `Chat`, `OtpInput`, `Swap`, `Fab`,
   `Megamenu`, `ConsolePage`, `Table`, `Modal`, `Select`, and `Typography`.
 - 21 DuskMoon workflow components such as `DmLayout`, `DmSearch`, `DmTable`,
   `DmProTable`, and `DmToolbar`.
@@ -90,10 +90,14 @@ export function Conversation() {
           <Chat.Bubble>The build passed.</Chat.Bubble>
           <Chat.Status>
             <Chat.StatusItem>Completed</Chat.StatusItem>
-            <Chat.StatusItem><Chat.StatusValue>42</Chat.StatusValue> token/s</Chat.StatusItem>
+            <Chat.StatusItem>
+              <Chat.StatusValue>42</Chat.StatusValue> token/s
+            </Chat.StatusItem>
           </Chat.Status>
           <Chat.Actions hover>
-            <button type="button" onClick={copyReply}>Copy reply</button>
+            <button type="button" onClick={copyReply}>
+              Copy reply
+            </button>
           </Chat.Actions>
         </Chat>
       </Chat.ScrollBody>
@@ -124,3 +128,80 @@ bun run typecheck
 # Check parity manifest coverage
 bun run parity:components
 ```
+
+## JSON Schema forms
+
+`@duskmoon-dev/components/json-schema-form` exports `JsonSchemaForm`,
+`compileForm`, `JsonSchemaWidget`, and the `RenderableSchema`, `CompiledForm`,
+`FormValue`, `JsonValue`, `FormErrors`, `FormValidationResult`,
+`JsonSchemaFormProps`, `JsonSchemaWidgetProps`, and widget contract types.
+Ajv and ajv-formats are installed as package runtime dependencies. The package
+stylesheet includes the renderer layout. Import these APIs from the explicit
+subpath; schema compilation is kept separate from the root component bundle.
+
+```tsx
+import { useState } from "react";
+import "@duskmoon-dev/components/styles.css";
+import {
+  JsonSchemaForm,
+  type FormErrors,
+  type FormValue,
+  type RenderableSchema,
+} from "@duskmoon-dev/components/json-schema-form";
+
+const schema: RenderableSchema = {
+  type: "object",
+  required: ["name"],
+  properties: {
+    name: { type: "string", title: "Name", minLength: 1 },
+    age: { type: "integer", title: "Age", minimum: 0 },
+  },
+};
+
+export function ProfileIsland({ send }: { send: (value: FormValue) => void }) {
+  const [value, setValue] = useState<FormValue>({ name: "Ada" });
+  const [errors, setErrors] = useState<FormErrors>({});
+  return (
+    <JsonSchemaForm
+      schema={schema}
+      value={value}
+      onChange={setValue}
+      errors={errors}
+      onErrorsChange={setErrors}
+      onSubmit={send}
+    />
+  );
+}
+```
+
+Mount the React root inside a LiveView element with a stable `id` and
+`phx-update="ignore"`. Parse the backend's schema JSON and call `compileForm`
+when accepting untrusted input; catch compilation errors before rendering.
+Pass the returned object as `compiled` instead of `schema` to compile once.
+Send the validated object from `onSubmit` through the island's LiveView hook;
+backend validation is still required. Use a new React `key` when replacing a
+schema and starting a fresh form.
+
+`value` and `onChange` control values. Omit `value` for internal state, optionally
+seeded by `defaultValue`. Reset restores `defaultValue` or schema defaults,
+notifies `onChange`, clears validation errors, and calls `onReset`. Backend
+`errors` merge with local errors and use escaped JSON Pointer keys such as
+`/address/email` (the empty key denotes a form error). Clear backend errors in
+`onErrorsChange`, which receives an empty object on edits/reset and validation
+errors on submission. `onSubmit` runs only for valid values and receives a
+copied JSON object with numbers and booleans preserved.
+
+The supported schema is a strict JSON Schema draft 2020-12 subset: object roots,
+nested objects, homogeneous arrays, primitive fields/enums/defaults, required
+fields, `additionalProperties: false`, string constraints/formats, numeric
+constraints, and array/object size constraints. References, combinators,
+nullable types, and arbitrary keywords are rejected. Validation does not coerce,
+remove, or default submitted values.
+
+Use `x-widget` for explicit component selection, `x-options` for typed option
+labels/hierarchies, and `x-widget-options` for orientation, length, count,
+allowHalf, min, max, and step where supported. `widgetNames`, `WidgetName`,
+`WidgetOption`, `WidgetConfig`, and `OrientationWidgetConfig` expose this
+contract; `compileForm` checks widget/type/config compatibility. Upload widgets
+submit JSON file metadata (`name`, `size`, `type`, `lastModified`), with file
+transfer owned by the application.

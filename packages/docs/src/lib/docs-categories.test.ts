@@ -54,7 +54,7 @@ describe("documentation categories", () => {
     const docs = getComponentDocs();
     const categoryIds = new Set(DOC_CATEGORIES.map(({ id }) => id));
 
-    expect(docs).toHaveLength(127);
+    expect(docs).toHaveLength(128);
     expect(new Set(docs.map(({ id }) => id)).size).toBe(docs.length);
     expect(new Set(docs.map(({ route }) => route)).size).toBe(docs.length);
     expect(docs.every(({ categoryId }) => categoryIds.has(categoryId))).toBe(
@@ -76,6 +76,13 @@ describe("documentation categories", () => {
     );
     expect([...groups.values()].every((group) => group.length > 0)).toBe(true);
     expect([...groups.values()].flat()).toHaveLength(docs.length);
+  });
+
+  test("links the published JSON Schema renderer to its existing guide", () => {
+    const doc = getComponentDocs().find(({ id }) => id === "json-schema-form");
+    expect(doc?.categoryId).toBe("data-entry");
+    expect(doc?.route).toBe("/utilities/form/");
+    expect(doc?.importPath).toBe("@duskmoon-dev/components/json-schema-form");
   });
 
   test("keeps API references, art, and unknown targets explicit", () => {

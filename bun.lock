@@ -27,7 +27,7 @@
     },
     "examples/nextjs-15-smoke": {
       "name": "nextjs-15-smoke",
-      "version": "0.3.3",
+      "version": "0.4.0",
       "dependencies": {
         "@duskmoon-dev/components": "workspace:*",
         "next": "16.2.12",
@@ -43,7 +43,7 @@
     },
     "packages/art-components": {
       "name": "@duskmoon-dev/art-components",
-      "version": "0.3.3",
+      "version": "0.4.0",
       "devDependencies": {
         "@duskmoon-dev/css-art": "1.20.3",
         "@testing-library/react": "16.3.2",
@@ -59,8 +59,10 @@
     },
     "packages/components": {
       "name": "@duskmoon-dev/components",
-      "version": "0.3.3",
+      "version": "0.4.0",
       "dependencies": {
+        "ajv": "^8.20.0",
+        "ajv-formats": "^3.0.1",
         "clsx": "^2.1.1",
         "react-markdown": "^10.1.0",
         "remark-breaks": "^4.0.0",
@@ -81,7 +83,7 @@
     },
     "packages/docs": {
       "name": "@duskmoon-dev/docs",
-      "version": "0.3.3",
+      "version": "0.4.0",
       "dependencies": {
         "@astrojs/react": "6.0.2",
         "@duskmoon-dev/art-components": "workspace:*",
@@ -89,8 +91,6 @@
         "@duskmoon-dev/core": "1.20.3",
         "@types/react": "19.2.18",
         "@types/react-dom": "19.2.4",
-        "ajv": "^8.20.0",
-        "ajv-formats": "^3.0.1",
         "astro": "7.1.6",
         "react": "19.2.8",
         "react-dom": "19.2.8",
