@@ -1,11 +1,13 @@
 ---
 import DemoRenderer from "./DemoRenderer";
+import DocsNavigation from "./DocsNavigation.astro";
 import DocsLayout from "../layouts/DocsLayout.astro";
-import { getDocsByCategory, type ComponentDoc } from "../lib/component-docs";
-import { docsPath } from "../lib/paths";
+import { getComponentDocs, type ComponentDoc } from "../lib/component-docs";
+import { categoriesForSection, sectionForCategory } from "../lib/docs-sections";
 
 const { component } = Astro.props as { component: ComponentDoc };
-const categories = Array.from(getDocsByCategory().entries());
+const section = sectionForCategory(component.categoryId);
+const categories = categoriesForSection(section, getComponentDocs());
 const apiPropCount = component.api.reduce(
   (count, section) => count + section.props.length,
   0,
@@ -13,41 +15,15 @@ const apiPropCount = component.api.reduce(
 const apiTypeCount = component.api.length;
 ---
 
-<DocsLayout title={component.title} description={component.intro}>
-  <div class="doc-shell">
-    <aside class="side-nav" aria-label="Component sections">
-      <div class="nav-section">
-        <a href="#overview">Overview</a>
-        <a href="#usage">Usage</a>
-        <a href="#features">Features</a>
-        <a href="#demos">Demos</a>
-        <a href="#api">API</a>
-        <a href={docsPath("/")}>All components</a>
-      </div>
-
-      {
-        categories.map(([category, docs]) => (
-          <div class="nav-group">
-            <div class="nav-group-title">{category}</div>
-            <div class="nav-group-items">
-              {docs.map((item) => (
-                <a
-                  href={item.route}
-                  class={`nav-item ${item.id === component.id ? "active" : ""}`}
-                >
-                  {item.title}
-                </a>
-              ))}
-            </div>
-          </div>
-        ))
-      }
-    </aside>
+<DocsLayout title={component.title} description={component.intro} section={section}>
+  <div class="doc-shell" data-docs-browser>
+    <DocsNavigation categories={categories} currentId={component.id} section={section} />
 
     <article class="doc-content">
       <header id="overview" class="doc-title">
         <div class="badge-row">
           <span class="badge">{component.category}</span>
+          {component.kind === "dm-workflow-component" && <span class="badge">Dm</span>}
           <span class="badge">{component.source}</span>
           <span class="badge">{component.status}</span>
           <span class="badge">{component.demos.length} demos</span>
@@ -139,7 +115,7 @@ const apiTypeCount = component.api.length;
                 <div class="demo-panel demo-panel-preview">
                   <div class="demo-panel-label">Preview</div>
                   <div
-                    class={`demo-preview ${component.category === "CSS Art" ? "art-demo-preview" : ""}`}
+                    class={`demo-preview ${component.id === "dropdown" ? "dropdown-demo-preview" : ""} ${component.category === "CSS Art" ? "art-demo-preview" : ""}`}
                   >
                     <DemoRenderer
                       componentId={component.id}

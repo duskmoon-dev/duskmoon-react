@@ -1,23 +1,36 @@
-import type { ComponentProps, ReactNode } from "react";
+import type { ChangeEventHandler, ComponentProps, ReactNode } from "react";
 
-type SwapContent = {
+export interface SwapProps extends Omit<
+  ComponentProps<"input">,
+  | "checked"
+  | "children"
+  | "className"
+  | "defaultChecked"
+  | "onChange"
+  | "size"
+  | "type"
+> {
+  checked?: boolean;
+  defaultChecked?: boolean;
+  onChange?: ChangeEventHandler<HTMLInputElement>;
+  /** Decorative, noninteractive content shown while unchecked. */
+  off?: ReactNode;
+  /** Decorative, noninteractive content shown while checked. */
+  on?: ReactNode;
+  rotate?: boolean;
+  /** Additional class names for the wrapping label. */
+  wrapperClassName?: string;
+  /** Additional class names for the native checkbox. */
+  className?: string;
+}
+
+export interface SwapButtonProps extends Omit<
+  ComponentProps<"button">,
+  "children" | "aria-pressed"
+> {
+  "aria-label": string;
   on: ReactNode;
   off: ReactNode;
   rotate?: boolean;
-  className?: string;
-};
-
-export interface SwapProps
-  extends
-    SwapContent,
-    Omit<ComponentProps<"input">, "children" | "className" | "type"> {
-  "aria-label": string;
-}
-
-export interface SwapButtonProps
-  extends
-    SwapContent,
-    Omit<ComponentProps<"button">, "children" | "className" | "aria-pressed"> {
-  "aria-label": string;
   pressed: boolean;
 }

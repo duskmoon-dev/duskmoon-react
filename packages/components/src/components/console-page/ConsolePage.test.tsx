@@ -1,63 +1,39 @@
-import React, { createRef } from "react";
-import { describe, expect, test } from "bun:test";
 import { render, screen } from "@testing-library/react";
+import { describe, expect, test } from "bun:test";
 import { ConsolePage } from "./ConsolePage";
 
 describe("ConsolePage", () => {
-  test("places application slots in the Core layout structure", () => {
-    const ref = createRef<HTMLDivElement>();
-    const { container } = render(
-      <ConsolePage
-        ref={ref}
-        id="workspace"
-        appBar={<h1>Workspace</h1>}
-        sidebarHeader="Product"
-        sidebar={<nav aria-label="Sections">Navigation</nav>}
-        sidebarFooter="Account"
-      >
-        <p>Dashboard</p>
+  test("maps explicit sidebar state and native mobile navigation", () => {
+    render(
+      <ConsolePage sidebarState="compact" data-testid="page">
+        <ConsolePage.Frame>
+          <ConsolePage.Appbar>
+            <ConsolePage.SidebarToggle onClick={() => {}} />
+            <ConsolePage.MobileTrigger aria-label="Open navigation" />
+            <ConsolePage.MobileMenu aria-label="Console navigation">
+              <a href="#overview">Overview</a>
+            </ConsolePage.MobileMenu>
+          </ConsolePage.Appbar>
+          <ConsolePage.Sidebar>
+            <ConsolePage.SidebarBody aria-label="Sections">
+              <a href="#overview">Overview</a>
+            </ConsolePage.SidebarBody>
+          </ConsolePage.Sidebar>
+          <ConsolePage.Main>Workspace</ConsolePage.Main>
+        </ConsolePage.Frame>
       </ConsolePage>,
     );
 
-    const root = container.querySelector(".console-page") as HTMLDivElement;
-    expect(ref.current).toBe(root);
-    expect(root.id).toBe("workspace");
-    expect(root.querySelector(".console-page-frame")).toBeTruthy();
-    expect(
-      root.querySelector("header.console-page-appbar h1")?.textContent,
-    ).toBe("Workspace");
-    expect(
-      root.querySelector(".console-page-sidebar-header")?.textContent,
-    ).toBe("Product");
-    expect(
-      screen
-        .getByRole("navigation", { name: "Sections" })
-        .closest(".console-page-sidebar-body"),
-    ).toBeTruthy();
-    expect(
-      root.querySelector(".console-page-sidebar-footer")?.textContent,
-    ).toBe("Account");
-    expect(screen.getByRole("main").textContent).toBe("Dashboard");
-  });
-
-  test("reflects caller-owned sidebar mode without changing its content", () => {
-    const { container, rerender } = render(
-      <ConsolePage sidebarMode="compact" sidebar="Navigation">
-        Content
-      </ConsolePage>,
+    expect(screen.getByTestId("page").className).toContain(
+      "console-page-sidebar-compact",
     );
-    const root = container.querySelector(".console-page") as HTMLDivElement;
-    expect(root.classList.contains("console-page-sidebar-compact")).toBe(true);
-
-    rerender(
-      <ConsolePage sidebarMode="hidden" sidebar="Navigation">
-        Content
-      </ConsolePage>,
+    expect(screen.getByRole("button", { name: "Hide sidebar" })).toBeDefined();
+    const trigger = screen.getByRole("button", { name: "Open navigation" });
+    const menu = document.getElementById(
+      trigger.getAttribute("popovertarget") ?? "",
     );
-    expect(root.classList.contains("console-page-sidebar-compact")).toBe(false);
-    expect(root.classList.contains("console-page-sidebar-hidden")).toBe(true);
-    expect(root.querySelector(".console-page-sidebar")?.textContent).toBe(
-      "Navigation",
-    );
+    expect(menu?.getAttribute("popover")).toBe("auto");
+    expect(menu?.style.positionAnchor).toMatch(/^--console-page-anchor-/);
+    expect(menu?.style.positionAnchor).toBe(trigger.style.anchorName);
   });
 });

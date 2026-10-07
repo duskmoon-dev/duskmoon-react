@@ -9,7 +9,8 @@
         "sm": "avatar-sm",
         "md": "avatar-md",
         "lg": "avatar-lg",
-        "xl": "avatar-xl"
+        "xl": "avatar-xl",
+        "2xl": "avatar-2xl"
       },
       "default": "md"
     },

@@ -1,90 +1,145 @@
-import React, { forwardRef, useId } from "react";
-import type { ComponentProps, ReactNode } from "react";
+import React, { createContext, forwardRef, useContext, useId } from "react";
+import {
+  fabActionClass,
+  fabActionsClass,
+  fabLabelClass,
+  fabTriggerClass,
+  getFabClasses,
+} from "../../classes/fab";
 import { cn } from "../../utils";
 import { Button } from "../button";
-import type { ButtonProps } from "../button/Button.types";
+import type {
+  FabComponent,
+  FabActionProps,
+  FabLabelProps,
+  FabProps,
+  FabSectionProps,
+  FabTriggerProps,
+} from "./Fab.types";
 
-export interface FabProps extends Omit<ComponentProps<"div">, "children"> {
-  label: string;
-  children: ReactNode;
-  actions?: ReactNode;
-  contained?: boolean;
-  start?: boolean;
-  extended?: boolean;
-  buttonProps?: Omit<
-    ButtonProps,
-    "children" | "type" | "popoverTarget" | "aria-label"
-  >;
+const FabContext = createContext<{
+  actionsId: string;
+  speedDial: boolean;
+} | null>(null);
+
+function useFabContext() {
+  const context = useContext(FabContext);
+  if (!context) throw new Error("Fab subcomponents must be inside Fab");
+  return context;
 }
 
-export const Fab = forwardRef<HTMLDivElement, FabProps>(
-  (
-    {
-      label,
-      children,
-      actions,
-      contained = false,
-      start = false,
-      extended = false,
-      buttonProps,
-      className,
-      ...props
-    },
-    ref,
-  ) => {
-    const actionsId = useId();
-    const hasActions = actions !== undefined && actions !== null;
-    const { className: buttonClassName, ...restButtonProps } =
-      buttonProps ?? {};
+const Trigger = forwardRef<HTMLButtonElement, FabTriggerProps>(
+  ({ extended, className, type = "button", ...props }, ref) => {
+    const { actionsId, speedDial } = useFabContext();
+    return (
+      <Button
+        {...props}
+        ref={ref}
+        type={type}
+        popoverTarget={speedDial ? actionsId : undefined}
+        className={cn(fabTriggerClass, extended && "fab-extended", className)}
+      />
+    );
+  },
+);
+Trigger.displayName = "Fab.Trigger";
 
+const Actions = forwardRef<HTMLDivElement, FabSectionProps>(
+  ({ className, ...props }, ref) => {
+    const { actionsId } = useFabContext();
     return (
       <div
         {...props}
         ref={ref}
-        className={cn(
-          "fab",
-          contained && "fab-contained",
-          start && "fab-start",
-          hasActions && "fab-speed-dial",
-          className,
-        )}
-      >
-        <Button
-          {...restButtonProps}
-          type="button"
-          aria-label={label}
-          className={cn(
-            "fab-trigger",
-            extended ? "fab-extended" : "btn-icon",
-            buttonClassName,
-          )}
-          popoverTarget={hasActions ? actionsId : undefined}
-        >
-          {children}
-        </Button>
-        {hasActions ? (
-          <div className="fab-actions" id={actionsId} popover="auto">
-            {actions}
-          </div>
-        ) : null}
-      </div>
+        id={actionsId}
+        popover="auto"
+        className={cn(fabActionsClass, className)}
+      />
     );
   },
 );
+Actions.displayName = "Fab.Actions";
 
-Fab.displayName = "Fab";
-
-export interface FabActionProps extends ComponentProps<"div"> {
-  label?: ReactNode;
-}
-
-export const FabAction = forwardRef<HTMLDivElement, FabActionProps>(
-  ({ label, children, className, ...props }, ref) => (
-    <div {...props} ref={ref} className={cn("fab-action", className)}>
-      {label ? <span className="fab-label">{label}</span> : null}
-      {children}
-    </div>
+const Action = forwardRef<HTMLDivElement, FabSectionProps>(
+  ({ className, ...props }, ref) => (
+    <div {...props} ref={ref} className={cn(fabActionClass, className)} />
   ),
 );
+Action.displayName = "Fab.Action";
 
+const Label = forwardRef<HTMLSpanElement, FabLabelProps>(
+  ({ className, ...props }, ref) => (
+    <span {...props} ref={ref} className={cn(fabLabelClass, className)} />
+  ),
+);
+Label.displayName = "Fab.Label";
+
+const FabRoot = forwardRef<HTMLDivElement, FabProps>(
+  (
+    {
+      contained,
+      start,
+      speedDial = false,
+      label,
+      actions,
+      extended,
+      buttonProps,
+      className,
+      children,
+      ...props
+    },
+    ref,
+  ) => {
+    const actionsId = `fab-actions-${useId().replace(/:/g, "")}`;
+    const hasActions = actions != null;
+    const resolvedSpeedDial = speedDial || hasActions;
+    return (
+      <FabContext.Provider value={{ actionsId, speedDial: resolvedSpeedDial }}>
+        <div
+          {...props}
+          ref={ref}
+          className={getFabClasses({
+            contained,
+            start,
+            speedDial: resolvedSpeedDial,
+            className,
+          })}
+        >
+          {label != null ? (
+            <>
+              <Trigger
+                {...buttonProps}
+                type="button"
+                aria-label={label}
+                extended={extended}
+                className={cn(!extended && "btn-icon", buttonProps?.className)}
+              >
+                {children}
+              </Trigger>
+              {hasActions && <Actions>{actions}</Actions>}
+            </>
+          ) : (
+            children
+          )}
+        </div>
+      </FabContext.Provider>
+    );
+  },
+) as FabComponent;
+FabRoot.displayName = "Fab";
+FabRoot.Trigger = Trigger;
+FabRoot.Actions = Actions;
+FabRoot.Action = Action;
+FabRoot.Label = Label;
+
+export const Fab = FabRoot;
+
+export const FabAction = forwardRef<HTMLDivElement, FabActionProps>(
+  ({ label, children, ...props }, ref) => (
+    <Action {...props} ref={ref}>
+      {label ? <Label>{label}</Label> : null}
+      {children}
+    </Action>
+  ),
+);
 FabAction.displayName = "FabAction";

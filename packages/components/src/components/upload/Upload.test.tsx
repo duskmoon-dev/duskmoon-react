@@ -137,4 +137,36 @@ describe("Upload", () => {
 
     await screen.findByText("drop.txt");
   });
+
+  test("forwards native file input attributes while preserving file handling", async () => {
+    let ignored = false;
+    const names: string[][] = [];
+    render(
+      <>
+        <label htmlFor="attachments">Attachments</label>
+        <Upload
+          inputProps={{
+            id: "attachments",
+            "aria-describedby": "upload-help",
+            "aria-invalid": true,
+            type: "text",
+            onChange: () => {
+              ignored = true;
+            },
+          }}
+          onChange={({ fileList }) =>
+            names.push(fileList.map((file) => file.name))
+          }
+        />
+      </>,
+    );
+    const input = screen.getByLabelText("Attachments") as HTMLInputElement;
+    expect(input.type).toBe("file");
+    expect(input.getAttribute("aria-describedby")).toBe("upload-help");
+    expect(input.getAttribute("aria-invalid")).toBe("true");
+    fireEvent.change(input, { target: { files: [makeFile("evidence.txt")] } });
+    await screen.findByText("evidence.txt");
+    expect(names.at(-1)).toEqual(["evidence.txt"]);
+    expect(ignored).toBe(false);
+  });
 });

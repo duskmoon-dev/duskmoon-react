@@ -75,6 +75,7 @@ function UploadRoot(
     disabled,
     fileList,
     listType = "text",
+    inputProps,
     multiple,
     onChange,
     onPreview,
@@ -307,6 +308,7 @@ function UploadRoot(
       })}
     >
       <input
+        {...inputProps}
         ref={inputRef}
         className={uploadInputClass}
         type="file"

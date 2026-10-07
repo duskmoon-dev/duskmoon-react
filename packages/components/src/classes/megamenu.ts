@@ -1,0 +1,10 @@
+export const megamenuClass = "megamenu";
+export const megamenuBarClass = "megamenu-bar";
+export const megamenuItemClass = "megamenu-item";
+export const megamenuTriggerClass = "megamenu-trigger";
+export const megamenuPanelClass = "megamenu-panel";
+export const megamenuGridClass = "megamenu-grid";
+export const megamenuGroupClass = "megamenu-group";
+export const megamenuHeadingClass = "megamenu-heading";
+export const megamenuSupportingClass = "megamenu-supporting";
+export const megamenuMobileClass = "megamenu-mobile";

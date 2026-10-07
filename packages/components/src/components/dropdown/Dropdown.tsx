@@ -137,9 +137,10 @@ const DropdownRoot = forwardRef<HTMLSpanElement, DropdownProps>(
     const childIsButton =
       isValidElement(children) &&
       (children.type === "button" || children.type === Button);
-    const triggerNode = childIsButton ? (
+    const triggerNode = isValidElement(children) ? (
       cloneElement(children as ReactElement<TriggerProps>, {
-        popoverTarget: clickTrigger && !disabled ? popupId : undefined,
+        popoverTarget:
+          childIsButton && clickTrigger && !disabled ? popupId : undefined,
         style: {
           ...(children as ReactElement<TriggerProps>).props.style,
           anchorName,
@@ -169,6 +170,8 @@ const DropdownRoot = forwardRef<HTMLSpanElement, DropdownProps>(
             event,
           );
           onClick?.(event);
+          if (!childIsButton && clickTrigger && !event.defaultPrevented)
+            toggle();
         },
         onContextMenu: (event) => {
           callHandler(
@@ -253,29 +256,66 @@ const DropdownButton = forwardRef<HTMLSpanElement, DropdownButtonProps>(
       menu,
       onClick,
       trigger = ["click"],
+      color = "base",
+      appearance = "outline",
+      size,
+      shape,
+      block,
+      isLoading,
+      leftIcon,
+      rightIcon,
+      confirm,
       ...props
     },
     ref,
   ) => {
+    const buttonStyle = { color, appearance, size, shape };
     const buttons = [
-      <Button key="primary" disabled={disabled} onClick={onClick}>
+      <Button
+        key="primary"
+        {...buttonStyle}
+        disabled={disabled}
+        isLoading={isLoading}
+        leftIcon={leftIcon}
+        rightIcon={rightIcon}
+        confirm={confirm}
+        onClick={onClick}
+      >
         {children}
       </Button>,
-      <Button key="trigger" aria-label="Open dropdown" disabled={disabled}>
-        v
+      <Button
+        key="trigger"
+        {...buttonStyle}
+        type="button"
+        aria-label="Open dropdown"
+        disabled={disabled || isLoading}
+      >
+        <svg
+          aria-hidden="true"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <circle cx="5" cy="12" r="1.75" />
+          <circle cx="12" cy="12" r="1.75" />
+          <circle cx="19" cy="12" r="1.75" />
+        </svg>
       </Button>,
     ];
     const renderedButtons = buttonsRender ? buttonsRender(buttons) : buttons;
 
     return (
-      <span className={dropdownButtonClass}>
+      <span
+        ref={ref}
+        className={cn(dropdownButtonClass, block && "dropdown-button-block")}
+      >
         {renderedButtons[0]}
         <DropdownRoot
           {...props}
-          ref={ref}
           menu={menu}
           trigger={trigger}
-          disabled={disabled}
+          disabled={disabled || isLoading}
         >
           {renderedButtons[1]}
         </DropdownRoot>

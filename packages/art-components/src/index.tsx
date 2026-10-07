@@ -172,12 +172,16 @@ export const ArtMountain = forwardRef<HTMLDivElement, ArtMountainProps>(
       {...getDecorativeProps(decorative, props)}
       {...props}
     >
-      {Array.from({ length: 4 }, (_, index) => (
-        <div key={`mountain-${index}`} className="mountain" />
-      ))}
-      {Array.from({ length: 3 }, (_, index) => (
-        <div key={`tree-${index}`} className="tree" />
-      ))}
+      <div className="mountains">
+        {Array.from({ length: 4 }, (_, index) => (
+          <div key={`mountain-${index}`} className="mountain" />
+        ))}
+      </div>
+      <div className="trees">
+        {Array.from({ length: 3 }, (_, index) => (
+          <div key={`tree-${index}`} className="tree" />
+        ))}
+      </div>
       <div className="lights">
         {Array.from({ length: 9 }, (_, index) => (
           <div key={index} className="borealis" />
@@ -336,13 +340,20 @@ export const ArtCircularGallery = forwardRef<
       title = "Gallery",
       items,
       size = "default",
-      decorative,
+      decorative = false,
       className,
       ...props
     },
     ref,
   ) => {
     const reactId = useId().replaceAll(":", "");
+    const decorativeProps = getDecorativeProps(decorative, props);
+    const rootAriaHidden =
+      props["aria-hidden"] ??
+      ("aria-hidden" in decorativeProps
+        ? decorativeProps["aria-hidden"]
+        : undefined);
+    const linksAreHidden = rootAriaHidden === true || rootAriaHidden === "true";
 
     return (
       <div
@@ -352,10 +363,9 @@ export const ArtCircularGallery = forwardRef<
           sizeClass("art-circular-gallery", size),
           className,
         )}
-        {...getDecorativeProps(decorative, props)}
+        {...decorativeProps}
         {...props}
       >
-        {title ? <h1>{title}</h1> : null}
         {items.map((item, index) => {
           const id = item.id ?? `${reactId}-gallery-item-${index + 1}`;
           const itemStyle = {
@@ -369,12 +379,14 @@ export const ArtCircularGallery = forwardRef<
                 href={item.href ?? `#${id}`}
                 target={item.target}
                 rel={item.rel}
+                tabIndex={linksAreHidden ? -1 : undefined}
               >
                 <img src={item.src} alt={item.alt ?? item.title} />
               </a>
             </div>
           );
         })}
+        {title ? <h1>{title}</h1> : null}
       </div>
     );
   },
@@ -436,6 +448,12 @@ function Flower({ index }: { index: 1 | 2 | 3 | 4 }) {
           />
         ))}
         <div className="flower__white-circle" />
+        {Array.from({ length: 8 }, (_, lightIndex) => (
+          <div
+            key={lightIndex}
+            className={cn("flower__light", `flower__light--${lightIndex + 1}`)}
+          />
+        ))}
       </div>
       <div className="flower__line">
         {Array.from({ length: leafCount }, (_, leafIndex) => (
@@ -448,12 +466,6 @@ function Flower({ index }: { index: 1 | 2 | 3 | 4 }) {
           />
         ))}
       </div>
-      {Array.from({ length: 8 }, (_, lightIndex) => (
-        <div
-          key={lightIndex}
-          className={cn("flower__light", `flower__light--${lightIndex + 1}`)}
-        />
-      ))}
     </div>
   );
 }
@@ -601,7 +613,7 @@ export const ArtColorSpin = forwardRef<HTMLDivElement, ArtColorSpinProps>(
     >
       <ul>
         {Array.from({ length: 4 }, (_, index) => (
-          <li key={index} style={{ "--i": index } as ArtStyle} />
+          <li key={index} style={{ "--i": index + 1 } as ArtStyle} />
         ))}
       </ul>
     </div>
@@ -641,22 +653,37 @@ export const ArtSynthwaveStarfield = forwardRef<
 );
 ArtSynthwaveStarfield.displayName = "ArtSynthwaveStarfield";
 
-function SwitchButton({ className }: { className: string }) {
+function SwitchButton({
+  className,
+  label,
+  hidden,
+}: {
+  className: string;
+  label: string;
+  hidden: boolean;
+}) {
   return (
     <button
       type="button"
       className={className}
-      tabIndex={-1}
-      aria-hidden="true"
+      aria-label={label}
+      tabIndex={hidden ? -1 : undefined}
+      aria-hidden={hidden || undefined}
     />
   );
 }
 
-function SwitchBar() {
+function SwitchBar({
+  side,
+  hidden,
+}: {
+  side: "Left" | "Right";
+  hidden: boolean;
+}) {
   return (
     <div className="bar">
-      <SwitchButton className="sub-lr" />
-      <SwitchButton className="sub-rr" />
+      <SwitchButton className="sub-lr" label={`${side} SL`} hidden={hidden} />
+      <SwitchButton className="sub-rr" label={`${side} SR`} hidden={hidden} />
       <span className="minus-sign" />
       <span className="peripheral" />
       <span className="cord" />
@@ -677,34 +704,58 @@ function SwitchConnector() {
   );
 }
 
-function LeftJoycon() {
+function LeftJoycon({ hidden }: { hidden: boolean }) {
   return (
     <div className="controller">
-      <SwitchBar />
+      <SwitchBar side="Left" hidden={hidden} />
       <SwitchConnector />
-      <SwitchButton className="minus" />
-      <SwitchButton className="mushroom round" />
-      <SwitchButton className="direction arrow up round" />
-      <SwitchButton className="direction arrow down round" />
-      <SwitchButton className="direction arrow left round" />
-      <SwitchButton className="direction arrow right round" />
-      <SwitchButton className="menu" />
+      <SwitchButton className="minus" label="Minus" hidden={hidden} />
+      <SwitchButton
+        className="mushroom round"
+        label="Left stick"
+        hidden={hidden}
+      />
+      <SwitchButton
+        className="direction arrow up round"
+        label="Up"
+        hidden={hidden}
+      />
+      <SwitchButton
+        className="direction arrow down round"
+        label="Down"
+        hidden={hidden}
+      />
+      <SwitchButton
+        className="direction arrow left round"
+        label="Left"
+        hidden={hidden}
+      />
+      <SwitchButton
+        className="direction arrow right round"
+        label="Right"
+        hidden={hidden}
+      />
+      <SwitchButton className="menu" label="Capture" hidden={hidden} />
     </div>
   );
 }
 
-function RightJoycon() {
+function RightJoycon({ hidden }: { hidden: boolean }) {
   return (
     <div className="controller right">
-      <SwitchBar />
+      <SwitchBar side="Right" hidden={hidden} />
       <SwitchConnector />
-      <SwitchButton className="minus plus" />
-      <SwitchButton className="mushroom round" />
-      <SwitchButton className="direction x round" />
-      <SwitchButton className="direction y round" />
-      <SwitchButton className="direction a round" />
-      <SwitchButton className="direction b round" />
-      <SwitchButton className="home round" />
+      <SwitchButton className="minus plus" label="Plus" hidden={hidden} />
+      <SwitchButton
+        className="mushroom round"
+        label="Right stick"
+        hidden={hidden}
+      />
+      <SwitchButton className="direction x round" label="X" hidden={hidden} />
+      <SwitchButton className="direction y round" label="Y" hidden={hidden} />
+      <SwitchButton className="direction a round" label="A" hidden={hidden} />
+      <SwitchButton className="direction b round" label="B" hidden={hidden} />
+      <SwitchButton className="home round" label="Home" hidden={hidden} />
     </div>
   );
 }
@@ -745,19 +796,30 @@ function ComfortGrip() {
 export type ArtCsswitchProps = SizedArtProps;
 
 export const ArtCsswitch = forwardRef<HTMLDivElement, ArtCsswitchProps>(
-  ({ size = "default", decorative, className, ...props }, ref) => (
-    <div
-      ref={ref}
-      className={cn("art-csswitch", sizeClass("art-csswitch", size), className)}
-      {...getDecorativeProps(decorative, props)}
-      {...props}
-    >
-      <SwitchBody />
-      <ComfortGrip />
-      <LeftJoycon />
-      <RightJoycon />
-    </div>
-  ),
+  ({ size = "default", decorative = false, className, ...props }, ref) => {
+    const decorativeProps = getDecorativeProps(decorative, props);
+    const rootAriaHidden =
+      props["aria-hidden"] ??
+      ("aria-hidden" in decorativeProps
+        ? decorativeProps["aria-hidden"]
+        : undefined);
+    const controlsAreHidden =
+      rootAriaHidden === true || rootAriaHidden === "true";
+
+    return (
+      <div
+        ref={ref}
+        className={cn("art-csswitch", sizeClass("art-csswitch", size), className)}
+        {...decorativeProps}
+        {...props}
+      >
+        <SwitchBody />
+        <ComfortGrip />
+        <LeftJoycon hidden={controlsAreHidden} />
+        <RightJoycon hidden={controlsAreHidden} />
+      </div>
+    );
+  },
 );
 ArtCsswitch.displayName = "ArtCsswitch";
 
@@ -784,8 +846,8 @@ export const ArtSnowballPreloader = forwardRef<
     <div className="art-snowball-preloader-track-cover" />
     <div className="art-snowball-preloader-ball">
       <div className="art-snowball-preloader-ball-texture" />
-      <div className="art-snowball-preloader-ball-inner-shadow" />
       <div className="art-snowball-preloader-ball-outer-shadow" />
+      <div className="art-snowball-preloader-ball-inner-shadow" />
       <div className="art-snowball-preloader-ball-side-shadows" />
     </div>
   </div>
@@ -863,6 +925,16 @@ export const ArtGeminiInput = forwardRef<HTMLDivElement, ArtGeminiInputProps>(
       type: afterButtonType = "button",
       ...restAfterButtonProps
     } = afterButtonProps ?? {};
+    const beforeLabel =
+      beforeButtonProps?.["aria-label"] ??
+      (before === "+" && beforeButtonProps?.["aria-labelledby"] === undefined
+        ? "Add"
+        : undefined);
+    const afterLabel =
+      afterButtonProps?.["aria-label"] ??
+      (after === ">" && afterButtonProps?.["aria-labelledby"] === undefined
+        ? "Send"
+        : undefined);
 
     return (
       <div
@@ -880,8 +952,9 @@ export const ArtGeminiInput = forwardRef<HTMLDivElement, ArtGeminiInputProps>(
             <button
               type={beforeButtonType}
               className={cn("art-gemini-input-btn", beforeButtonClassName)}
-              disabled={disabled || beforeButtonProps?.disabled}
               {...restBeforeButtonProps}
+              disabled={disabled || beforeButtonProps?.disabled}
+              aria-label={beforeLabel}
             >
               {before}
             </button>
@@ -893,7 +966,7 @@ export const ArtGeminiInput = forwardRef<HTMLDivElement, ArtGeminiInputProps>(
             onChange={onChange}
             placeholder={placeholder}
             name={name}
-            rows={rows}
+            rows={rows ?? 1}
             disabled={disabled}
             readOnly={readOnly}
             required={required}
@@ -903,8 +976,9 @@ export const ArtGeminiInput = forwardRef<HTMLDivElement, ArtGeminiInputProps>(
             <button
               type={afterButtonType}
               className={cn("art-gemini-input-btn", afterButtonClassName)}
-              disabled={disabled || afterButtonProps?.disabled}
               {...restAfterButtonProps}
+              disabled={disabled || afterButtonProps?.disabled}
+              aria-label={afterLabel}
             >
               {after}
             </button>

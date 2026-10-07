@@ -107,6 +107,28 @@ describe("Chat", () => {
     }
   });
 
+  test("keeps one Core caret after compound streaming content", () => {
+    const { container } = render(
+      <Chat.Bubble streaming>
+        <Chat.Reasoning open>
+          <summary>Thinking</summary>
+          <p>Checking the answer</p>
+        </Chat.Reasoning>
+        Reply
+      </Chat.Bubble>,
+    );
+
+    const bubble = container.querySelector(".chat-bubble-streaming");
+    expect(
+      bubble?.querySelectorAll(
+        ":scope > .chat-bubble-content.chat-bubble-streaming",
+      ),
+    ).toHaveLength(1);
+    expect(bubble?.lastElementChild?.className).toBe(
+      "chat-bubble-content chat-bubble-streaming",
+    );
+  });
+
   test("uses native details and summary elements for LLM blocks", () => {
     render(
       <Chat>

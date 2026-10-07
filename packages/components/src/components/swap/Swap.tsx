@@ -1,15 +1,43 @@
 import { forwardRef } from "react";
-import { cn } from "../../utils";
+import {
+  getSwapClasses,
+  getSwapInputClasses,
+  swapOffClass,
+  swapOnClass,
+} from "../../classes/swap";
 import type { SwapButtonProps, SwapProps } from "./Swap.types";
 
 export const Swap = forwardRef<HTMLInputElement, SwapProps>(
-  ({ on, off, rotate, className, ...inputProps }, ref) => (
-    <label className={cn("swap", rotate && "swap-rotate", className)}>
-      <input {...inputProps} ref={ref} type="checkbox" className="swap-input" />
-      <span className="swap-off" aria-hidden="true">
+  (
+    {
+      checked,
+      defaultChecked,
+      onChange,
+      disabled,
+      off,
+      on,
+      rotate = false,
+      wrapperClassName,
+      className,
+      ...inputProps
+    },
+    ref,
+  ) => (
+    <label className={getSwapClasses({ rotate, wrapperClassName })}>
+      <input
+        {...inputProps}
+        ref={ref}
+        type="checkbox"
+        className={getSwapInputClasses({ className })}
+        checked={checked}
+        defaultChecked={defaultChecked}
+        onChange={onChange}
+        disabled={disabled}
+      />
+      <span className={swapOffClass} aria-hidden="true">
         {off}
       </span>
-      <span className="swap-on" aria-hidden="true">
+      <span className={swapOnClass} aria-hidden="true">
         {on}
       </span>
     </label>
@@ -28,12 +56,12 @@ export const SwapButton = forwardRef<HTMLButtonElement, SwapButtonProps>(
       ref={ref}
       type={type}
       aria-pressed={pressed}
-      className={cn("swap", rotate && "swap-rotate", className)}
+      className={getSwapClasses({ rotate, wrapperClassName: className })}
     >
-      <span className="swap-off" aria-hidden="true">
+      <span className={swapOffClass} aria-hidden="true">
         {off}
       </span>
-      <span className="swap-on" aria-hidden="true">
+      <span className={swapOnClass} aria-hidden="true">
         {on}
       </span>
     </button>

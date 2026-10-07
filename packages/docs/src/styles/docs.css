@@ -57,6 +57,7 @@ a {
 }
 
 .brand {
+  flex-wrap: wrap;
   font-weight: 700;
   text-decoration: none;
   color: var(--color-primary-content);
@@ -64,12 +65,24 @@ a {
 
 .brand-mark {
   display: inline-grid;
+  flex: none;
   width: 34px;
   height: 34px;
   place-items: center;
   border-radius: 8px;
   background: var(--color-primary-content);
   color: var(--color-primary);
+}
+
+.brand-version {
+  border-radius: 999px;
+  background: var(--color-secondary);
+  color: var(--color-on-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+  padding: 4px 8px;
+  white-space: nowrap;
 }
 
 .top-nav a {
@@ -83,6 +96,13 @@ a {
 
 .top-nav a:hover {
   opacity: 1;
+}
+
+.top-nav a[aria-current="page"] {
+  opacity: 1;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 5px;
 }
 
 .theme-toggle {
@@ -128,7 +148,7 @@ main {
   padding: 40px 0 72px;
 }
 
-.hero,
+.docs-hero,
 .doc-shell,
 .section,
 .component-card,
@@ -139,25 +159,25 @@ main {
   background: var(--dm-surface);
 }
 
-.hero {
+.docs-hero {
   padding: 36px;
 }
 
-.hero h1,
+.docs-hero h1,
 .doc-title h1 {
   margin: 0;
   font-size: 40px;
   line-height: 1.08;
 }
 
-.hero p,
+.docs-hero p,
 .doc-title p,
 .section p,
 .demo-card p {
   color: var(--dm-muted);
 }
 
-.hero-actions {
+.docs-hero-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
@@ -166,6 +186,7 @@ main {
 
 .category {
   margin-top: 36px;
+  scroll-margin-top: 90px;
 }
 
 .category h2,
@@ -186,7 +207,10 @@ main {
 }
 
 .component-card strong {
-  display: block;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
   margin-bottom: 8px;
 }
 
@@ -214,6 +238,8 @@ main {
 }
 
 .install-line code {
+  min-width: 0;
+  overflow-wrap: anywhere;
   color: var(--dm-text);
 }
 
@@ -249,6 +275,18 @@ main {
   grid-template-columns: 240px minmax(0, 1fr);
   gap: 28px;
   padding: 24px;
+}
+
+.catalog-no-results {
+  margin-top: 36px;
+  border: 1px solid var(--dm-border);
+  border-radius: 8px;
+  padding: 24px;
+  color: var(--dm-muted);
+}
+
+[data-docs-browser] [hidden] {
+  display: none !important;
 }
 
 .side-nav {
@@ -300,6 +338,57 @@ main {
   gap: 2px;
 }
 
+.section-links {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.doc-search {
+  margin-bottom: 18px;
+}
+
+.doc-search label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.doc-search-controls {
+  display: flex;
+  gap: 6px;
+}
+
+.doc-search input {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--dm-border);
+  border-radius: 8px;
+  background: var(--dm-surface);
+  color: var(--dm-text);
+  font: inherit;
+  font-size: 14px;
+  padding: 8px;
+}
+
+.doc-search button {
+  border: 1px solid var(--dm-border);
+  border-radius: 8px;
+  background: var(--dm-surface);
+  color: var(--dm-text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  padding: 6px;
+}
+
+.nav-no-results {
+  margin: 0;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
 .side-nav a {
   display: block;
   padding: 8px 12px;
@@ -320,6 +409,7 @@ main {
 }
 
 .nav-group-title {
+  display: block;
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
@@ -328,6 +418,28 @@ main {
   opacity: 0.65;
   margin: 0 0 6px 0;
   padding-left: 12px;
+}
+
+.side-nav .nav-group-title {
+  padding: 4px 12px;
+}
+
+.dm-badge {
+  display: inline-block;
+  flex: none;
+  border-radius: 999px;
+  background: var(--color-secondary-container);
+  color: var(--color-on-secondary-container);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+  padding: 3px 6px;
+}
+
+.side-nav .dm-badge {
+  margin-left: 4px;
+  background: var(--color-secondary);
+  color: var(--color-on-secondary);
 }
 
 .nav-group-items {
@@ -546,6 +658,24 @@ main {
     var(--dm-surface-soft);
 }
 
+.demo-preview.dropdown-demo-preview {
+  align-items: flex-start;
+  min-height: 260px;
+}
+
+.demo-preview.dropdown-demo-preview:has(.dropdown-button-danger-preview) {
+  min-height: 300px;
+}
+
+.demo-preview:has(.chat-demo) {
+  min-height: 200px;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 2rem;
+  background: var(--dm-bg);
+}
+
 .demo-preview .skeleton {
   display: block;
   background-color: color-mix(
@@ -698,6 +828,20 @@ code {
   font-size: 13px;
 }
 
+.demo-preview .chat-demo pre {
+  overflow-x: revert-layer;
+  margin: revert-layer;
+  border-radius: revert-layer;
+  background: revert-layer;
+  color: revert-layer;
+  padding: revert-layer;
+}
+
+.demo-preview .chat-demo code {
+  font-family: revert-layer;
+  font-size: revert-layer;
+}
+
 .api-card {
   margin-top: 16px;
   overflow: hidden;
@@ -713,6 +857,9 @@ code {
 }
 
 .api-source span {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
   border: 1px solid var(--dm-border);
   border-radius: 8px;
   background: var(--dm-surface-soft);
@@ -751,10 +898,264 @@ code {
   padding: 16px;
 }
 
+.json-schema-page .doc-content,
+.json-schema-page .section,
+.json-schema-tool,
+.schema-editor,
+.schema-preview,
+.schema-output {
+  min-width: 0;
+}
+
+.json-schema-page .section {
+  margin-top: 24px;
+  padding: 20px;
+}
+
+.json-schema-tool {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.schema-editor,
+.schema-preview,
+.schema-output {
+  border: 1px solid var(--dm-border);
+  border-radius: 8px;
+  background: var(--dm-surface);
+  padding: 16px;
+}
+
+.schema-editor label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.schema-editor .schema-example-select {
+  background-position: right 1rem center;
+  padding-inline-end: 2.5rem;
+}
+
+.schema-editor textarea {
+  display: block;
+  width: 100%;
+  min-height: 14rem;
+  max-height: 26rem;
+  overflow: auto;
+  resize: vertical;
+  border: 1px solid var(--dm-border);
+  border-radius: 6px;
+  background: var(--dm-surface-soft);
+  color: var(--dm-text);
+  font:
+    13px/1.5 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  padding: 10px;
+}
+
+.schema-preview .schema-form {
+  max-width: none;
+}
+
+.schema-preview .schema-object,
+.schema-preview .schema-array {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+  margin: 0;
+  padding: 1rem;
+  border: 1px solid var(--dm-border);
+  border-radius: 8px;
+}
+
+.schema-preview .schema-form > .schema-object {
+  padding: 0;
+  border: 0;
+}
+
+.schema-preview .schema-object legend,
+.schema-preview .schema-array legend {
+  padding: 0 0.25rem;
+  color: var(--color-on-surface);
+  font-weight: 700;
+}
+
+.schema-preview .schema-choice-group {
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.schema-preview .schema-choice-group legend {
+  margin-bottom: 0.5rem;
+  padding: 0;
+  color: var(--color-on-surface);
+  font-weight: 500;
+}
+
+.schema-preview .schema-choice-options {
+  display: grid;
+  justify-items: start;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.schema-preview .schema-choice-horizontal .schema-choice-options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+}
+
+.schema-preview .schema-choice-options > label {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.schema-preview .schema-choice-group .schema-field-error {
+  margin: 0;
+  font-size: 0.75rem;
+}
+
+.schema-preview .schema-required::before {
+  margin-right: 0.25rem;
+  color: var(--color-error);
+  content: "*";
+}
+
+.schema-preview .schema-description,
+.schema-preview .form-item-extra {
+  margin: 0;
+  color: var(--color-on-surface-variant);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.schema-preview .form-item-extra p,
+.schema-preview .form-item-help p {
+  margin: 0;
+}
+
+.schema-preview .schema-array-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.schema-preview .schema-array-item > .schema-array-remove {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: center;
+}
+
+.schema-preview .schema-array-remove svg {
+  display: block;
+}
+
+/* Share the label and control rows so wrapped labels keep actions aligned. */
+.schema-preview .schema-array-item:has(> .form-item) {
+  grid-template-rows: auto;
+  row-gap: 0.375rem;
+}
+
+.schema-preview
+  .schema-array-item:has(
+    > .form-item > :is(.form-item-help, .form-item-extra)
+  ) {
+  grid-template-rows: auto auto;
+}
+
+.schema-preview
+  .schema-array-item:has(> .form-item > .form-item-help):has(
+    > .form-item > .form-item-extra
+  ) {
+  grid-template-rows: auto auto auto;
+}
+
+.schema-preview .schema-array-item:has(> .form-item > .form-item-label) {
+  grid-template-rows: auto auto;
+}
+
+.schema-preview
+  .schema-array-item:has(> .form-item > .form-item-label):has(
+    > .form-item > :is(.form-item-help, .form-item-extra)
+  ) {
+  grid-template-rows: auto auto auto;
+}
+
+.schema-preview
+  .schema-array-item:has(> .form-item > .form-item-label):has(
+    > .form-item > .form-item-help
+  ):has(> .form-item > .form-item-extra) {
+  grid-template-rows: auto auto auto auto;
+}
+
+.schema-preview .schema-array-item > .form-item {
+  grid-column: 1;
+  grid-row: 1 / -1;
+  grid-template-rows: subgrid;
+}
+
+.schema-preview .schema-array-item > .form-item > .form-item-control {
+  align-self: center;
+}
+
+.schema-preview
+  .schema-array-item:has(> .form-item > .form-item-label)
+  > .schema-array-remove {
+  grid-row: 2;
+}
+
+.schema-preview .schema-array > button {
+  justify-self: start;
+}
+
+.schema-preview .schema-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.schema-preview [role="alert"] {
+  color: var(--color-error, #b42318);
+}
+
+.schema-output {
+  grid-column: 1 / -1;
+  max-width: 100%;
+  overflow: auto;
+}
+
+.schema-output pre {
+  max-width: 100%;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 @media (max-width: 800px) {
   .site-header,
   .doc-shell {
     grid-template-columns: 1fr;
+  }
+
+  .site-header {
+    gap: 12px;
+    padding: 12px 16px;
+  }
+
+  .top-nav {
+    flex-wrap: wrap;
   }
 
   main {
@@ -772,7 +1173,7 @@ code {
   }
 
   .side-nav {
-    order: 2;
+    order: 0;
     position: static;
     max-height: 320px;
     border-radius: 8px;
@@ -791,4 +1192,42 @@ code {
   .usage-grid {
     grid-template-columns: 1fr;
   }
+}
+
+@media (max-width: 640px) {
+  .demo-preview:has(.chat-demo) {
+    padding: 1rem;
+  }
+
+  .json-schema-tool {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .schema-output {
+    grid-column: auto;
+  }
+}
+
+/* Schema fields own their labels, including composite workflow controls. */
+.schema-form .schema-specialized-field {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.schema-form .schema-specialized-field > legend {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+.schema-widget {
+  min-width: 0;
+}
+.schema-widget-value {
+  margin: 0.5rem 0 0;
+  overflow-wrap: anywhere;
+  font-size: 0.75rem;
+  color: var(--color-on-surface-variant);
+}
+.schema-form .schema-widget > :is(.cascader-container, .tree-select) {
+  width: 100%;
 }

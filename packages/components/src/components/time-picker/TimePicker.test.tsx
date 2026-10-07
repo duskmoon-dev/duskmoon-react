@@ -4,6 +4,58 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { TimePicker } from "./TimePicker";
 
 describe("TimePicker", () => {
+  test("opens default time columns without Now and selects a complete local time", () => {
+    let changed = "";
+    render(
+      <TimePicker
+        defaultValue="09:15:20"
+        showNow={false}
+        onChange={(_, text) => {
+          changed = text;
+        }}
+      />,
+    );
+    const trigger = screen.getByRole("button", { name: "Open time picker" });
+    fireEvent.click(trigger);
+    expect(screen.getByRole("dialog", { name: "Choose time" })).toBeTruthy();
+    const hour = screen.getByRole("option", { name: "Hour 10" });
+    fireEvent.blur(screen.getByPlaceholderText("Select time"), {
+      relatedTarget: hour,
+    });
+    fireEvent.click(hour);
+    fireEvent.click(screen.getByRole("option", { name: "Minute 30" }));
+    fireEvent.click(screen.getByRole("option", { name: "Second 45" }));
+    expect(changed).toBe("10:30:45");
+    expect(screen.getByDisplayValue("10:30:45")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Done" }));
+    expect(screen.queryByRole("dialog")).toBeNull();
+    fireEvent.click(screen.getByPlaceholderText("Select time"));
+    fireEvent.keyDown(screen.getByRole("dialog"), { key: "Escape" });
+    expect(screen.queryByRole("dialog")).toBeNull();
+    fireEvent.click(trigger);
+    fireEvent.pointerDown(document.body);
+    expect(screen.queryByRole("dialog")).toBeNull();
+  });
+
+  test("disables panel choices and honors controlled open", () => {
+    const changes: boolean[] = [];
+    const { rerender } = render(
+      <TimePicker open={false} onOpenChange={(open) => changes.push(open)} />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Open time picker" }));
+    expect(changes).toEqual([true]);
+    expect(screen.queryByRole("dialog")).toBeNull();
+    rerender(
+      <TimePicker open disabledTime={() => ({ disabledHours: () => [13] })} />,
+    );
+    expect(
+      (screen.getByRole("option", { name: "Hour 13" }) as HTMLButtonElement)
+        .disabled,
+    ).toBe(true);
+    rerender(<TimePicker open disabled />);
+    expect(screen.queryByRole("dialog")).toBeNull();
+  });
+
   test("renders value with format, size, status, and classes", () => {
     const { container } = render(
       <TimePicker
@@ -124,5 +176,50 @@ describe("TimePicker", () => {
 
     expect(changedValue).toEqual(["09:00:00", "18:30:00"]);
     expect(changedStrings).toEqual(["09:00:00", "18:30:00"]);
+  });
+
+  test("keeps controlled partial time text editable and forwards native input attributes", () => {
+    let changed: unknown;
+    let formatted = "initial";
+    let ignored = false;
+    function ControlledTime() {
+      const [value, setValue] = React.useState<string | Date | undefined>("");
+      return (
+        <TimePicker
+          value={value}
+          inputProps={{
+            id: "clock",
+            "aria-label": "Meeting time",
+            "aria-invalid": true,
+            value: "wrong",
+            onChange: () => {
+              ignored = true;
+            },
+          }}
+          onChange={(next, text) => {
+            changed = next;
+            formatted = text;
+            setValue(next ?? "");
+          }}
+        />
+      );
+    }
+    render(<ControlledTime />);
+    const input = screen.getByRole("textbox", {
+      name: "Meeting time",
+    }) as HTMLInputElement;
+    expect(input.id).toBe("clock");
+    expect(input.type).toBe("text");
+    expect(input.getAttribute("aria-invalid")).toBe("true");
+    for (const value of ["1", "12", "12:", "12:3"]) {
+      fireEvent.change(input, { target: { value } });
+      expect(input.value).toBe(value);
+      expect(changed).toBe(value);
+      expect(formatted).toBe("");
+    }
+    fireEvent.change(input, { target: { value: "12:30:05" } });
+    expect(input.value).toBe("12:30:05");
+    expect(formatted).toBe("12:30:05");
+    expect(ignored).toBe(false);
   });
 });

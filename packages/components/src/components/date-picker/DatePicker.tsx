@@ -1,4 +1,7 @@
 import React, { forwardRef, useMemo, useState } from "react";
+import { Calendar } from "../calendar";
+import type { CalendarMode } from "../calendar";
+import { usePickerDropdown } from "./usePickerDropdown";
 import {
   datePickerClearClass,
   datePickerFooterClass,
@@ -57,6 +60,7 @@ const DatePickerRoot = forwardRef<HTMLDivElement, DatePickerProps>(
     {
       allowClear,
       className,
+      inputProps,
       defaultOpen,
       defaultValue,
       disabled,
@@ -77,25 +81,23 @@ const DatePickerRoot = forwardRef<HTMLDivElement, DatePickerProps>(
     },
     ref,
   ) => {
+    const [calendarMode, setCalendarMode] = useState<CalendarMode>("month");
     const isValueControlled = value !== undefined;
-    const isOpenControlled = open !== undefined;
     const [innerValue, setInnerValue] = useState(() =>
       normalizeDateValue(defaultValue),
     );
-    const [innerOpen, setInnerOpen] = useState(Boolean(defaultOpen));
+    const dropdown = usePickerDropdown({
+      open,
+      defaultOpen,
+      disabled,
+      onOpenChange,
+      ref,
+    });
     const currentValue = isValueControlled
       ? normalizeDateValue(value)
       : innerValue;
-    const visible = isOpenControlled ? Boolean(open) : innerOpen;
+    const { visible, setVisible } = dropdown;
     const inputType = inputTypeForPicker(picker);
-
-    function setVisible(nextOpen: boolean) {
-      if (!isOpenControlled) {
-        setInnerOpen(nextOpen);
-      }
-
-      onOpenChange?.(nextOpen);
-    }
 
     function emitChange(nextValue: string | undefined) {
       if (nextValue && disabledDate?.(nextValue)) {
@@ -109,12 +111,19 @@ const DatePickerRoot = forwardRef<HTMLDivElement, DatePickerProps>(
       onChange?.(nextValue, nextValue ?? "");
     }
 
+    function selectValue(nextValue: string) {
+      if (disabledDate?.(nextValue)) return;
+      emitChange(nextValue);
+      dropdown.closeAndFocus();
+    }
+
     const presetItems = useMemo(() => presets ?? [], [presets]);
 
     return (
       <div
         {...props}
-        ref={ref}
+        ref={dropdown.rootRef}
+        onBlur={dropdown.onRootBlur}
         className={getDatePickerClasses({
           size,
           status,
@@ -125,6 +134,10 @@ const DatePickerRoot = forwardRef<HTMLDivElement, DatePickerProps>(
         })}
       >
         <input
+          {...inputProps}
+          ref={dropdown.inputRef}
+          aria-haspopup="dialog"
+          aria-controls={visible ? dropdown.panelId : undefined}
           className={datePickerInputClass}
           disabled={disabled}
           type={inputType}
@@ -132,12 +145,12 @@ const DatePickerRoot = forwardRef<HTMLDivElement, DatePickerProps>(
           placeholder={placeholder ?? placeholderForPicker(picker)}
           onFocus={(event) => {
             onFocus?.(event);
-            setVisible(true);
+            dropdown.onInputFocus();
           }}
           onBlur={(event) => {
             onBlur?.(event);
-            setVisible(false);
           }}
+          onClick={() => setVisible(true)}
           onChange={(event) =>
             emitChange(event.currentTarget.value || undefined)
           }
@@ -153,16 +166,86 @@ const DatePickerRoot = forwardRef<HTMLDivElement, DatePickerProps>(
             x
           </button>
         ) : null}
-        <span className={datePickerIconClass} aria-hidden="true" />
-        {(presetItems.length > 0 || showNow) && visible ? (
-          <div className={getDatePickerDropdownClasses({ open: visible })}>
+        <button
+          type="button"
+          className={datePickerIconClass}
+          aria-label="Open date picker"
+          aria-haspopup="dialog"
+          aria-expanded={visible}
+          aria-controls={visible ? dropdown.panelId : undefined}
+          disabled={disabled}
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={() => setVisible(!visible)}
+        >
+          <svg
+            aria-hidden="true"
+            focusable="false"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.75"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <rect x="3" y="5" width="18" height="16" rx="2" />
+            <path d="M8 3v4M16 3v4M3 10h18" />
+          </svg>
+        </button>
+        {visible ? (
+          <div
+            id={dropdown.panelId}
+            role="dialog"
+            aria-label="Choose date"
+            className={getDatePickerDropdownClasses({ open: visible })}
+          >
+            {picker === "date" || picker === "month" ? (
+              <Calendar
+                fullscreen={false}
+                value={currentValue}
+                mode={picker === "month" ? "year" : calendarMode}
+                onPanelChange={(_, mode) => {
+                  if (picker === "date") setCalendarMode(mode);
+                }}
+                disabledDate={(date) => {
+                  if (!disabledDate) return false;
+                  if (picker === "month") return disabledDate(date.slice(0, 7));
+                  if (calendarMode === "year") {
+                    const [year, month] = date.split("-").map(Number);
+                    const days = new Date(year, month, 0).getDate();
+                    return Array.from(
+                      { length: days },
+                      (_, index) =>
+                        `${date.slice(0, 7)}-${String(index + 1).padStart(2, "0")}`,
+                    ).every((day) => disabledDate(day));
+                  }
+                  return disabledDate(date);
+                }}
+                onSelect={(date, info) => {
+                  if (picker === "date" && info.source === "month") {
+                    setCalendarMode("month");
+                    return;
+                  }
+                  selectValue(picker === "month" ? date.slice(0, 7) : date);
+                }}
+              />
+            ) : (
+              <input
+                type={inputType}
+                aria-label={placeholderForPicker(picker)}
+                value={currentValue ?? ""}
+                onChange={(event) => selectValue(event.currentTarget.value)}
+              />
+            )}
             {presetItems.map((preset, index) => (
               <button
                 key={index}
                 type="button"
                 className={datePickerPresetClass}
                 onMouseDown={(event) => event.preventDefault()}
-                onClick={() => emitChange(preset.value)}
+                disabled={Boolean(disabledDate?.(preset.value))}
+                onClick={() => selectValue(preset.value)}
               >
                 {preset.label}
               </button>
@@ -172,7 +255,8 @@ const DatePickerRoot = forwardRef<HTMLDivElement, DatePickerProps>(
                 <button
                   type="button"
                   onMouseDown={(event) => event.preventDefault()}
-                  onClick={() => emitChange(todayValue(picker))}
+                  disabled={Boolean(disabledDate?.(todayValue(picker)))}
+                  onClick={() => selectValue(todayValue(picker))}
                 >
                   Now
                 </button>
@@ -192,6 +276,7 @@ const RangePicker = forwardRef<HTMLDivElement, RangePickerProps>(
     {
       allowClear,
       className,
+      inputProps,
       defaultValue,
       disabled,
       disabledDate,
@@ -251,6 +336,7 @@ const RangePicker = forwardRef<HTMLDivElement, RangePickerProps>(
         })}
       >
         <input
+          {...inputProps}
           className={datePickerInputClass}
           disabled={disabled}
           type={inputType}
@@ -264,6 +350,8 @@ const RangePicker = forwardRef<HTMLDivElement, RangePickerProps>(
         />
         <span className={datePickerSeparatorClass}>{separator}</span>
         <input
+          {...inputProps}
+          id={inputProps?.id ? `${inputProps.id}-end` : undefined}
           className={datePickerInputClass}
           disabled={disabled}
           type={inputType}

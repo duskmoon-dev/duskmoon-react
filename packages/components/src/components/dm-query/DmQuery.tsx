@@ -17,6 +17,7 @@ function toSearchItem(item: DmQueryItem): DmSearchItem {
       type: item.type,
       extraProps: item.extraProps,
       formProps: item.customProps,
+      render: item.render,
     },
   };
 }
@@ -54,25 +55,13 @@ export const DmQuery = forwardRef<DmQueryRef, DmQueryProps>(
       <DmSearch
         {...props}
         ref={searchRef}
-        defaultCollapsed={collapsed}
+        defaultCollapsed={props.defaultCollapsed ?? collapsed}
         items={collapsed ? queryItem.map(toSearchItem) : items}
         fastFilterItem={
           fastFilterItem ? toSearchItem(fastFilterItem) : undefined
         }
         onSearch={onSearch}
-        extra={
-          <>
-            {props.extra}
-            <button
-              type="button"
-              hidden
-              onClick={() => {
-                searchRef.current?.onReset();
-                onReset?.();
-              }}
-            />
-          </>
-        }
+        onReset={onReset}
       />
     );
   },

@@ -4,7 +4,14 @@ import {
   componentPageContentFor,
   type ComponentPageContent,
 } from "./component-page-content";
+import {
+  categoryForTarget,
+  DOC_CATEGORIES,
+  type DocCategoryId,
+} from "./docs-categories";
 import { docsPath } from "./paths";
+import { chatDemoExamples } from "./chat-demo-examples";
+import { dmLayoutDemoExamples } from "./dm-layout-demo-examples";
 
 type Target = {
   id: string;
@@ -41,6 +48,7 @@ export type ApiSection = {
 export type ComponentDoc = Target & {
   title: string;
   route: string;
+  categoryId: DocCategoryId;
   category: string;
   intro: string;
   pageContent: ComponentPageContent;
@@ -172,14 +180,6 @@ function componentName(target: Target) {
     .split("-")
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join("");
-}
-
-function categoryFor(kind: string) {
-  if (kind === "art-component") return "CSS Art";
-  if (kind === "dm-workflow-component") return "DuskMoon workflow";
-  if (kind === "infrastructure-export") return "Infrastructure";
-  if (kind === "internal-component") return "Internal";
-  return "Standard";
 }
 
 function sentenceCase(text: string) {
@@ -683,23 +683,63 @@ function demoCode(
   <${name}.Avatar>
     <span className="avatar avatar-sm avatar-info">AI</span>
   </${name}.Avatar>
-  <${name}.Header>Assistant · just now</${name}.Header>
-  <${name}.Reasoning open>
-    <summary>Thinking (2s)</summary>
-    <div>Reviewing the component API before answering.</div>
-  </${name}.Reasoning>
-  <${name}.Tool status="success" open>
-    <${name}.ToolHeader>
-      <span>search_components</span>
-      <${name}.ToolStatus>Done</${name}.ToolStatus>
-    </${name}.ToolHeader>
-    <${name}.ToolCall>{'{"query":"chat"}'}</${name}.ToolCall>
-    <${name}.ToolResult>Found the DuskMoon Chat primitives.</${name}.ToolResult>
-  </${name}.Tool>
-  <${name}.Bubble color="primary" streaming>
-    Chat is ready for React.
+  <${name}.Header>Assistant - 2:18 PM</${name}.Header>
+  <${name}.Bubble>
+    <${name}.Reasoning open>
+      <summary>Thinking (3s)</summary>
+      <div className="chat-reasoning-body">
+        <div>I should call the weather tool, then summarize the result in one sentence.</div>
+        <${name}.Tool status="running" open>
+          <${name}.ToolHeader>
+            <span>get_weather</span>
+            <${name}.ToolStatus>Running...</${name}.ToolStatus>
+          </${name}.ToolHeader>
+          <${name}.ToolCall>
+            <div className="code-block code-block-compact">
+              <div className="code-header">
+                <span className="code-title">Call</span>
+                <span className="code-language">json</span>
+              </div>
+              <div className="code-content">
+                <pre tabIndex={0} aria-label="Call JSON payload"><code>{'{"city":"Tokyo"}'}</code></pre>
+              </div>
+            </div>
+          </${name}.ToolCall>
+        </${name}.Tool>
+        <div>Tool returned cloudy at 18 C. Drafting the final answer.</div>
+      </div>
+    </${name}.Reasoning>
+    <${name}.Tool status="success" open>
+      <${name}.ToolHeader>
+        <span>get_weather</span>
+        <${name}.ToolStatus>Done</${name}.ToolStatus>
+      </${name}.ToolHeader>
+      <${name}.ToolCall>
+        <div className="code-block code-block-compact">
+          <div className="code-header">
+            <span className="code-title">Call</span>
+            <span className="code-language">json</span>
+          </div>
+          <div className="code-content">
+            <pre tabIndex={0} aria-label="Call JSON payload"><code>{'{"city":"Tokyo"}'}</code></pre>
+          </div>
+        </div>
+      </${name}.ToolCall>
+      <${name}.ToolResult>
+        <div className="code-block code-block-compact">
+          <div className="code-header">
+            <span className="code-title">Result</span>
+            <span className="code-language">json</span>
+          </div>
+          <div className="code-content">
+            <pre tabIndex={0} aria-label="Result JSON payload"><code>{'{"temperature":"18 C","condition":"cloudy"}'}</code></pre>
+          </div>
+        </div>
+      </${name}.ToolResult>
+    </${name}.Tool>
+    <div className="chat-bubble-content chat-bubble-streaming">It is 18 C and cloudy in Tokyo right now.</div>
   </${name}.Bubble>
-  <${name}.Footer>Delivered</${name}.Footer>
+  <${name}.Footer>Streaming</${name}.Footer>
 </${name}>`;
   }
 
@@ -959,25 +999,6 @@ function demoCode(
     return `<${name} type="primary" icon="+" tooltip="Create" />`;
   }
 
-  if (target.id === "fab") {
-    return `<${name}
-  label="Create"
-  actions={<button type="button" className="fab-action">New note</button>}
->
-  +
-</${name}>`;
-  }
-
-  if (target.id === "megamenu") {
-    return `<${name}
-  aria-label="Products"
-  trigger="Products"
-  panelHeading="Explore products"
-  panel={<a href="/components/button">Components</a>}
-  mobile={<a href="/components/button">Components</a>}
-/>`;
-  }
-
   if (target.id === "form") {
     return `<${name}
   layout="vertical"
@@ -1110,11 +1131,11 @@ function demoCode(
 
   if (target.id === "modal") {
     return `<${name}
-  open
+  defaultOpen
   title="Release checklist"
   width={420}
   onOk={() => console.log("ok")}
-  onCancel={() => console.log("cancel")}
+  onCancel={() => console.log("closed")}
 >
   Review component styles before publishing the package.
 </${name}>`;
@@ -1210,25 +1231,6 @@ function demoCode(
   defaultChecked
   checkedChildren="On"
   unCheckedChildren="Off"
-/>`;
-  }
-
-  if (target.id === "console-page") {
-    return `<${name}
-  appBar={<strong>Workspace</strong>}
-  sidebar={<nav aria-label="Sections">Navigation</nav>}
-  sidebarMode="compact"
->
-  <p>Dashboard content</p>
-</${name}>`;
-  }
-
-  if (target.id === "swap") {
-    return `<${name}
-  aria-label="Toggle navigation"
-  off="Menu"
-  on="Close"
-  rotate
 />`;
   }
 
@@ -1520,6 +1522,137 @@ function colorDemoFor(
   };
 }
 
+function buttonFeatureDemos(
+  importPath: string,
+  componentStyleImport: string,
+): DemoSpec[] {
+  const imports = `${componentStyleImport}\nimport { Button } from "${importPath}";`;
+  const appearances = `const appearances = ["filled", "outline", "tonal", "ghost", "text"] as const;`;
+
+  return [
+    {
+      title: "Appearances",
+      description:
+        "Compare the five Button appearances, including outline and ghost treatments.",
+      code: `${imports}\n\n${appearances}\n\nexport function ButtonAppearancesDemo() {\n  return (\n    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>\n      {appearances.map((appearance) => (\n        <Button key={appearance} appearance={appearance}>\n          {appearance}\n        </Button>\n      ))}\n    </div>\n  );\n}`,
+      source: "authored",
+    },
+    {
+      title: "Loading states",
+      description:
+        "Loading adds a spinner and disables the button while preserving each appearance and size.",
+      code: `${imports}\n\n${appearances}\n\nexport function ButtonLoadingDemo() {\n  return (\n    <div style={{ display: "grid", gap: 12 }}>\n      {appearances.map((appearance) => (\n        <div key={appearance} style={{ display: "flex", gap: 8, alignItems: "center" }}>\n          <span style={{ minWidth: 68 }}>{appearance}</span>\n          <Button appearance={appearance} isLoading>Saving</Button>\n          <Button appearance={appearance} size="sm" isLoading>Saving</Button>\n          <Button appearance={appearance} size="lg" isLoading>Saving</Button>\n        </div>\n      ))}\n    </div>\n  );\n}`,
+      source: "authored",
+    },
+    {
+      title: "Interactive loading",
+      description:
+        "Click Save to show the loading state briefly; the button is disabled until it finishes.",
+      code: `${componentStyleImport}\nimport { useEffect, useRef, useState } from "react";\nimport { Button } from "${importPath}";\n\nexport function InteractiveLoadingDemo() {\n  const [isLoading, setIsLoading] = useState(false);\n  const timeoutRef = useRef<number | null>(null);\n\n  useEffect(() => () => {\n    if (timeoutRef.current !== null) window.clearTimeout(timeoutRef.current);\n  }, []);\n\n  function save() {\n    setIsLoading(true);\n    timeoutRef.current = window.setTimeout(() => {\n      timeoutRef.current = null;\n      setIsLoading(false);\n    }, 900);\n  }\n\n  return (\n    <div style={{ display: "grid", gap: 8, justifyItems: "start" }}>\n      <Button isLoading={isLoading} onClick={save}>Save changes</Button>\n      <span role="status">{isLoading ? "Saving changes…" : "Ready to save"}</span>\n    </div>\n  );\n}`,
+      source: "authored",
+    },
+    {
+      title: "Disabled states",
+      description:
+        "Use the native disabled prop to prevent interaction across Button appearances.",
+      code: `${imports}\n\n${appearances}\n\nexport function DisabledButtonsDemo() {\n  return (\n    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>\n      {appearances.map((appearance) => (\n        <Button key={appearance} appearance={appearance} disabled>\n          {appearance}\n        </Button>\n      ))}\n    </div>\n  );\n}`,
+      source: "authored",
+    },
+    {
+      title: "Icon buttons",
+      description:
+        "Use leftIcon or rightIcon beside text, and give icon-only buttons an accessible label. Circular buttons use fixed icon sizes.",
+      code: `${imports}\n\nexport function ButtonIconsDemo() {\n  const addIcon = <svg aria-hidden="true" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" d="M12 5v14M5 12h14" /></svg>;\n  const downloadIcon = <svg aria-hidden="true" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v12m-4-4 4 4 4-4M4 17v3h16v-3" /></svg>;\n  const closeIcon = <svg aria-hidden="true" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" d="M6 6l12 12M18 6 6 18" /></svg>;\n\n  return (\n    <div style={{ display: "grid", gap: 12 }}>\n      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>\n        <Button leftIcon={addIcon}>Add item</Button>\n        <Button appearance="outline" rightIcon={downloadIcon}>\n          Download\n        </Button>\n      </div>\n      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>\n        <Button shape="circle" aria-label="Close">{closeIcon}</Button>\n        <Button shape="circle" size="sm" appearance="outline" aria-label="Add">{addIcon}</Button>\n        <Button shape="circle" size="lg" appearance="tonal" aria-label="Close">{closeIcon}</Button>\n        <Button shape="square" appearance="outline" aria-label="Add">{addIcon}</Button>\n      </div>\n    </div>\n  );\n}`,
+      source: "authored",
+    },
+    {
+      title: "Tooltip composition",
+      description:
+        "Wrap a Button with Tooltip to show help on hover or focus.",
+      code: `${componentStyleImport}\nimport { Button } from "${importPath}";\nimport { Tooltip } from "@duskmoon-dev/components";\n\nexport function TooltipButtonDemo() {\n  return (\n    <Tooltip id="save-help" title="Save your changes" defaultOpen>\n      <Button>Save</Button>\n    </Tooltip>\n  );\n}`,
+      source: "authored",
+    },
+    {
+      title: "Confirmation popover form",
+      description:
+        "The action callback runs only after confirmation; cancelling leaves the confirmed count unchanged.",
+      code: `${componentStyleImport}\nimport { useState } from "react";\nimport { Button } from "${importPath}";\n\nexport function ConfirmButtonDemo() {\n  const [deletedCount, setDeletedCount] = useState(0);\n\n  return (\n    <div style={{ display: "grid", gap: 8, justifyItems: "start" }}>\n      <Button\n        color="error"\n        confirm={{\n          title: "Delete this item?",\n          message: "This action cannot be undone.",\n          confirmText: "Delete",\n          cancelText: "Cancel",\n        }}\n        onClick={() => setDeletedCount((count) => count + 1)}\n      >\n        Delete item\n      </Button>\n      <span role="status">Confirmed deletions: {deletedCount}</span>\n    </div>\n  );\n}`,
+      source: "authored",
+    },
+    {
+      title: "Custom confirmation content",
+      description:
+        "Pass a component without its own form as confirmation body content; Button keeps the confirmation controls and runs the action only after approval.",
+      code: `${componentStyleImport}\nimport { useState } from "react";\nimport { Button } from "${importPath}";\n\nfunction DeleteConfirmContent() {\n  return <p>Delete this draft and discard its unsaved changes?</p>;\n}\n\nexport function CustomConfirmButtonDemo() {\n  const [deletedCount, setDeletedCount] = useState(0);\n\n  return (\n    <div style={{ display: "grid", gap: 8, justifyItems: "start" }}>\n      <Button\n        color="error"\n        confirm={{ component: <DeleteConfirmContent /> }}\n        onClick={() => setDeletedCount((count) => count + 1)}\n      >\n        Delete draft\n      </Button>\n      <span role="status">Confirmed draft deletions: {deletedCount}</span>\n    </div>\n  );\n}`,
+      source: "authored",
+    },
+  ];
+}
+
+function dropdownFeatureDemos(
+  importLine: string,
+  componentStyleImport: string,
+): DemoSpec[] {
+  const imports = `${componentStyleImport}\nimport React from "react";\n${importLine}\nimport { Button, Tooltip } from "@duskmoon-dev/components";`;
+  const iconsAndMenu = `function UserIcon() {
+  return <svg aria-hidden="true" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.25" /><path strokeLinecap="round" d="M5.5 20a6.5 6.5 0 0 1 13 0" /></svg>;
+}
+
+const actionMenu = {
+  items: [
+    { key: "overview", label: "Overview", icon: <UserIcon /> },
+    { key: "members", label: "Members", icon: <UserIcon /> },
+    { key: "delete", label: "Delete workspace", danger: true, icon: <UserIcon /> },
+    { key: "invite", label: "Invite member", disabled: true, icon: <UserIcon /> },
+  ]
+};`;
+
+  return [
+    {
+      title: "Split buttons",
+      description:
+        "Use the split button for a primary action alongside a menu of related workspace actions.",
+      code: `${imports}\n\n${iconsAndMenu}\n\nexport function DropdownSplitButtonsDemo() {\n  return (\n    <Dropdown.Button appearance="outline" color="base" menu={actionMenu}>\n      Actions\n    </Dropdown.Button>\n  );\n}`,
+      source: "authored",
+    },
+    {
+      title: "Custom trigger icon",
+      description:
+        "Replace the split button trigger content with a custom icon while preserving its click behavior.",
+      code: `${imports}\n\n${iconsAndMenu}\n\nexport function DropdownCustomTriggerIconDemo() {\n  return (\n    <Dropdown.Button\n      appearance="outline"\n      color="base"\n      buttonsRender={(buttons) => [\n        buttons[0],\n        React.cloneElement(buttons[1] as React.ReactElement<{ children?: React.ReactNode }>, { children: <UserIcon /> }),\n      ]}\n      menu={actionMenu}\n    >\n      Actions\n    </Dropdown.Button>\n  );\n}`,
+      source: "authored",
+    },
+    {
+      title: "Disabled split button",
+      description:
+        "Disable both parts of the split button when the action menu is unavailable.",
+      code: `${imports}\n\n${iconsAndMenu}\n\nexport function DisabledDropdownSplitButtonDemo() {\n  return (\n    <Dropdown.Button appearance="outline" color="base" disabled menu={actionMenu}>\n      Actions\n    </Dropdown.Button>\n  );\n}`,
+      source: "authored",
+    },
+    {
+      title: "Tooltip on trigger",
+      description:
+        "Wrap only the menu trigger with a Tooltip to explain where it leads.",
+      code: `${imports}\n\n${iconsAndMenu}\n\nexport function DropdownTooltipTriggerDemo() {\n  return (\n    <Dropdown.Button\n      appearance="outline"\n      color="base"\n      buttonsRender={(buttons) => [\n        buttons[0],\n        <Tooltip key="trigger" id="dropdown-trigger-help" title="Open workspace actions">\n          {buttons[1]}\n        </Tooltip>,\n      ]}\n      menu={actionMenu}\n    >\n      Actions\n    </Dropdown.Button>\n  );\n}`,
+      source: "authored",
+    },
+    {
+      title: "Button and danger",
+      description:
+        "Use a regular Button as a dropdown trigger, and reserve the error color for destructive split actions.",
+      code: `${imports}\n\n${iconsAndMenu}\n\nfunction ChevronDownIcon() {\n  return <svg aria-hidden="true" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m6 9 6 6 6-6" /></svg>;\n}\n\nexport function DropdownButtonAndDangerDemo() {\n  return (\n    <div className="dropdown-button-danger-preview" style={{ display: "flex", flexWrap: "wrap", gap: 16, alignItems: "flex-start" }}>\n      <Dropdown trigger={["click"]} menu={actionMenu}>\n        <Button appearance="outline" color="base" rightIcon={<ChevronDownIcon />}>\n          Actions\n        </Button>\n      </Dropdown>\n      <Dropdown.Button appearance="outline" color="error" menu={actionMenu}>\n        Delete\n      </Dropdown.Button>\n    </div>\n  );\n}`,
+      source: "authored",
+    },
+    {
+      title: "Menu item states",
+      description:
+        "Combine regular, destructive, and unavailable menu items in one open menu preview.",
+      code: `${imports}\n\n${iconsAndMenu}\n\nexport function DropdownMenuItemStatesDemo() {\n  return (\n    <Dropdown.Button\n      appearance="outline"\n      color="base"\n      defaultOpen\n      menu={actionMenu}\n    >\n      Actions\n    </Dropdown.Button>\n  );\n}`,
+      source: "authored",
+    },
+  ];
+}
+
 function demosFor(
   target: Target,
   name: string,
@@ -1574,6 +1707,135 @@ export function MarkdownFeaturesDemo() {
     ];
   }
 
+  const nativeDemos: Record<string, { description: string; code: string }> = {
+    "otp-input": {
+      description:
+        "Type or paste a code into one native input; reset returns the form value to empty.",
+      code: `import { useState } from "react";
+import "@duskmoon-dev/components/styles.css";
+import { OtpInput } from "@duskmoon-dev/components/otp-input";
+
+export function OtpInputDemo() {
+  const [code, setCode] = useState("");
+  return <form onReset={() => setCode("")}>
+    <label htmlFor="demo-otp">Verification code</label>
+    <OtpInput id="demo-otp" name="code" length={6} required
+      aria-describedby="demo-otp-help" onChange={(event) => setCode(event.currentTarget.value)} />
+    <p id="demo-otp-help">Entered {code.length} of 6 digits</p>
+    <button type="reset">Reset</button>
+  </form>;
+}`,
+    },
+    swap: {
+      description:
+        "The native checkbox drives both the visual slot and a visible preference value.",
+      code: `import { useState } from "react";
+import "@duskmoon-dev/components/styles.css";
+import { Swap } from "@duskmoon-dev/components/swap";
+
+export function SwapDemo() {
+  const [dark, setDark] = useState(false);
+  return <div>
+    <Swap aria-label="Use dark appearance" checked={dark}
+      onChange={(event) => setDark(event.currentTarget.checked)}
+      off="☀️" on="🌙" rotate />
+    <p>Appearance: {dark ? "Dark" : "Light"}</p>
+  </div>;
+}`,
+    },
+    fab: {
+      description:
+        "Open the browser-managed action panel and choose a real action.",
+      code: `import { useState } from "react";
+import "@duskmoon-dev/components/styles.css";
+import { Fab, Button } from "@duskmoon-dev/components";
+
+export function FabDemo() {
+  const [action, setAction] = useState("None");
+  return <div style={{ position: "relative", minHeight: 220 }}>
+    <Fab contained speedDial>
+      <Fab.Trigger aria-label="Create" shape="square">+</Fab.Trigger>
+      <Fab.Actions>
+        <Fab.Action><Fab.Label>New message</Fab.Label>
+          <Button type="button" aria-label="New message" onClick={() => setAction("Message")}>✉</Button>
+        </Fab.Action>
+        <Fab.Action><Fab.Label>New note</Fab.Label>
+          <Button type="button" aria-label="New note" onClick={() => setAction("Note")}>✎</Button>
+        </Fab.Action>
+      </Fab.Actions>
+    </Fab>
+    <p>Selected action: {action}</p>
+  </div>;
+}`,
+    },
+    megamenu: {
+      description:
+        "Each trigger opens its own native popover; Escape and light dismissal are browser-managed.",
+      code: `import "@duskmoon-dev/components/styles.css";
+import { Megamenu } from "@duskmoon-dev/components/megamenu";
+
+export function MegamenuDemo() {
+  return <Megamenu aria-label="Product navigation">
+    <Megamenu.Bar>
+      <Megamenu.Item>
+        <Megamenu.Trigger>Products</Megamenu.Trigger>
+        <Megamenu.Panel>
+          <Megamenu.Heading>Products</Megamenu.Heading>
+          <Megamenu.Grid><Megamenu.Group>
+            <a className="link" href="#components">Components</a>
+          </Megamenu.Group></Megamenu.Grid>
+        </Megamenu.Panel>
+      </Megamenu.Item>
+      <li><a className="link" href="#components">All products</a></li>
+    </Megamenu.Bar>
+    <Megamenu.Mobile summary="Products">
+      <a className="link" href="#components">Components</a>
+    </Megamenu.Mobile>
+  </Megamenu>;
+}`,
+    },
+    "console-page": {
+      description:
+        "Cycle three sidebar states and open the native mobile navigation on narrow screens.",
+      code: `import { useState } from "react";
+import "@duskmoon-dev/components/styles.css";
+import { ConsolePage } from "@duskmoon-dev/components/console-page";
+
+export function ConsolePageDemo() {
+  const [state, setState] = useState<"expanded" | "compact" | "hidden">("expanded");
+  const next = { expanded: "compact", compact: "hidden", hidden: "expanded" } as const;
+  return <ConsolePage sidebarState={state}>
+    <ConsolePage.Frame>
+      <ConsolePage.Appbar>
+        <ConsolePage.SidebarToggle onClick={() => setState(next[state])}>☰</ConsolePage.SidebarToggle>
+        <ConsolePage.MobileTrigger aria-label="Open navigation">☰</ConsolePage.MobileTrigger>
+        <ConsolePage.MobileMenu aria-label="Mobile navigation">
+          <a className="menu-item" href="#overview">Overview</a>
+        </ConsolePage.MobileMenu>
+        <strong>Operations</strong>
+      </ConsolePage.Appbar>
+      <ConsolePage.Sidebar><ConsolePage.SidebarBody aria-label="Sections">
+        <a className="drawer-item" href="#overview">Overview</a>
+      </ConsolePage.SidebarBody></ConsolePage.Sidebar>
+      <ConsolePage.Main id="overview">Workspace · {state}</ConsolePage.Main>
+    </ConsolePage.Frame>
+  </ConsolePage>;
+}`,
+    },
+  };
+
+  const nativeDemo = nativeDemos[target.id];
+  if (nativeDemo) {
+    return [
+      {
+        title: "Interactive usage",
+        description: nativeDemo.description,
+        code: nativeDemo.code,
+        source: "authored",
+      },
+    ];
+  }
+
   if (target.id === "breakpoint") {
     return [
       {
@@ -1597,6 +1859,44 @@ export function MarkdownFeaturesDemo() {
     importLine,
     componentStyleImport,
   );
+
+  if (target.id === "chat") {
+    return chatDemoExamples.map((example) => ({ ...example }));
+  }
+
+  if (target.id === "dm-layout") {
+    return dmLayoutDemoExamples.map((example) => ({ ...example }));
+  }
+
+  if (target.id === "modal") {
+    return [{
+      title: "Controlled native modal",
+      description:
+        "Modal uses native showModal and close. A controlled onCancel must update open; its ref and div props remain on the inner modal box. Apply maskClassName to the dialog for ::backdrop styling. Static Modal.confirm/info/success/error/warning handles are retained but do not render a service surface yet.",
+      code: `${componentStyleImport}\nimport { useState } from "react";\n${importLine}\n\nexport function ReleaseChecklist() {\n  const [open, setOpen] = useState(false);\n  return (\n    <>\n      <button type="button" onClick={() => setOpen(true)}>Review release</button>\n      <${name}\n        open={open}\n        title="Release checklist"\n        onCancel={() => setOpen(false)}\n        onOk={() => setOpen(false)}\n        maskClassName="release-mask"\n      >\n        Review component styles before publishing.\n      </${name}>\n    </>\n  );\n}`,
+      source: "authored",
+    }];
+  }
+
+  if (target.id === "button") {
+    return [
+      ...(colorDemo ? [colorDemo] : []),
+      {
+        title: "Basic usage",
+        description: `Import the component stylesheet and ${name} from its package subpath, then render it with the core props.`,
+        code: `${componentStyleImport}\n${importLine}\n\nexport function Example() {\n  return (${usage});\n}`,
+        source: "authored",
+      },
+      ...buttonFeatureDemos(importPath, componentStyleImport),
+      {
+        title: "Theme aware",
+        description:
+          "Docs previews inherit the DuskMoon data-theme value. Use the header switch to compare light and dark rendering.",
+        code: `<div data-theme="sunshine">\n  ${usage}\n</div>\n\n<div data-theme="moonlight">\n  ${usage}\n</div>`,
+        source: "authored",
+      },
+    ];
+  }
 
   if (target.kind === "art-component") {
     return [
@@ -1632,6 +1932,26 @@ export function MarkdownFeaturesDemo() {
     };
   });
 
+  if (target.id === "dropdown") {
+    return [
+      {
+        title: "Basic usage",
+        description: `Import the component stylesheet and ${name} from its package subpath, then render it with the core props.`,
+        code: `${componentStyleImport}\n${importLine}\n\nexport function Example() {\n  return (${usage});\n}`,
+        source: "authored",
+      },
+      ...scenarioDemos,
+      ...dropdownFeatureDemos(importLine, componentStyleImport),
+      {
+        title: "Theme aware",
+        description:
+          "Docs previews inherit the DuskMoon data-theme value. Use the header switch to compare light and dark rendering.",
+        code: `<div data-theme="sunshine">\n  ${usage}\n</div>\n\n<div data-theme="moonlight">\n  ${usage}\n</div>`,
+        source: "authored",
+      },
+    ];
+  }
+
   return [
     ...(colorDemo ? [colorDemo] : []),
     {
@@ -1659,7 +1979,8 @@ function toDoc(target: Target): ComponentDoc {
   const scenarios =
     target.manualScenarios?.map(sentenceCase) ?? scenariosFromTest(testFile);
   const keyProps = keyPropsFromApi(api);
-  const category = categoryFor(target.kind);
+  const categoryId = categoryForTarget(target);
+  const category = DOC_CATEGORIES.find(({ id }) => id === categoryId)!.title;
   const pageContent = componentPageContentFor({
     id: target.id,
     name,
@@ -1674,6 +1995,7 @@ function toDoc(target: Target): ComponentDoc {
     ...target,
     title: name,
     route: docsPath(`/components/${target.id}`),
+    categoryId,
     category,
     intro: pageContent.summary || introFor(target, name, scenarios, keyProps),
     pageContent,
@@ -1706,5 +2028,15 @@ export function getComponentDoc(id: string) {
 }
 
 export function getDocsByCategory() {
-  return Map.groupBy(getComponentDocs(), (component) => component.category);
+  const docsByCategory = new Map<string, ComponentDoc[]>();
+  const docs = getComponentDocs();
+
+  for (const { title } of DOC_CATEGORIES) {
+    const categoryDocs = docs.filter(
+      (component) => component.category === title,
+    );
+    if (categoryDocs.length > 0) docsByCategory.set(title, categoryDocs);
+  }
+
+  return docsByCategory;
 }

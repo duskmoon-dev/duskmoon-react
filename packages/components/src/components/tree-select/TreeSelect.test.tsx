@@ -120,4 +120,37 @@ describe("TreeSelect", () => {
     expect(TreeSelect.SHOW_PARENT).toBe("SHOW_PARENT");
     expect(TreeSelect.SHOW_CHILD).toBe("SHOW_CHILD");
   });
+
+  test("binds root, trigger, search, and option elements to default theme selectors", () => {
+    const { container } = render(
+      <TreeSelect treeData={treeData} showSearch multiple />,
+    );
+    const trigger = screen.getByRole("button", {
+      name: "Please select",
+    }) as HTMLButtonElement;
+    expect(trigger.classList.contains("tree-select-trigger")).toBe(true);
+    expect(trigger.classList.contains("tree-select")).toBe(false);
+    expect(trigger.parentElement?.classList.contains("tree-select")).toBe(true);
+    trigger.focus();
+    expect(document.activeElement).toBe(trigger);
+    fireEvent.click(trigger);
+    expect(container.querySelector(".tree-select-value")).toBeTruthy();
+    expect(container.querySelector(".tree-select-arrow")).toBeTruthy();
+    expect(
+      screen
+        .getByPlaceholderText("Please select")
+        .classList.contains("tree-select-search-input"),
+    ).toBe(true);
+    expect(
+      container.querySelector(".tree-select-options[role=tree]"),
+    ).toBeTruthy();
+    const leaf = screen.getByRole("treeitem", { name: "Leaf" });
+    expect(leaf.classList.contains("tree-select-node-label")).toBe(true);
+    leaf.focus();
+    expect(document.activeElement).toBe(leaf);
+    fireEvent.click(leaf);
+    expect(container.querySelector(".tree-select-tag")?.textContent).toBe(
+      "Leaf",
+    );
+  });
 });

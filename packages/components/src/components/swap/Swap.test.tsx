@@ -1,73 +1,103 @@
-import React, { createRef } from "react";
 import { describe, expect, test } from "bun:test";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { Swap, SwapButton } from "./Swap";
+import React, { createRef } from "react";
+import { Swap } from "./Swap";
 
 describe("Swap", () => {
-  test("uses the native checkbox and Core slot order", () => {
+  test("uses one native checkbox as the form state source", () => {
     const ref = createRef<HTMLInputElement>();
-    render(
-      <Swap
-        ref={ref}
-        aria-label="Toggle navigation"
-        off="Menu"
-        on="Close"
-        rotate
-      />,
+    const { container } = render(
+      <form aria-label="Preferences">
+        <Swap
+          aria-label="Use dark appearance"
+          name="dark"
+          defaultChecked
+          rotate
+          off={<span>Light</span>}
+          on={<span>Dark</span>}
+          ref={ref}
+        />
+      </form>,
     );
-
-    const input = screen.getByRole("checkbox", {
-      name: "Toggle navigation",
+    const checkbox = screen.getByRole("checkbox", {
+      name: "Use dark appearance",
     }) as HTMLInputElement;
-    const root = input.closest("label") as HTMLLabelElement;
-    expect(ref.current).toBe(input);
-    expect(root.className).toContain("swap-rotate");
-    expect(input.className).toBe("swap-input");
-    expect(input.nextElementSibling?.className).toBe("swap-off");
-    expect(input.nextElementSibling?.nextElementSibling?.className).toBe(
-      "swap-on",
-    );
-    fireEvent.click(input);
-    expect(input.checked).toBe(true);
+
+    expect(container.querySelectorAll("input")).toHaveLength(1);
+    expect(checkbox.checked).toBe(true);
+    expect(ref.current).toBe(checkbox);
+    expect(checkbox.className).toContain("swap-input");
+    expect(checkbox.closest("label")?.className).toContain("swap-rotate");
+    expect(
+      container.querySelectorAll(".swap > .swap-off[aria-hidden='true']"),
+    ).toHaveLength(1);
+    expect(
+      container.querySelectorAll(".swap > .swap-on[aria-hidden='true']"),
+    ).toHaveLength(1);
+    expect(
+      new FormData(
+        screen.getByRole("form", { name: "Preferences" }) as HTMLFormElement,
+      ).get("dark"),
+    ).toBe("on");
   });
 
-  test("respects native checked and disabled attributes", () => {
-    render(
-      <Swap aria-label="Toggle" off="Off" on="On" defaultChecked disabled />,
-    );
-    const input = screen.getByRole("checkbox") as HTMLInputElement;
-    expect(input.checked).toBe(true);
-    expect(input.disabled).toBe(true);
-  });
-});
-
-describe("SwapButton", () => {
-  test("exposes application-owned pressed state and a native button", () => {
-    const ref = createRef<HTMLButtonElement>();
-    let clicks = 0;
+  test("reports native uncontrolled and controlled checkbox changes", () => {
+    const observed: boolean[] = [];
+    const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      observed.push(event.currentTarget.checked);
+    };
     const { rerender } = render(
-      <SwapButton
-        ref={ref}
-        aria-label="Mute"
-        off="Sound on"
-        on="Muted"
-        pressed={false}
-        onClick={() => clicks++}
+      <Swap aria-label="Toggle state" defaultChecked={false} />,
+    );
+    const checkbox = screen.getByRole("checkbox", {
+      name: "Toggle state",
+    }) as HTMLInputElement;
+
+    fireEvent.click(checkbox);
+    expect(checkbox.checked).toBe(true);
+
+    rerender(
+      <Swap
+        aria-label="Controlled state"
+        checked={false}
+        onChange={onChange}
       />,
     );
+    const controlled = screen.getByRole("checkbox", {
+      name: "Controlled state",
+    }) as HTMLInputElement;
 
-    const button = screen.getByRole("button", {
-      name: "Mute",
-    }) as HTMLButtonElement;
-    expect(ref.current).toBe(button);
-    expect(button.type).toBe("button");
-    expect(button.getAttribute("aria-pressed")).toBe("false");
-    fireEvent.click(button);
-    expect(clicks).toBe(1);
-    expect(button.getAttribute("aria-pressed")).toBe("false");
-    rerender(
-      <SwapButton aria-label="Mute" off="Sound on" on="Muted" pressed />,
+    fireEvent.click(controlled);
+    expect(observed).toEqual([true]);
+    expect(controlled.checked).toBe(false);
+  });
+
+  test("native form reset restores default state and disabled blocks activation", () => {
+    const onChange = () => {
+      throw new Error("disabled Swap must not change");
+    };
+    render(
+      <form aria-label="Swap form">
+        <Swap aria-label="Enabled toggle" name="enabled" defaultChecked />
+        <Swap aria-label="Disabled toggle" disabled onChange={onChange} />
+      </form>,
     );
-    expect(button.getAttribute("aria-pressed")).toBe("true");
+    const form = screen.getByRole("form", {
+      name: "Swap form",
+    }) as HTMLFormElement;
+    const enabled = screen.getByRole("checkbox", {
+      name: "Enabled toggle",
+    }) as HTMLInputElement;
+    const disabled = screen.getByRole("checkbox", {
+      name: "Disabled toggle",
+    }) as HTMLInputElement;
+
+    fireEvent.click(enabled);
+    expect(enabled.checked).toBe(false);
+    form.reset();
+    expect(enabled.checked).toBe(true);
+
+    fireEvent.click(disabled);
+    expect(disabled.checked).toBe(false);
   });
 });

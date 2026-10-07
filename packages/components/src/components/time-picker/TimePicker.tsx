@@ -1,4 +1,5 @@
 import React, { forwardRef, useState } from "react";
+import { usePickerDropdown } from "../date-picker/usePickerDropdown";
 import {
   getTimePickerClasses,
   getTimePickerPanelClasses,
@@ -89,7 +90,11 @@ function displayValue(
   use12Hours?: boolean,
 ) {
   const parts = valueToParts(value);
-  return parts ? formatParts(parts, format, use12Hours) : "";
+  return parts
+    ? formatParts(parts, format, use12Hours)
+    : typeof value === "string"
+      ? value
+      : "";
 }
 
 function normalizedTimeString(
@@ -97,7 +102,8 @@ function normalizedTimeString(
   format: string,
   use12Hours?: boolean,
 ) {
-  return displayValue(value, format, use12Hours);
+  const parts = valueToParts(value);
+  return parts ? formatParts(parts, format, use12Hours) : "";
 }
 
 function isDisabledTime(
@@ -134,6 +140,7 @@ const TimePickerRoot = forwardRef<HTMLDivElement, TimePickerProps>(
     {
       allowClear,
       className,
+      inputProps,
       defaultOpen,
       defaultValue,
       disabled,
@@ -156,20 +163,26 @@ const TimePickerRoot = forwardRef<HTMLDivElement, TimePickerProps>(
   ) => {
     const timeFormat = format ?? (use12Hours ? "h:mm:ss A" : "HH:mm:ss");
     const isValueControlled = value !== undefined;
-    const isOpenControlled = open !== undefined;
     const [innerValue, setInnerValue] = useState<TimePickerValue | undefined>(
       defaultValue,
     );
-    const [innerOpen, setInnerOpen] = useState(Boolean(defaultOpen));
+    const dropdown = usePickerDropdown({
+      open,
+      defaultOpen,
+      disabled,
+      onOpenChange,
+      ref,
+    });
     const currentValue = isValueControlled ? value : innerValue;
-    const visible = isOpenControlled ? Boolean(open) : innerOpen;
+    const { visible, setVisible } = dropdown;
+    const parts = valueToParts(currentValue) ?? {
+      hour: 0,
+      minute: 0,
+      second: 0,
+    };
 
-    function setVisible(nextOpen: boolean) {
-      if (!isOpenControlled) {
-        setInnerOpen(nextOpen);
-      }
-
-      onOpenChange?.(nextOpen);
+    function columnValue(part: "hour" | "minute" | "second", value: number) {
+      return formatParts({ ...parts, [part]: value }, "HH:mm:ss");
     }
 
     function emitChange(nextValue: TimePickerValue | undefined) {
@@ -190,7 +203,8 @@ const TimePickerRoot = forwardRef<HTMLDivElement, TimePickerProps>(
     return (
       <div
         {...props}
-        ref={ref}
+        ref={dropdown.rootRef}
+        onBlur={dropdown.onRootBlur}
         className={getTimePickerClasses({
           size,
           status,
@@ -200,18 +214,23 @@ const TimePickerRoot = forwardRef<HTMLDivElement, TimePickerProps>(
         })}
       >
         <input
+          {...inputProps}
+          ref={dropdown.inputRef}
+          aria-haspopup="dialog"
+          aria-controls={visible ? dropdown.panelId : undefined}
+          type="text"
           className={timePickerInputClass}
           disabled={disabled}
           value={displayValue(currentValue, timeFormat, use12Hours)}
           placeholder={placeholder}
           onFocus={(event) => {
             onFocus?.(event);
-            setVisible(true);
+            dropdown.onInputFocus();
           }}
           onBlur={(event) => {
             onBlur?.(event);
-            setVisible(false);
           }}
+          onClick={() => setVisible(true)}
           onChange={(event) =>
             emitChange(event.currentTarget.value || undefined)
           }
@@ -227,19 +246,87 @@ const TimePickerRoot = forwardRef<HTMLDivElement, TimePickerProps>(
             x
           </button>
         ) : null}
-        <span className={timePickerIconClass} aria-hidden="true">
-          clock
-        </span>
-        {showNow && visible ? (
-          <div className={getTimePickerPanelClasses({ open: visible })}>
+        <button
+          type="button"
+          className={timePickerIconClass}
+          aria-label="Open time picker"
+          aria-haspopup="dialog"
+          aria-expanded={visible}
+          aria-controls={visible ? dropdown.panelId : undefined}
+          disabled={disabled}
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={() => setVisible(!visible)}
+        />
+        {visible ? (
+          <div
+            id={dropdown.panelId}
+            role="dialog"
+            aria-label="Choose time"
+            className={getTimePickerPanelClasses({ open: visible })}
+          >
+            <div className="time-picker-columns">
+              {(["hour", "minute", "second"] as const)
+                .filter(
+                  (part) =>
+                    part === "hour" ||
+                    timeFormat.includes(part === "minute" ? "m" : "s"),
+                )
+                .map((part) => (
+                  <div
+                    key={part}
+                    className="time-picker-column"
+                    role="listbox"
+                    aria-label={`${part[0].toUpperCase()}${part.slice(1)}s`}
+                  >
+                    {Array.from(
+                      { length: part === "hour" ? 24 : 60 },
+                      (_, option) => (
+                        <button
+                          key={option}
+                          type="button"
+                          role="option"
+                          className="time-picker-option"
+                          aria-label={`${part[0].toUpperCase()}${part.slice(1)} ${padTimePart(option)}`}
+                          aria-selected={parts[part] === option}
+                          disabled={isDisabledTime(columnValue(part, option), {
+                            disabledTime,
+                            use12Hours,
+                          })}
+                          onClick={() => emitChange(columnValue(part, option))}
+                        >
+                          {part === "hour" && use12Hours
+                            ? `${option % 12 || 12} ${option < 12 ? "AM" : "PM"}`
+                            : padTimePart(option)}
+                        </button>
+                      ),
+                    )}
+                  </div>
+                ))}
+            </div>
             <div className={timePickerFooterClass}>
+              {showNow ? (
+                <button
+                  type="button"
+                  className={timePickerNowClass}
+                  disabled={isDisabledTime(nowValue(), {
+                    disabledTime,
+                    use12Hours,
+                  })}
+                  onMouseDown={(event) => event.preventDefault()}
+                  onClick={() => {
+                    emitChange(nowValue());
+                    dropdown.closeAndFocus();
+                  }}
+                >
+                  Now
+                </button>
+              ) : null}
               <button
                 type="button"
-                className={timePickerNowClass}
-                onMouseDown={(event) => event.preventDefault()}
-                onClick={() => emitChange(nowValue())}
+                className="time-picker-confirm"
+                onClick={dropdown.closeAndFocus}
               >
-                Now
+                Done
               </button>
             </div>
           </div>
@@ -256,6 +343,7 @@ const RangePicker = forwardRef<HTMLDivElement, RangePickerProps>(
     {
       allowClear,
       className,
+      inputProps,
       defaultValue,
       disabled,
       disabledTime,
@@ -319,6 +407,8 @@ const RangePicker = forwardRef<HTMLDivElement, RangePickerProps>(
         })}
       >
         <input
+          {...inputProps}
+          type="text"
           className={timePickerInputClass}
           disabled={disabled}
           value={displayValue(currentValue?.[0], timeFormat, use12Hours)}
@@ -329,6 +419,9 @@ const RangePicker = forwardRef<HTMLDivElement, RangePickerProps>(
         />
         <span className={timePickerSeparatorClass}>{separator}</span>
         <input
+          {...inputProps}
+          id={inputProps?.id ? `${inputProps.id}-end` : undefined}
+          type="text"
           className={timePickerInputClass}
           disabled={disabled}
           value={displayValue(currentValue?.[1], timeFormat, use12Hours)}

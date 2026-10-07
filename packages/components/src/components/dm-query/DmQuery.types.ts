@@ -8,6 +8,7 @@ export type DmQueryItem = {
   name: string;
   extraProps?: Record<string, unknown>;
   customProps?: Record<string, unknown>;
+  render?: DmSearchItem["search"]["render"];
 };
 
 export interface DmQueryRef extends DmSearchRef {
@@ -22,5 +23,4 @@ export interface DmQueryProps
   fastFilterItem?: DmQueryItem;
   collapsed?: boolean;
   form?: unknown;
-  onReset?: () => void;
 }

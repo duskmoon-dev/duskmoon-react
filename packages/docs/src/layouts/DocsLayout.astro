@@ -3,14 +3,18 @@
 import "@duskmoon-dev/components/styles.css";
 import "@duskmoon-dev/art-components/styles.css";
 import "../styles/docs.css";
+import packageJson from "../../../../package.json";
 import { docsPath } from "../lib/paths";
+import { DOC_SECTIONS, type DocSectionId } from "../lib/docs-sections";
 
 interface Props {
   title: string;
   description?: string;
+  section?: DocSectionId;
 }
 
-const { title, description = "DuskMoon React component documentation" } = Astro.props;
+const { title, description = "DuskMoon React component documentation", section = "components" } = Astro.props;
+const version = packageJson.version;
 ---
 
 <!doctype html>
@@ -35,13 +39,17 @@ const { title, description = "DuskMoon React component documentation" } = Astro.
   </head>
   <body>
     <header class="site-header">
-      <a class="brand" href={docsPath("/")}>
+      <a class="brand" href={docsPath("/")} aria-label={`DuskMoon React version ${version}`}>
         <span class="brand-mark">Dm</span>
         <span>DuskMoon React</span>
+        <span class="brand-version" aria-hidden="true">v{version}</span>
       </a>
       <nav class="top-nav" aria-label="Primary">
-        <a href={docsPath("/")}>Components</a>
-        <a href={docsPath("/components/dm-provider")}>Theme</a>
+        {DOC_SECTIONS.map((item) => (
+          <a href={docsPath(item.path)} aria-current={item.id === section ? "page" : undefined}>
+            {item.title}
+          </a>
+        ))}
       </nav>
       <button class="theme-toggle" type="button" data-theme-toggle>
         <span data-theme-label>Light</span>

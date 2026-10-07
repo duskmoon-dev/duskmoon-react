@@ -1,0 +1,150 @@
+---
+import type { ComponentDoc } from "../lib/component-docs";
+import { DOC_CATEGORIES } from "../lib/docs-categories";
+import { docsPath } from "../lib/paths";
+import {
+  sectionById,
+  UTILITY_TOOLS,
+  type DocSectionId,
+  type UtilityToolId,
+} from "../lib/docs-sections";
+
+interface Props {
+  categories: [string, ComponentDoc[]][];
+  currentId?: string;
+  currentTool?: UtilityToolId;
+  section: DocSectionId;
+}
+
+const { categories, currentId, currentTool, section } = Astro.props;
+const sectionPath = docsPath(sectionById(section).path);
+---
+
+<aside class="side-nav" aria-label="Documentation navigation" data-docs-navigation>
+  <div class="nav-section">
+    {currentId && (
+      <nav aria-label="On this page" class="section-links">
+        <a href="#overview">Overview</a>
+        <a href="#usage">Usage</a>
+        <a href="#features">Features</a>
+        <a href="#demos">Demos</a>
+        <a href="#api">API</a>
+      </nav>
+    )}
+    <a href={sectionPath}>Overview</a>
+  </div>
+
+  <div class="doc-search">
+    <label for="doc-search-input">Find documentation</label>
+    <div class="doc-search-controls">
+      <input
+        id="doc-search-input"
+        type="search"
+        placeholder="Name or ID"
+        autocomplete="off"
+        aria-controls="doc-category-navigation"
+        data-doc-search
+      />
+      <button type="button" data-doc-search-clear hidden>Clear</button>
+    </div>
+  </div>
+
+  <nav id="doc-category-navigation" aria-label="Browse by category">
+    {categories.map(([title, docs]) => {
+      const category = DOC_CATEGORIES.find((item) => item.title === title)!;
+      return (
+        <div class="nav-group" data-doc-nav-group>
+          <a class="nav-group-title" href={`${sectionPath}#${category.id}`}>
+            {title}
+          </a>
+          <div class="nav-group-items">
+            {docs.map((item) => (
+              <a
+                href={item.route}
+                class={`nav-item ${item.id === currentId ? "active" : ""}`}
+                aria-current={item.id === currentId ? "page" : undefined}
+                data-doc-nav-entry
+                data-search-text={`${item.title} ${item.id}`}
+              >
+                {item.title}
+                {item.kind === "dm-workflow-component" && (
+                  <span class="dm-badge">Dm</span>
+                )}
+              </a>
+            ))}
+          </div>
+        </div>
+      );
+    })}
+    {section === "utilities" && (
+      <div class="nav-group" data-doc-nav-group>
+        <span class="nav-group-title">JSON Form</span>
+        <div class="nav-group-items">
+          {UTILITY_TOOLS.map((tool) => (
+            <a
+              href={docsPath(tool.path)}
+              class={`nav-item ${tool.id === currentTool ? "active" : ""}`}
+              aria-current={tool.id === currentTool ? "page" : undefined}
+              data-doc-nav-entry
+              data-search-text={`${tool.title} ${tool.id}`}
+            >
+              {tool.title}
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
+    <p class="nav-no-results" role="status" data-doc-nav-empty hidden>
+      No matching documentation.
+    </p>
+  </nav>
+</aside>
+
+<script>
+  const normalizeSearch = (value: string) => value.trim().replace(/\s+/g, " ").toLowerCase();
+
+  document.querySelectorAll<HTMLElement>("[data-docs-browser]").forEach((browser) => {
+    const input = browser.querySelector<HTMLInputElement>("[data-doc-search]");
+    const clear = browser.querySelector<HTMLButtonElement>("[data-doc-search-clear]");
+    const navEntries = Array.from(browser.querySelectorAll<HTMLElement>("[data-doc-nav-entry]"));
+    const cards = Array.from(browser.querySelectorAll<HTMLElement>("[data-doc-card]"));
+
+    if (!input || !clear) return;
+
+    const update = () => {
+      const query = normalizeSearch(input.value);
+      clear.hidden = query === "";
+      let visibleNav = 0;
+
+      for (const entry of navEntries) {
+        const matches = normalizeSearch(entry.dataset.searchText ?? "").includes(query);
+        entry.hidden = !matches;
+        if (matches) visibleNav++;
+      }
+      browser.querySelectorAll<HTMLElement>("[data-doc-nav-group]").forEach((group) => {
+        group.hidden = !group.querySelector("[data-doc-nav-entry]:not([hidden])");
+      });
+      const navEmpty = browser.querySelector<HTMLElement>("[data-doc-nav-empty]");
+      if (navEmpty) navEmpty.hidden = visibleNav !== 0;
+
+      let visibleCards = 0;
+      for (const card of cards) {
+        const matches = normalizeSearch(card.dataset.searchText ?? "").includes(query);
+        card.hidden = !matches;
+        if (matches) visibleCards++;
+      }
+      browser.querySelectorAll<HTMLElement>("[data-doc-category]").forEach((section) => {
+        section.hidden = !section.querySelector("[data-doc-card]:not([hidden])");
+      });
+      const catalogEmpty = browser.querySelector<HTMLElement>("[data-doc-catalog-empty]");
+      if (catalogEmpty) catalogEmpty.hidden = visibleCards !== 0;
+    };
+
+    input.addEventListener("input", update);
+    clear.addEventListener("click", () => {
+      input.value = "";
+      update();
+      input.focus();
+    });
+  });
+</script>

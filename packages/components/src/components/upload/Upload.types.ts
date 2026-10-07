@@ -50,6 +50,7 @@ export interface UploadProps extends Omit<
   ComponentProps<"div">,
   "children" | "defaultValue" | "onChange"
 > {
+  inputProps?: ComponentProps<"input">;
   accept?: string;
   action?: string;
   beforeUpload?: (file: File, fileList: File[]) => UploadBeforeUploadResult;

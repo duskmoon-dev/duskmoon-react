@@ -1,6 +1,17 @@
 import React from "react";
 import * as ArtComponents from "@duskmoon-dev/art-components";
 import * as DmComponents from "@duskmoon-dev/components";
+import { ButtonPreview, isButtonPreviewDemo } from "./ButtonPreviews";
+import { chatShowcasePreviews } from "./ChatPreviews";
+import { DropdownPreview, isDropdownPreviewDemo } from "./DropdownPreviews";
+import { DmLayoutPreview } from "./DmLayoutPreviews";
+import {
+  ConsolePagePreview,
+  FabPreview,
+  MegamenuPreview,
+  OtpInputPreview,
+  SwapPreview,
+} from "./NativeSyncPreviews";
 
 interface DemoRendererProps {
   componentId: string;
@@ -455,79 +466,6 @@ function SemanticColorPreview({ componentId }: { componentId: string }) {
   }
 
   return null;
-}
-
-function ChatPreview() {
-  const transcriptStyle: React.CSSProperties = {
-    display: "grid",
-    gap: "14px",
-    width: "min(680px, 100%)",
-  };
-  const payloadStyle: React.CSSProperties = {
-    margin: 0,
-    whiteSpace: "pre-wrap",
-  };
-
-  return (
-    <div style={transcriptStyle} aria-label="Example chat transcript">
-      <DmComponents.Chat aria-live="polite">
-        <DmComponents.Chat.Avatar>
-          <DmComponents.Avatar
-            size="sm"
-            fallback="AI"
-            className="avatar-info"
-          />
-        </DmComponents.Chat.Avatar>
-        <DmComponents.Chat.Header>
-          Assistant · just now
-        </DmComponents.Chat.Header>
-        <DmComponents.Chat.Reasoning open>
-          <summary>Thinking (2s)</summary>
-          <div>Checking the component catalog before replying.</div>
-        </DmComponents.Chat.Reasoning>
-        <DmComponents.Chat.Tool status="success" open>
-          <DmComponents.Chat.ToolHeader>
-            <span>search_components</span>
-            <DmComponents.Chat.ToolStatus>Done</DmComponents.Chat.ToolStatus>
-          </DmComponents.Chat.ToolHeader>
-          <DmComponents.Chat.ToolCall>
-            <pre style={payloadStyle}>{'{"query":"chat"}'}</pre>
-          </DmComponents.Chat.ToolCall>
-          <DmComponents.Chat.ToolResult>
-            <pre style={payloadStyle}>Found the DuskMoon Chat primitives.</pre>
-          </DmComponents.Chat.ToolResult>
-        </DmComponents.Chat.Tool>
-        <DmComponents.Chat.Bubble color="info" streaming>
-          The React chat primitives are ready to compose.
-        </DmComponents.Chat.Bubble>
-        <DmComponents.Chat.Footer>Delivered</DmComponents.Chat.Footer>
-      </DmComponents.Chat>
-
-      <DmComponents.Chat placement="end">
-        <DmComponents.Chat.Avatar>
-          <DmComponents.Avatar size="sm" fallback="You" />
-        </DmComponents.Chat.Avatar>
-        <DmComponents.Chat.Header>You · just now</DmComponents.Chat.Header>
-        <DmComponents.Chat.Bubble color="primary" filled>
-          Show me the live response state.
-        </DmComponents.Chat.Bubble>
-        <DmComponents.Chat.Footer>Sent</DmComponents.Chat.Footer>
-      </DmComponents.Chat>
-
-      <DmComponents.Chat>
-        <DmComponents.Chat.Avatar>
-          <DmComponents.Avatar
-            size="sm"
-            fallback="AI"
-            className="avatar-info"
-          />
-        </DmComponents.Chat.Avatar>
-        <DmComponents.Chat.Bubble>
-          <DmComponents.Chat.Typing />
-        </DmComponents.Chat.Bubble>
-      </DmComponents.Chat>
-    </div>
-  );
 }
 
 function GridPreview() {
@@ -1301,6 +1239,19 @@ This line demonstrates \`breaks={true}\`.
     );
   }
 
+  if (componentId === "chat") {
+    const preview = chatShowcasePreviews[demoTitle as keyof typeof chatShowcasePreviews];
+    return preview ? React.createElement(preview) : null;
+  }
+
+  if (componentId === "dropdown" && isDropdownPreviewDemo(demoTitle)) {
+    return <DropdownPreview demoTitle={demoTitle} />;
+  }
+
+  if (componentId === "dm-layout") {
+    return <DmLayoutPreview demoTitle={demoTitle} />;
+  }
+
   if (
     demoTitle.toLowerCase().includes("color") &&
     semanticColorComponentIds.has(componentId)
@@ -1309,9 +1260,15 @@ This line demonstrates \`breaks={true}\`.
     if (colorPreview) return colorPreview;
   }
 
-  if (componentId === "chat") {
-    return <ChatPreview />;
+  if (componentId === "button" && isButtonPreviewDemo(demoTitle)) {
+    return <ButtonPreview demoTitle={demoTitle} />;
   }
+
+  if (componentId === "otp-input") return <OtpInputPreview />;
+  if (componentId === "swap") return <SwapPreview />;
+  if (componentId === "fab") return <FabPreview />;
+  if (componentId === "megamenu") return <MegamenuPreview />;
+  if (componentId === "console-page") return <ConsolePagePreview />;
 
   if (componentId === "grid") {
     return <GridPreview />;
@@ -1384,60 +1341,6 @@ This line demonstrates \`breaks={true}\`.
       >
         <button type="button">Open popover</button>
       </DmComponents.Popover>
-    );
-  }
-
-  if (componentId === "swap") {
-    return (
-      <DmComponents.Swap
-        aria-label="Toggle navigation"
-        off="Menu"
-        on="Close"
-        rotate
-      />
-    );
-  }
-
-  if (componentId === "console-page") {
-    return (
-      <DmComponents.ConsolePage
-        appBar={<strong>Workspace</strong>}
-        sidebar={<nav aria-label="Sections">Navigation</nav>}
-        sidebarMode="compact"
-        style={{ "--console-page-min-height": "18rem" } as React.CSSProperties}
-      >
-        <p>Dashboard content</p>
-      </DmComponents.ConsolePage>
-    );
-  }
-
-  if (componentId === "fab") {
-    return (
-      <div style={{ position: "relative", width: "100%", minHeight: "15rem" }}>
-        <DmComponents.Fab
-          label="Create"
-          contained
-          actions={
-            <DmComponents.FabAction label="New note">
-              <button type="button">Note</button>
-            </DmComponents.FabAction>
-          }
-        >
-          +
-        </DmComponents.Fab>
-      </div>
-    );
-  }
-
-  if (componentId === "megamenu") {
-    return (
-      <DmComponents.Megamenu
-        aria-label="Products"
-        trigger="Products"
-        panelHeading="Explore products"
-        panel={<a href="/components/button">Components</a>}
-        mobile={<a href="/components/button">Components</a>}
-      />
     );
   }
 

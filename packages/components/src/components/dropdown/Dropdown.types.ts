@@ -59,7 +59,7 @@ export type DropdownButtonProps = Omit<
   DropdownProps,
   "children" | "onClick" | keyof ButtonProps
 > &
-  Omit<ButtonProps, "children" | "onClick"> & {
+  Omit<ButtonProps, "children" | "onClick" | "ref"> & {
     buttonsRender?: (buttons: ReactNode[]) => ReactNode[];
     children?: ReactNode;
     onClick?: ButtonProps["onClick"];
