@@ -22,7 +22,7 @@ and a framework smoke test.
 
 | Workspace                                              | Description                                                                                                                    |
 | :----------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------- |
-| [`packages/components`](packages/components)           | `@duskmoon-dev/components`: 73 standard components, 21 `Dm*` workflow components, theme helpers, class helpers, and utilities. |
+| [`packages/components`](packages/components)           | `@duskmoon-dev/components`: 77 standard components, 21 `Dm*` workflow components, theme helpers, class helpers, and utilities. |
 | [`packages/art-components`](packages/art-components)   | `@duskmoon-dev/art-components`: 15 React wrappers for `@duskmoon-dev/css-art` illustrations.                                   |
 | [`packages/docs`](packages/docs)                       | Internal Astro site containing API references, demos, and theme previews; not published to npm.                                |
 | [`examples/nextjs-15-smoke`](examples/nextjs-15-smoke) | Internal Next.js 16 smoke app; not published to npm. The directory name is retained from its Next.js 15 setup.                 |
@@ -114,7 +114,7 @@ function ArtDemo() {
 
 | Package                        | Required peers                                                           |
 | :----------------------------- | :----------------------------------------------------------------------- |
-| `@duskmoon-dev/components`     | `@duskmoon-dev/core >=1.17.0`, `react >=19.0.0`, `react-dom >=19.0.0`    |
+| `@duskmoon-dev/components`     | `@duskmoon-dev/core >=1.19.7`, `react >=19.0.0`, `react-dom >=19.0.0`    |
 | `@duskmoon-dev/art-components` | `@duskmoon-dev/css-art >=1.17.0`, `react >=19.0.0`, `react-dom >=19.0.0` |
 
 The npm badges above show the current published versions. The React packages are

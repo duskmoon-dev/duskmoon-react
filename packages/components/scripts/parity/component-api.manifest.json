@@ -221,6 +221,17 @@
       "status": "implemented"
     },
     {
+      "id": "console-page",
+      "kind": "standard-component",
+      "source": "duskmoon",
+      "exportName": "ConsolePage",
+      "directory": "console-page",
+      "rootExport": "./components/console-page",
+      "packageSubpath": "./console-page",
+      "buildEntrypoint": "src/components/console-page/index.ts",
+      "status": "implemented"
+    },
+    {
       "id": "config-provider",
       "kind": "standard-component",
       "source": "duskmoon",
@@ -284,6 +295,17 @@
       "rootExport": "./components/dropdown",
       "packageSubpath": "./dropdown",
       "buildEntrypoint": "src/components/dropdown/index.ts",
+      "status": "implemented"
+    },
+    {
+      "id": "fab",
+      "kind": "standard-component",
+      "source": "duskmoon",
+      "exportName": "Fab",
+      "directory": "fab",
+      "rootExport": "./components/fab",
+      "packageSubpath": "./fab",
+      "buildEntrypoint": "src/components/fab/index.ts",
       "status": "implemented"
     },
     {
@@ -394,6 +416,17 @@
       "rootExport": "./components/list",
       "packageSubpath": "./list",
       "buildEntrypoint": "src/components/list/index.ts",
+      "status": "implemented"
+    },
+    {
+      "id": "megamenu",
+      "kind": "standard-component",
+      "source": "duskmoon",
+      "exportName": "Megamenu",
+      "directory": "megamenu",
+      "rootExport": "./components/megamenu",
+      "packageSubpath": "./megamenu",
+      "buildEntrypoint": "src/components/megamenu/index.ts",
       "status": "implemented"
     },
     {
@@ -658,6 +691,17 @@
       "rootExport": "./components/switch",
       "packageSubpath": "./switch",
       "buildEntrypoint": "src/components/switch/index.ts",
+      "status": "implemented"
+    },
+    {
+      "id": "swap",
+      "kind": "standard-component",
+      "source": "duskmoon",
+      "exportName": "Swap",
+      "directory": "swap",
+      "rootExport": "./components/swap",
+      "packageSubpath": "./swap",
+      "buildEntrypoint": "src/components/swap/index.ts",
       "status": "implemented"
     },
     {

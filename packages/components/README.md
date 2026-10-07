@@ -41,7 +41,7 @@ import { Button, DmTable, theme } from "@duskmoon-dev/components";
 
 ## Public Surface
 
-- 73 standard components such as `Button`, `Chat`, `Table`, `Modal`, `Select`,
+- 77 standard components such as `Button`, `Chat`, `ConsolePage`, `Fab`, `Megamenu`, `Swap`, `Table`, `Modal`, `Select`,
   and `Typography`.
 - 21 DuskMoon workflow components such as `DmLayout`, `DmSearch`, `DmTable`,
   `DmProTable`, and `DmToolbar`.

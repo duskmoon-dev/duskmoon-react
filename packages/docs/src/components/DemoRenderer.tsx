@@ -1359,6 +1359,60 @@ This line demonstrates \`breaks={true}\`.
     );
   }
 
+  if (componentId === "swap") {
+    return (
+      <DmComponents.Swap
+        aria-label="Toggle navigation"
+        off="Menu"
+        on="Close"
+        rotate
+      />
+    );
+  }
+
+  if (componentId === "console-page") {
+    return (
+      <DmComponents.ConsolePage
+        appBar={<strong>Workspace</strong>}
+        sidebar={<nav aria-label="Sections">Navigation</nav>}
+        sidebarMode="compact"
+        style={{ "--console-page-min-height": "18rem" } as React.CSSProperties}
+      >
+        <p>Dashboard content</p>
+      </DmComponents.ConsolePage>
+    );
+  }
+
+  if (componentId === "fab") {
+    return (
+      <div style={{ position: "relative", width: "100%", minHeight: "15rem" }}>
+        <DmComponents.Fab
+          label="Create"
+          contained
+          actions={
+            <DmComponents.FabAction label="New note">
+              <button type="button">Note</button>
+            </DmComponents.FabAction>
+          }
+        >
+          +
+        </DmComponents.Fab>
+      </div>
+    );
+  }
+
+  if (componentId === "megamenu") {
+    return (
+      <DmComponents.Megamenu
+        aria-label="Products"
+        trigger="Products"
+        panelHeading="Explore products"
+        panel={<a href="/components/button">Components</a>}
+        mobile={<a href="/components/button">Components</a>}
+      />
+    );
+  }
+
   if (componentId === "splitter") {
     return <SplitterPreview variant="standard" />;
   }

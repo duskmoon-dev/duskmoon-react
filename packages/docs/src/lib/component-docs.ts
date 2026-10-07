@@ -961,6 +961,25 @@ function demoCode(
     return `<${name} type="primary" icon="+" tooltip="Create" />`;
   }
 
+  if (target.id === "fab") {
+    return `<${name}
+  label="Create"
+  actions={<button type="button" className="fab-action">New note</button>}
+>
+  +
+</${name}>`;
+  }
+
+  if (target.id === "megamenu") {
+    return `<${name}
+  aria-label="Products"
+  trigger="Products"
+  panelHeading="Explore products"
+  panel={<a href="/components/button">Components</a>}
+  mobile={<a href="/components/button">Components</a>}
+/>`;
+  }
+
   if (target.id === "form") {
     return `<${name}
   layout="vertical"
@@ -1193,6 +1212,25 @@ function demoCode(
   defaultChecked
   checkedChildren="On"
   unCheckedChildren="Off"
+/>`;
+  }
+
+  if (target.id === "console-page") {
+    return `<${name}
+  appBar={<strong>Workspace</strong>}
+  sidebar={<nav aria-label="Sections">Navigation</nav>}
+  sidebarMode="compact"
+>
+  <p>Dashboard content</p>
+</${name}>`;
+  }
+
+  if (target.id === "swap") {
+    return `<${name}
+  aria-label="Toggle navigation"
+  off="Menu"
+  on="Close"
+  rotate
 />`;
   }
 

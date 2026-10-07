@@ -103,6 +103,10 @@
       "import": "./dist/components/color-picker/index.js",
       "types": "./dist/components/color-picker/index.d.ts"
     },
+    "./console-page": {
+      "import": "./dist/components/console-page/index.js",
+      "types": "./dist/components/console-page/index.d.ts"
+    },
     "./date-picker": {
       "import": "./dist/components/date-picker/index.js",
       "types": "./dist/components/date-picker/index.d.ts"
@@ -207,6 +211,10 @@
       "import": "./dist/components/dropdown/index.js",
       "types": "./dist/components/dropdown/index.d.ts"
     },
+    "./fab": {
+      "import": "./dist/components/fab/index.js",
+      "types": "./dist/components/fab/index.d.ts"
+    },
     "./empty": {
       "import": "./dist/components/empty/index.js",
       "types": "./dist/components/empty/index.d.ts"
@@ -250,6 +258,10 @@
     "./mentions": {
       "import": "./dist/components/mentions/index.js",
       "types": "./dist/components/mentions/index.d.ts"
+    },
+    "./megamenu": {
+      "import": "./dist/components/megamenu/index.js",
+      "types": "./dist/components/megamenu/index.d.ts"
     },
     "./menu": {
       "import": "./dist/components/menu/index.js",
@@ -342,6 +354,10 @@
     "./switch": {
       "import": "./dist/components/switch/index.js",
       "types": "./dist/components/switch/index.d.ts"
+    },
+    "./swap": {
+      "import": "./dist/components/swap/index.js",
+      "types": "./dist/components/swap/index.d.ts"
     },
     "./tabs": {
       "import": "./dist/components/tabs/index.js",
@@ -448,7 +464,7 @@
     }
   ],
   "peerDependencies": {
-    "@duskmoon-dev/core": ">=1.17.0",
+    "@duskmoon-dev/core": ">=1.19.7",
     "react": ">=19.0.0",
     "react-dom": ">=19.0.0"
   },

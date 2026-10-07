@@ -103,6 +103,7 @@ const formIds = new Set([
   "select",
   "slider",
   "switch",
+  "swap",
   "time-picker",
   "tree-select",
   "upload",
@@ -159,6 +160,7 @@ const purposeById: Record<string, string> = {
   avatar:
     "represents a person, team, object, or entity in compact UI surfaces.",
   "back-top": "gives long pages a persistent return-to-top affordance.",
+  fab: "places a primary action and optional speed dial actions at a viewport edge.",
   badge:
     "adds short status, count, or classification markers around nearby content.",
   breadcrumb:
@@ -170,6 +172,8 @@ const purposeById: Record<string, string> = {
   chat: "composes conversational turns with message bubbles, reasoning traces, tool calls, and live response states.",
   carousel:
     "cycles through a limited set of panels while keeping one panel in focus.",
+  "console-page":
+    "arranges an application bar, sidebar, and main content in a responsive shell.",
   cascader:
     "selects a value from a nested hierarchy without exposing the whole tree at once.",
   checkbox: "captures independent boolean or multi-select choices.",
@@ -179,6 +183,7 @@ const purposeById: Record<string, string> = {
   "color-picker":
     "captures theme colors, brand swatches, or user-selected color values.",
   "config-provider": "passes component configuration through a subtree.",
+  megamenu: "opens a grouped navigation panel from a native popover trigger.",
   "date-picker":
     "captures single dates and related date-picker states with typed callbacks.",
   descriptions:
@@ -225,6 +230,7 @@ const purposeById: Record<string, string> = {
   statistic: "emphasizes a metric, count, or countdown.",
   steps: "shows progress through an ordered workflow.",
   switch: "toggles an immediate on/off setting.",
+  swap: "shows alternate content through a native checkbox or controlled button.",
   table:
     "renders structured data with columns, sorting, filters, selection, and pagination.",
   tabs: "switches between related content panels in the same context.",
