@@ -13,7 +13,6 @@ import {
   chatHeaderClass,
   chatPlacementClasses,
   chatReasoningClass,
-  chatStreamingCaretClass,
   chatToolBaseClass,
   chatToolCallClass,
   chatToolHeaderClass,
@@ -60,7 +59,6 @@ describe("Chat class integration", () => {
       chatToolCallClass,
       chatToolResultClass,
       chatTypingClass,
-      chatStreamingCaretClass,
       chatBubbleFilledClass,
       chatBubbleStreamingClass,
       ...Object.values(chatPlacementClasses),
@@ -75,20 +73,16 @@ describe("Chat class integration", () => {
     }
   });
 
-  test("keeps the streaming caret separate from directional tails", () => {
-    const css = localCss();
-
-    expect(css).toMatch(
-      /\.chat-bubble-streaming::after\s*\{[^}]*content:\s*none/s,
+  test("upstream styles use distinct caret and tail pseudo-elements", () => {
+    const css = readFileSync(
+      join(
+        import.meta.dir,
+        "../../../node_modules/@duskmoon-dev/core/dist/components/chat.css",
+      ),
+      "utf8",
     );
-    expect(css).toMatch(
-      /\.chat-start \.chat-bubble-streaming::after\s*\{[^}]*content:\s*""[^}]*animation:\s*none/s,
-    );
-    expect(css).toMatch(
-      /\.chat-end \.chat-bubble-streaming::after\s*\{[^}]*content:\s*""[^}]*animation:\s*none/s,
-    );
-    expect(css).toMatch(
-      /\.chat-streaming-caret\s*\{[^}]*animation:\s*chat-stream-caret/s,
-    );
+    expect(css).toContain(".chat-bubble-streaming::after");
+    expect(css).toContain(".chat-start .chat-bubble::before");
+    expect(css).toContain(".chat-end .chat-bubble::before");
   });
 });

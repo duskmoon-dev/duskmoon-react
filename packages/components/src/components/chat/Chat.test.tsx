@@ -69,7 +69,9 @@ describe("Chat", () => {
     expect(bubble.className).toContain("chat-bubble-filled");
     expect(bubble.className).toContain("chat-bubble-streaming");
     expect(bubble.className).toContain("custom-bubble");
-    expect(bubble.querySelector(".chat-streaming-caret")).toBeTruthy();
+    expect(
+      bubble.querySelector(".chat-bubble-content.chat-bubble-streaming"),
+    ).toBeTruthy();
   });
 
   test("maps every bubble size and tool state", () => {

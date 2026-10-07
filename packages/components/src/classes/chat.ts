@@ -18,7 +18,6 @@ export const chatToolStatusClass = "chat-tool-status";
 export const chatToolCallClass = "chat-tool-call";
 export const chatToolResultClass = "chat-tool-result";
 export const chatTypingClass = "chat-typing";
-export const chatStreamingCaretClass = "chat-streaming-caret";
 export const chatBubbleFilledClass = "chat-bubble-filled";
 export const chatBubbleStreamingClass = "chat-bubble-streaming";
 

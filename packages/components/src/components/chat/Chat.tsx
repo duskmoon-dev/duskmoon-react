@@ -4,7 +4,6 @@ import {
   chatFooterClass,
   chatHeaderClass,
   chatReasoningClass,
-  chatStreamingCaretClass,
   chatToolCallClass,
   chatToolHeaderClass,
   chatToolResultClass,
@@ -64,9 +63,11 @@ export const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(
       })}
     >
       {children}
-      {/* TODO(upstream): duskmoon-dev/duskmoonui#50 */}
       {streaming ? (
-        <span className={chatStreamingCaretClass} aria-hidden="true" />
+        <span
+          className="chat-bubble-content chat-bubble-streaming"
+          aria-hidden="true"
+        />
       ) : null}
     </div>
   ),
