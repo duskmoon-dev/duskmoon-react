@@ -1567,8 +1567,7 @@ function buttonFeatureDemos(
     },
     {
       title: "Tooltip composition",
-      description:
-        "Wrap a Button with Tooltip to show help on hover or focus.",
+      description: "Wrap a Button with Tooltip to show help on hover or focus.",
       code: `${componentStyleImport}\nimport { Button } from "${importPath}";\nimport { Tooltip } from "@duskmoon-dev/components";\n\nexport function TooltipButtonDemo() {\n  return (\n    <Tooltip id="save-help" title="Save your changes" defaultOpen>\n      <Button>Save</Button>\n    </Tooltip>\n  );\n}`,
       source: "authored",
     },
@@ -1869,13 +1868,15 @@ export function ConsolePageDemo() {
   }
 
   if (target.id === "modal") {
-    return [{
-      title: "Controlled native modal",
-      description:
-        "Modal uses native showModal and close. A controlled onCancel must update open; its ref and div props remain on the inner modal box. Apply maskClassName to the dialog for ::backdrop styling. Static Modal.confirm/info/success/error/warning handles are retained but do not render a service surface yet.",
-      code: `${componentStyleImport}\nimport { useState } from "react";\n${importLine}\n\nexport function ReleaseChecklist() {\n  const [open, setOpen] = useState(false);\n  return (\n    <>\n      <button type="button" onClick={() => setOpen(true)}>Review release</button>\n      <${name}\n        open={open}\n        title="Release checklist"\n        onCancel={() => setOpen(false)}\n        onOk={() => setOpen(false)}\n        maskClassName="release-mask"\n      >\n        Review component styles before publishing.\n      </${name}>\n    </>\n  );\n}`,
-      source: "authored",
-    }];
+    return [
+      {
+        title: "Controlled native modal",
+        description:
+          "Modal uses native showModal and close. A controlled onCancel must update open; its ref and div props remain on the inner modal box. Apply maskClassName to the dialog for ::backdrop styling. Static Modal.confirm/info/success/error/warning handles are retained but do not render a service surface yet.",
+        code: `${componentStyleImport}\nimport { useState } from "react";\n${importLine}\n\nexport function ReleaseChecklist() {\n  const [open, setOpen] = useState(false);\n  return (\n    <>\n      <button type="button" onClick={() => setOpen(true)}>Review release</button>\n      <${name}\n        open={open}\n        title="Release checklist"\n        onCancel={() => setOpen(false)}\n        onOk={() => setOpen(false)}\n        maskClassName="release-mask"\n      >\n        Review component styles before publishing.\n      </${name}>\n    </>\n  );\n}`,
+        source: "authored",
+      },
+    ];
   }
 
   if (target.id === "button") {
@@ -1994,7 +1995,10 @@ function toDoc(target: Target): ComponentDoc {
   return {
     ...target,
     title: name,
-    route: docsPath(`/components/${target.id}`),
+    route:
+      target.id === "json-schema-form"
+        ? docsPath("/utilities/form/")
+        : docsPath(`/components/${target.id}`),
     categoryId,
     category,
     intro: pageContent.summary || introFor(target, name, scenarios, keyProps),

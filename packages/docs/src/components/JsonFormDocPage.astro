@@ -169,6 +169,24 @@ const uploadExample = JSON.stringify(
             </ol>
             <p>The generator accepts a root <code>type: "object"</code> schema. It supports JSON Schema draft 2020-12; when <code>$schema</code> is present, it must name that draft.</p>
           </section>
+          <section class="section" aria-labelledby="form-package">
+            <h2 id="form-package">Use the published renderer</h2>
+            <p>Import <code>JsonSchemaForm</code> and <code>compileForm</code> from <code>@duskmoon-dev/components/json-schema-form</code>, and import <code>@duskmoon-dev/components/styles.css</code> once. This demo uses the same published renderer.</p>
+            <pre><code>{`import { JsonSchemaForm, compileForm } from "@duskmoon-dev/components/json-schema-form";
+
+const compiled = compileForm(schemaFromBackend);
+
+<JsonSchemaForm
+  compiled={compiled}
+  value={values}
+  onChange={setValues}
+  errors={backendErrors}
+  onErrorsChange={setBackendErrors}
+  onSubmit={sendToBackend}
+/>`}</code></pre>
+            <p>Alternatively, pass a typed <code>schema</code> directly. Omit <code>value</code> for internal state, optionally initialized by <code>defaultValue</code>. Errors use JSON Pointer keys such as <code>/address/email</code>; <code>onErrorsChange</code> reports validation errors and clears them on edits or reset. Submission runs only after validation and preserves JSON number and boolean types.</p>
+            <p>For a LiveView React island, mount inside an element with a stable <code>id</code> and <code>phx-update="ignore"</code>, then send the JSON from <code>onSubmit</code> through the LiveView hook. Catch schema compilation errors and validate values again on the backend. Use a new React <code>key</code> to start fresh when replacing the schema.</p>
+          </section>
           <section class="section" aria-labelledby="form-fields">
             <h2 id="form-fields">Fields and submitted values</h2>
             <div class="api-card"><table class="api-table">

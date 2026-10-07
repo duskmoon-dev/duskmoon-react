@@ -419,7 +419,11 @@
       "import": "./dist/components/swap/index.js",
       "types": "./dist/components/swap/index.d.ts"
     },
-    "./styles.css": "./dist/styles.css"
+    "./styles.css": "./dist/styles.css",
+    "./json-schema-form": {
+      "import": "./dist/components/json-schema-form/index.js",
+      "types": "./dist/components/json-schema-form/index.d.ts"
+    }
   },
   "files": [
     "dist",
@@ -476,7 +480,9 @@
     "clsx": "^2.1.1",
     "react-markdown": "^10.1.0",
     "remark-breaks": "^4.0.0",
-    "remark-gfm": "^4.0.1"
+    "remark-gfm": "^4.0.1",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1"
   },
   "devDependencies": {
     "@duskmoon-dev/core": "1.20.3",

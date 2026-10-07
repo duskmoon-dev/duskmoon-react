@@ -94,6 +94,7 @@ const targetCategories: Record<string, DocCategoryId> = {
   "color-picker": "data-entry",
   "date-picker": "data-entry",
   form: "data-entry",
+  "json-schema-form": "data-entry",
   input: "data-entry",
   "otp-input": "data-entry",
   "input-number": "data-entry",

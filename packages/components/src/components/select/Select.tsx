@@ -172,11 +172,17 @@ const SelectRoot = forwardRef<HTMLDivElement, SelectProps>(
   (
     {
       allowClear,
+      "aria-describedby": ariaDescribedBy,
+      "aria-errormessage": ariaErrorMessage,
+      "aria-invalid": ariaInvalid,
+      "aria-label": ariaLabel,
+      "aria-labelledby": ariaLabelledBy,
       children,
       className,
       defaultValue,
       disabled,
       filterOption,
+      id,
       loading,
       mode,
       onChange,
@@ -358,10 +364,17 @@ const SelectRoot = forwardRef<HTMLDivElement, SelectProps>(
           className,
         })}
       >
+        {/* eslint-disable-next-line jsx-a11y/role-supports-aria-props -- aria-invalid and aria-errormessage are global properties in WAI-ARIA 1.2. */}
         <button
           type="button"
+          id={id}
           className={getSelectClasses({ size, status, disabled })}
           disabled={disabled || loading}
+          aria-describedby={ariaDescribedBy}
+          aria-errormessage={ariaErrorMessage}
+          aria-invalid={ariaInvalid}
+          aria-label={ariaLabel}
+          aria-labelledby={ariaLabelledBy}
           aria-haspopup="listbox"
           aria-expanded={open}
           onClick={() => setOpen((current) => !current)}
