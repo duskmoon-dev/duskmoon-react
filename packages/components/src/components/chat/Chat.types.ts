@@ -2,12 +2,37 @@ import type {
   ComponentProps,
   ForwardRefExoticComponent,
   RefAttributes,
+  ReactNode,
 } from "react";
+
+import type { TextAreaProps } from "../input";
 
 export type ChatPlacement = "start" | "end";
 export type ChatTimeline =
-  | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
-  | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22 | 23 | 24;
+  | 1
+  | 2
+  | 3
+  | 4
+  | 5
+  | 6
+  | 7
+  | 8
+  | 9
+  | 10
+  | 11
+  | 12
+  | 13
+  | 14
+  | 15
+  | 16
+  | 17
+  | 18
+  | 19
+  | 20
+  | 21
+  | 22
+  | 23
+  | 24;
 
 export type ChatBubbleColor =
   | "primary"
@@ -76,11 +101,111 @@ export type ChatToolResultProps = ComponentProps<"div">;
 
 export type ChatTypingProps = Omit<ComponentProps<"span">, "children">;
 
+/** A snapshot of the controlled draft at submission time. */
+export interface ChatComposerSubmission {
+  value: string;
+  files: File[];
+}
+
+export interface ChatComposerCompletion {
+  id: string;
+  label: string;
+  description?: ReactNode;
+  disabled?: boolean;
+}
+
+export interface ChatComposerCompletionContext {
+  value: string;
+  selectionStart: number;
+  selectionEnd: number;
+}
+
+/** The application supplies candidates and owns inserting the selected result. */
+export interface ChatComposerCompletionConfig {
+  items: readonly ChatComposerCompletion[];
+  onSelect: (
+    item: ChatComposerCompletion,
+    context: ChatComposerCompletionContext,
+  ) => void;
+  label?: string;
+}
+
+export interface ChatComposerActionContext {
+  submit: () => void;
+  submitting: boolean;
+  canSubmit: boolean;
+  disabled: boolean;
+  generating: boolean;
+  openAttachments: () => void;
+}
+
+export interface ChatComposerAttachmentContext {
+  remove: () => void;
+  disabled: boolean;
+}
+
+export interface ChatComposerProps extends Omit<
+  ComponentProps<"div">,
+  "children" | "onSubmit" | "onChange"
+> {
+  value: string;
+  onValueChange: (value: string) => void;
+  /** Return false to reject admission and retain the draft. */
+  onSubmit: (
+    snapshot: ChatComposerSubmission,
+  ) => boolean | void | Promise<boolean | void>;
+  attachments?: File[];
+  /** Enables the native file picker and attachment removal controls. */
+  onAttachmentsChange?: (files: File[]) => void;
+  accept?: string;
+  /** @default true */
+  multiple?: boolean;
+  /** Permit a draft containing only files. @default false */
+  allowAttachmentOnly?: boolean;
+  disabled?: boolean;
+  /** Gates submission while keeping the draft editable. */
+  busy?: boolean;
+  /** Shows Stop when onStop is supplied; does not prevent submission. */
+  generating?: boolean;
+  /** Application-controlled admission, including follow-ups. @default true */
+  canSubmit?: boolean;
+  onStop?: () => void;
+  error?: ReactNode;
+  onSubmitError?: (error: unknown) => void;
+  /** Clear unchanged admitted text and only admitted file entries. @default true */
+  clearOnSubmit?: boolean;
+  completion?: ChatComposerCompletionConfig;
+  /** @default 1 */
+  minRows?: number;
+  /** @default 6 */
+  maxRows?: number;
+  textareaProps?: Omit<
+    TextAreaProps,
+    | "value"
+    | "defaultValue"
+    | "onChange"
+    | "disabled"
+    | "rows"
+    | "autoSize"
+    | "ref"
+  >;
+  attachLabel?: string;
+  sendLabel?: string;
+  stopLabel?: string;
+  renderAttachment?: (
+    file: File,
+    context: ChatComposerAttachmentContext,
+  ) => ReactNode;
+  /** Extra application actions rendered alongside Attach, Stop, and Send. */
+  children?: ReactNode | ((context: ChatComposerActionContext) => ReactNode);
+}
+
 type ChatPartComponent<T extends HTMLElement, P> = ForwardRefExoticComponent<
   P & RefAttributes<T>
 >;
 
 export type ChatComponent = ChatPartComponent<HTMLDivElement, ChatProps> & {
+  Composer: ChatPartComponent<HTMLDivElement, ChatComposerProps>;
   Avatar: ChatPartComponent<HTMLDivElement, ChatAvatarProps>;
   Header: ChatPartComponent<HTMLDivElement, ChatHeaderProps>;
   Bubble: ChatPartComponent<HTMLDivElement, ChatBubbleProps>;
@@ -92,7 +217,10 @@ export type ChatComponent = ChatPartComponent<HTMLDivElement, ChatProps> & {
   Scroll: ChatPartComponent<HTMLDivElement, ChatScrollProps>;
   ScrollBody: ChatPartComponent<HTMLDivElement, ChatScrollBodyProps>;
   ScrollTrack: ChatPartComponent<HTMLDivElement, ChatScrollTrackProps>;
-  ScrollIndicator: ChatPartComponent<HTMLButtonElement, ChatScrollIndicatorProps>;
+  ScrollIndicator: ChatPartComponent<
+    HTMLButtonElement,
+    ChatScrollIndicatorProps
+  >;
   Reasoning: ChatPartComponent<HTMLDetailsElement, ChatReasoningProps>;
   Tool: ChatPartComponent<HTMLDetailsElement, ChatToolProps>;
   ToolHeader: ChatPartComponent<HTMLElement, ChatToolHeaderProps>;

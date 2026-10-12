@@ -1,4 +1,5 @@
 import React, { forwardRef } from "react";
+import { ChatComposer } from "./ChatComposer";
 import {
   chatAvatarClass,
   chatFooterClass,
@@ -114,11 +115,12 @@ export const ChatStatusItem = forwardRef<HTMLSpanElement, ChatStatusItemProps>(
 );
 ChatStatusItem.displayName = "Chat.StatusItem";
 
-export const ChatStatusValue = forwardRef<HTMLSpanElement, ChatStatusValueProps>(
-  ({ className, ...props }, ref) => (
-    <span {...props} ref={ref} className={cn(chatStatusValueClass, className)} />
-  ),
-);
+export const ChatStatusValue = forwardRef<
+  HTMLSpanElement,
+  ChatStatusValueProps
+>(({ className, ...props }, ref) => (
+  <span {...props} ref={ref} className={cn(chatStatusValueClass, className)} />
+));
 ChatStatusValue.displayName = "Chat.StatusValue";
 
 export const ChatActions = forwardRef<HTMLDivElement, ChatActionsProps>(
@@ -126,7 +128,11 @@ export const ChatActions = forwardRef<HTMLDivElement, ChatActionsProps>(
     <div
       {...props}
       ref={ref}
-      className={cn(chatActionsClass, hover && chatActionsHoverClass, className)}
+      className={cn(
+        chatActionsClass,
+        hover && chatActionsHoverClass,
+        className,
+      )}
     />
   ),
 );
@@ -300,6 +306,7 @@ const ChatRoot = forwardRef<HTMLDivElement, ChatProps>(
 ChatRoot.displayName = "Chat";
 
 export const Chat = Object.assign(ChatRoot, {
+  Composer: ChatComposer,
   Avatar: ChatAvatar,
   Header: ChatHeader,
   Bubble: ChatBubble,
