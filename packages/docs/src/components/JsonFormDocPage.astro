@@ -178,6 +178,7 @@ const compiled = compileForm(schemaFromBackend);
 
 <JsonSchemaForm
   compiled={compiled}
+  className="space-y-6"
   value={values}
   onChange={setValues}
   errors={backendErrors}
@@ -185,6 +186,7 @@ const compiled = compileForm(schemaFromBackend);
   onSubmit={sendToBackend}
 />`}</code></pre>
             <p>Alternatively, pass a typed <code>schema</code> directly. Omit <code>value</code> for internal state, optionally initialized by <code>defaultValue</code>. Errors use JSON Pointer keys such as <code>/address/email</code>; <code>onErrorsChange</code> reports validation errors and clears them on edits or reset. Submission runs only after validation and preserves JSON number and boolean types.</p>
+            <p>The optional <code>className</code> prop adds classes to the generated native <code>&lt;form&gt;</code>, preserving <code>form form-vertical schema-form</code>. The outer wrapper retains its <code>schema-form-container</code> class.</p>
             <p>For a LiveView React island, mount inside an element with a stable <code>id</code> and <code>phx-update="ignore"</code>, then send the JSON from <code>onSubmit</code> through the LiveView hook. Catch schema compilation errors and validate values again on the backend. Use a new React <code>key</code> to start fresh when replacing the schema.</p>
           </section>
           <section class="section" aria-labelledby="form-fields">

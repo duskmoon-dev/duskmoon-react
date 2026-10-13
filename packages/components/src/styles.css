@@ -3562,6 +3562,10 @@
     border-color: var(--color-primary);
   }
 
+  .select-container > .select {
+    background-image: none;
+  }
+
   .select:focus-visible {
     outline: none;
     border-color: var(--color-primary);
@@ -3608,6 +3612,10 @@
   .select-selection > :not(.select-tag),
   .select-selection {
     text-overflow: ellipsis;
+  }
+
+  .select-container:has(> .select-clear) > .select > .select-selection {
+    margin-inline-end: 1.75rem;
   }
 
   .select-placeholder {

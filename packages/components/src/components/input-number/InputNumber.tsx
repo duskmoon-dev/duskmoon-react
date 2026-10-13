@@ -47,6 +47,7 @@ export const InputNumber = forwardRef<HTMLInputElement, InputNumberProps>(
       onStep,
       parser = parseNumber,
       precision,
+      readOnly,
       size = "md",
       status,
       step = 1,
@@ -79,7 +80,7 @@ export const InputNumber = forwardRef<HTMLInputElement, InputNumberProps>(
     }
 
     function stepValue(type: "up" | "down") {
-      if (disabled) return;
+      if (disabled || readOnly) return;
       const offset = type === "up" ? step : -step;
       const base = typeof currentValue === "number" ? currentValue : 0;
       const nextValue = emitChange(base + offset);
@@ -102,11 +103,14 @@ export const InputNumber = forwardRef<HTMLInputElement, InputNumberProps>(
           inputMode="decimal"
           className={inputNumberInputClass}
           disabled={disabled}
+          readOnly={readOnly}
           value={displayValue}
-          onChange={(event) => emitChange(parser(event.currentTarget.value))}
+          onChange={(event) => {
+            if (!readOnly) emitChange(parser(event.currentTarget.value));
+          }}
           onKeyDown={(event) => {
             onKeyDown?.(event);
-            if (!keyboard || event.defaultPrevented) return;
+            if (readOnly || !keyboard || event.defaultPrevented) return;
             if (event.key === "ArrowUp") {
               event.preventDefault();
               stepValue("up");
@@ -123,7 +127,9 @@ export const InputNumber = forwardRef<HTMLInputElement, InputNumberProps>(
               type="button"
               className={inputNumberControlClass}
               disabled={
-                disabled || (max !== undefined && Number(currentValue) >= max)
+                disabled ||
+                readOnly ||
+                (max !== undefined && Number(currentValue) >= max)
               }
               aria-label="Increase value"
               onClick={() => stepValue("up")}
@@ -134,7 +140,9 @@ export const InputNumber = forwardRef<HTMLInputElement, InputNumberProps>(
               type="button"
               className={inputNumberControlClass}
               disabled={
-                disabled || (min !== undefined && Number(currentValue) <= min)
+                disabled ||
+                readOnly ||
+                (min !== undefined && Number(currentValue) <= min)
               }
               aria-label="Decrease value"
               onClick={() => stepValue("down")}

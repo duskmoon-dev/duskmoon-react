@@ -89,6 +89,8 @@ function newItem(schema: RenderableSchema): JsonValue {
 }
 
 export type JsonSchemaFormProps = {
+  /** Additional classes for the generated native form; default classes are preserved. */
+  className?: string;
   value?: FormValue;
   defaultValue?: FormValue;
   onChange?: (value: FormValue) => void;
@@ -103,6 +105,7 @@ export type JsonSchemaFormProps = {
 );
 
 export function JsonSchemaForm({
+  className,
   compiled: suppliedCompiled,
   schema,
   value: controlledValue,
@@ -581,7 +584,9 @@ export function JsonSchemaForm({
   return (
     <div ref={formRef} className="schema-form-container">
       <form
-        className="form form-vertical schema-form"
+        className={["form form-vertical schema-form", className]
+          .filter(Boolean)
+          .join(" ")}
         noValidate
         onSubmit={(event) => {
           event.preventDefault();

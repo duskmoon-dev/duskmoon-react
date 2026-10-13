@@ -88,6 +88,51 @@ describe("InputNumber", () => {
     expect(screen.getByDisplayValue("1")).toBeTruthy();
   });
 
+  test.each(["controlled", "uncontrolled"])(
+    "readOnly prevents %s changes while keeping the input focusable",
+    (mode) => {
+      const changedValues: Array<number | null> = [];
+      const steppedValues: Array<number | null> = [];
+      const keys: string[] = [];
+
+      render(
+        <InputNumber
+          {...(mode === "controlled" ? { value: 2 } : { defaultValue: 2 })}
+          readOnly
+          onChange={(value) => changedValues.push(value)}
+          onStep={(value) => steppedValues.push(value)}
+          onKeyDown={(event) => keys.push(event.key)}
+        />,
+      );
+
+      const input = screen.getByRole("textbox") as HTMLInputElement;
+      const increase = screen.getByRole("button", {
+        name: "Increase value",
+      }) as HTMLButtonElement;
+      const decrease = screen.getByRole("button", {
+        name: "Decrease value",
+      }) as HTMLButtonElement;
+
+      expect(input.readOnly).toBe(true);
+      expect(input.disabled).toBe(false);
+      input.focus();
+      expect(document.activeElement).toBe(input);
+      expect(increase.disabled).toBe(true);
+      expect(decrease.disabled).toBe(true);
+
+      fireEvent.click(increase);
+      fireEvent.click(decrease);
+      fireEvent.keyDown(input, { key: "ArrowUp" });
+      fireEvent.keyDown(input, { key: "ArrowDown" });
+      fireEvent.change(input, { target: { value: "3" } });
+
+      expect(changedValues).toEqual([]);
+      expect(steppedValues).toEqual([]);
+      expect(keys).toEqual(["ArrowUp", "ArrowDown"]);
+      expect(input.value).toBe("2");
+    },
+  );
+
   test("includes component stylesheet rules", () => {
     const styles = readFileSync(join(import.meta.dir, "../../styles.css"), {
       encoding: "utf8",

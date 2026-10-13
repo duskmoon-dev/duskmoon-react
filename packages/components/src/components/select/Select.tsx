@@ -177,6 +177,7 @@ const SelectRoot = forwardRef<HTMLDivElement, SelectProps>(
       "aria-invalid": ariaInvalid,
       "aria-label": ariaLabel,
       "aria-labelledby": ariaLabelledBy,
+      "aria-required": ariaRequired,
       children,
       className,
       defaultValue,
@@ -364,7 +365,7 @@ const SelectRoot = forwardRef<HTMLDivElement, SelectProps>(
           className,
         })}
       >
-        {/* eslint-disable-next-line jsx-a11y/role-supports-aria-props -- aria-invalid and aria-errormessage are global properties in WAI-ARIA 1.2. */}
+        {/* eslint-disable-next-line jsx-a11y/role-supports-aria-props -- Forward required/error state to the interactive trigger rather than the wrapper. */}
         <button
           type="button"
           id={id}
@@ -375,6 +376,7 @@ const SelectRoot = forwardRef<HTMLDivElement, SelectProps>(
           aria-invalid={ariaInvalid}
           aria-label={ariaLabel}
           aria-labelledby={ariaLabelledBy}
+          aria-required={ariaRequired}
           aria-haspopup="listbox"
           aria-expanded={open}
           onClick={() => setOpen((current) => !current)}
@@ -387,7 +389,19 @@ const SelectRoot = forwardRef<HTMLDivElement, SelectProps>(
             )}
           </span>
           <span className={selectIconClass} aria-hidden="true">
-            v
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="m6 9 6 6 6-6" />
+            </svg>
           </span>
         </button>
         {allowClear && hasValue && !disabled && !loading ? (
@@ -397,7 +411,18 @@ const SelectRoot = forwardRef<HTMLDivElement, SelectProps>(
             aria-label="Clear selection"
             onClick={clearValue}
           >
-            x
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              aria-hidden="true"
+            >
+              <path d="m6 6 12 12M6 18 18 6" />
+            </svg>
           </button>
         ) : null}
         {open ? (

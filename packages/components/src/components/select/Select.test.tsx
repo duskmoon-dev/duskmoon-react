@@ -1,6 +1,7 @@
 import React from "react";
 import { describe, expect, test } from "bun:test";
 import { fireEvent, render, screen } from "@testing-library/react";
+import { renderToStaticMarkup } from "react-dom/server";
 import { Form } from "../form";
 import { Select } from "./Select";
 import type {
@@ -26,6 +27,7 @@ describe("Select", () => {
             aria-describedby="role-description"
             aria-errormessage="role-errors"
             aria-invalid="true"
+            aria-required="true"
             className="custom-select"
             data-testid="select-wrapper"
             options={[{ label: "Editor", value: "editor" }]}
@@ -42,16 +44,61 @@ describe("Select", () => {
       expect(trigger.id).toBe("role-select");
       expect(trigger.getAttribute("aria-errormessage")).toBe("role-errors");
       expect(trigger.getAttribute("aria-invalid")).toBe("true");
+      expect(trigger.getAttribute("aria-required")).toBe("true");
       expect(container.querySelectorAll("#role-select")).toHaveLength(1);
       expect(root.id).toBe("");
       expect(root.hasAttribute("aria-label")).toBe(false);
       expect(root.hasAttribute("aria-describedby")).toBe(false);
       expect(root.hasAttribute("aria-errormessage")).toBe(false);
       expect(root.hasAttribute("aria-invalid")).toBe(false);
+      expect(root.hasAttribute("aria-required")).toBe(false);
       expect(root.className).toContain("custom-select");
       expect(ref.current).toBe(root as HTMLDivElement);
     },
   );
+
+  test.each([undefined, "multiple"] as const)(
+    "server-renders required state on the trigger in %s mode",
+    (mode) => {
+      const markup = renderToStaticMarkup(
+        <Select
+          mode={mode}
+          aria-required={true}
+          options={[{ label: "Moon", value: "moon" }]}
+        />,
+      );
+      const container = document.createElement("div");
+      container.innerHTML = markup;
+      expect(
+        container
+          .querySelector('button[aria-haspopup="listbox"]')
+          ?.getAttribute("aria-required"),
+      ).toBe("true");
+      expect(
+        container
+          .querySelector(".select-container")
+          ?.hasAttribute("aria-required"),
+      ).toBe(false);
+    },
+  );
+
+  test("renders graphical caret and clear controls without changing accessible names", () => {
+    const { container } = render(
+      <Select
+        allowClear
+        defaultValue="alpha"
+        options={[{ label: "Alpha", value: "alpha" }]}
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: "Alpha" })).toBeTruthy();
+    const caret = container.querySelector(".select-icon")!;
+    const clear = screen.getByRole("button", { name: "Clear selection" });
+    expect(caret.textContent).toBe("");
+    expect(caret.querySelector("svg")).toBeTruthy();
+    expect(clear.textContent).toBe("");
+    expect(clear.querySelector('svg[aria-hidden="true"]')).toBeTruthy();
+  });
 
   test("uses aria-labelledby as the trigger's accessible name", () => {
     render(

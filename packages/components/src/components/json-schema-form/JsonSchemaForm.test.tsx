@@ -23,12 +23,36 @@ const schema = {
 } satisfies RenderableSchema;
 
 describe("published JSON Schema form contract", () => {
+  test.each(["schema", "compiled"] as const)(
+    "applies className to the native form with %s input",
+    (source) => {
+      const input =
+        source === "schema" ? { schema } : { compiled: compileForm(schema) };
+      const { container, rerender } = render(
+        <JsonSchemaForm
+          {...input}
+          className="space-y-6 custom-form"
+          onSubmit={() => {}}
+        />,
+      );
+      const form = container.querySelector("form")!;
+      expect(form.className).toBe(
+        "form form-vertical schema-form space-y-6 custom-form",
+      );
+      expect(form.parentElement?.className).toBe("schema-form-container");
+
+      rerender(<JsonSchemaForm {...input} onSubmit={() => {}} />);
+      expect(form.className).toBe("form form-vertical schema-form");
+    },
+  );
+
   test("accepts a schema and submits typed JSON without mutating defaults", () => {
     const defaultValue: FormValue = { name: "Ada", active: true };
     let submitted: FormValue | undefined;
     render(
       <JsonSchemaForm
         schema={schema}
+        className="space-y-6"
         defaultValue={defaultValue}
         onSubmit={(next) => {
           submitted = next;
@@ -75,6 +99,7 @@ describe("published JSON Schema form contract", () => {
     render(
       <JsonSchemaForm
         compiled={compileForm(schema)}
+        className="space-y-6"
         onErrorsChange={(next) => {
           errors = next;
         }}
@@ -108,6 +133,7 @@ describe("published JSON Schema form contract", () => {
       return (
         <JsonSchemaForm
           schema={schema}
+          className="space-y-6"
           value={value}
           defaultValue={{ name: "Ada" }}
           onChange={setValue}
