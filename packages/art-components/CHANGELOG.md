@@ -1,5 +1,11 @@
 # @duskmoon-dev/art-components
 
+## 0.5.2
+
+### Patch Changes
+
+- d99fb6b: Update Core and CSS Art build and documentation dependencies from 1.20.3 to 1.20.5. Rebuild the bundled component stylesheet with upstream screen-reader utility, pagination state, and megamenu viewport fallback fixes.
+
 ## 0.5.1
 
 ## 0.5.0
