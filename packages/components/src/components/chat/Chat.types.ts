@@ -85,6 +85,57 @@ export interface ChatBubbleProps extends ComponentProps<"div"> {
   filled?: boolean;
   /** Show the live streaming caret after the bubble content. */
   streaming?: boolean;
+  /** Collapse sent user messages exceeding six rendered lines. */
+  collapsible?: boolean;
+  expanded?: boolean;
+  defaultExpanded?: boolean;
+  onExpandedChange?: (expanded: boolean) => void;
+}
+
+export type ChatAgentProps = Omit<ChatProps, "placement">;
+export interface ChatContentProps extends ComponentProps<"div"> {
+  streaming?: boolean;
+}
+export type ChatWorkProps = ComponentProps<"details">;
+export type ChatWorkSummaryProps = ComponentProps<"summary">;
+export type ChatWorkBodyProps = ComponentProps<"div">;
+export type ChatInputAreaProps = ComponentProps<"div">;
+export type ChatComposerColor =
+  | "primary"
+  | "secondary"
+  | "tertiary"
+  | "info"
+  | "success"
+  | "warning"
+  | "error";
+export interface ChatComposerFormProps extends ComponentProps<"form"> {
+  color?: ChatComposerColor;
+  ghost?: boolean;
+}
+export type ChatComposerInputProps = ComponentProps<"textarea">;
+export type ChatComposerActionsProps = ComponentProps<"div">;
+export type ChatComposerHintProps = ComponentProps<"kbd">;
+
+export interface ChatQueueItem {
+  id: string;
+  text: string;
+  attachment?: { src: string; alt: string };
+}
+
+export interface ChatQueueProps extends Omit<
+  ComponentProps<"section">,
+  "children"
+> {
+  items: readonly ChatQueueItem[];
+  /** Stable identity of the next message; defaults to the first item. */
+  activeId?: string;
+  /** The application owns pending state and removes messages after acknowledgment. */
+  pendingIds?: readonly string[];
+  steerDisabled?: boolean;
+  onSteer: (id: string) => void;
+  onRemove: (id: string) => void;
+  /** Accessible queue name. @default "Waiting messages" */
+  label?: string;
 }
 
 export type ChatReasoningProps = ComponentProps<"details">;
@@ -206,6 +257,17 @@ type ChatPartComponent<T extends HTMLElement, P> = ForwardRefExoticComponent<
 
 export type ChatComponent = ChatPartComponent<HTMLDivElement, ChatProps> & {
   Composer: ChatPartComponent<HTMLDivElement, ChatComposerProps>;
+  Agent: ChatPartComponent<HTMLDivElement, ChatAgentProps>;
+  Content: ChatPartComponent<HTMLDivElement, ChatContentProps>;
+  Work: ChatPartComponent<HTMLDetailsElement, ChatWorkProps>;
+  WorkSummary: ChatPartComponent<HTMLElement, ChatWorkSummaryProps>;
+  WorkBody: ChatPartComponent<HTMLDivElement, ChatWorkBodyProps>;
+  InputArea: ChatPartComponent<HTMLDivElement, ChatInputAreaProps>;
+  Queue: ChatPartComponent<HTMLElement, ChatQueueProps>;
+  ComposerForm: ChatPartComponent<HTMLFormElement, ChatComposerFormProps>;
+  ComposerInput: ChatPartComponent<HTMLTextAreaElement, ChatComposerInputProps>;
+  ComposerActions: ChatPartComponent<HTMLDivElement, ChatComposerActionsProps>;
+  ComposerHint: ChatPartComponent<HTMLElement, ChatComposerHintProps>;
   Avatar: ChatPartComponent<HTMLDivElement, ChatAvatarProps>;
   Header: ChatPartComponent<HTMLDivElement, ChatHeaderProps>;
   Bubble: ChatPartComponent<HTMLDivElement, ChatBubbleProps>;

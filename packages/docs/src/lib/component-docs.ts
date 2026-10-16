@@ -598,12 +598,10 @@ function artDemoCode(target: Target, name: string) {
       return `<${name}
   title="Moons"
   size="sm"
-  items={[
-    { title: "Crater", src: "https://picsum.photos/seed/dm-art-1/160/220" },
-    { title: "Orbit", src: "https://picsum.photos/seed/dm-art-2/160/220" },
-    { title: "Lunar", src: "https://picsum.photos/seed/dm-art-3/160/220" },
-    { title: "Night", src: "https://picsum.photos/seed/dm-art-4/160/220" }
-  ]}
+  items={Array.from({ length: 20 }, (_, index) => ({
+    title: \`Photo \${index + 1}\`,
+    src: \`https://picsum.photos/seed/dm-art-\${index + 1}/600/600\`
+  }))}
 />`;
     case "art-cat-stargazer":
       return `<${name} size="sm" />`;
@@ -612,17 +610,20 @@ function artDemoCode(target: Target, name: string) {
     case "art-color-spin":
       return `<${name} size="sm" />`;
     case "art-synthwave-starfield":
-      return `<${name} size="sm" />`;
+      return `<${name} size="sm" paused />`;
     case "art-csswitch":
       return `<${name} size="sm" />`;
     case "art-snowball-preloader":
-      return `<${name} size="sm" />`;
+      return `<${name}
+  size="sm"
+  style={{ background: "#101827", "--art-snowball-preloader-bg": "#101827" }}
+/>`;
     case "art-gemini-input":
       return `<${name}
   size="lg"
   placeholder="Ask DuskMoon"
   defaultValue="Pure CSS art"
-  rows={2}
+  textareaProps={{ "aria-label": "Message" }}
 />`;
     default:
       return `<${name} />`;
@@ -679,68 +680,18 @@ function demoCode(
     : `\n  DuskMoon ${titleCase(target.id)}\n`;
 
   if (target.id === "chat") {
-    return `<${name} aria-live="polite">
-  <${name}.Avatar>
-    <span className="avatar avatar-sm avatar-info">AI</span>
-  </${name}.Avatar>
-  <${name}.Header>Assistant - 2:18 PM</${name}.Header>
-  <${name}.Bubble>
-    <${name}.Reasoning open>
-      <summary>Thinking (3s)</summary>
-      <div className="chat-reasoning-body">
-        <div>I should call the weather tool, then summarize the result in one sentence.</div>
-        <${name}.Tool status="running" open>
-          <${name}.ToolHeader>
-            <span>get_weather</span>
-            <${name}.ToolStatus>Running...</${name}.ToolStatus>
-          </${name}.ToolHeader>
-          <${name}.ToolCall>
-            <div className="code-block code-block-compact">
-              <div className="code-header">
-                <span className="code-title">Call</span>
-                <span className="code-language">json</span>
-              </div>
-              <div className="code-content">
-                <pre tabIndex={0} aria-label="Call JSON payload"><code>{'{"city":"Tokyo"}'}</code></pre>
-              </div>
-            </div>
-          </${name}.ToolCall>
-        </${name}.Tool>
-        <div>Tool returned cloudy at 18 C. Drafting the final answer.</div>
-      </div>
-    </${name}.Reasoning>
-    <${name}.Tool status="success" open>
-      <${name}.ToolHeader>
-        <span>get_weather</span>
-        <${name}.ToolStatus>Done</${name}.ToolStatus>
-      </${name}.ToolHeader>
-      <${name}.ToolCall>
-        <div className="code-block code-block-compact">
-          <div className="code-header">
-            <span className="code-title">Call</span>
-            <span className="code-language">json</span>
-          </div>
-          <div className="code-content">
-            <pre tabIndex={0} aria-label="Call JSON payload"><code>{'{"city":"Tokyo"}'}</code></pre>
-          </div>
-        </div>
-      </${name}.ToolCall>
-      <${name}.ToolResult>
-        <div className="code-block code-block-compact">
-          <div className="code-header">
-            <span className="code-title">Result</span>
-            <span className="code-language">json</span>
-          </div>
-          <div className="code-content">
-            <pre tabIndex={0} aria-label="Result JSON payload"><code>{'{"temperature":"18 C","condition":"cloudy"}'}</code></pre>
-          </div>
-        </div>
-      </${name}.ToolResult>
-    </${name}.Tool>
-    <div className="chat-bubble-content chat-bubble-streaming">It is 18 C and cloudy in Tokyo right now.</div>
-  </${name}.Bubble>
-  <${name}.Footer>Streaming</${name}.Footer>
-</${name}>`;
+    return `<${name}.Agent>
+  <${name}.Work>
+    <${name}.WorkSummary>Worked · 1 tool call</${name}.WorkSummary>
+    <${name}.WorkBody>
+      <${name}.Tool status="success">
+        <${name}.ToolHeader>Check source <${name}.ToolStatus>Done</${name}.ToolStatus></${name}.ToolHeader>
+        <${name}.ToolResult>Source reviewed.</${name}.ToolResult>
+      </${name}.Tool>
+    </${name}.WorkBody>
+  </${name}.Work>
+  <${name}.Content>The answer remains visible when activity is closed.</${name}.Content>
+</${name}.Agent>`;
   }
 
   if (target.id === "button") {
@@ -1260,7 +1211,7 @@ function demoCode(
   size="lg"
   open
 >
-  Hover for details
+  <button type="button">Review details</button>
 </${name}>`;
   }
 
@@ -1859,6 +1810,60 @@ export function ConsolePageDemo() {
     componentStyleImport,
   );
 
+  if (target.id === "tooltip") {
+    return [
+      {
+        title: "Native interest hint",
+        description:
+          "Hover or focus the native button to show a brief noninteractive description. The browser controls hint visibility; the status reflects actual onOpenChange callbacks. Requires browser support for Interest Invokers, hint popovers and CSS Anchor Positioning.",
+        code: `import React, { useState } from "react";
+import "@duskmoon-dev/components/styles.css";
+import { Tooltip } from "@duskmoon-dev/components/tooltip";
+
+export function TooltipInterestPreview() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div data-overlay-tooltip-demo style={{ display: "grid", gap: "0.75rem", justifyItems: "start" }}>
+      <Tooltip
+        title="Review the project settings before publishing."
+        onOpenChange={setOpen}
+      >
+        <button className="btn btn-outlined" type="button">Review settings</button>
+      </Tooltip>
+      <p role="status" aria-atomic="true">Tooltip is {open ? "open" : "closed"}.</p>
+    </div>
+  );
+}`,
+        source: "authored",
+      },
+    ];
+  }
+
+  if (target.id === "popover") {
+    return [
+      {
+        title: "Interactive form",
+        description:
+          "Open a real native Popover, edit the project name and submit the form. Save and cancel close the surface; the status reports actual edited values.",
+        code: 'import React, { useId, useRef, useState } from "react";\nimport "@duskmoon-dev/components/styles.css";\nimport { Popover } from "@duskmoon-dev/components/popover";\n\nexport function PopoverFormPreview() {\n  const [open, setOpen] = useState(false);\n  const [saved, setSaved] = useState("DuskMoon");\n  const [status, setStatus] = useState("No changes saved yet.");\n  const fieldId = useId();\n  const triggerRef = useRef<HTMLButtonElement>(null);\n\n  function close() {\n    setOpen(false);\n    triggerRef.current?.focus();\n  }\n\n  return <div data-overlay-form-demo style={{ display: "grid", gap: "0.75rem", justifyItems: "start" }}>\n    <Popover\n      title="Project settings"\n      trigger="click"\n      placement="bottom"\n      open={open}\n      onOpenChange={setOpen}\n      destroyTooltipOnHide\n      content={\n        <form aria-label="Project settings" onSubmit={(event) => {\n          event.preventDefault();\n          const value = String(new FormData(event.currentTarget).get("project"));\n          setSaved(value);\n          setStatus(`Saved project: ${value}`);\n          close();\n        }} style={{ display: "grid", gap: "0.75rem" }}>\n          <label htmlFor={fieldId}>Project name</label>\n          <input className="input" id={fieldId} name="project" defaultValue={saved} required />\n          <div style={{ display: "flex", gap: "0.5rem" }}>\n            <button className="btn btn-primary btn-sm" type="submit">Save project</button>\n            <button className="btn btn-ghost btn-sm" type="button" onClick={() => { setStatus("Changes canceled."); close(); }}>Cancel changes</button>\n          </div>\n        </form>\n      }\n    >\n      <button ref={triggerRef} className="btn btn-outlined" type="button">Edit project</button>\n    </Popover>\n    <p role="status" aria-atomic="true">{status}</p>\n  </div>;\n}',
+        source: "authored",
+      },
+    ];
+  }
+
+  if (target.id === "popconfirm") {
+    return [
+      {
+        title: "Async confirmation and retry",
+        description:
+          "A real button opens native Popconfirm. Reject the next simulated request to keep the confirmation available, then retry successfully or cancel. Pending controls and outcome counters use actual callbacks.",
+        code: 'import React, { useEffect, useRef, useState } from "react";\nimport "@duskmoon-dev/components/styles.css";\nimport { Popconfirm } from "@duskmoon-dev/components/popconfirm";\n\nexport function PopconfirmAsyncPreview() {\n  const [shouldReject, setShouldReject] = useState(false);\n  const [pending, setPending] = useState(false);\n  const [confirmed, setConfirmed] = useState(0);\n  const [canceled, setCanceled] = useState(0);\n  const [status, setStatus] = useState("Choose whether the next simulated request succeeds.");\n  const timerRef = useRef<number | undefined>(undefined);\n  useEffect(() => () => window.clearTimeout(timerRef.current), []);\n\n  async function confirm() {\n    setPending(true);\n    setStatus("Confirming deletion\u2026");\n    try {\n      await new Promise<void>((resolve) => {\n        timerRef.current = window.setTimeout(resolve, 300);\n      });\n      if (shouldReject) {\n        setShouldReject(false);\n        setStatus("Request rejected. The confirmation remains available; retry or cancel.");\n        throw new Error("Simulated request rejection");\n      }\n      setConfirmed((count) => count + 1);\n      setStatus("Deletion confirmed.");\n    } finally {\n      setPending(false);\n    }\n  }\n\n  return <div data-overlay-confirm-demo style={{ display: "grid", gap: "0.75rem", justifyItems: "start" }}>\n    <label style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>\n      <input className="checkbox" type="checkbox" checked={shouldReject} disabled={pending} onChange={(event) => setShouldReject(event.currentTarget.checked)} />\n      Reject next request\n    </label>\n    <Popconfirm\n      title="Delete this draft?"\n      description="A simulated request takes a moment. A rejection keeps these actions available."\n      placement="bottom"\n      okText="Delete draft"\n      cancelText="Keep draft"\n      cancelButtonProps={{ disabled: pending }}\n      onConfirm={confirm}\n      onCancel={() => { setCanceled((count) => count + 1); setStatus("Deletion canceled."); }}\n    >\n      <button className="btn btn-outlined" type="button">Review draft deletion</button>\n    </Popconfirm>\n    <p role="status" aria-atomic="true">{status}</p>\n    <p>Confirmed: {confirmed} \u00b7 Canceled: {canceled}</p>\n  </div>;\n}',
+        source: "authored",
+      },
+    ];
+  }
+
   if (target.id === "chat") {
     return chatDemoExamples.map((example) => ({ ...example }));
   }
@@ -1913,6 +1918,75 @@ export function ConsolePageDemo() {
         code: `import "@duskmoon-dev/art-components/styles.css";\n${importLine}\n\nexport function AccessibleArt() {\n  return (${accessibleArtDemoCode(target, name)});\n}`,
         source: "authored",
       },
+      ...(target.id === "art-plasma-ball"
+        ? [
+            {
+              title: "Native toggle and disabled state",
+              description:
+                "Activate the ball by click or Space to change its visible power state. The second native checkbox is disabled.",
+              code: `import { useState } from "react";
+import { ArtPlasmaBall } from "@duskmoon-dev/art-components";
+import "@duskmoon-dev/art-components/styles.css";
+
+export function PlasmaPower() {
+  const [checked, setChecked] = useState(false);
+  return (
+    <>
+      <ArtPlasmaBall size="sm" hideBase checked={checked}
+        onCheckedChange={setChecked}
+        inputProps={{ "aria-label": "Power plasma ball" }} />
+      <p role="status">Plasma power: {checked ? "On" : "Off"}</p>
+      <ArtPlasmaBall size="sm" hideBase checked={false}
+        inputProps={{ "aria-label": "Disabled plasma power", disabled: true }} />
+    </>
+  );
+}`,
+              source: "authored" as const,
+            },
+          ]
+        : []),
+      ...(target.id === "art-gemini-input"
+        ? [
+            {
+              title: "Native form and field states",
+              description:
+                "Type multiline text and use Send to submit the native form. Read-only text stays selectable; the disabled field and actions cannot activate.",
+              code: `import { useState } from "react";
+import { ArtGeminiInput } from "@duskmoon-dev/art-components";
+import "@duskmoon-dev/art-components/styles.css";
+
+export function MessageForm() {
+  const [value, setValue] = useState("");
+  const [submitted, setSubmitted] = useState("");
+  const [count, setCount] = useState(0);
+  return (
+    <>
+      <form onSubmit={(event) => {
+        event.preventDefault();
+        setSubmitted(value);
+        setCount((previous) => previous + 1);
+      }}>
+        <ArtGeminiInput size="sm" name="message" required
+          value={value} onChange={(event) => setValue(event.currentTarget.value)}
+          textareaProps={{ "aria-label": "Message to send" }}
+          afterButtonProps={{ type: "submit" }} />
+        <p role="status">Submitted {count}: {submitted}</p>
+      </form>
+      <ArtGeminiInput size="sm" readOnly after={null}
+        beforeButtonProps={{ "aria-label": "Read-only add", disabled: true }}
+        defaultValue="Read-only example"
+        textareaProps={{ "aria-label": "Read-only message" }} />
+      <ArtGeminiInput size="sm" disabled defaultValue="Disabled example"
+        textareaProps={{ "aria-label": "Disabled message" }}
+        beforeButtonProps={{ "aria-label": "Disabled add" }}
+        afterButtonProps={{ "aria-label": "Disabled send" }} />
+    </>
+  );
+}`,
+              source: "authored" as const,
+            },
+          ]
+        : []),
     ];
   }
 

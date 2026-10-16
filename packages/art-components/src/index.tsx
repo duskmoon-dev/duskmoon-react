@@ -219,7 +219,7 @@ function PlasmaRay({ bigwave = false }: { bigwave?: boolean }) {
     <div className={cn("ray", bigwave && "bigwave")}>
       <span />
       <span />
-      <span />
+      {!bigwave && <span />}
     </div>
   );
 }
@@ -230,7 +230,7 @@ function PlasmaRays({ group }: { group: number }) {
   return (
     <div className="rays">
       {Array.from({ length: rayCount }, (_, index) => (
-        <PlasmaRay key={index} bigwave={group >= 4 || index % 2 === 1} />
+        <PlasmaRay key={index} bigwave={group < 4 && index % 2 === 1} />
       ))}
     </div>
   );
@@ -409,10 +409,10 @@ export const ArtCatStargazer = forwardRef<HTMLDivElement, ArtCatStargazerProps>(
     >
       <div className="moon" />
       <div className="cat">
-        <div className="bubble" />
-        <div className="backpack" />
         <div className="tail" />
+        <div className="backpack" />
         <div className="body">
+          <div className="leg" />
           <div className="leg" />
           <div className="paw" />
           <div className="paw" />
@@ -423,10 +423,11 @@ export const ArtCatStargazer = forwardRef<HTMLDivElement, ArtCatStargazerProps>(
           {Array.from({ length: 4 }, (_, index) => (
             <div key={index} className="whisker" />
           ))}
+          <div className="eye" />
+          <div className="eye" />
           <div className="nose" />
-          <div className="eye" />
-          <div className="eye" />
         </div>
+        <div className="bubble" />
       </div>
     </div>
   ),
@@ -489,11 +490,38 @@ function FlowerGrass({ index }: { index: 1 | 2 }) {
   );
 }
 
+const grassGrowthDelays = [
+  [3, 2.2, 3.4, 3.6],
+  [3.6, 3.8, 4, 4.2],
+  [4, 4.2, 4.4, 4.6],
+  [4, 4.2, 3, 3.6],
+  [4, 4.2, 3, 3.6],
+  [4, 4.2, 3, 3.6],
+  [4.2, 4.4, 4.6, 4.8],
+  [3, 3.2, 3.5, 3.6],
+];
+
+function GrowingArt({
+  delay,
+  children,
+}: {
+  delay: number;
+  children: ReactNode;
+}) {
+  return (
+    <div className="grow-ans" style={{ "--d": `${delay}s` } as ArtStyle}>
+      {children}
+    </div>
+  );
+}
+
 function LongGrass({ index }: { index: number }) {
   return (
     <div className={cn("long-g", `long-g--${index}`)}>
-      {Array.from({ length: 4 }, (_, leafIndex) => (
-        <div key={leafIndex} className={cn("leaf", `leaf--${leafIndex}`)} />
+      {grassGrowthDelays[index].map((delay, leafIndex) => (
+        <GrowingArt key={leafIndex} delay={delay}>
+          <div className={cn("leaf", `leaf--${leafIndex}`)} />
+        </GrowingArt>
       ))}
     </div>
   );
@@ -502,19 +530,18 @@ function LongGrass({ index }: { index: number }) {
 function FrontGrass() {
   return (
     <div className="flower__g-front">
-      <div className="flower__g-front__line">
-        {Array.from({ length: 8 }, (_, index) => (
-          <div
-            key={index}
-            className={cn(
-              "flower__g-front__leaf-wrapper",
-              `flower__g-front__leaf-wrapper--${index + 1}`,
-            )}
-          >
-            <div className="flower__g-front__leaf" />
-          </div>
-        ))}
-      </div>
+      {Array.from({ length: 8 }, (_, index) => (
+        <div
+          key={index}
+          className={cn(
+            "flower__g-front__leaf-wrapper",
+            `flower__g-front__leaf-wrapper--${index + 1}`,
+          )}
+        >
+          <div className="flower__g-front__leaf" />
+        </div>
+      ))}
+      <div className="flower__g-front__line" />
     </div>
   );
 }
@@ -568,30 +595,42 @@ export const ArtFlowerAnimation = forwardRef<
       <Flower index={2} />
       <Flower index={3} />
       <Flower index={4} />
+      <GrowingArt delay={1.2}>
+        <div className="flower__g-long">
+          <div className="flower__g-long__top" />
+          <div className="flower__g-long__bottom" />
+        </div>
+      </GrowingArt>
       <div className="growing-grass">
         <FlowerGrass index={1} />
+      </div>
+      <div className="growing-grass">
         <FlowerGrass index={2} />
       </div>
-      <div className="flower__g-long">
-        <div className="flower__g-long__top" />
-        <div className="flower__g-long__bottom" />
-      </div>
-      <div className="flower__g-right flower__g-right--1">
-        <div className="leaf" />
-      </div>
-      <div className="flower__g-right flower__g-right--2">
-        <div className="leaf" />
-      </div>
-      <FrontGrass />
-      <FrontRightGrass />
-      {Array.from({ length: 7 }, (_, index) => (
-        <LongGrass key={index} index={index + 1} />
+      <GrowingArt delay={2.4}>
+        <div className="flower__g-right flower__g-right--1">
+          <div className="leaf" />
+        </div>
+      </GrowingArt>
+      <GrowingArt delay={2.8}>
+        <div className="flower__g-right flower__g-right--2">
+          <div className="leaf" />
+        </div>
+      </GrowingArt>
+      <GrowingArt delay={2.8}>
+        <FrontGrass />
+      </GrowingArt>
+      <GrowingArt delay={3.2}>
+        <FrontRightGrass />
+      </GrowingArt>
+      {grassGrowthDelays.map((_, index) => (
+        <LongGrass key={index} index={index} />
       ))}
-      <div className="bubbles">
-        {Array.from({ length: 20 }, (_, index) => (
-          <Bubble key={index} />
-        ))}
-      </div>
+    </div>
+    <div className="bubbles">
+      {Array.from({ length: 20 }, (_, index) => (
+        <Bubble key={index} />
+      ))}
     </div>
   </div>
 ));
@@ -644,8 +683,8 @@ export const ArtSynthwaveStarfield = forwardRef<
       {...getDecorativeProps(decorative, props)}
       {...props}
     >
-      <div className="art-synthwave-starfield-sides art-synthwave-starfield-lefrig" />
       <div className="art-synthwave-starfield-sides art-synthwave-starfield-topbot" />
+      <div className="art-synthwave-starfield-sides art-synthwave-starfield-lefrig" />
       <div className="art-synthwave-starfield-stars" />
       <div className="art-synthwave-starfield-stars" />
     </div>
@@ -682,33 +721,45 @@ function SwitchBar({
 }) {
   return (
     <div className="bar">
+      <div className="cord" />
       <SwitchButton className="sub-lr" label={`${side} SL`} hidden={hidden} />
       <SwitchButton className="sub-rr" label={`${side} SR`} hidden={hidden} />
-      <span className="minus-sign" />
-      <span className="peripheral" />
-      <span className="cord" />
+      <div className="peripheral" />
+      <div className="minus-sign" />
     </div>
   );
 }
 
-function SwitchConnector() {
+function SwitchConnector({
+  side,
+  hidden,
+}: {
+  side: "Left" | "Right";
+  hidden: boolean;
+}) {
   return (
     <div className="connector">
-      <div className="con-lr">
-        <div className="con-part" />
-      </div>
-      <div className="con-rr">
-        <div className="con-part" />
-      </div>
+      <SwitchButton
+        className="con-lr"
+        label={`${side} connector L`}
+        hidden={hidden}
+      />
+      <SwitchButton
+        className="con-rr"
+        label={`${side} connector R`}
+        hidden={hidden}
+      />
+      <div className="con-part" />
     </div>
   );
 }
 
 function LeftJoycon({ hidden }: { hidden: boolean }) {
   return (
-    <div className="controller">
+    <div className="controller left">
       <SwitchBar side="Left" hidden={hidden} />
-      <SwitchConnector />
+      <SwitchConnector side="Left" hidden={hidden} />
+      <SwitchButton className="lr" label="L" hidden={hidden} />
       <SwitchButton className="minus" label="Minus" hidden={hidden} />
       <SwitchButton
         className="mushroom round"
@@ -721,11 +772,6 @@ function LeftJoycon({ hidden }: { hidden: boolean }) {
         hidden={hidden}
       />
       <SwitchButton
-        className="direction arrow down round"
-        label="Down"
-        hidden={hidden}
-      />
-      <SwitchButton
         className="direction arrow left round"
         label="Left"
         hidden={hidden}
@@ -733,6 +779,11 @@ function LeftJoycon({ hidden }: { hidden: boolean }) {
       <SwitchButton
         className="direction arrow right round"
         label="Right"
+        hidden={hidden}
+      />
+      <SwitchButton
+        className="direction arrow down round"
+        label="Down"
         hidden={hidden}
       />
       <SwitchButton className="menu" label="Capture" hidden={hidden} />
@@ -744,31 +795,45 @@ function RightJoycon({ hidden }: { hidden: boolean }) {
   return (
     <div className="controller right">
       <SwitchBar side="Right" hidden={hidden} />
-      <SwitchConnector />
+      <SwitchConnector side="Right" hidden={hidden} />
+      <SwitchButton className="lr rr" label="R" hidden={hidden} />
       <SwitchButton className="minus plus" label="Plus" hidden={hidden} />
+      <SwitchButton
+        className="direction up x round"
+        label="X"
+        hidden={hidden}
+      />
+      <SwitchButton
+        className="direction left y round"
+        label="Y"
+        hidden={hidden}
+      />
+      <SwitchButton
+        className="direction right a round"
+        label="A"
+        hidden={hidden}
+      />
+      <SwitchButton
+        className="direction down b round"
+        label="B"
+        hidden={hidden}
+      />
       <SwitchButton
         className="mushroom round"
         label="Right stick"
         hidden={hidden}
       />
-      <SwitchButton className="direction x round" label="X" hidden={hidden} />
-      <SwitchButton className="direction y round" label="Y" hidden={hidden} />
-      <SwitchButton className="direction a round" label="A" hidden={hidden} />
-      <SwitchButton className="direction b round" label="B" hidden={hidden} />
       <SwitchButton className="home round" label="Home" hidden={hidden} />
     </div>
   );
 }
 
-function SwitchBody() {
+function SwitchBody({ hidden }: { hidden: boolean }) {
   return (
     <div className="body">
-      <div className="frame">
-        <div className="screen" />
-      </div>
-      <div className="lr" />
-      <div className="lr rr" />
-      <div className="volume" />
+      <SwitchButton className="volume" label="Volume" hidden={hidden} />
+      <div className="frame" />
+      <div className="screen" />
     </div>
   );
 }
@@ -778,16 +843,22 @@ function ComfortGrip() {
     <div className="comfort-grip">
       <div className="grip" />
       <div className="grip right" />
-      <div className="holder">
-        <div className="main-frame">
-          <div className="logo" />
-          <div className="logo right" />
-          <div className="nintendo">NINTENDO</div>
-          <div className="switch">SWITCH</div>
-          {Array.from({ length: 8 }, (_, index) => (
-            <div key={index} className="light" />
-          ))}
-        </div>
+      <div className="holder" />
+    </div>
+  );
+}
+
+function ComfortGripBack() {
+  return (
+    <div className="comfort-grip">
+      <div className="main-frame">
+        {Array.from({ length: 8 }, (_, index) => (
+          <div key={index} className="light" />
+        ))}
+        <div className="logo" />
+        <div className="logo right" />
+        <div className="nintendo">NINTENDO</div>
+        <div className="switch">SWITCH</div>
       </div>
     </div>
   );
@@ -809,14 +880,19 @@ export const ArtCsswitch = forwardRef<HTMLDivElement, ArtCsswitchProps>(
     return (
       <div
         ref={ref}
-        className={cn("art-csswitch", sizeClass("art-csswitch", size), className)}
+        className={cn(
+          "art-csswitch",
+          sizeClass("art-csswitch", size),
+          className,
+        )}
         {...decorativeProps}
         {...props}
       >
-        <SwitchBody />
         <ComfortGrip />
         <LeftJoycon hidden={controlsAreHidden} />
         <RightJoycon hidden={controlsAreHidden} />
+        <SwitchBody hidden={controlsAreHidden} />
+        <ComfortGripBack />
       </div>
     );
   },

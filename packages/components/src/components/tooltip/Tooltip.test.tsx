@@ -71,7 +71,7 @@ describe("Tooltip", () => {
     expect(tooltip.matches(":popover-open")).toBe(false);
   });
 
-  test("reports native dismissal and can reopen on the next hover", () => {
+  test("uses native interest invokers and reports browser toggle outcomes", () => {
     const changes: boolean[] = [];
     const { container } = render(
       <Tooltip title="Tip" onOpenChange={(open) => changes.push(open)}>
@@ -81,7 +81,21 @@ describe("Tooltip", () => {
     const wrapper = container.querySelector(".tooltip-wrapper") as HTMLElement;
     const tooltip = screen.getByRole("tooltip");
 
+    const trigger = screen.getByRole("button");
+    expect(trigger.getAttribute("interestfor")).toBe(tooltip.id);
+    expect(trigger.style.getPropertyValue("anchor-name")).toBe(
+      tooltip.style.getPropertyValue("position-anchor"),
+    );
     fireEvent.mouseEnter(wrapper);
+    expect(tooltip.matches(":popover-open")).toBe(false);
+    tooltip.showPopover();
+    fireEvent(
+      tooltip,
+      Object.assign(new Event("toggle"), {
+        oldState: "closed",
+        newState: "open",
+      }),
+    );
     tooltip.hidePopover();
     fireEvent(
       tooltip,
@@ -93,7 +107,14 @@ describe("Tooltip", () => {
     expect(tooltip.matches(":popover-open")).toBe(false);
     expect(changes).toEqual([true, false]);
 
-    fireEvent.mouseEnter(wrapper);
+    tooltip.showPopover();
+    fireEvent(
+      tooltip,
+      Object.assign(new Event("toggle"), {
+        oldState: "closed",
+        newState: "open",
+      }),
+    );
     expect(tooltip.matches(":popover-open")).toBe(true);
     expect(changes).toEqual([true, false, true]);
   });

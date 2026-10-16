@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import React, { createRef } from "react";
 import {
   ArtAtom,
@@ -63,6 +63,21 @@ describe("@duskmoon-dev/art-components", () => {
     expect(container.querySelectorAll(".art-mountain .mountain")).toHaveLength(
       4,
     );
+    expect(
+      container.querySelectorAll(".art-cat-stargazer .body > .leg"),
+    ).toHaveLength(2);
+    expect(
+      container.querySelector(".art-cat-stargazer .cat > :first-child")
+        ?.className,
+    ).toBe("tail");
+    expect(
+      container.querySelector(".art-cat-stargazer .cat > :last-child")
+        ?.className,
+    ).toBe("bubble");
+    expect(
+      container.querySelector(".art-cat-stargazer .head > :last-child")
+        ?.className,
+    ).toBe("nose");
     expect(container.querySelectorAll(".art-mountain .borealis")).toHaveLength(
       9,
     );
@@ -108,6 +123,109 @@ describe("@duskmoon-dev/art-components", () => {
     expect(
       container.querySelector(".art-snowball-preloader-track-cover"),
     ).toBeTruthy();
+  });
+
+  test("preserves plasma checkbox state and the CSS ray anatomy", () => {
+    const changes: boolean[] = [];
+    const inputChanges: boolean[] = [];
+    const { container, rerender } = render(
+      <ArtPlasmaBall
+        onCheckedChange={(checked) => changes.push(checked)}
+        inputProps={{
+          onChange: (event) => inputChanges.push(event.currentTarget.checked),
+        }}
+      />,
+    );
+    const input = screen.getByRole("checkbox", {
+      name: "Toggle plasma ball",
+    }) as HTMLInputElement;
+    fireEvent.click(input);
+    expect(input.checked).toBe(true);
+    expect(changes).toEqual([true]);
+    expect(inputChanges).toEqual([true]);
+    const groups = container.querySelectorAll(".glassball > .rays");
+    expect(Array.from(groups, (group) => group.children.length)).toEqual([
+      5, 5, 5, 5, 3, 3,
+    ]);
+    expect(container.querySelectorAll(".ray.bigwave")).toHaveLength(8);
+    for (const wave of container.querySelectorAll(".ray.bigwave")) {
+      expect(wave.children.length).toBe(2);
+    }
+    for (const group of Array.from(groups).slice(4)) {
+      expect(group.querySelectorAll(".bigwave")).toHaveLength(0);
+    }
+    rerender(
+      <ArtPlasmaBall
+        key="controlled"
+        checked={false}
+        inputProps={{ disabled: true }}
+      />,
+    );
+    const disabledInput = screen.getByRole("checkbox") as HTMLInputElement;
+    expect(disabledInput.checked).toBe(false);
+    expect(disabledInput.disabled).toBe(true);
+  });
+
+  test("positions garden leaves and bubbles in their CSS containing blocks", () => {
+    const { container } = render(<ArtFlowerAnimation />);
+    const scene = container.querySelector(".art-flower-animation")!;
+    expect(scene.querySelector(":scope > .bubbles")).toBeTruthy();
+    expect(scene.querySelectorAll(".flowers > .growing-grass")).toHaveLength(2);
+    expect(scene.querySelectorAll(".long-g")).toHaveLength(8);
+    expect(
+      scene.querySelector(".long-g--0 .grow-ans")?.getAttribute("style"),
+    ).toContain("--d: 3s");
+    expect(scene.querySelectorAll(".long-g > .grow-ans > .leaf")).toHaveLength(
+      32,
+    );
+    expect(
+      scene.querySelectorAll(
+        ".flower__g-front > .flower__g-front__leaf-wrapper",
+      ),
+    ).toHaveLength(8);
+    expect(
+      scene.querySelector(".flower__g-front > :last-child")?.className,
+    ).toBe("flower__g-front__line");
+    expect(
+      scene.querySelectorAll(".flower__leafs > .flower__light"),
+    ).toHaveLength(32);
+  });
+
+  test("exposes console controls without submitting a surrounding form", () => {
+    let submissions = 0;
+    const { container, rerender } = render(
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          submissions++;
+        }}
+      >
+        <ArtCSSwitch />
+      </form>,
+    );
+    const scene = container.querySelector(".art-csswitch")!;
+    expect(scene.querySelectorAll(":scope > .comfort-grip")).toHaveLength(2);
+    expect(scene.querySelectorAll(".connector > button")).toHaveLength(4);
+    expect(scene.querySelectorAll(".body > .frame + .screen")).toHaveLength(1);
+    expect(
+      scene.querySelectorAll(".main-frame > .light:nth-child(-n+8)"),
+    ).toHaveLength(8);
+    for (const name of [
+      "L",
+      "R",
+      "Volume",
+      "Left connector L",
+      "Right connector R",
+    ]) {
+      const button = screen.getByRole("button", { name });
+      expect(button.getAttribute("type")).toBe("button");
+      fireEvent.click(button);
+    }
+    expect(submissions).toBe(0);
+    rerender(<ArtCSSwitch decorative />);
+    for (const button of container.querySelectorAll("button")) {
+      expect(button.tabIndex).toBe(-1);
+    }
   });
 
   test("renders circular gallery items with targetable cards", () => {

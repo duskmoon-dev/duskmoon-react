@@ -160,11 +160,9 @@ export const Popover = forwardRef<HTMLSpanElement, PopoverProps>(
       }
     }
 
-    const hasContent = Boolean(content || title);
     const shouldRenderContent = !destroyTooltipOnHide || visible;
 
     const triggerProps = {
-      "aria-describedby": hasContent && visible ? tooltipId : undefined,
       onMouseEnter: triggerHandlers.onMouseEnter ? handleMouseEnter : undefined,
       onMouseLeave: triggerHandlers.onMouseLeave ? handleMouseLeave : undefined,
       onFocus: triggerHandlers.onFocus ? handleFocus : undefined,
@@ -176,9 +174,6 @@ export const Popover = forwardRef<HTMLSpanElement, PopoverProps>(
     };
     const triggerNode = isValidElement<TriggerElementProps>(children)
       ? cloneElement(children as ReactElement<TriggerElementProps>, {
-          "aria-describedby":
-            triggerProps["aria-describedby"] ??
-            children.props["aria-describedby"],
           onMouseEnter: (event) => {
             callHandler(children.props.onMouseEnter, event);
             triggerProps.onMouseEnter?.(event);
@@ -219,7 +214,6 @@ export const Popover = forwardRef<HTMLSpanElement, PopoverProps>(
             ref={popoverRef}
             id={tooltipId}
             popover="auto"
-            role="tooltip"
             style={{ positionAnchor: anchorName } as React.CSSProperties}
             onToggle={(event) => {
               const nextOpen = event.newState === "open";

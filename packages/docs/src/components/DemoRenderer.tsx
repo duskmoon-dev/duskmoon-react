@@ -1,10 +1,19 @@
 import React from "react";
 import * as ArtComponents from "@duskmoon-dev/art-components";
 import * as DmComponents from "@duskmoon-dev/components";
+import {
+  GeminiInputContractPreview,
+  PlasmaBallContractPreview,
+} from "./ArtContractPreviews";
 import { ButtonPreview, isButtonPreviewDemo } from "./ButtonPreviews";
 import { chatShowcasePreviews } from "./ChatPreviews";
 import { DropdownPreview, isDropdownPreviewDemo } from "./DropdownPreviews";
 import { DmLayoutPreview } from "./DmLayoutPreviews";
+import {
+  PopoverFormPreview,
+  PopconfirmAsyncPreview,
+  TooltipInterestPreview,
+} from "./OverlayContractPreviews";
 import {
   ConsolePagePreview,
   FabPreview,
@@ -1048,6 +1057,19 @@ export default function DemoRenderer({
   demoTitle,
   demoCode,
 }: DemoRendererProps) {
+  if (
+    componentId === "art-plasma-ball" &&
+    demoTitle === "Native toggle and disabled state"
+  ) {
+    return <PlasmaBallContractPreview />;
+  }
+  if (
+    componentId === "art-gemini-input" &&
+    demoTitle === "Native form and field states"
+  ) {
+    return <GeminiInputContractPreview />;
+  }
+
   // Handle special case utility/hook/types
   const isArtComponent = componentId.startsWith("art-");
   const isTypeOnlyInfrastructure =
@@ -1240,7 +1262,8 @@ This line demonstrates \`breaks={true}\`.
   }
 
   if (componentId === "chat") {
-    const preview = chatShowcasePreviews[demoTitle as keyof typeof chatShowcasePreviews];
+    const preview =
+      chatShowcasePreviews[demoTitle as keyof typeof chatShowcasePreviews];
     return preview ? React.createElement(preview) : null;
   }
 
@@ -1331,17 +1354,16 @@ This line demonstrates \`breaks={true}\`.
     );
   }
 
+  if (componentId === "tooltip") {
+    return <TooltipInterestPreview />;
+  }
+
   if (componentId === "popover") {
-    return (
-      <DmComponents.Popover
-        title="DuskMoon"
-        content="Popover content"
-        placement="bottom"
-        trigger="click"
-      >
-        <button type="button">Open popover</button>
-      </DmComponents.Popover>
-    );
+    return <PopoverFormPreview />;
+  }
+
+  if (componentId === "popconfirm") {
+    return <PopconfirmAsyncPreview />;
   }
 
   if (componentId === "splitter") {

@@ -174,7 +174,7 @@ const purposeById: Record<string, string> = {
   calendar:
     "renders date-oriented browsing and selection with month and year modes.",
   card: "groups related content and actions into a small self-contained surface.",
-  chat: "composes conversational turns with controlled composers, message bubbles, reasoning traces, tool calls, and live response states.",
+  chat: "composes unboxed agent answers, native activity disclosures, collapsible user bubbles, controlled waiting queues, and native or controlled composers.",
   "console-page":
     "arranges an app bar, sidebar, workspace, and native mobile navigation in a responsive shell.",
   carousel:
@@ -550,6 +550,33 @@ function usageNotesFor(
           description:
             "Import @duskmoon-dev/components/styles.css once in the app or docs shell.",
         };
+  const artContractNotes: Record<string, ComponentUsageNote> = {
+    "art-circular-gallery": {
+      title: "Native gallery",
+      description:
+        "The upstream arc uses 20 cards and CSS Motion Path, :has(), @property, and Anchor Positioning. Omit href to open each card's native hash preview; custom href values navigate normally. The published card-width default is 0.09 times scene size. CSS Art 1.20.7 fixes native preview centering; use that version or later to receive the fix.",
+    },
+    "art-csswitch": {
+      title: "Responsive controls",
+      description:
+        "Console modes follow viewport breakpoints at 1010, 670, 460, and 360px, independently of size. Named native buttons show press feedback; application actions belong to the consuming app.",
+    },
+    "art-snowball-preloader": {
+      title: "Mask background",
+      description:
+        "Set --art-snowball-preloader-bg to match the surrounding background. The mask needs CSS relative-color support and its texture loads from upstream's external URL. Add a separate status message to announce loading.",
+    },
+    "art-gemini-input": {
+      title: "Native textarea",
+      description:
+        "Auto-growth uses field-sizing: content with rows=1 by default. Name the textarea through textareaProps or an associated label. Actions are consumer-owned; use button props for callbacks or an explicit submit type. Parent disabled disables the field and both buttons.",
+    },
+    "art-plasma-ball": {
+      title: "Native checkbox",
+      description:
+        "Use checked/defaultChecked and onCheckedChange for state. inputProps forwards native disabled, form and accessible-name attributes. Checked state activates the rays; hovering attracts them. hideBase moves the native toggle over the ball.",
+    },
+  };
   const stateNote: ComponentUsageNote =
     family === "infrastructure"
       ? {
@@ -575,7 +602,12 @@ function usageNotesFor(
             "The preview inherits the active DuskMoon data-theme value from the docs layout.",
         };
 
-  return [importNote, stateNote, themeNote];
+  return [
+    importNote,
+    stateNote,
+    themeNote,
+    ...(artContractNotes[input.id] ? [artContractNotes[input.id]] : []),
+  ];
 }
 
 export function componentPageContentFor(

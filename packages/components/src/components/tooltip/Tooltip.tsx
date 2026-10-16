@@ -10,7 +10,7 @@ export const Tooltip = forwardRef<HTMLSpanElement, TooltipProps>(
       open,
       defaultOpen,
       onOpenChange,
-      arrow = true,
+      arrow = false,
       size = "md",
       className,
       children,
@@ -42,6 +42,13 @@ export const Tooltip = forwardRef<HTMLSpanElement, TooltipProps>(
     onOpenChangeRef.current = onOpenChange;
 
     const hasTitle = Boolean(title);
+    const nativeInterest =
+      !isControlled &&
+      React.isValidElement(children) &&
+      (typeof children.type !== "string" ||
+        children.type === "button" ||
+        children.type === "a") &&
+      children.type !== React.Fragment;
 
     useEffect(() => {
       const surface = surfaceRef.current;
@@ -49,6 +56,17 @@ export const Tooltip = forwardRef<HTMLSpanElement, TooltipProps>(
       const tooltipSurface = surface;
 
       function handleToggle(event: Event) {
+        if (nativeInterest) {
+          const next = (event as ToggleEvent).newState === "open";
+          if (
+            next !== tooltipSurface.matches(":popover-open") ||
+            next === visibleRef.current
+          )
+            return;
+          onOpenChangeRef.current?.(next);
+          setInternalOpen(next);
+          return;
+        }
         if (
           (event as ToggleEvent).newState !== "closed" ||
           !visibleRef.current ||
@@ -69,7 +87,14 @@ export const Tooltip = forwardRef<HTMLSpanElement, TooltipProps>(
 
       surface.addEventListener("toggle", handleToggle);
       return () => surface.removeEventListener("toggle", handleToggle);
-    }, [hasTitle, isControlled]);
+    }, [hasTitle, isControlled, nativeInterest]);
+
+    useEffect(() => {
+      const surface = surfaceRef.current;
+      return () => {
+        if (surface?.matches(":popover-open")) surface.hidePopover();
+      };
+    }, [hasTitle, isControlled, nativeInterest]);
 
     useEffect(() => {
       const surface = surfaceRef.current;
@@ -121,24 +146,28 @@ export const Tooltip = forwardRef<HTMLSpanElement, TooltipProps>(
 
     function showTooltip(event: React.MouseEvent<HTMLSpanElement>) {
       onMouseEnter?.(event);
+      if (nativeInterest) return;
       hoveredRef.current = true;
       updateInteraction();
     }
 
     function hideTooltip(event: React.MouseEvent<HTMLSpanElement>) {
       onMouseLeave?.(event);
+      if (nativeInterest) return;
       hoveredRef.current = false;
       updateInteraction();
     }
 
     function focusTooltip(event: React.FocusEvent<HTMLSpanElement>) {
       onFocus?.(event);
+      if (nativeInterest) return;
       focusedRef.current = true;
       updateInteraction();
     }
 
     function blurTooltip(event: React.FocusEvent<HTMLSpanElement>) {
       onBlur?.(event);
+      if (nativeInterest) return;
       if (event.currentTarget.contains(event.relatedTarget)) return;
       focusedRef.current = false;
       updateInteraction();
@@ -147,10 +176,23 @@ export const Tooltip = forwardRef<HTMLSpanElement, TooltipProps>(
     let trigger = children;
     if (
       hasTitle &&
-      React.isValidElement<{ "aria-describedby"?: string }>(children) &&
+      React.isValidElement<{
+        "aria-describedby"?: string;
+        interestfor?: string;
+        style?: React.CSSProperties;
+      }>(children) &&
       children.type !== React.Fragment
     ) {
       trigger = React.cloneElement(children, {
+        ...(nativeInterest
+          ? {
+              interestfor: tooltipId,
+              style: {
+                ...children.props.style,
+                anchorName: anchor,
+              } as React.CSSProperties,
+            }
+          : {}),
         "aria-describedby": [children.props["aria-describedby"], tooltipId]
           .filter(Boolean)
           .join(" "),
@@ -162,7 +204,12 @@ export const Tooltip = forwardRef<HTMLSpanElement, TooltipProps>(
         {...props}
         ref={ref}
         className={tooltipWrapperClass}
-        style={{ ...style, anchorName: anchor } as React.CSSProperties}
+        style={
+          {
+            ...style,
+            ...(nativeInterest ? {} : { anchorName: anchor }),
+          } as React.CSSProperties
+        }
         aria-describedby={
           hasTitle && trigger === children
             ? [props["aria-describedby"], tooltipId].filter(Boolean).join(" ")

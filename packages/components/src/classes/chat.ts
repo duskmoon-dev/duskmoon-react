@@ -7,6 +7,18 @@ import type {
 import { cn } from "../utils";
 
 export const chatBaseClass = "chat";
+export const chatAgentClass = "chat-agent";
+export const chatContentClass = "chat-content";
+export const chatStreamingClass = "chat-streaming";
+export const chatWorkClass = "chat-work";
+export const chatWorkSummaryClass = "chat-work-summary";
+export const chatWorkBodyClass = "chat-work-body";
+export const chatInputAreaClass = "chat-input-area";
+export const chatQueueClass = "chat-queue";
+export const chatComposerClass = "chat-composer";
+export const chatComposerInputClass = "chat-composer-input";
+export const chatComposerActionsClass = "chat-composer-actions";
+export const chatComposerHintClass = "chat-composer-hint";
 export const chatAvatarClass = "chat-avatar";
 export const chatHeaderClass = "chat-header";
 export const chatBubbleBaseClass = "chat-bubble";

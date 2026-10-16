@@ -64,11 +64,40 @@ the supported `badge-outline` alias.
 Pair assistant rows and indicator buttons with timeline slots 1–24; user rows
 do not need ticks. `Chat.Status` and `Chat.Actions` accept ordinary content and
 button callbacks, so the application owns generation state and metrics. The
-Chat docs show all ten Core 1.20.3 showcases, including RTL bubbles, live states,
-tool statuses, and message actions. For an LLM reply, place reasoning and tool
-details inside one `Chat.Bubble`, with final content in
-`.chat-bubble-content`. The new Chat styles and the `Avatar` `2xl` size require
-Core 1.20.3 or newer.
+Chat docs include RTL, live states, tool statuses, message actions and the Core
+1.20.6 agent, queue and long-message contracts. Use `Chat.Agent` with
+`Chat.Content` for unboxed assistant answers. Group activity in native
+`Chat.Work`, `Chat.WorkSummary` and `Chat.WorkBody` disclosures, keeping the final
+answer outside them. User messages use `Chat placement="end"` and `Chat.Bubble`;
+opt into `collapsible` for automatic six-line measurement, resize/text updates,
+accessible expansion and focus cleanup. All new Chat primitives require Core
+1.20.6, which is the package peer minimum.
+
+`Chat.InputArea` attaches a controlled `Chat.Queue` to native
+`Chat.ComposerForm`, `Chat.ComposerInput`, `Chat.ComposerActions` and
+`Chat.ComposerHint` primitives. Queue items have stable `id`/`text` values and
+optional `{ src, alt }` attachments. `onSteer` and `onRemove` request application
+actions; the component never dequeues locally. Supply `pendingIds` while awaiting
+acknowledgment and update items only after success. Restore focus after removing
+a focused row, and announce queue changes once in an application status region.
+The application owns Enter/Shift+Enter/steering, IME guards, transport, ordering
+and failure policy. The interactive docs demonstrate those actual state changes.
+
+The existing controlled `Chat.Composer` retains its div ref, attachment and
+completion APIs, revision-safe asynchronous draft clearing, and Cmd/Ctrl+Enter
+submission with ordinary Enter for newlines. Use the native composer primitives
+when form submission and the reference's Enter-to-queue contract are needed.
+Existing `Chat.Bubble streaming` remains usable; `Chat.Content streaming` is the
+preferred agent presentation. No public Chat API is removed or deprecated.
+
+Normal `Tooltip` button/link triggers use native `interestfor`, hint popovers
+and CSS anchors. Browsers must support those APIs; there is no feature polyfill.
+Keep essential help inline. Controlled `open` uses native manual popovers;
+non-invoker children retain the older imperative compatibility adapter. Custom
+trigger components must forward `interestfor`, `style` and `aria-describedby`
+to their native control. Tooltip content is brief and noninteractive; put links,
+buttons and confirmation forms in Popover/Popconfirm. The existing deprecated
+`arrow` prop remains accepted; native surfaces are arrowless.
 
 ```tsx
 import { Chat } from "@duskmoon-dev/components/chat";
@@ -86,8 +115,8 @@ export function Conversation() {
         <Chat.ScrollIndicator timeline={1} targetId={replyId} />
       </Chat.ScrollTrack>
       <Chat.ScrollBody>
-        <Chat id={replyId} timeline={1}>
-          <Chat.Bubble>The build passed.</Chat.Bubble>
+        <Chat.Agent id={replyId} timeline={1}>
+          <Chat.Content>The build passed.</Chat.Content>
           <Chat.Status>
             <Chat.StatusItem>Completed</Chat.StatusItem>
             <Chat.StatusItem>
@@ -99,7 +128,7 @@ export function Conversation() {
               Copy reply
             </button>
           </Chat.Actions>
-        </Chat>
+        </Chat.Agent>
       </Chat.ScrollBody>
     </Chat.Scroll>
   );

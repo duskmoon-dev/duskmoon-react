@@ -1,4 +1,9 @@
 import React, { useId, useState } from "react";
+import {
+  AgentActivityPreview,
+  CollapsibleMessagePreview,
+  WaitingQueuePreview,
+} from "./ChatContractPreviews";
 import * as DmComponents from "@duskmoon-dev/components";
 
 const Chat = DmComponents.Chat;
@@ -82,16 +87,16 @@ export function BasicChatPreview() {
         gap: "1rem",
       }}
     >
-      <Chat>
+      <Chat.Agent>
         <ChatAvatar name="AI" color="avatar-primary" />
         <Chat.Header>Assistant - 2:15 PM</Chat.Header>
-        <Chat.Bubble>
+        <Chat.Content>
           How can I help you today? Read the{" "}
           <a href="/components/chat">Chat guide</a> for longer messages and
           links.
-        </Chat.Bubble>
+        </Chat.Content>
         <Chat.Footer>Delivered</Chat.Footer>
-      </Chat>
+      </Chat.Agent>
       <Chat placement="end">
         <ChatAvatar name="GA" />
         <Chat.Header>You - 2:16 PM</Chat.Header>
@@ -148,13 +153,13 @@ export function ScrollDrivenChatPreview() {
       <Chat.ScrollBody>
         {scrollTimelines.map((timeline, index) => (
           <React.Fragment key={timeline}>
-            <Chat id={replyIds[index]} timeline={timeline}>
+            <Chat.Agent id={replyIds[index]} timeline={timeline}>
               <ChatAvatar name="AI" color="avatar-primary" />
               <Chat.Header>
                 Assistant - 2:{String(index).padStart(2, "0")} PM
               </Chat.Header>
-              <Chat.Bubble>{scrollReplies[index]}</Chat.Bubble>
-            </Chat>
+              <Chat.Content>{scrollReplies[index]}</Chat.Content>
+            </Chat.Agent>
             {index < scrollQuestions.length && (
               <Chat placement="end">
                 <ChatAvatar name="GA" />
@@ -193,11 +198,11 @@ export function BubbleColorsPreview() {
         gap: "0.75rem",
       }}
     >
-      <Chat>
+      <Chat placement="end">
         <Chat.Bubble>Default bubble</Chat.Bubble>
       </Chat>
       {colors.map((color) => (
-        <Chat key={color}>
+        <Chat placement="end" key={color}>
           <Chat.Bubble color={color}>{color} bubble</Chat.Bubble>
         </Chat>
       ))}
@@ -223,11 +228,11 @@ export function RtlBubblePreview() {
         gap: "1rem",
       }}
     >
-      <Chat>
+      <Chat.Agent>
         <ChatAvatar name="AI" color="avatar-primary" />
         <Chat.Header>المساعد</Chat.Header>
-        <Chat.Bubble>كيف يمكنني مساعدتك اليوم؟</Chat.Bubble>
-      </Chat>
+        <Chat.Content>كيف يمكنني مساعدتك اليوم؟</Chat.Content>
+      </Chat.Agent>
       <Chat placement="end">
         <ChatAvatar name="GA" />
         <Chat.Header>أنت</Chat.Header>
@@ -255,7 +260,7 @@ export function BubbleSizesPreview() {
       }}
     >
       {sizes.map(([size, label]) => (
-        <Chat key={size}>
+        <Chat placement="end" key={size}>
           <Chat.Bubble size={size}>{label}</Chat.Bubble>
         </Chat>
       ))}
@@ -274,51 +279,54 @@ export function LlmChatPreview() {
         gap: "1rem",
       }}
     >
-      <Chat aria-live="polite">
+      <Chat.Agent aria-live="polite">
         <ChatAvatar name="AI" color="avatar-info" />
         <Chat.Header>Assistant - 2:18 PM</Chat.Header>
-        <Chat.Bubble>
-          <Chat.Reasoning open>
-            <summary>Thinking (3s)</summary>
-            <div className="chat-reasoning-body">
-              <div>
-                I should call the weather tool, then summarize the result in one
-                sentence.
+        <Chat.Work open>
+          <Chat.WorkSummary>Working · 2 tool calls · 0 failed</Chat.WorkSummary>
+          <Chat.WorkBody>
+            <Chat.Reasoning open>
+              <summary>Thinking (3s)</summary>
+              <div className="chat-reasoning-body">
+                <div>
+                  I should call the weather tool, then summarize the result in
+                  one sentence.
+                </div>
+                <Chat.Tool status="running" open>
+                  <Chat.ToolHeader>
+                    <span>get_weather</span>
+                    <Chat.ToolStatus>Running...</Chat.ToolStatus>
+                  </Chat.ToolHeader>
+                  <Chat.ToolCall>
+                    <CodePane title="Call">{'{"city":"Tokyo"}'}</CodePane>
+                  </Chat.ToolCall>
+                </Chat.Tool>
+                <div>
+                  Tool returned cloudy at 18 C. Drafting the final answer.
+                </div>
               </div>
-              <Chat.Tool status="running" open>
-                <Chat.ToolHeader>
-                  <span>get_weather</span>
-                  <Chat.ToolStatus>Running...</Chat.ToolStatus>
-                </Chat.ToolHeader>
-                <Chat.ToolCall>
-                  <CodePane title="Call">{'{"city":"Tokyo"}'}</CodePane>
-                </Chat.ToolCall>
-              </Chat.Tool>
-              <div>
-                Tool returned cloudy at 18 C. Drafting the final answer.
-              </div>
-            </div>
-          </Chat.Reasoning>
-          <Chat.Tool status="success" open>
-            <Chat.ToolHeader>
-              <span>get_weather</span>
-              <Chat.ToolStatus>Done</Chat.ToolStatus>
-            </Chat.ToolHeader>
-            <Chat.ToolCall>
-              <CodePane title="Call">{'{"city":"Tokyo"}'}</CodePane>
-            </Chat.ToolCall>
-            <Chat.ToolResult>
-              <CodePane title="Result">
-                {'{"temperature":"18 C","condition":"cloudy"}'}
-              </CodePane>
-            </Chat.ToolResult>
-          </Chat.Tool>
-          <div className="chat-bubble-content chat-bubble-streaming">
-            It is 18 C and cloudy in Tokyo right now.
-          </div>
-        </Chat.Bubble>
+            </Chat.Reasoning>
+            <Chat.Tool status="success" open>
+              <Chat.ToolHeader>
+                <span>get_weather</span>
+                <Chat.ToolStatus>Done</Chat.ToolStatus>
+              </Chat.ToolHeader>
+              <Chat.ToolCall>
+                <CodePane title="Call">{'{"city":"Tokyo"}'}</CodePane>
+              </Chat.ToolCall>
+              <Chat.ToolResult>
+                <CodePane title="Result">
+                  {'{"temperature":"18 C","condition":"cloudy"}'}
+                </CodePane>
+              </Chat.ToolResult>
+            </Chat.Tool>
+          </Chat.WorkBody>
+        </Chat.Work>
+        <Chat.Content streaming>
+          It is 18 C and cloudy in Tokyo right now.
+        </Chat.Content>
         <Chat.Footer>Streaming</Chat.Footer>
-      </Chat>
+      </Chat.Agent>
     </div>
   );
 }
@@ -334,16 +342,16 @@ export function LiveStatesPreview() {
         gap: "1rem",
       }}
     >
-      <Chat>
+      <Chat.Agent>
         <ChatAvatar name="AI" color="avatar-secondary" />
-        <Chat.Bubble>
+        <Chat.Content>
           <Chat.Typing />
-        </Chat.Bubble>
-      </Chat>
-      <Chat>
+        </Chat.Content>
+      </Chat.Agent>
+      <Chat.Agent>
         <ChatAvatar name="AI" color="avatar-secondary" />
-        <Chat.Bubble streaming>Generating a response</Chat.Bubble>
-      </Chat>
+        <Chat.Content streaming>Generating a response</Chat.Content>
+      </Chat.Agent>
     </div>
   );
 }
@@ -422,16 +430,16 @@ export function MessageActionsPreview() {
           </form>
         )}
       </Chat>
-      <Chat>
+      <Chat.Agent>
         <ChatAvatar name="AI" color="avatar-secondary" />
         <Chat.Header>
           Assistant · {generating ? "Generating" : "Stopped"}
         </Chat.Header>
-        <Chat.Bubble streaming={generating}>
+        <Chat.Content streaming={generating}>
           {generating
             ? "Checking the build and smoke-test results"
             : "Generation stopped."}
-        </Chat.Bubble>
+        </Chat.Content>
         <Chat.Status>
           <Chat.StatusItem>
             {generating ? "Generating" : "Stopped"}
@@ -456,11 +464,11 @@ export function MessageActionsPreview() {
             </Action>
           </Chat.Actions>
         )}
-      </Chat>
-      <Chat>
+      </Chat.Agent>
+      <Chat.Agent>
         <ChatAvatar name="AI" color="avatar-primary" />
         <Chat.Header>Assistant · Completed</Chat.Header>
-        <Chat.Bubble>{answer}</Chat.Bubble>
+        <Chat.Content>{answer}</Chat.Content>
         <Chat.Status>
           <Chat.StatusItem>Completed</Chat.StatusItem>
           <Chat.StatusItem>
@@ -491,7 +499,7 @@ export function MessageActionsPreview() {
             <path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3" />
           </Action>
         </Chat.Actions>
-      </Chat>
+      </Chat.Agent>
       <p role="status">{feedback}</p>
     </div>
   );
@@ -529,9 +537,9 @@ export function ToolStatusesPreview() {
 export function MarkdownChatPreview() {
   return (
     <div className="chat-demo" style={{ width: "min(42rem, 100%)" }}>
-      <Chat>
+      <Chat.Agent>
         <ChatAvatar name="AI" color="avatar-tertiary" />
-        <Chat.Bubble>
+        <Chat.Content>
           <div className="markdown-body">
             <p>
               <strong>Summary:</strong> the deployment is ready.
@@ -541,8 +549,8 @@ export function MarkdownChatPreview() {
               <li>Smoke test passed</li>
             </ul>
           </div>
-        </Chat.Bubble>
-      </Chat>
+        </Chat.Content>
+      </Chat.Agent>
     </div>
   );
 }
@@ -633,6 +641,9 @@ export function ComposerChatPreview() {
 }
 
 export const chatShowcasePreviews = {
+  "Agent Answers and Activity": AgentActivityPreview,
+  "Collapsible Sent Messages": CollapsibleMessagePreview,
+  "Waiting Queue and Steer": WaitingQueuePreview,
   "Basic Chat": BasicChatPreview,
   "Composer, Attachments, and Completion": ComposerChatPreview,
   "Scroll-Driven Chat Indicators": ScrollDrivenChatPreview,
@@ -643,5 +654,5 @@ export const chatShowcasePreviews = {
   "Typing and Streaming": LiveStatesPreview,
   "Token Metrics and Message Actions": MessageActionsPreview,
   "Tool Statuses": ToolStatusesPreview,
-  "Markdown Body in a Bubble": MarkdownChatPreview,
+  "Markdown Agent Content": MarkdownChatPreview,
 } as const;

@@ -152,7 +152,20 @@
       "rootExport": "./components/chat",
       "packageSubpath": "./chat",
       "buildEntrypoint": "src/components/chat/index.ts",
-      "status": "implemented"
+      "status": "implemented",
+      "subcomponents": [
+        "ChatAgent",
+        "ChatContent",
+        "ChatWork",
+        "ChatWorkSummary",
+        "ChatWorkBody",
+        "ChatInputArea",
+        "ChatQueue",
+        "ChatComposerForm",
+        "ChatComposerInput",
+        "ChatComposerActions",
+        "ChatComposerHint"
+      ]
     },
     {
       "id": "carousel",

@@ -472,7 +472,7 @@
     }
   ],
   "peerDependencies": {
-    "@duskmoon-dev/core": ">=1.20.3",
+    "@duskmoon-dev/core": ">=1.20.6",
     "react": ">=19.0.0",
     "react-dom": ">=19.0.0"
   },
@@ -485,7 +485,7 @@
     "ajv-formats": "^3.0.1"
   },
   "devDependencies": {
-    "@duskmoon-dev/core": "1.20.5",
+    "@duskmoon-dev/core": "1.20.7",
     "@testing-library/react": "16.3.2",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.4",

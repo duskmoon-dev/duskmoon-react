@@ -9,7 +9,7 @@ export interface TooltipProps extends Omit<ComponentProps<"span">, "title"> {
   placement?: TooltipPlacement;
   open?: boolean;
   defaultOpen?: boolean;
-  /** Called when hover, focus, or dismissal requests a visibility change.
+  /** Called when native interest changes visibility, or a controlled interaction requests it.
    * Controlled tooltips use manual popovers and stay open until `open` changes. */
   onOpenChange?: (open: boolean) => void;
   /** @deprecated Native tooltips follow Core's arrowless automatic placement. */

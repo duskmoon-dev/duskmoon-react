@@ -73,7 +73,7 @@ describe("Chat class integration", () => {
     }
   });
 
-  test("upstream styles use distinct caret and tail pseudo-elements", () => {
+  test("upstream styles supply agent carets and rounded user bubbles", () => {
     const css = readFileSync(
       join(
         import.meta.dir,
@@ -82,7 +82,8 @@ describe("Chat class integration", () => {
       "utf8",
     );
     expect(css).toContain(".chat-bubble-streaming::after");
-    expect(css).toContain(".chat-start .chat-bubble::before");
-    expect(css).toContain(".chat-end .chat-bubble::before");
+    expect(css.includes(".chat-streaming::after")).toBe(true);
+    expect(css.includes(".chat-start .chat-bubble::before")).toBe(false);
+    expect(css.includes(".chat-end .chat-bubble::before")).toBe(false);
   });
 });

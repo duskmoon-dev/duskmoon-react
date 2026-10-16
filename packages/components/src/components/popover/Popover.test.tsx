@@ -3,6 +3,10 @@ import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { Popover } from "./Popover";
 
+function getSurface() {
+  return document.querySelector<HTMLElement>(".popover[popover]")!;
+}
+
 describe("Popover", () => {
   const originalMatches = HTMLElement.prototype.matches;
   const originalShowPopover = HTMLElement.prototype.showPopover;
@@ -41,7 +45,7 @@ describe("Popover", () => {
 
     const trigger = screen.getByRole("button", { name: "Target" });
 
-    const surface = screen.getByRole("tooltip");
+    const surface = getSurface();
     expect(surface.getAttribute("popover")).toBe("auto");
     expect(surface.hasAttribute("data-native-open")).toBe(false);
 
@@ -65,15 +69,13 @@ describe("Popover", () => {
 
     const trigger = screen.getByRole("button", { name: "Target" });
 
-    expect(screen.queryByRole("tooltip")).toBeNull();
+    expect(document.querySelector(".popover[popover]")).toBeNull();
 
     fireEvent.click(trigger);
-    expect(screen.getByRole("tooltip").hasAttribute("data-native-open")).toBe(
-      true,
-    );
+    expect(getSurface().hasAttribute("data-native-open")).toBe(true);
 
     fireEvent.click(trigger);
-    expect(screen.queryByRole("tooltip")).toBeNull();
+    expect(document.querySelector(".popover[popover]")).toBeNull();
   });
 
   test("supports controlled open state", () => {
@@ -84,9 +86,7 @@ describe("Popover", () => {
     );
 
     expect(screen.getByText("Controlled")).toBeTruthy();
-    expect(screen.getByRole("tooltip").hasAttribute("data-native-open")).toBe(
-      true,
-    );
+    expect(getSurface().hasAttribute("data-native-open")).toBe(true);
   });
 
   test("reports native light dismissal", () => {
@@ -101,7 +101,7 @@ describe("Popover", () => {
       </Popover>,
     );
 
-    const surface = screen.getByRole("tooltip");
+    const surface = getSurface();
     surface.removeAttribute("data-native-open");
     fireEvent(
       surface,
@@ -116,5 +116,70 @@ describe("Popover", () => {
         .getByRole("button", { name: "Target" })
         .hasAttribute("aria-describedby"),
     ).toBe(false);
+  });
+
+  test("keeps rich form controls semantic and preserves the trigger description", () => {
+    let submitted = "";
+    render(
+      <>
+        <p id="action-help">Change your display name</p>
+        <Popover
+          defaultOpen
+          trigger="click"
+          content={
+            <form
+              aria-label="Profile settings"
+              onSubmit={(event) => {
+                event.preventDefault();
+                submitted = String(
+                  new FormData(event.currentTarget).get("name"),
+                );
+              }}
+            >
+              <label>
+                Display name
+                <input name="name" defaultValue="Luna" />
+              </label>
+              <button type="submit">Save profile</button>
+            </form>
+          }
+        >
+          <button type="button" aria-describedby="action-help">
+            Edit profile
+          </button>
+        </Popover>
+      </>,
+    );
+
+    const trigger = screen.getByRole("button", { name: "Edit profile" });
+    const field = screen.getByRole("textbox", { name: "Display name" });
+    const save = screen.getByRole("button", { name: "Save profile" });
+    expect(screen.queryByRole("tooltip")).toBeNull();
+    expect(getSurface().hasAttribute("role")).toBe(false);
+    expect(trigger.getAttribute("aria-describedby")).toBe("action-help");
+
+    fireEvent.change(field, { target: { value: "Moon" } });
+    fireEvent.click(save);
+
+    expect(submitted).toBe("Moon");
+    expect(getSurface().hasAttribute("data-native-open")).toBe(true);
+  });
+
+  test("does not describe a trigger with the complete interactive surface", () => {
+    render(
+      <Popover
+        defaultOpen
+        content={<button type="button">Apply filters</button>}
+      >
+        <button type="button">Filters</button>
+      </Popover>,
+    );
+
+    expect(
+      screen
+        .getByRole("button", { name: "Filters" })
+        .hasAttribute("aria-describedby"),
+    ).toBe(false);
+    expect(screen.getByRole("button", { name: "Apply filters" })).toBeTruthy();
   });
 });

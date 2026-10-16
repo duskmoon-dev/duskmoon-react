@@ -2,6 +2,8 @@
 import React, {
   forwardRef,
   useId,
+  useLayoutEffect,
+  useRef,
   useState,
   type FocusEvent,
   type MouseEvent,
@@ -82,6 +84,25 @@ export const Popconfirm = forwardRef<HTMLSpanElement, PopconfirmProps>(
     const isControlled = open !== undefined;
     const visible = isControlled ? open : internalOpen;
     const popupId = id ? `${id}-popconfirm` : generatedPopupId;
+    const anchorName = `--dm-popconfirm-${generatedPopupId.replace(/[^a-zA-Z0-9_-]/g, "")}`;
+    const popupRef = useRef<HTMLSpanElement>(null);
+    const desiredOpen = useRef(visible);
+    desiredOpen.current = visible;
+    const shouldRenderPopup = !destroyTooltipOnHide || visible;
+
+    useLayoutEffect(() => {
+      const popup = popupRef.current;
+      if (!popup || typeof popup.showPopover !== "function") return;
+      if (visible && !popup.matches(":popover-open")) popup.showPopover();
+      else if (!visible && popup.matches(":popover-open")) popup.hidePopover();
+    }, [visible, shouldRenderPopup]);
+
+    useLayoutEffect(() => {
+      const popup = popupRef.current;
+      return () => {
+        if (popup?.matches(":popover-open")) popup.hidePopover();
+      };
+    }, [shouldRenderPopup]);
 
     function setVisible(nextOpen: boolean) {
       if (disabled) {
@@ -121,6 +142,9 @@ export const Popconfirm = forwardRef<HTMLSpanElement, PopconfirmProps>(
       try {
         await result;
         close();
+      } catch {
+        // A failed confirmation keeps the available actions in the open surface.
+        return;
       } finally {
         if (loading) {
           setConfirmLoading(false);
@@ -143,6 +167,7 @@ export const Popconfirm = forwardRef<HTMLSpanElement, PopconfirmProps>(
     }
 
     function handleClick(event: MouseEvent<HTMLSpanElement>) {
+      if (popupRef.current?.contains(event.target as Node)) return;
       onClick?.(event);
       if (hasTrigger(trigger, "click")) {
         setVisible(!visible);
@@ -174,15 +199,13 @@ export const Popconfirm = forwardRef<HTMLSpanElement, PopconfirmProps>(
       }
     }
 
-    const shouldRenderPopup = !destroyTooltipOnHide || visible;
-
     return (
       <span
         {...props}
         ref={ref}
         className={popconfirmWrapperClass}
-        aria-describedby={visible ? popupId : undefined}
         aria-expanded={visible || undefined}
+        style={{ ...props.style, anchorName } as React.CSSProperties}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onClick={handleClick}
@@ -190,11 +213,36 @@ export const Popconfirm = forwardRef<HTMLSpanElement, PopconfirmProps>(
         onFocus={handleFocus}
         onBlur={handleBlur}
       >
-        {children}
+        {React.isValidElement(children) && children.type !== React.Fragment
+          ? React.cloneElement(
+              children as React.ReactElement<React.HTMLAttributes<HTMLElement>>,
+              { "aria-controls": popupId, "aria-expanded": Boolean(visible) },
+            )
+          : children}
         {shouldRenderPopup ? (
           <span
             id={popupId}
-            role="tooltip"
+            ref={popupRef}
+            popover="auto"
+            style={{ positionAnchor: anchorName } as React.CSSProperties}
+            onToggle={(event) => {
+              if (event.target !== event.currentTarget) return;
+              const nextOpen = event.newState === "open";
+              if (nextOpen === visible) return;
+              setVisible(nextOpen);
+              if (isControlled && visible && !nextOpen) {
+                const popup = event.currentTarget;
+                queueMicrotask(() => {
+                  if (
+                    popup.isConnected &&
+                    desiredOpen.current &&
+                    !popup.matches(":popover-open")
+                  ) {
+                    popup.showPopover();
+                  }
+                });
+              }
+            }}
             className={getPopconfirmClasses({
               placement,
               open: visible,

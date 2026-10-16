@@ -1,5 +1,24 @@
-import React, { forwardRef } from "react";
+import React, {
+  forwardRef,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { ChatComposer } from "./ChatComposer";
+import {
+  ChatAgent,
+  ChatContent,
+  ChatWork,
+  ChatWorkSummary,
+  ChatWorkBody,
+  ChatInputArea,
+  ChatQueue,
+  ChatComposerForm,
+  ChatComposerInput,
+  ChatComposerActions,
+  ChatComposerHint,
+} from "./ChatPrimitives";
 import {
   chatAvatarClass,
   chatFooterClass,
@@ -66,29 +85,129 @@ ChatHeader.displayName = "Chat.Header";
 
 export const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(
   (
-    { color, size = "md", filled, streaming, className, children, ...props },
+    {
+      color,
+      size = "md",
+      filled,
+      streaming,
+      collapsible,
+      expanded,
+      defaultExpanded = false,
+      onExpandedChange,
+      className,
+      children,
+      ...props
+    },
     ref,
-  ) => (
-    <div
-      {...props}
-      ref={ref}
-      className={getChatBubbleClasses({
-        color,
-        size,
-        filled,
-        streaming,
-        className,
-      })}
-    >
-      {children}
-      {streaming ? (
-        <span
-          className="chat-bubble-content chat-bubble-streaming"
-          aria-hidden="true"
-        />
-      ) : null}
-    </div>
-  ),
+  ) => {
+    const contentId = `${useId()}-content`;
+    const contentRef = useRef<HTMLDivElement>(null);
+    const toggleRef = useRef<HTMLButtonElement>(null);
+    const collapseRequestedRef = useRef(false);
+    const [overflows, setOverflows] = useState(false);
+    const [internalExpanded, setInternalExpanded] = useState(defaultExpanded);
+    const requestedExpanded = expanded ?? internalExpanded;
+    const isExpanded = overflows && requestedExpanded;
+
+    useLayoutEffect(() => {
+      const content = contentRef.current;
+      if (!collapsible || !content) {
+        collapseRequestedRef.current = false;
+        return;
+      }
+      const view = content.ownerDocument.defaultView;
+      function measure() {
+        if (!content || !view) return;
+        const lineHeight = parseFloat(
+          view.getComputedStyle(content).lineHeight,
+        );
+        if (!Number.isFinite(lineHeight)) return;
+        const next = content.scrollHeight > 6 * lineHeight + 1;
+        if (next || !requestedExpanded) collapseRequestedRef.current = false;
+        if (!next) {
+          if (content.ownerDocument.activeElement === toggleRef.current)
+            content.focus();
+          if (requestedExpanded && !collapseRequestedRef.current) {
+            collapseRequestedRef.current = true;
+            if (expanded === undefined) setInternalExpanded(false);
+            onExpandedChange?.(false);
+          }
+        }
+        setOverflows(next);
+      }
+      measure();
+      const resize = view?.ResizeObserver
+        ? new view.ResizeObserver(measure)
+        : undefined;
+      const mutation = view?.MutationObserver
+        ? new view.MutationObserver(measure)
+        : undefined;
+      resize?.observe(content);
+      mutation?.observe(content, {
+        childList: true,
+        characterData: true,
+        subtree: true,
+      });
+      return () => {
+        resize?.disconnect();
+        mutation?.disconnect();
+      };
+    }, [collapsible, children, requestedExpanded, expanded, onExpandedChange]);
+
+    const body = (
+      <>
+        {children}
+        {streaming ? (
+          <span
+            className="chat-bubble-content chat-bubble-streaming"
+            aria-hidden="true"
+          />
+        ) : null}
+      </>
+    );
+    return (
+      <div
+        {...props}
+        ref={ref}
+        className={getChatBubbleClasses({
+          color,
+          size,
+          filled,
+          streaming,
+          className: cn(collapsible && "chat-bubble-collapsible", className),
+        })}
+      >
+        {collapsible ? (
+          <>
+            <div
+              ref={contentRef}
+              className="chat-bubble-content"
+              id={contentId}
+              tabIndex={-1}
+            >
+              {body}
+            </div>
+            <button
+              ref={toggleRef}
+              type="button"
+              className="btn btn-ghost btn-xs chat-bubble-toggle"
+              aria-controls={contentId}
+              aria-expanded={isExpanded}
+              hidden={!overflows}
+              onClick={() => {
+                if (expanded === undefined) setInternalExpanded(!isExpanded);
+                onExpandedChange?.(!isExpanded);
+              }}
+            >
+              {isExpanded ? "Show less" : "Show more"}
+            </button>
+          </>
+        ) : (
+          body
+        )}
+      </div>
+    );
+  },
 );
 
 ChatBubble.displayName = "Chat.Bubble";
@@ -307,6 +426,17 @@ ChatRoot.displayName = "Chat";
 
 export const Chat = Object.assign(ChatRoot, {
   Composer: ChatComposer,
+  Agent: ChatAgent,
+  Content: ChatContent,
+  Work: ChatWork,
+  WorkSummary: ChatWorkSummary,
+  WorkBody: ChatWorkBody,
+  InputArea: ChatInputArea,
+  Queue: ChatQueue,
+  ComposerForm: ChatComposerForm,
+  ComposerInput: ChatComposerInput,
+  ComposerActions: ChatComposerActions,
+  ComposerHint: ChatComposerHint,
   Avatar: ChatAvatar,
   Header: ChatHeader,
   Bubble: ChatBubble,
