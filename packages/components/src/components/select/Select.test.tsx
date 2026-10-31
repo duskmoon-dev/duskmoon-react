@@ -309,4 +309,68 @@ describe("Select", () => {
     expect(screen.getByText("Group A")).toBeTruthy();
     expect(screen.getByRole("option", { name: "Alpha" })).toBeTruthy();
   });
+
+  test("uses Popover API with popover='auto' and anchors to trigger", () => {
+    const { container } = render(
+      <Select
+        placeholder="Choose"
+        defaultOpen
+        options={[{ label: "Alpha", value: "alpha" }]}
+      />,
+    );
+
+    const trigger = screen.getByRole("button", { name: /Choose/ });
+    const dropdown = container.querySelector(".select-dropdown");
+
+    expect(dropdown).toBeTruthy();
+    expect(dropdown?.getAttribute("popover")).toBe("auto");
+    expect((trigger as HTMLButtonElement).style.anchorName).toBe(
+      (dropdown as HTMLElement).style.positionAnchor,
+    );
+  });
+
+  test("closes when clicking outside the select container", () => {
+    const transitions: boolean[] = [];
+    const { container } = render(
+      <div>
+        <div data-testid="outside">Outside element</div>
+        <Select
+          placeholder="Choose"
+          onOpenChange={(next) => transitions.push(next)}
+          options={[{ label: "Alpha", value: "alpha" }]}
+        />
+      </div>,
+    );
+
+    const trigger = screen.getByRole("button", { name: /Choose/ });
+    expect(container.querySelector(".select-dropdown")).toBeNull();
+
+    fireEvent.click(trigger);
+    expect(container.querySelector(".select-dropdown")).toBeTruthy();
+    expect(transitions).toEqual([true]);
+
+    fireEvent.mouseDown(screen.getByTestId("outside"));
+    expect(container.querySelector(".select-dropdown")).toBeNull();
+    expect(transitions).toEqual([true, false]);
+  });
+
+  test("tracks native popover toggle event", () => {
+    const transitions: boolean[] = [];
+    const { container } = render(
+      <Select
+        defaultOpen
+        onOpenChange={(next) => transitions.push(next)}
+        options={[{ label: "Alpha", value: "alpha" }]}
+      />,
+    );
+
+    const dropdown = container.querySelector(".select-dropdown")!;
+    expect(dropdown).toBeTruthy();
+
+    const toggleEvent = new Event("toggle", { bubbles: true });
+    Object.defineProperty(toggleEvent, "newState", { value: "closed" });
+    fireEvent(dropdown, toggleEvent);
+
+    expect(transitions).toContain(false);
+  });
 });

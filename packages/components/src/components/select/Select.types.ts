@@ -33,6 +33,7 @@ export interface SelectProps extends Omit<
 > {
   allowClear?: boolean;
   children?: ReactNode;
+  defaultOpen?: boolean;
   defaultValue?: SelectChangeValue;
   disabled?: boolean;
   filterOption?:
@@ -43,6 +44,9 @@ export interface SelectProps extends Omit<
     value: SelectChangeValue,
     option?: SelectOptionType | SelectOptionType[],
   ) => void;
+  onDropdownVisibleChange?: (open: boolean) => void;
+  onOpenChange?: (open: boolean) => void;
+  open?: boolean;
   options?: SelectOptionInput[];
   placeholder?: ReactNode;
   showSearch?: boolean;

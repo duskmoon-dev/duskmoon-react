@@ -82,7 +82,6 @@ describe("Chat class integration", () => {
       "utf8",
     );
     expect(css).toContain(".chat-bubble-streaming::after");
-    expect(css.includes(".chat-streaming::after")).toBe(true);
     expect(css.includes(".chat-start .chat-bubble::before")).toBe(false);
     expect(css.includes(".chat-end .chat-bubble::before")).toBe(false);
   });

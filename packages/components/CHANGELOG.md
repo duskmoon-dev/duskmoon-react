@@ -1,5 +1,11 @@
 # @duskmoon-dev/components
 
+## 0.5.4
+
+### Patch Changes
+
+- fix(select): migrate dropdown to HTML Popover API with anchor positioning, click-outside dismissal, and fix button layout style collision
+
 ## 0.5.3
 
 ### Patch Changes

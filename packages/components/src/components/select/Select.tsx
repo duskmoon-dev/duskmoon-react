@@ -1,4 +1,12 @@
-import React, { forwardRef, useMemo, useState } from "react";
+import React, {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   getSelectClasses,
   getSelectContainerClasses,
@@ -180,6 +188,7 @@ const SelectRoot = forwardRef<HTMLDivElement, SelectProps>(
       "aria-required": ariaRequired,
       children,
       className,
+      defaultOpen = false,
       defaultValue,
       disabled,
       filterOption,
@@ -187,6 +196,9 @@ const SelectRoot = forwardRef<HTMLDivElement, SelectProps>(
       loading,
       mode,
       onChange,
+      onDropdownVisibleChange,
+      onOpenChange,
+      open: openProp,
       options,
       placeholder,
       showSearch,
@@ -197,6 +209,68 @@ const SelectRoot = forwardRef<HTMLDivElement, SelectProps>(
     },
     ref,
   ) => {
+    const generatedId = useId();
+    const cleanId = generatedId.replace(/[^a-zA-Z0-9_-]/g, "");
+    const triggerId = id || `select-${cleanId}`;
+    const dropdownId = `select-dropdown-${cleanId}`;
+    const anchorName = `--dm-select-${cleanId}`;
+
+    const [internalOpen, setInternalOpen] = useState(Boolean(defaultOpen));
+    const isControlled = openProp !== undefined;
+    const isOpen = isControlled ? Boolean(openProp) : internalOpen;
+
+    const containerRef = useRef<HTMLDivElement>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    const setOpenState = useCallback(
+      (nextOpen: boolean) => {
+        if (!isControlled) {
+          setInternalOpen(nextOpen);
+        }
+        onDropdownVisibleChange?.(nextOpen);
+        onOpenChange?.(nextOpen);
+      },
+      [isControlled, onDropdownVisibleChange, onOpenChange],
+    );
+
+    useEffect(() => {
+      const dropdown = dropdownRef.current;
+      if (!dropdown || typeof dropdown.showPopover !== "function") return;
+      if (isOpen && !dropdown.matches(":popover-open")) {
+        try {
+          dropdown.showPopover();
+        } catch {
+          // ignore
+        }
+      } else if (!isOpen && dropdown.matches(":popover-open")) {
+        try {
+          dropdown.hidePopover();
+        } catch {
+          // ignore
+        }
+      }
+    }, [isOpen]);
+
+    useEffect(() => {
+      if (!isOpen) return;
+
+      const handlePointerDown = (event: MouseEvent | TouchEvent) => {
+        const target = event.target as Node | null;
+        if (!target) return;
+        if (containerRef.current?.contains(target)) return;
+        if (dropdownRef.current?.contains(target)) return;
+
+        setOpenState(false);
+      };
+
+      document.addEventListener("mousedown", handlePointerDown);
+      document.addEventListener("touchstart", handlePointerDown);
+      return () => {
+        document.removeEventListener("mousedown", handlePointerDown);
+        document.removeEventListener("touchstart", handlePointerDown);
+      };
+    }, [isOpen, setOpenState]);
+
     const multiple = mode === "multiple" || mode === "tags";
     const sourceOptions = useMemo(
       () => options ?? optionsFromChildren(children),
@@ -206,7 +280,6 @@ const SelectRoot = forwardRef<HTMLDivElement, SelectProps>(
       () => flattenOptions(sourceOptions),
       [sourceOptions],
     );
-    const [open, setOpen] = useState(false);
     const [searchValue, setSearchValue] = useState("");
     const [internalValue, setInternalValue] = useState<
       SelectValue | SelectValue[] | undefined
@@ -273,13 +346,13 @@ const SelectRoot = forwardRef<HTMLDivElement, SelectProps>(
         emitChange(nextValues);
       } else {
         emitChange(option.value);
-        setOpen(false);
+        setOpenState(false);
       }
 
       setSearchValue("");
     }
 
-    function clearValue(event: React.MouseEvent<HTMLSpanElement>) {
+    function clearValue(event: React.MouseEvent<HTMLButtonElement>) {
       event.stopPropagation();
 
       if (disabled || loading) {
@@ -345,6 +418,15 @@ const SelectRoot = forwardRef<HTMLDivElement, SelectProps>(
       });
     }
 
+    const setRefs = (node: HTMLDivElement | null) => {
+      containerRef.current = node;
+      if (typeof ref === "function") {
+        ref(node);
+      } else if (ref) {
+        (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+      }
+    };
+
     const selection = multiple
       ? selectedOptions.map((option) => (
           <span key={valueKey(option.value)} className={selectTagClass}>
@@ -356,9 +438,9 @@ const SelectRoot = forwardRef<HTMLDivElement, SelectProps>(
     return (
       <div
         {...props}
-        ref={ref}
+        ref={setRefs}
         className={getSelectContainerClasses({
-          open,
+          open: isOpen,
           loading,
           disabled,
           full: true,
@@ -368,7 +450,7 @@ const SelectRoot = forwardRef<HTMLDivElement, SelectProps>(
         {/* eslint-disable-next-line jsx-a11y/role-supports-aria-props -- Forward required/error state to the interactive trigger rather than the wrapper. */}
         <button
           type="button"
-          id={id}
+          id={triggerId}
           className={getSelectClasses({ size, status, disabled })}
           disabled={disabled || loading}
           aria-describedby={ariaDescribedBy}
@@ -378,8 +460,13 @@ const SelectRoot = forwardRef<HTMLDivElement, SelectProps>(
           aria-labelledby={ariaLabelledBy}
           aria-required={ariaRequired}
           aria-haspopup="listbox"
-          aria-expanded={open}
-          onClick={() => setOpen((current) => !current)}
+          aria-expanded={isOpen}
+          aria-controls={dropdownId}
+          style={{ anchorName } as React.CSSProperties}
+          onClick={() => {
+            if (disabled || loading) return;
+            setOpenState(!isOpen);
+          }}
         >
           <span className={selectSelectionClass}>
             {hasValue ? (
@@ -425,11 +512,24 @@ const SelectRoot = forwardRef<HTMLDivElement, SelectProps>(
             </svg>
           </button>
         ) : null}
-        {open ? (
+        {isOpen ? (
           <div
-            className={selectDropdownClass}
+            id={dropdownId}
+            ref={dropdownRef}
+            popover="auto"
             role="listbox"
             aria-multiselectable={multiple || undefined}
+            className={selectDropdownClass}
+            style={{ positionAnchor: anchorName } as React.CSSProperties}
+            onToggle={(event) => {
+              if (event.target !== event.currentTarget) return;
+              const nextOpen =
+                (event.nativeEvent as { newState?: "open" | "closed" })
+                  ?.newState === "open";
+              if (nextOpen !== isOpen) {
+                setOpenState(nextOpen);
+              }
+            }}
           >
             {searchable ? (
               <input
