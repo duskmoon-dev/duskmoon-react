@@ -1,5 +1,15 @@
 # @duskmoon-dev/components
 
+## 0.5.5
+
+### Patch Changes
+
+- Align Timeline marker styles with @duskmoon-dev/core:
+  - Render `.timeline-marker-dot` element directly when no custom dot is provided instead of generating a pseudo-element.
+  - Remove intrusive `.timeline-marker:not(.timeline-marker-icon)::after` rule from styles.css that caused dual dots and icon collisions.
+  - Remove default `box-shadow` on uncolored `.timeline-marker` so default markers display clean outline without primary halo.
+  - Align `.timeline-sm` marker size to 1.5rem to match Core line offset.
+
 ## 0.5.4
 
 ### Patch Changes

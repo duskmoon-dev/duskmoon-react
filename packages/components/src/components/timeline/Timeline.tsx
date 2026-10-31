@@ -4,6 +4,7 @@ import {
   getTimelineMarkerClasses,
   timelineContentClass,
   timelineItemClass,
+  timelineMarkerDotClass,
   timelinePendingClass,
   timelineTimeClass,
 } from "../../classes/timeline";
@@ -64,7 +65,6 @@ export const Timeline = forwardRef<HTMLDivElement, TimelineProps>(
               item.className,
             )}
           >
-            {/* TODO(upstream): duskmoon-dev/duskmoonui#65 */}
             <span
               className={getTimelineMarkerClasses({
                 color: item.color,
@@ -72,7 +72,9 @@ export const Timeline = forwardRef<HTMLDivElement, TimelineProps>(
               })}
               aria-hidden="true"
             >
-              {item.dot}
+              {item.dot ?? (
+                <span className={timelineMarkerDotClass} aria-hidden="true" />
+              )}
             </span>
             <div className={timelineContentClass}>
               {item.label ? (

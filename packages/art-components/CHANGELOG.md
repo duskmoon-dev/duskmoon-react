@@ -1,5 +1,7 @@
 # @duskmoon-dev/art-components
 
+## 0.5.5
+
 ## 0.5.4
 
 ## 0.5.3

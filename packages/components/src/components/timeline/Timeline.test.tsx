@@ -14,6 +14,7 @@ describe("Timeline", () => {
 
     expect(container.querySelector(".timeline")).toBeTruthy();
     expect(container.querySelectorAll(".timeline-item").length).toBe(3);
+    expect(container.querySelector(".timeline-marker-dot")).toBeTruthy();
     expect(screen.getByText("Created")).toBeTruthy();
     expect(screen.getByText("Initialized")).toBeTruthy();
     expect(screen.getByText("Deployed")).toBeTruthy();

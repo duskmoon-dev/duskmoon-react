@@ -9,6 +9,7 @@ export const timelineBaseClass = "timeline";
 export const timelineItemClass = "timeline-item";
 export const timelineMarkerBaseClass = "timeline-marker";
 export const timelineMarkerIconClass = "timeline-marker-icon";
+export const timelineMarkerDotClass = "timeline-marker-dot";
 export const timelineContentClass = "timeline-content";
 export const timelineTimeClass = "timeline-time";
 export const timelinePendingClass = "timeline-item-pending";
