@@ -107,10 +107,14 @@ jobs:
       - run: bun x playwright install --with-deps chromium
       - name: Run executable browser fixtures
         shell: bash
+        env:
+          DOCS_BASE: /
         run: |
+          cleanup() {
+            (cd packages/docs && bun x astro dev stop) || true
+          }
+          trap cleanup EXIT
           bun run --filter "@duskmoon-dev/docs" dev > /tmp/duskmoon-docs.log 2>&1 &
-          docs_pid=$!
-          trap 'kill "$docs_pid" 2>/dev/null || true' EXIT
           for attempt in {1..60}; do
             if curl --fail --silent http://127.0.0.1:4334/components/chat/ > /dev/null; then
               break
