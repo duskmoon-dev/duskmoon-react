@@ -438,7 +438,7 @@
     align-items: center;
     max-width: 100%;
     padding: 0.125rem 0.375rem;
-    color: var(--color-primary);
+    color: var(--color-on-primary-container);
     font-size: 0.75rem;
     line-height: 1rem;
     background-color: var(--color-primary-container);
@@ -565,7 +565,7 @@
   }
 
   .cascader-option-selected {
-    color: var(--color-primary);
+    color: var(--color-on-primary-container);
     font-weight: 700;
     background-color: var(--color-primary-container);
   }
@@ -1520,7 +1520,7 @@
 
   .form-item-required .form-item-label::before {
     margin-right: 0.25rem;
-    color: var(--color-error);
+    color: var(--color-on-error-container);
     content: "*";
   }
 
@@ -1548,7 +1548,7 @@
   .form-item-error .form-item-label,
   .form-item-error .form-item-help,
   .form-error-list {
-    color: var(--color-error);
+    color: var(--color-on-error-container);
   }
 
   .form-list {
@@ -3751,7 +3751,7 @@
   }
 
   .select-option-selected {
-    color: var(--color-primary);
+    color: var(--color-on-primary-container);
     font-weight: 700;
     background-color: var(--color-primary-container);
   }
@@ -3786,7 +3786,7 @@
     align-items: center;
     padding: 0.125rem 0.375rem;
     overflow: hidden;
-    color: var(--color-primary);
+    color: var(--color-on-primary-container);
     font-size: 0.75rem;
     font-weight: 700;
     line-height: 1rem;
@@ -4384,12 +4384,12 @@
 
   .tab:hover:not(:disabled),
   .tab:focus-visible {
-    color: var(--color-primary);
+    color: var(--color-on-primary-container);
   }
 
   .tab-active,
   .tab[aria-selected="true"] {
-    color: var(--color-primary);
+    color: var(--color-on-primary-container);
     border-bottom-color: var(--color-primary);
   }
 
@@ -5885,6 +5885,10 @@
     .divider-accent
   ) {
     --dm-color: var(--color-accent);
+    --dm-color-ink: light-dark(
+      var(--color-accent-content),
+      var(--color-accent)
+    );
     --dm-color-solid: var(--color-accent);
     --dm-color-content: var(--color-accent-content);
     --dm-color-solid-content: var(--color-accent-content);
@@ -5893,7 +5897,7 @@
       var(--color-accent) 18%,
       var(--color-surface)
     );
-    --dm-color-on-container: var(--color-accent);
+    --dm-color-on-container: var(--color-on-surface);
   }
 
   :is(
@@ -5912,6 +5916,7 @@
     .divider-neutral
   ) {
     --dm-color: var(--color-neutral);
+    --dm-color-ink: var(--color-neutral);
     --dm-color-solid: var(--color-neutral);
     --dm-color-content: var(--color-neutral-content);
     --dm-color-solid-content: var(--color-neutral-content);
@@ -5920,7 +5925,7 @@
       var(--color-neutral) 16%,
       var(--color-surface)
     );
-    --dm-color-on-container: var(--color-neutral);
+    --dm-color-on-container: var(--color-on-surface);
   }
 
   :is(
@@ -5939,6 +5944,7 @@
     .divider-base
   ) {
     --dm-color: var(--color-base-content);
+    --dm-color-ink: var(--color-base-content);
     --dm-color-solid: var(--color-base-300);
     --dm-color-content: var(--color-base-content);
     --dm-color-solid-content: var(--color-base-content);
@@ -6023,7 +6029,7 @@
   }
 
   :is(.btn-outline, .btn-outlined):is(.btn-accent, .btn-neutral, .btn-base) {
-    --btn-text-color: var(--dm-color);
+    --btn-text-color: var(--dm-color-ink);
     color: var(--btn-text-color);
     background-color: transparent;
     border-color: currentcolor;
@@ -6040,7 +6046,7 @@
   }
 
   :is(.btn-ghost, .btn-text):is(.btn-accent, .btn-neutral, .btn-base) {
-    --btn-text-color: var(--dm-color);
+    --btn-text-color: var(--dm-color-ink);
     color: var(--btn-text-color);
     background-color: transparent;
     border-color: transparent;
@@ -6060,7 +6066,7 @@
   }
 
   .badge-outline:is(.badge-accent, .badge-neutral, .badge-base) {
-    color: var(--dm-color);
+    color: var(--dm-color-ink);
     background-color: transparent;
     border-color: currentcolor;
   }
@@ -6116,35 +6122,35 @@
   }
 
   .badge-ghost.badge-primary {
-    color: var(--color-primary);
+    color: var(--color-on-primary-container);
   }
 
   .badge-ghost.badge-secondary {
-    color: var(--color-secondary);
+    color: var(--color-on-secondary-container);
   }
 
   .badge-ghost.badge-tertiary {
-    color: var(--color-tertiary);
+    color: var(--color-on-tertiary-container);
   }
 
   .badge-ghost.badge-info {
-    color: var(--color-info);
+    color: var(--color-on-info-container);
   }
 
   .badge-ghost.badge-success {
-    color: var(--color-success);
+    color: var(--color-on-success-container);
   }
 
   .badge-ghost.badge-warning {
-    color: var(--color-warning);
+    color: var(--color-on-warning-container);
   }
 
   .badge-ghost.badge-error {
-    color: var(--color-error);
+    color: var(--color-on-error-container);
   }
 
   .badge-ghost:is(.badge-accent, .badge-neutral, .badge-base) {
-    color: var(--dm-color);
+    color: var(--dm-color-ink);
   }
 
   :is(.chip-accent, .chip-neutral, .chip-base) {
@@ -6158,7 +6164,7 @@
   }
 
   :is(.chip-outlined, .chip-ghost):is(.chip-accent, .chip-neutral, .chip-base) {
-    color: var(--dm-color);
+    color: var(--dm-color-ink);
     background-color: transparent;
   }
 
@@ -6185,14 +6191,14 @@
   }
 
   .alert-outlined:is(.alert-accent, .alert-neutral, .alert-base) {
-    color: var(--dm-color);
+    color: var(--dm-color-ink);
     background-color: transparent;
     border-color: currentcolor;
   }
 
   :is(.autocomplete-accent, .autocomplete-neutral, .autocomplete-base)
     .autocomplete-input {
-    color: var(--dm-color);
+    color: var(--dm-color-ink);
   }
 
   :is(.autocomplete-accent, .autocomplete-neutral, .autocomplete-base)
@@ -6427,7 +6433,7 @@
 
 .schema-form .schema-required::before {
   margin-right: 0.25rem;
-  color: var(--color-error);
+  color: var(--color-on-error-container);
   content: "*";
 }
 
@@ -6554,81 +6560,10 @@
   width: 100%;
 }
 
-/* The controlled helper retains its bounded editor; Core owns composer presentation. */
-.chat-composer .chat-composer-editor {
-  box-sizing: border-box;
-  width: 100%;
+/* The native adapter owns minRows/maxRows; Core owns the editor surface. */
+.chat-composer textarea.chat-composer-editor {
   min-height: 0;
   max-height: none;
   resize: none;
   line-height: 1.5rem;
-}
-
-.chat-composer-attachments {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.chat-composer-attachments,
-.chat-composer-completions {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.chat-composer-attachment {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  min-width: 0;
-  max-width: 100%;
-  padding: 0.375rem;
-  border-radius: var(--radius-sm, 0.375rem);
-  background: var(--color-surface-container);
-}
-
-.chat-composer-attachment img {
-  width: 2.5rem;
-  height: 2.5rem;
-  object-fit: cover;
-  border-radius: var(--radius-sm, 0.375rem);
-}
-
-.chat-composer-filename {
-  overflow-wrap: anywhere;
-}
-
-.chat-composer-completions {
-  max-height: 12rem;
-  overflow-y: auto;
-  border: 1px solid var(--color-outline-variant);
-  border-radius: var(--radius-sm, 0.375rem);
-}
-
-.chat-composer-completions [role="option"] {
-  display: flex;
-  flex-direction: column;
-  gap: 0.125rem;
-  padding: 0.5rem 0.75rem;
-  cursor: pointer;
-}
-
-.chat-composer-completions [aria-selected="true"] {
-  background: var(--color-primary-container);
-  color: var(--color-on-primary-container);
-}
-
-.chat-composer-completions [aria-disabled="true"] {
-  opacity: 0.5;
-  cursor: default;
-}
-
-.chat-composer-description {
-  font-size: 0.875rem;
-}
-
-.chat-composer .chat-composer-error {
-  color: var(--color-error);
 }

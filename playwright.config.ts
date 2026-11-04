@@ -9,6 +9,9 @@ export default defineConfig({
   reporter: "html",
   use: {
     trace: "on-first-retry",
+    launchOptions: {
+      executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH,
+    },
   },
   projects: [
     {

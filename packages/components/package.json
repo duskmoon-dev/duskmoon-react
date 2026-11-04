@@ -1,6 +1,6 @@
 {
   "name": "@duskmoon-dev/components",
-  "version": "0.5.5",
+  "version": "0.5.6",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -423,7 +423,8 @@
     "./json-schema-form": {
       "import": "./dist/components/json-schema-form/index.js",
       "types": "./dist/components/json-schema-form/index.d.ts"
-    }
+    },
+    "./chat/contracts.v1.json": "./dist/components/chat/composer/contracts.v1.json"
   },
   "files": [
     "dist",
@@ -472,7 +473,7 @@
     }
   ],
   "peerDependencies": {
-    "@duskmoon-dev/core": ">=1.20.6",
+    "@duskmoon-dev/core": ">=1.21.0",
     "react": ">=19.0.0",
     "react-dom": ">=19.0.0"
   },
@@ -485,7 +486,7 @@
     "ajv-formats": "^3.0.1"
   },
   "devDependencies": {
-    "@duskmoon-dev/core": "1.20.7",
+    "@duskmoon-dev/core": "1.21.0",
     "@testing-library/react": "16.3.2",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.4",

@@ -178,6 +178,10 @@ async function runBuild() {
     process.exit(1);
   }
 
+  const fixtures = "components/chat/composer/contracts.v1.json";
+  await fs.mkdir(path.dirname(`dist/${fixtures}`), { recursive: true });
+  await fs.copyFile(`src/${fixtures}`, `dist/${fixtures}`);
+
   console.log("Build successful");
 }
 

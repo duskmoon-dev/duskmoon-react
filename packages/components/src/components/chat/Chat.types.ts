@@ -6,6 +6,7 @@ import type {
 } from "react";
 
 import type { TextAreaProps } from "../input";
+import type { ComposerScope } from "./Composer.types";
 
 export type ChatPlacement = "start" | "end";
 export type ChatTimeline =
@@ -200,6 +201,8 @@ export interface ChatComposerProps extends Omit<
   "children" | "onSubmit" | "onChange"
 > {
   value: string;
+  /** Isolate pending admission and completion state when changing contexts. */
+  scope?: ComposerScope;
   onValueChange: (value: string) => void;
   /** Return false to reject admission and retain the draft. */
   onSubmit: (

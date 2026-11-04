@@ -76,6 +76,37 @@ test("chat docs publish the composable composer example", async ({ page }) => {
   await expect(demo.getByRole("alert")).toHaveCount(0);
 });
 
+test("late admission cannot clear the same draft and file in a new scope", async ({
+  page,
+}) => {
+  const root = await fixture(page);
+  const message = root.getByLabel("Fixture message", { exact: true });
+  await root.getByLabel("Admission", { exact: true }).selectOption("pending");
+  await message.fill("Identical draft in another repository");
+  await root.locator('input[type="file"]').setInputFiles(image);
+  await root.getByRole("button", { name: "Send", exact: true }).click();
+  await expect(
+    root.getByRole("button", { name: "Send", exact: true }),
+  ).toBeDisabled();
+  await expect(message).toBeEnabled();
+  await root.getByRole("button", { name: "Switch composer context" }).click();
+  await expect(
+    root.getByRole("button", { name: "Send", exact: true }),
+  ).toBeEnabled();
+  await root.getByRole("button", { name: "Accept pending submission" }).click();
+  await expect(message).toHaveValue("Identical draft in another repository");
+  await expect(
+    root.getByRole("button", { name: "Remove pixel.png" }),
+  ).toBeVisible();
+  await root.getByLabel("Admission", { exact: true }).selectOption("accept");
+  await root.getByRole("button", { name: "Send", exact: true }).click();
+  await expect(message).toHaveValue("");
+  await expect(
+    root.getByRole("button", { name: "Remove pixel.png" }),
+  ).toHaveCount(0);
+  expect(await submissions(root)).toHaveLength(2);
+});
+
 test("multiline composer grows, bounds scrolling, shrinks and respects IME", async ({
   page,
 }) => {

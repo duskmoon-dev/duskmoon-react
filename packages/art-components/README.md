@@ -70,7 +70,7 @@ element, accept `className`, `style`, and DuskMoon CSS custom properties through
 
 ## CSS and browser contracts
 
-The wrappers supply the HTML required by CSS Art 1.20.7. They do not add
+The wrappers supply the HTML required by CSS Art 1.21.0. They do not add
 JavaScript animation engines or browser polyfills. CSS art uses modern CSS;
 check feature support in your supported browsers, especially the following:
 

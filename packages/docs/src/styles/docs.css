@@ -480,7 +480,7 @@ main {
   margin-bottom: 18px;
 }
 
-.badge {
+.badge-row > .badge {
   border-radius: 999px;
   background: var(--dm-primary-soft);
   color: var(--dm-primary);

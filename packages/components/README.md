@@ -70,8 +70,8 @@ Chat docs include RTL, live states, tool statuses, message actions and the Core
 `Chat.Work`, `Chat.WorkSummary` and `Chat.WorkBody` disclosures, keeping the final
 answer outside them. User messages use `Chat placement="end"` and `Chat.Bubble`;
 opt into `collapsible` for automatic six-line measurement, resize/text updates,
-accessible expansion and focus cleanup. All new Chat primitives require Core
-1.20.6, which is the package peer minimum.
+accessible expansion and focus cleanup. The package now requires Core 1.21.0,
+which supplies the shared Composer editor, attachment, suggestion and status parts.
 
 `Chat.InputArea` attaches a controlled `Chat.Queue` to native
 `Chat.ComposerForm`, `Chat.ComposerInput`, `Chat.ComposerActions` and
@@ -87,6 +87,26 @@ The existing controlled `Chat.Composer` retains its div ref, attachment and
 completion APIs, revision-safe asynchronous draft clearing, and Cmd/Ctrl+Enter
 submission with ordinary Enter for newlines. Use the native composer primitives
 when form submission and the reference's Enter-to-queue contract are needed.
+Supply `scope={{ contextKey, conversationId }}` when reusing a Composer between
+repositories or conversations: a late acceptance or error from the previous
+scope cannot clear the current draft or call its error handler. Pending admission
+leaves editing available. The host still owns the controlled draft and files.
+
+Root and `/chat` exports also provide editor-independent `ComposerDocument`,
+`ComposerDraft`, submission/receipt, provider, attachment and queue types.
+`readComposerDocument` and `readComposerDraft` preserve incompatible input for
+recovery; `snapshotComposerDocument` and `snapshotComposerSubmission` validate,
+copy and freeze portable JSON. `exportComposerText` and `exportComposerMarkdown`
+project references through `plainText` and retain quote attribution. Invalid
+snapshots throw instead of silently discarding unsupported fields. Portable
+examples are published at `@duskmoon-dev/components/chat/contracts.v1.json`.
+These contracts are integration groundwork; the optional rich editor, upload
+transport, provider lookup and authoritative queue mutation remain separate work.
+
+Core 1.21.0 still has a known Moonlight contrast gap for neutral outlined/ghost
+labels ([duskmoonui#78](https://github.com/duskmoon-dev/duskmoonui/issues/78)).
+The upstream fix is required before claiming complete palette accessibility.
+
 Existing `Chat.Bubble streaming` remains usable; `Chat.Content streaming` is the
 preferred agent presentation. No public Chat API is removed or deprecated.
 

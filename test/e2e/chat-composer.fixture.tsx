@@ -10,6 +10,7 @@ function ComposerFixture() {
   const [admission, setAdmission] = useState("accept");
   const [error, setError] = useState("");
   const [mount, setMount] = useState(0);
+  const [context, setContext] = useState("first-repository");
   const [items, setItems] = useState<
     { id: string; label: string; disabled?: boolean }[]
   >([]);
@@ -71,6 +72,9 @@ function ComposerFixture() {
         >
           Accept pending submission
         </button>
+        <button type="button" onClick={() => setContext("second-repository")}>
+          Switch composer context
+        </button>
         <button
           type="button"
           onClick={() => setMount((current) => current + 1)}
@@ -108,6 +112,7 @@ function ComposerFixture() {
       </fieldset>
       <Chat.Composer
         key={mount}
+        scope={{ contextKey: context, conversationId: "same-conversation" }}
         value={value}
         onValueChange={setValue}
         attachments={files}

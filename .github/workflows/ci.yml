@@ -95,3 +95,27 @@ jobs:
       - name: Setup npm auth
         run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
       - run: bun run release:dry-run
+
+  composer-browser:
+    name: Composer and surface contracts (Chromium)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run build:all
+      - run: bun x playwright install --with-deps chromium
+      - name: Run executable browser fixtures
+        shell: bash
+        run: |
+          bun run --filter "@duskmoon-dev/docs" dev > /tmp/duskmoon-docs.log 2>&1 &
+          docs_pid=$!
+          trap 'kill "$docs_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:4334/components/chat/ > /dev/null; then
+              break
+            fi
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:4334/components/chat/ > /dev/null
+          bun x playwright test test/e2e/chat-composer.test.ts test/e2e/core-surface.test.ts --project chromium --reporter line

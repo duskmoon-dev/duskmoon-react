@@ -1,5 +1,13 @@
 # @duskmoon-dev/components
 
+## 0.5.6
+
+### Patch Changes
+
+- Adopt DuskMoon Core and CSS Art 1.21.0. Keep semantic surface text readable through React styling, scope docs metadata badges, and use Core's shared Composer attachment, suggestion and error presentation. Components now require Core >=1.21.0.
+
+  Preserve plain Composer defaults while isolating pending admission and previews across optional application/conversation scopes. Export portable Composer v1 types, JSON fixtures and validated document/snapshot/export helpers as groundwork for later rich integration; no rich editor runtime is included.
+
 ## 0.5.5
 
 ### Patch Changes
