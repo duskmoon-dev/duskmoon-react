@@ -4,6 +4,7 @@
 
 ### Patch Changes
 
+- Publish the semantic and rich Composer, authoritative queue, and settings reference pages at their catalog links.
 - Updated dependencies [5ec48ae]
   - @duskmoon-dev/components@0.6.0
   - @duskmoon-dev/art-components@0.6.0

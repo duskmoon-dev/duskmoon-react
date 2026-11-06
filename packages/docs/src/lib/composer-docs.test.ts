@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test";
+import { existsSync } from "node:fs";
 import { getComponentDoc } from "./component-docs";
 
 describe("Composer catalog contracts", () => {
@@ -39,6 +40,9 @@ describe("Composer catalog contracts", () => {
     "%s documents its actual API and live host preview",
     (id, propsName, types, tests, importPath, demoTitle) => {
       const doc = getComponentDoc(id)!;
+      expect(
+        existsSync(new URL(`../pages/components/${id}.astro`, import.meta.url)),
+      ).toBe(true);
       expect(doc.apiSource).toEndWith(`chat/${types}`);
       expect(doc.testSource).toEndWith(`chat/${tests}`);
       expect(doc.importPath).toBe(importPath);
