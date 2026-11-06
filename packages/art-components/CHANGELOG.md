@@ -1,5 +1,7 @@
 # @duskmoon-dev/art-components
 
+## 0.6.0
+
 ## 0.5.7
 
 ### Patch Changes

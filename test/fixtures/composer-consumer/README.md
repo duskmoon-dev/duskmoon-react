@@ -4,7 +4,7 @@ Run after the components build and tarball are complete:
 
 ```sh
 bun scripts/check-composer-package.ts \
-  --artifact /absolute/path/duskmoon-dev-components-0.5.6.tgz \
+  --artifact /absolute/path/duskmoon-dev-components-0.6.0.tgz \
   --phoenix /home/gao/Workspace/duskmoon-dev/phoenix-duskmoon-ui/apps/phoenix_duskmoon \
   --temp /tmp
 ```
