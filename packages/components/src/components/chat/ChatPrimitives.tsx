@@ -126,6 +126,8 @@ export const ChatQueue = forwardRef<HTMLElement, ChatQueueProps>(
       activeId = items[0]?.id,
       pendingIds = [],
       steerDisabled,
+      renderItemActions,
+      renderItemContent,
       onSteer,
       onRemove,
       label = "Waiting messages",
@@ -190,48 +192,56 @@ export const ChatQueue = forwardRef<HTMLElement, ChatQueueProps>(
                   />
                 ) : null}
                 <div className="chat-queue-content" title={item.text}>
-                  {item.text}
+                  {renderItemContent
+                    ? renderItemContent(item, index)
+                    : item.text}
                 </div>
                 <div className="chat-actions chat-queue-actions">
-                  <button
-                    className="btn btn-ghost btn-sm chat-queue-steer"
-                    type="button"
-                    disabled={pending || steerDisabled}
-                    aria-label={`Steer waiting message ${index + 1}`}
-                    onClick={() => onSteer(item.id)}
-                  >
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      aria-hidden="true"
-                      focusable="false"
-                    >
-                      <path d="m15 4 5 5-5 5M20 9h-9a6 6 0 0 0-6 6v4" />
-                    </svg>
-                    Steer
-                  </button>
-                  <button
-                    className="btn btn-ghost btn-sm btn-square chat-queue-remove"
-                    type="button"
-                    disabled={pending}
-                    aria-label={`Remove waiting message ${index + 1}`}
-                    onClick={() => onRemove(item.id)}
-                  >
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      aria-hidden="true"
-                      focusable="false"
-                    >
-                      <path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7" />
-                    </svg>
-                  </button>
+                  {renderItemActions ? (
+                    renderItemActions(item, index, pending)
+                  ) : (
+                    <>
+                      <button
+                        className="btn btn-ghost btn-sm chat-queue-steer"
+                        type="button"
+                        disabled={pending || steerDisabled}
+                        aria-label={`Steer waiting message ${index + 1}`}
+                        onClick={() => onSteer(item.id)}
+                      >
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          aria-hidden="true"
+                          focusable="false"
+                        >
+                          <path d="m15 4 5 5-5 5M20 9h-9a6 6 0 0 0-6 6v4" />
+                        </svg>
+                        Steer
+                      </button>
+                      <button
+                        className="btn btn-ghost btn-sm btn-square chat-queue-remove"
+                        type="button"
+                        disabled={pending}
+                        aria-label={`Remove waiting message ${index + 1}`}
+                        onClick={() => onRemove(item.id)}
+                      >
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          aria-hidden="true"
+                          focusable="false"
+                        >
+                          <path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7" />
+                        </svg>
+                      </button>
+                    </>
+                  )}
                 </div>
               </li>
             );

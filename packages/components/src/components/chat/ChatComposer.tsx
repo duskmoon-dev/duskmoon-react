@@ -9,6 +9,7 @@ import type { ChatComposerCompletion, ChatComposerProps } from "./Chat.types";
 import { ComposerShell } from "./composer/ComposerShell";
 import { PlainEditor } from "./composer/PlainEditor";
 import type { PlainEditorHandle } from "./composer/PlainEditor";
+import { completionOptionId } from "./composer/CompletionList";
 import {
   legacyCompletion,
   legacyEligibility,
@@ -18,6 +19,11 @@ import {
   retainUnsubmittedAttachments,
 } from "./composer/legacy";
 import type { AttachmentEntry } from "./composer/legacy";
+import { validateComposerAttachmentIntake } from "./composer/attachments";
+import type {
+  ComposerAttachmentRejection,
+  ComposerAttachmentSource,
+} from "./ComposerAttachment.types";
 
 /** Controlled prompts, attachments, and application-supplied completions. */
 export const ChatComposer = forwardRef<HTMLDivElement, ChatComposerProps>(
@@ -30,6 +36,8 @@ export const ChatComposer = forwardRef<HTMLDivElement, ChatComposerProps>(
       attachments = [],
       onAttachmentsChange,
       accept,
+      attachmentPolicy,
+      onAttachmentRejected,
       multiple = true,
       allowAttachmentOnly = false,
       disabled = false,
@@ -71,6 +79,9 @@ export const ChatComposer = forwardRef<HTMLDivElement, ChatComposerProps>(
     const generationRef = useRef(0);
     const [submitting, setSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState<string>();
+    const [attachmentRejections, setAttachmentRejections] = useState<
+      readonly ComposerAttachmentRejection[]
+    >([]);
     const [activeId, setActiveId] = useState<string>();
     const [dismissed, setDismissed] = useState(false);
     const latestRef = useRef({
@@ -108,6 +119,7 @@ export const ChatComposer = forwardRef<HTMLDivElement, ChatComposerProps>(
         submittingRef.current = false;
         setSubmitting(false);
         setSubmitError(undefined);
+        setAttachmentRejections([]);
         setActiveId(undefined);
         setDismissed(false);
         revisionRef.current++;
@@ -143,7 +155,18 @@ export const ChatComposer = forwardRef<HTMLDivElement, ChatComposerProps>(
     const candidates = completion?.items ?? [];
     const { enabled, active } = legacyCompletion(candidates, activeId);
     const showCompletion = !disabled && !dismissed && candidates.length > 0;
-    const visibleError = error ?? submitError;
+    const visibleError =
+      error ??
+      submitError ??
+      (attachmentRejections.length ? (
+        <ul>
+          {attachmentRejections.map((item, index) => (
+            <li key={`${index}-${item.metadata.name}`}>
+              {item.metadata.name}: {item.error.message}
+            </li>
+          ))}
+        </ul>
+      ) : undefined);
     const hasError =
       visibleError !== undefined &&
       visibleError !== null &&
@@ -163,6 +186,26 @@ export const ChatComposer = forwardRef<HTMLDivElement, ChatComposerProps>(
       nextEntryRef.current = next.nextId;
       latestRef.current.attachments = files;
       onAttachmentsChange?.(files);
+    }
+
+    function intakeAttachments(
+      files: File[],
+      source: ComposerAttachmentSource,
+    ) {
+      if (disabled || !onAttachmentsChange) return;
+      const result = validateComposerAttachmentIntake(
+        files,
+        latestRef.current.attachments.length,
+        { ...attachmentPolicy, accept: attachmentPolicy?.accept ?? accept },
+        source,
+      );
+      setAttachmentRejections(result.rejected);
+      if (result.rejected.length) onAttachmentRejected?.(result.rejected);
+      if (result.accepted.length)
+        changeAttachments([
+          ...latestRef.current.attachments,
+          ...result.accepted,
+        ]);
     }
 
     function removeAttachment(entryId: number) {
@@ -242,10 +285,10 @@ export const ChatComposer = forwardRef<HTMLDivElement, ChatComposerProps>(
         composerId={id}
         entries={occurrences.entries}
         renderAttachment={renderAttachment}
-        removeAttachment={removeAttachment}
-        addAttachments={(files) =>
-          changeAttachments([...attachments, ...files])
-        }
+        removeAttachment={(entryId) => {
+          if (typeof entryId === "number") removeAttachment(entryId);
+        }}
+        addAttachments={intakeAttachments}
         onAttachmentsChange={onAttachmentsChange}
         pickerRef={pickerRef}
         accept={accept}
@@ -282,6 +325,11 @@ export const ChatComposer = forwardRef<HTMLDivElement, ChatComposerProps>(
             hasCompletion={!!completion}
             showCompletion={showCompletion}
             activeIndex={active ? candidates.indexOf(active) : -1}
+            activeDescendant={
+              showCompletion && active
+                ? completionOptionId(id, active.id)
+                : undefined
+            }
             onChange={(nextValue) => {
               revisionRef.current++;
               observedValueRef.current = nextValue;

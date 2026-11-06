@@ -7,6 +7,7 @@ import { Alert } from "@duskmoon-dev/components/alert";
 import { Avatar } from "@duskmoon-dev/components/avatar";
 import { cn } from "@duskmoon-dev/components/utils";
 import { useTheme } from "@duskmoon-dev/components/theme";
+import { ComposerSmoke } from "./ComposerSmoke";
 
 export default function Home() {
   const containerClass = cn("test-class", { active: true });
@@ -23,6 +24,7 @@ export default function Home() {
       className={containerClass}
     >
       <h1>Duskmoon React Smoke Test</h1>
+      <ComposerSmoke />
 
       <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
         <span>Current Theme: {theme}</span>

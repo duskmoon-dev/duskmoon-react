@@ -18,6 +18,9 @@ async function runBuild() {
       "ajv",
       "ajv/*",
       "ajv-formats",
+      "lexical",
+      "@lexical/history",
+      "@lexical/plain-text",
     ],
     minify: false,
     naming: "[dir]/[name].[ext]",
@@ -175,6 +178,19 @@ async function runBuild() {
     for (const message of clientResult.logs) {
       console.error(message);
     }
+    process.exit(1);
+  }
+
+  // Rich loading needs an actual emitted split point. Lexical stays external so
+  // the consumer supplies exactly one internally consistent optional runtime.
+  const richResult = await build({
+    ...commonOptions,
+    splitting: true,
+    entrypoints: ["src/components/chat/rich/index.ts"],
+    banner: '"use client";\n',
+  });
+  if (!richResult.success) {
+    for (const message of richResult.logs) console.error(message);
     process.exit(1);
   }
 

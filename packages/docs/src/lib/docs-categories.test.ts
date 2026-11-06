@@ -54,7 +54,7 @@ describe("documentation categories", () => {
     const docs = getComponentDocs();
     const categoryIds = new Set(DOC_CATEGORIES.map(({ id }) => id));
 
-    expect(docs).toHaveLength(128);
+    expect(docs).toHaveLength(132);
     expect(new Set(docs.map(({ id }) => id)).size).toBe(docs.length);
     expect(new Set(docs.map(({ route }) => route)).size).toBe(docs.length);
     expect(docs.every(({ categoryId }) => categoryIds.has(categoryId))).toBe(

@@ -122,4 +122,4 @@ jobs:
             sleep 1
           done
           curl --fail --silent http://127.0.0.1:4334/components/chat/ > /dev/null
-          bun x playwright test test/e2e/chat-composer.test.ts test/e2e/core-surface.test.ts --project chromium --reporter line
+          bun x playwright test test/e2e/chat-composer.test.ts test/e2e/chat-rich.test.ts test/e2e/core-surface.test.ts --project chromium --reporter line

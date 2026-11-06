@@ -14,6 +14,7 @@ import type {
 export interface PlainEditorHandle {
   focus: () => void;
   selection: (value: string) => ChatComposerCompletionContext;
+  select: (start: number, end: number) => void;
 }
 
 interface PlainEditorProps {
@@ -28,6 +29,7 @@ interface PlainEditorProps {
   hasCompletion: boolean;
   showCompletion: boolean;
   activeIndex: number;
+  activeDescendant?: string;
   onChange: (value: string) => void;
   onKeyDown: React.KeyboardEventHandler<HTMLTextAreaElement>;
 }
@@ -47,6 +49,7 @@ export const PlainEditor = forwardRef<PlainEditorHandle, PlainEditorProps>(
       hasCompletion,
       showCompletion,
       activeIndex,
+      activeDescendant,
       onChange,
       onKeyDown,
     },
@@ -61,6 +64,8 @@ export const PlainEditor = forwardRef<PlainEditorHandle, PlainEditorProps>(
       ref,
       () => ({
         focus: () => editorRef.current?.focus(),
+        select: (start, end) =>
+          editorRef.current?.setSelectionRange(start, end),
         selection: (currentValue) => ({
           value: currentValue,
           selectionStart:
@@ -134,9 +139,10 @@ export const PlainEditor = forwardRef<PlainEditorHandle, PlainEditorProps>(
         aria-autocomplete={hasCompletion ? "list" : undefined}
         aria-haspopup={hasCompletion ? "listbox" : undefined}
         aria-activedescendant={
-          showCompletion && activeIndex >= 0
+          activeDescendant ??
+          (showCompletion && activeIndex >= 0
             ? `${composerId}-option-${activeIndex}`
-            : undefined
+            : undefined)
         }
         onChange={(event) => onChange(event.currentTarget.value)}
         onCompositionStart={(event) => {

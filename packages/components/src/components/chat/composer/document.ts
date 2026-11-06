@@ -103,6 +103,11 @@ function copyJson(value: unknown, ancestors = new Set<object>()): ComposerJson {
   }
 }
 
+/** Internal portable-data boundary shared by the lifecycle adapters. */
+export function snapshotComposerJson(value: unknown): ComposerJson {
+  return copyJson(value);
+}
+
 function validScope(value: ComposerJson | undefined): boolean {
   return (
     value !== undefined &&

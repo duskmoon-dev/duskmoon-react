@@ -11,6 +11,15 @@ const componentsSourcePlugin = {
       resolve: {
         alias: [
           {
+            find: /^@duskmoon-dev\/components\/chat\/rich$/,
+            replacement: fileURLToPath(
+              new URL(
+                "../components/src/components/chat/rich/index.ts",
+                import.meta.url,
+              ),
+            ),
+          },
+          {
             find: /^@duskmoon-dev\/components$/,
             replacement: fileURLToPath(
               new URL("../components/src/index.ts", import.meta.url),

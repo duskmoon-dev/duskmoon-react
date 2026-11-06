@@ -1266,6 +1266,50 @@
       "packageSubpath": "./json-schema-form",
       "buildEntrypoint": "src/components/json-schema-form/index.ts",
       "status": "implemented"
+    },
+    {
+      "id": "chat-session-composer",
+      "kind": "react-component",
+      "source": "react",
+      "exportName": "ChatSessionComposer",
+      "directory": "chat",
+      "rootExport": "./components/chat",
+      "packageSubpath": "./chat",
+      "buildEntrypoint": "src/components/chat/index.ts",
+      "status": "implemented"
+    },
+    {
+      "id": "chat-authoritative-queue",
+      "kind": "react-component",
+      "source": "react",
+      "exportName": "ChatAuthoritativeQueue",
+      "directory": "chat",
+      "rootExport": "./components/chat",
+      "packageSubpath": "./chat",
+      "buildEntrypoint": "src/components/chat/index.ts",
+      "status": "implemented"
+    },
+    {
+      "id": "composer-settings",
+      "kind": "react-component",
+      "source": "react",
+      "exportName": "ComposerSettings",
+      "directory": "chat",
+      "rootExport": "./components/chat",
+      "packageSubpath": "./chat",
+      "buildEntrypoint": "src/components/chat/index.ts",
+      "status": "implemented"
+    },
+    {
+      "id": "rich-chat-composer",
+      "kind": "react-component",
+      "source": "react",
+      "exportName": "RichChatComposer",
+      "directory": "chat",
+      "rootExport": null,
+      "packageSubpath": "./chat/rich",
+      "buildEntrypoint": "src/components/chat/rich/index.ts",
+      "status": "implemented"
     }
   ],
   "internalTargets": []

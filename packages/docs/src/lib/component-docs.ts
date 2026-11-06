@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import * as ts from "typescript";
 import {
   componentPageContentFor,
   type ComponentPageContent,
@@ -104,6 +105,60 @@ const artComponentsTest = path.join(
   repoRoot,
   "packages/art-components/tests/art-components.test.tsx",
 );
+
+// Composer entries share a directory, but their public contracts and live demos
+// differ. Do not select an arbitrary Chat type/test file for these exports.
+const composerDocSources = new Map<
+  string,
+  { typeFile: string; testFile: string; apiNames: string[]; demoTitle: string }
+>([
+  [
+    "chat-session-composer",
+    {
+      typeFile: "ChatSessionComposer.types.ts",
+      testFile: "ChatSessionComposer.test.tsx",
+      apiNames: ["ChatSessionComposerProps", "ChatSessionComposerHandle"],
+      demoTitle: "Semantic Composer and Recovery",
+    },
+  ],
+  [
+    "rich-chat-composer",
+    {
+      typeFile: "ChatSessionComposer.types.ts",
+      testFile: "rich/nodes.test.ts",
+      apiNames: [
+        "RichChatComposerProps",
+        "ChatSessionComposerProps",
+        "RichChatComposerHandle",
+      ],
+      demoTitle: "Rich Composer and Authoritative Queue",
+    },
+  ],
+  [
+    "chat-authoritative-queue",
+    {
+      typeFile: "ComposerQueue.types.ts",
+      testFile: "ChatAuthoritativeQueue.test.tsx",
+      apiNames: ["ChatAuthoritativeQueueProps", "ComposerQueueEditorProps"],
+      demoTitle: "Rich Composer and Authoritative Queue",
+    },
+  ],
+  [
+    "composer-settings",
+    {
+      typeFile: "ComposerQueue.types.ts",
+      testFile: "ComposerSettings.test.tsx",
+      apiNames: [
+        "ComposerSettingsProps",
+        "ComposerSetting",
+        "ComposerSettingChoice",
+        "ComposerSettingRequest",
+        "ComposerSettingResult",
+      ],
+      demoTitle: "Rich Composer and Authoritative Queue",
+    },
+  ],
+]);
 
 function artTarget(
   id: string,
@@ -276,6 +331,8 @@ function introFor(
 }
 
 function findTypeFile(target: Target, name: string) {
+  const composer = composerDocSources.get(target.id);
+  if (composer) return path.join(componentsRoot, "chat", composer.typeFile);
   if (target.packageName === "art-components") {
     return path.join(artComponentsRoot, "index.tsx");
   }
@@ -302,6 +359,8 @@ function findTypeFile(target: Target, name: string) {
 }
 
 function findTestFile(target: Target, name: string) {
+  const composer = composerDocSources.get(target.id);
+  if (composer) return path.join(componentsRoot, "chat", composer.testFile);
   if (target.packageName === "art-components") {
     return artComponentsTest;
   }
@@ -448,6 +507,65 @@ function parseApi(typeFile: string | null, name: string): ApiSection[] {
   }
 
   return sections;
+}
+
+/** Read readonly properties and multiline callbacks without truncating their types. */
+function parseComposerApi(typeFile: string, names: string[]): ApiSection[] {
+  const source = ts.createSourceFile(
+    typeFile,
+    fs.readFileSync(typeFile, "utf8"),
+    ts.ScriptTarget.Latest,
+    true,
+  );
+  return names.flatMap((name): ApiSection[] => {
+    const statement = source.statements.find(
+      (node) =>
+        (ts.isInterfaceDeclaration(node) || ts.isTypeAliasDeclaration(node)) &&
+        node.name.text === name,
+    );
+    if (!statement) return [];
+    if (ts.isTypeAliasDeclaration(statement))
+      return [
+        {
+          name,
+          kind: "type",
+          definition: compactType(statement.type.getText(source)),
+          props: [],
+        },
+      ];
+    if (!ts.isInterfaceDeclaration(statement)) return [];
+    return [
+      {
+        name,
+        kind: "interface",
+        extendsText: statement.heritageClauses
+          ?.flatMap((clause) =>
+            clause.types.map((type) => type.getText(source)),
+          )
+          .join(", "),
+        props: statement.members.flatMap((member): ApiProp[] => {
+          if (!ts.isPropertySignature(member) || !member.type) return [];
+          return [
+            {
+              name: member.name.getText(source),
+              required: !member.questionToken,
+              type: compactType(member.type.getText(source)),
+              description: ts
+                .getJSDocCommentsAndTags(member)
+                .map((comment) =>
+                  comment
+                    .getText(source)
+                    .replace(/\/\*\*|\*\/|\*/g, "")
+                    .replace(/\s+/g, " ")
+                    .trim(),
+                )
+                .join(" "),
+            },
+          ];
+        }),
+      },
+    ];
+  });
 }
 
 function keyPropsFromApi(api: ApiSection[]) {
@@ -1611,6 +1729,16 @@ function demosFor(
 ): DemoSpec[] {
   const importPath = importPathForTarget(target);
 
+  const composer = composerDocSources.get(target.id);
+  if (composer) {
+    const example = chatDemoExamples.find(
+      ({ title }) => title === composer.demoTitle,
+    );
+    if (!example)
+      throw new Error(`Missing live Composer example: ${composer.demoTitle}`);
+    return [{ ...example, source: "authored" }];
+  }
+
   if (target.id === "markdown") {
     return [
       {
@@ -1865,7 +1993,10 @@ export function TooltipInterestPreview() {
   }
 
   if (target.id === "chat") {
-    return chatDemoExamples.map((example) => ({ ...example }));
+    return chatDemoExamples.map((example) => ({
+      ...example,
+      source: "authored",
+    }));
   }
 
   if (target.id === "dm-layout") {
@@ -2050,7 +2181,11 @@ function toDoc(target: Target): ComponentDoc {
   const name = componentName(target);
   const typeFile = findTypeFile(target, name);
   const testFile = findTestFile(target, name);
-  const api = parseApi(typeFile, name);
+  const composer = composerDocSources.get(target.id);
+  const api =
+    composer && typeFile
+      ? parseComposerApi(typeFile, composer.apiNames)
+      : parseApi(typeFile, name);
   const scenarios =
     target.manualScenarios?.map(sentenceCase) ?? scenariosFromTest(testFile);
   const keyProps = keyPropsFromApi(api);

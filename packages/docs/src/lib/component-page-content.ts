@@ -151,6 +151,205 @@ const navigationIds = new Set([
 
 const overlayIds = new Set(["drawer", "popover", "tooltip", "dm-drawer"]);
 
+const composerPageContent = new Map<string, ComponentPageContent>([
+  [
+    "chat-session-composer",
+    {
+      summary:
+        "ChatSessionComposer is a controlled semantic-document composer backed by a native textarea and a typed host admission/recovery contract. The existing string-based Chat.Composer API remains available.",
+      whenToUse: [
+        "Use it for text-only conversations that need explicit accepted, rejected and unknown outcomes without loading the optional editor runtime.",
+        "Keep storage, upload preparation, command policy and recovery ownership in your application.",
+      ],
+      featureHighlights: [
+        {
+          title: "One controlled document",
+          description:
+            "Supply value and echo onDocumentChange updates with their origin and revision. Enter adds a line; Cmd/Ctrl+Enter submits by default.",
+        },
+        {
+          title: "Recovery and attachments",
+          description:
+            "Pending admission leaves editing available. Late acceptance preserves newer edits and attachment occurrences; unknown outcomes retain their immutable submission snapshot and stable ID.",
+        },
+      ],
+      usageNotes: [
+        {
+          title: "Required host",
+          description:
+            "Provide scope, draftKey, host and a controlled value. The host owns capabilities and a recovery owner that outlives the editor; transport success alone is not typed admission.",
+        },
+        {
+          title: "Structured draft preservation",
+          description:
+            "The native textarea cannot edit reference, quote or claimed-command nodes. Such documents remain recoverable behind a readable preview and explicit JSON export instead of being flattened.",
+        },
+        {
+          title: "Optional draft storage",
+          description:
+            "draftAdapter loads scoped drafts automatically. Save draft explicitly; restoration uses a new controlled revision. Files require reattachment unless the host declares their handles recoverable.",
+        },
+        {
+          title: "Stylesheet",
+          description:
+            "Import @duskmoon-dev/components/styles.css once. Root and /chat consumers do not load Lexical.",
+        },
+      ],
+      demoIntro:
+        "The live in-memory host demonstrates rejection, response loss, reconciliation, explicit draft saving/remount, attachment retry and independent Stop. It performs no backend execution and promises no durable storage.",
+      apiIntro:
+        "ChatSessionComposerProps and ChatSessionComposerHandle are read from the public semantic-composer type module. Imported host, document and provider types remain editor-independent.",
+    },
+  ],
+  [
+    "rich-chat-composer",
+    {
+      summary:
+        "RichChatComposer adds atomic references, claimed leading commands and attributed quotes to the same controlled semantic document and host lifecycle as ChatSessionComposer.",
+      whenToUse: [
+        "Use the optional /chat/rich entry when references or quotes must retain stable identities through editing, clipboard operations and admission.",
+        "Use host-provided providers to resolve authorized references and distinguish prompt commands from non-prompt actions.",
+      ],
+      featureHighlights: [
+        {
+          title: "Semantic editing",
+          description:
+            "Reference/quote occurrences preserve their provider identities and attribution. Claimed commands retain identity with empty arguments; deleting the command token exits command mode.",
+        },
+        {
+          title: "Editor-owned history",
+          description:
+            "Controlled echoes preserve selection and undo history. Explicit replace, restore, clear and scope changes reset editor history; durable undo across remounts is not promised.",
+        },
+      ],
+      usageNotes: [
+        {
+          title: "Optional entry and peers",
+          description:
+            "Import RichChatComposer only from @duskmoon-dev/components/chat/rich. Install lexical, @lexical/history and @lexical/plain-text at the matching pinned version 0.53.0; keep one runtime in the consuming application.",
+        },
+        {
+          title: "One semantic input",
+          description:
+            "RichChatComposerProps aliases ChatSessionComposerProps. Echo document updates directly; do not round-trip structured drafts through a separately controlled string or Lexical JSON.",
+        },
+        {
+          title: "Clipboard and failure recovery",
+          description:
+            "Composer-aware copy/paste retains semantic nodes and creates new occurrence IDs; external plain text remains text. An unavailable editor preserves the original document with an explicit JSON export.",
+        },
+        {
+          title: "Host boundaries",
+          description:
+            "The host supplies command meaning, reference authorization, uploads, settings and typed receipts. The live preview is a page-lifetime fake host, not a model or backend integration.",
+        },
+      ],
+      demoIntro:
+        "The live rich preview exercises references, quotes, claimed commands, editable skills, uncertain admission, running-turn intents and authoritative queue/settings updates. Start a demo turn to expose follow-up and steer controls.",
+      apiIntro:
+        "RichChatComposerProps shares the full ChatSessionComposerProps interface below. The public handle contains semantic operations and exposes no Lexical classes or node keys.",
+    },
+  ],
+  [
+    "chat-authoritative-queue",
+    {
+      summary:
+        "ChatAuthoritativeQueue presents the host's queue projection and capability-gated edit, remove and promote actions without implementing a scheduler.",
+      whenToUse: [
+        "Use it when the backend exposes authoritative queue items, revisions and mutation acknowledgments.",
+        "Keep Chat.Queue for applications that already own queue rendering and callback policy; its existing API remains supported.",
+      ],
+      featureHighlights: [
+        {
+          title: "Canonical reconciliation",
+          description:
+            "Actions capture the relevant revision and item/turn identity. Pending controls do not optimistically dequeue; the host's returned projection determines visible membership.",
+        },
+        {
+          title: "Safe document edits",
+          description:
+            "Text edits preserve portable document semantics. Structured edits require the explicit renderDocumentEditor slot, and attachment ownership stays with the host.",
+        },
+      ],
+      usageNotes: [
+        {
+          title: "Capabilities",
+          description:
+            "Supply projection, capabilities, onMutation and onProjection. Unsupported operations stay unavailable; targetTurnId is required for promoting an item into an active turn.",
+        },
+        {
+          title: "Stale and consumed items",
+          description:
+            "The backend decides what happens if an item starts execution while an editor is open. Apply canonical rejected/conflicting projections as well as accepted ones; do not fabricate a local restore or dequeue.",
+        },
+        {
+          title: "Live host controls",
+          description:
+            "In the preview, start a demo turn and submit a follow-up before trying queue edits, removal or promotion. Acknowledgments change the same host projection shown above the queue.",
+        },
+        {
+          title: "Stylesheet",
+          description:
+            "Import @duskmoon-dev/components/styles.css once; queue presentation uses the shared Core classes.",
+        },
+      ],
+      demoIntro:
+        "The live fake host creates queued follow-ups only after admission, then applies revision-checked queue mutations. The surrounding rich composer supplies structured examples; no production scheduling capability is implied.",
+      apiIntro:
+        "ChatAuthoritativeQueueProps and ComposerQueueEditorProps are read from ComposerQueue.types.ts. Portable queue projection and mutation shapes come from the shared Composer protocol types.",
+    },
+  ],
+  [
+    "composer-settings",
+    {
+      summary:
+        "ComposerSettings presents host-owned model, reasoning or policy choices and keeps their selected values authoritative until the host applies an acknowledged change.",
+      whenToUse: [
+        "Use it for reusable composer settings whose availability and selected values come from the application or backend.",
+        "Supply explicit unavailable reasons and acknowledgment handlers instead of treating selection as backend configuration success.",
+      ],
+      featureHighlights: [
+        {
+          title: "Controlled choices",
+          description:
+            "Each setting supplies its current value and choices. Selecting a candidate records pending state while the displayed selected value remains bound to host props.",
+        },
+        {
+          title: "Revision-safe requests",
+          description:
+            "Requests capture scope, setting identity and expected revision. Rejected or stale responses cannot falsely confirm a setting; scope changes abort pending work.",
+        },
+      ],
+      usageNotes: [
+        {
+          title: "Apply host state",
+          description:
+            "Provide scopeKey, revision, settings, onRequest and onAcknowledged. Apply acknowledged values to your authoritative state and pass new props; the component does not configure a model or backend itself.",
+        },
+        {
+          title: "Unavailable settings",
+          description:
+            "Use unavailableReason on a setting or choice to explain missing capabilities. The live Restricted model choice deliberately returns a rejection while retaining the previous model.",
+        },
+        {
+          title: "Submission options",
+          description:
+            "If a selected setting affects requests, supply the acknowledged value in the composer's options. The submission controller snapshots those options with the logical request.",
+        },
+        {
+          title: "Stylesheet",
+          description:
+            "Import @duskmoon-dev/components/styles.css once. The settings use the existing controlled Select presentation.",
+        },
+      ],
+      demoIntro:
+        "The live fake host delays model acknowledgments. Choose Fast to see an acknowledged change or Restricted to see a rejected change; neither choice executes a model.",
+      apiIntro:
+        "ComposerSettingsProps and its setting, choice, request and result types are read from ComposerQueue.types.ts. Queue-only editor props are omitted from this settings reference.",
+    },
+  ],
+]);
+
 const purposeById: Record<string, string> = {
   affix:
     "pins supporting actions or navigation to the viewport while the surrounding document continues to scroll.",
@@ -613,6 +812,8 @@ function usageNotesFor(
 export function componentPageContentFor(
   input: ComponentPageContentInput,
 ): ComponentPageContent {
+  const composer = composerPageContent.get(input.id);
+  if (composer) return composer;
   const family = familyFor(input);
   const purpose =
     purposeById[input.id] ??

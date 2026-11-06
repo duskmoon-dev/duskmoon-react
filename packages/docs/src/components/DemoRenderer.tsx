@@ -1261,7 +1261,13 @@ This line demonstrates \`breaks={true}\`.
     );
   }
 
-  if (componentId === "chat") {
+  if (
+    componentId === "chat" ||
+    componentId === "chat-session-composer" ||
+    componentId === "rich-chat-composer" ||
+    componentId === "chat-authoritative-queue" ||
+    componentId === "composer-settings"
+  ) {
     const preview =
       chatShowcasePreviews[demoTitle as keyof typeof chatShowcasePreviews];
     return preview ? React.createElement(preview) : null;

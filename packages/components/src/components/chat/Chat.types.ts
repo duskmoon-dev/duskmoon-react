@@ -7,6 +7,10 @@ import type {
 
 import type { TextAreaProps } from "../input";
 import type { ComposerScope } from "./Composer.types";
+import type {
+  ComposerAttachmentIntakePolicy,
+  ComposerAttachmentRejection,
+} from "./ComposerAttachment.types";
 
 export type ChatPlacement = "start" | "end";
 export type ChatTimeline =
@@ -133,6 +137,13 @@ export interface ChatQueueProps extends Omit<
   /** The application owns pending state and removes messages after acknowledgment. */
   pendingIds?: readonly string[];
   steerDisabled?: boolean;
+  /** Optional authoritative controls; legacy Steer/Remove remain the default. */
+  renderItemActions?: (
+    item: ChatQueueItem,
+    index: number,
+    pending: boolean,
+  ) => ReactNode;
+  renderItemContent?: (item: ChatQueueItem, index: number) => ReactNode;
   onSteer: (id: string) => void;
   onRemove: (id: string) => void;
   /** Accessible queue name. @default "Waiting messages" */
@@ -164,6 +175,7 @@ export interface ChatComposerCompletion {
   label: string;
   description?: ReactNode;
   disabled?: boolean;
+  group?: string;
 }
 
 export interface ChatComposerCompletionContext {
@@ -212,6 +224,11 @@ export interface ChatComposerProps extends Omit<
   /** Enables the native file picker and attachment removal controls. */
   onAttachmentsChange?: (files: File[]) => void;
   accept?: string;
+  /** Shared validation for picker, pasted files, and dropped files. */
+  attachmentPolicy?: ComposerAttachmentIntakePolicy;
+  onAttachmentRejected?: (
+    rejected: readonly ComposerAttachmentRejection[],
+  ) => void;
   /** @default true */
   multiple?: boolean;
   /** Permit a draft containing only files. @default false */

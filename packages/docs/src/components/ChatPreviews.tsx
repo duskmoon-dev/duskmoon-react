@@ -5,6 +5,10 @@ import {
   WaitingQueuePreview,
 } from "./ChatContractPreviews";
 import * as DmComponents from "@duskmoon-dev/components";
+import {
+  RichComposerPreview,
+  SemanticComposerPreview,
+} from "./ChatSessionPreviews";
 
 const Chat = DmComponents.Chat;
 const Avatar = DmComponents.Avatar;
@@ -641,6 +645,8 @@ export function ComposerChatPreview() {
 }
 
 export const chatShowcasePreviews = {
+  "Semantic Composer and Recovery": SemanticComposerPreview,
+  "Rich Composer and Authoritative Queue": RichComposerPreview,
   "Agent Answers and Activity": AgentActivityPreview,
   "Collapsible Sent Messages": CollapsibleMessagePreview,
   "Waiting Queue and Steer": WaitingQueuePreview,

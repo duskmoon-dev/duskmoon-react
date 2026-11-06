@@ -7,7 +7,20 @@ import type {
   ChatComposerCompletion,
   ChatComposerProps,
 } from "../Chat.types";
-import type { AttachmentEntry } from "./legacy";
+import type { ComposerAttachmentSource } from "../ComposerAttachment.types";
+import { CompletionList } from "./CompletionList";
+
+export interface ComposerShellAttachment {
+  id: number | string;
+  file?: File;
+  name?: string;
+  previewUrl?: string;
+  state?: string;
+  status?: React.ReactNode;
+  progress?: number;
+  retry?: () => void;
+  cancel?: () => void;
+}
 
 function AttachmentPreview({ file }: { file: File }) {
   const imageRef = useRef<HTMLImageElement>(null);
@@ -57,10 +70,10 @@ interface ComposerShellProps extends Omit<
 > {
   editor: React.ReactNode;
   composerId: string;
-  entries: readonly AttachmentEntry[];
+  entries: readonly ComposerShellAttachment[];
   renderAttachment?: ChatComposerProps["renderAttachment"];
-  removeAttachment: (id: number) => void;
-  addAttachments: (files: File[]) => void;
+  removeAttachment: (id: number | string) => void;
+  addAttachments: (files: File[], source: ComposerAttachmentSource) => void;
   onAttachmentsChange?: ChatComposerProps["onAttachmentsChange"];
   pickerRef: React.RefObject<HTMLInputElement | null>;
   accept?: string;
@@ -77,6 +90,10 @@ interface ComposerShellProps extends Omit<
   selectCompletion: (item: ChatComposerCompletion) => void;
   visibleError: React.ReactNode;
   hasError: boolean;
+  intakeEvents?: boolean;
+  completionHeader?: React.ReactNode;
+  completionStatus?: React.ReactNode;
+  statusContent?: React.ReactNode;
   attachLabel: string;
   sendLabel: string;
   stopLabel: string;
@@ -112,6 +129,10 @@ export const ComposerShell = forwardRef<HTMLDivElement, ComposerShellProps>(
       selectCompletion,
       visibleError,
       hasError,
+      intakeEvents = true,
+      completionHeader,
+      completionStatus,
+      statusContent,
       attachLabel,
       sendLabel,
       stopLabel,
@@ -124,7 +145,50 @@ export const ComposerShell = forwardRef<HTMLDivElement, ComposerShellProps>(
     },
     ref,
   ) => (
-    <div {...props} ref={ref} className={cn("chat-composer", className)}>
+    <div
+      {...props}
+      ref={ref}
+      className={cn("chat-composer", className)}
+      onPaste={(event) => {
+        props.onPaste?.(event);
+        if (
+          !intakeEvents ||
+          event.defaultPrevented ||
+          disabled ||
+          !onAttachmentsChange
+        )
+          return;
+        const files = Array.from(event.clipboardData.files ?? []);
+        if (files.length) addAttachments(files, "paste");
+        // Leave the native text paste available, including mixed text + files.
+      }}
+      onDragOver={(event) => {
+        props.onDragOver?.(event);
+        if (
+          intakeEvents &&
+          !event.defaultPrevented &&
+          !disabled &&
+          onAttachmentsChange &&
+          Array.from(event.dataTransfer.types).includes("Files")
+        )
+          event.preventDefault();
+      }}
+      onDrop={(event) => {
+        props.onDrop?.(event);
+        if (
+          !intakeEvents ||
+          event.defaultPrevented ||
+          disabled ||
+          !onAttachmentsChange
+        )
+          return;
+        const files = Array.from(event.dataTransfer.files ?? []);
+        if (files.length) {
+          event.preventDefault();
+          addAttachments(files, "drop");
+        }
+      }}
+    >
       {entries.length > 0 ? (
         // Preserve list semantics when Core removes list markers.
         // eslint-disable-next-line jsx-a11y/no-redundant-roles
@@ -133,76 +197,114 @@ export const ComposerShell = forwardRef<HTMLDivElement, ComposerShellProps>(
           className="chat-composer-attachments"
           aria-label="Attachments"
         >
-          {entries.map(({ file, id }) => (
-            <li key={id} className="chat-composer-attachment">
-              {renderAttachment ? (
-                <AttachmentContent
-                  file={file}
-                  renderAttachment={renderAttachment}
-                  context={{
-                    remove: () => removeAttachment(id),
-                    disabled: disabled || !onAttachmentsChange,
-                  }}
-                />
-              ) : (
-                <>
-                  <AttachmentPreview file={file} />
-                  <span className="chat-composer-filename" title={file.name}>
-                    {file.name}
-                  </span>
-                  {onAttachmentsChange ? (
-                    <Button
-                      type="button"
-                      size="sm"
-                      color="base"
-                      appearance="ghost"
-                      disabled={disabled}
-                      aria-label={`Remove ${file.name}`}
-                      onClick={() => removeAttachment(id)}
-                    >
-                      Remove
-                    </Button>
-                  ) : null}
-                </>
-              )}
-            </li>
-          ))}
+          {entries.map(
+            ({
+              file,
+              id,
+              name: entryName,
+              previewUrl,
+              state,
+              status,
+              progress,
+              retry,
+              cancel,
+            }) => {
+              const name = file?.name ?? entryName ?? "Attachment";
+              return (
+                <li
+                  key={id}
+                  className="chat-composer-attachment"
+                  data-state={state}
+                >
+                  {renderAttachment && file ? (
+                    <AttachmentContent
+                      file={file}
+                      renderAttachment={renderAttachment}
+                      context={{
+                        remove: () => removeAttachment(id),
+                        disabled: disabled || !onAttachmentsChange,
+                      }}
+                    />
+                  ) : (
+                    <>
+                      {previewUrl ? (
+                        <img src={previewUrl} alt={name} />
+                      ) : file ? (
+                        <AttachmentPreview file={file} />
+                      ) : null}
+                      <div className="chat-composer-attachment-info">
+                        <span className="chat-composer-filename" title={name}>
+                          {name}
+                        </span>
+                        {status ? (
+                          <span className="chat-composer-description">
+                            {status}
+                          </span>
+                        ) : null}
+                        {progress !== undefined ? (
+                          <progress
+                            value={progress}
+                            max={1}
+                            aria-label={`Preparing ${name}`}
+                          />
+                        ) : null}
+                      </div>
+                      {retry ? (
+                        <Button
+                          type="button"
+                          size="sm"
+                          disabled={disabled}
+                          onClick={retry}
+                          aria-label={`Retry ${name}`}
+                        >
+                          Retry
+                        </Button>
+                      ) : null}
+                      {cancel ? (
+                        <Button
+                          type="button"
+                          size="sm"
+                          disabled={disabled}
+                          onClick={cancel}
+                          aria-label={`Cancel ${name}`}
+                        >
+                          Cancel
+                        </Button>
+                      ) : null}
+                      {onAttachmentsChange ? (
+                        <Button
+                          type="button"
+                          size="sm"
+                          color="base"
+                          appearance="ghost"
+                          disabled={disabled}
+                          aria-label={`Remove ${name}`}
+                          onClick={() => removeAttachment(id)}
+                        >
+                          Remove
+                        </Button>
+                      ) : null}
+                    </>
+                  )}
+                </li>
+              );
+            },
+          )}
         </ul>
       ) : null}
       {editor}
+      {completionHeader}
+      {completionStatus}
       {showCompletion ? (
-        <ul
-          id={`${composerId}-completions`}
-          role="listbox"
-          aria-label={completion?.label ?? "Suggestions"}
-          className="chat-composer-completions"
-        >
-          {candidates.map((item, index) => (
-            <li
-              key={item.id}
-              id={`${composerId}-option-${index}`}
-              role="option"
-              aria-selected={item.id === active?.id}
-              aria-disabled={item.disabled || undefined}
-              onMouseDown={(event) => event.preventDefault()}
-              onClick={() => selectCompletion(item)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                  event.preventDefault();
-                  selectCompletion(item);
-                }
-              }}
-            >
-              <span>{item.label}</span>
-              {item.description ? (
-                <span className="chat-composer-description">
-                  {item.description}
-                </span>
-              ) : null}
-            </li>
-          ))}
-        </ul>
+        <CompletionList
+          composerId={composerId}
+          label={completion?.label ?? "Suggestions"}
+          candidates={candidates}
+          activeId={active?.id}
+          onSelect={selectCompletion}
+        />
       ) : null}
+      {statusContent}
       {hasError ? (
         <div
           id={`${composerId}-error`}
@@ -227,7 +329,7 @@ export const ComposerShell = forwardRef<HTMLDivElement, ComposerShellProps>(
               onChange={(event) => {
                 const files = Array.from(event.currentTarget.files ?? []);
                 event.currentTarget.value = "";
-                if (files.length > 0) addAttachments(files);
+                if (files.length > 0) addAttachments(files, "picker");
               }}
             />
             <Button

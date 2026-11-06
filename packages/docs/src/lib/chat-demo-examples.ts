@@ -1,7 +1,22 @@
 import chatContractSource from "../components/ChatContractPreviews.tsx?raw";
+import chatSessionSource from "../components/ChatSessionPreviews.tsx?raw";
 
 // Authored snippets mirror the live public React APIs.
 export const chatDemoExamples = [
+  {
+    title: "Semantic Composer and Recovery",
+    description:
+      "Controlled semantic plain editor with a typed in-memory host. Try rejected or lost responses, reconciliation, explicit draft save and editor remount, attachment preparation failure/retry, and independent Stop. No backend execution or durable persistence is claimed; the existing string-based Composer remains available below.",
+    code: chatSessionSource,
+    source: "authored",
+  },
+  {
+    title: "Rich Composer and Authoritative Queue",
+    description:
+      "Optional /chat/rich editor with atomic references, attributed quotes, claimed prompt/action commands and editable skills. Start a demo turn, send follow-ups or steer, then edit/remove/promote confirmed queue items. Model selection changes only after host acknowledgment; the restricted choice demonstrates rejection. Copy/paste and undo stay editor-owned. The fake host stores only page-lifetime memory.",
+    code: chatSessionSource,
+    source: "authored",
+  },
   {
     title: "Agent Answers and Activity",
     description:

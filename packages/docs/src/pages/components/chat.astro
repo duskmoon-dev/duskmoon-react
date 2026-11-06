@@ -2,11 +2,36 @@
 import ComponentDocPage from "../../components/ComponentDocPage.astro";
 import { getComponentDoc } from "../../lib/component-docs";
 
-const component = getComponentDoc("chat");
+const existing = getComponentDoc("chat");
 
-if (!component) {
+if (!existing) {
   throw new Error("Missing component docs for chat");
 }
+
+const component = {
+  ...existing,
+  pageContent: {
+    ...existing.pageContent,
+    usageNotes: [
+      ...existing.pageContent.usageNotes,
+      {
+        title: "Choose the editor contract",
+        description:
+          "Keep Chat.Composer for controlled string/File inputs. ChatSessionComposer adds portable documents and host receipts. RichChatComposer is available only from @duskmoon-dev/components/chat/rich; root and /chat imports do not load the editor runtime.",
+      },
+      {
+        title: "Controlled updates, history and clipboard",
+        description:
+          "Echo editor updates unchanged to preserve selection and undo. Explicit replace, restore, scope-switch and clear updates reset rich history. Remounts restore content, not undo. Rich copy includes portable semantic data and plain text; external paste uses text. Mixed file/text paste preserves the text and applies the same file intake policy.",
+      },
+      {
+        title: "The host owns authority and recovery",
+        description:
+          "Keep the recovery owner and optional draft adapter stable beyond editor mounts. Pending/unknown submissions retain their immutable identity; reconcile before any explicitly authorized retry. Hosts authorize references and handles, prepare files, admit prompts, execute commands, confirm queue projections and acknowledge settings. The demos simulate these transitions in memory and provide no durable delivery guarantee.",
+      },
+    ],
+  },
+};
 ---
 
 <ComponentDocPage component={component} />

@@ -89,6 +89,9 @@ const targetCategories: Record<string, DocCategoryId> = {
   "dm-tabs": "navigation",
 
   "auto-complete": "data-entry",
+  "chat-session-composer": "data-entry",
+  "rich-chat-composer": "data-entry",
+  "composer-settings": "data-entry",
   cascader: "data-entry",
   checkbox: "data-entry",
   "color-picker": "data-entry",
@@ -118,6 +121,7 @@ const targetCategories: Record<string, DocCategoryId> = {
   calendar: "data-display",
   carousel: "data-display",
   chat: "data-display",
+  "chat-authoritative-queue": "data-display",
   descriptions: "data-display",
   image: "data-display",
   list: "data-display",

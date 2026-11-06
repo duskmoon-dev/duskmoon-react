@@ -100,8 +100,91 @@ copy and freeze portable JSON. `exportComposerText` and `exportComposerMarkdown`
 project references through `plainText` and retain quote attribution. Invalid
 snapshots throw instead of silently discarding unsupported fields. Portable
 examples are published at `@duskmoon-dev/components/chat/contracts.v1.json`.
-These contracts are integration groundwork; the optional rich editor, upload
-transport, provider lookup and authoritative queue mutation remain separate work.
+`ChatSessionComposer` uses those contracts with a controlled semantic document,
+application-owned `ComposerSessionHost`, scope and draft key. The original
+string/File-based `Chat.Composer` remains available with its existing ref and
+callbacks. The optional editor is imported separately:
+
+```tsx
+import { useState } from "react";
+import type {
+  ComposerDocumentUpdate,
+  ComposerScope,
+  ComposerSessionHost,
+} from "@duskmoon-dev/components/chat";
+import { RichChatComposer } from "@duskmoon-dev/components/chat/rich";
+
+export function PromptBox({
+  host,
+  scope,
+}: {
+  host: ComposerSessionHost;
+  scope: ComposerScope;
+}) {
+  const [value, setValue] = useState<ComposerDocumentUpdate>({
+    document: { schemaVersion: 1, content: [{ type: "text", text: "" }] },
+    revision: 0,
+    origin: "replace",
+    originId: "initial-draft",
+  });
+  return (
+    <RichChatComposer
+      value={value}
+      onDocumentChange={setValue}
+      scope={scope}
+      draftKey="main-prompt"
+      host={host}
+    />
+  );
+}
+```
+
+Use `ChatSessionComposer` from root or `/chat` with the same props for text-only
+semantic drafts. RichChatComposer is available only from `/chat/rich`. Keep a
+single compatible Lexical runtime in consumers that also import Lexical directly;
+ordinary root and `/chat` imports do not initialize it.
+
+Echo each `onDocumentChange` update unchanged. The rich editor retains selection
+and undo for echoes; explicit replace, restore, scope switch and clear operations
+reset its history. Remounts restore semantic content, not undo history. Its ref
+inserts references, quotes, text and claimed commands without exposing Lexical.
+References and quotes are atomic. Claimed command identity stays distinct from
+editable skill text. Rich copy/cut includes portable semantic content and plain
+text; rich paste creates fresh occurrence IDs, while external paste uses plain
+text. Mixed file/text paste preserves text and validates files through the shared
+picker/paste/drop policy. Unsupported content is retained for recovery rather
+than silently flattened if the editor cannot load or a draft is incompatible.
+
+Keep `host.recovery = createComposerRecoveryOwner()` outside the editor's mount
+lifetime. Pending and unknown attempts retain the exact immutable submission
+snapshot and ID. An accepted prompt reports actual delivery and persistence;
+an accepted command returns a result without claiming a queued prompt or turn.
+Unknown outcomes preserve the draft: reconcile using `host.reconcile` before any
+explicit `host.authorizeRetry` of the same snapshot. Admission is not completed
+generation. Stop is a separate `onStop` action and remains available while file
+preparation or admission is pending. Host capabilities determine which active-turn
+intents and controls are available.
+
+Optional `attachmentOptions` validates and prepares each file occurrence, with
+cancellation, progress, failure and retry. Only ready portable handles enter a
+submission; runtime `File` objects and preview URLs stay out of saved documents.
+Recovered files require reattachment unless the host explicitly confirms handle
+recovery. A stable optional `draftAdapter` loads scoped drafts and supports explicit
+Save draft; storage durability, retention and coordination with other writers
+belong to the application. The UI never automatically overwrites incompatible
+stored content.
+
+`providers` supply scoped asynchronous candidates, disabled reasons, directory
+drill-down and insert/invoke actions. The host resolves and authorizes references,
+quote provenance, commands and attachment handles; portable validity is not
+authorization. `ChatAuthoritativeQueue` renders confirmed projections and requests
+revision-checked edit/remove/promote mutations. Apply canonical projections through
+`onProjection`; an optimistic click does not confirm membership or order.
+`ComposerSettings` likewise keeps values controlled until the host acknowledges
+and applies a request. The host owns transport, model execution, uploads,
+idempotency, persistence and execution policy. The Chat documentation includes
+interactive fake-host examples with real local state transitions; their memory
+storage survives editor remounts only and makes no durable delivery claim.
 
 Core 1.21.0 still has a known Moonlight contrast gap for neutral outlined/ghost
 labels ([duskmoonui#78](https://github.com/duskmoon-dev/duskmoonui/issues/78)).
