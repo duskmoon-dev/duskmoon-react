@@ -1,5 +1,11 @@
 # @duskmoon-dev/art-components
 
+## 0.5.7
+
+### Patch Changes
+
+- Keep the fixed workspace release group synchronized; CSS Art remains at 1.21.0.
+
 ## 0.5.6
 
 ### Patch Changes

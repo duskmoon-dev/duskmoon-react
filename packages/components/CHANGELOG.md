@@ -1,5 +1,11 @@
 # @duskmoon-dev/components
 
+## 0.5.7
+
+### Patch Changes
+
+- Synchronize the fixed workspace lockfile versions and rebuild the existing Core 1.21.0 integration with the corrected browser CI configuration. No additional upstream dependency or public API changes.
+
 ## 0.5.6
 
 ### Patch Changes
