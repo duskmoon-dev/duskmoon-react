@@ -1,5 +1,12 @@
 # nextjs-15-smoke
 
+## 0.6.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @duskmoon-dev/components@0.6.1
+
 ## 0.6.0
 
 ### Patch Changes

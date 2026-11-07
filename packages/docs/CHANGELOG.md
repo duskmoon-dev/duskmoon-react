@@ -1,5 +1,22 @@
 # @duskmoon-dev/docs
 
+## 0.6.1
+
+### Patch Changes
+
+- Update Core to 1.21.1 and refine the Chat composers with compact controls,
+  centered icon buttons, smaller padding, integrated editor styling, native
+  completion menus, and slash skill and command examples. Preserve controlled
+  drafts, attachment recovery, and host-owned admission and execution.
+
+  Use a compact documentation appbar with a theme dropdown. Collapse example
+  source, API type definitions, and JSON schema snippets by default, with native
+  keyboard-accessible disclosure controls.
+
+- Updated dependencies
+  - @duskmoon-dev/components@0.6.1
+  - @duskmoon-dev/art-components@0.6.1
+
 ## 0.6.0
 
 ### Patch Changes
