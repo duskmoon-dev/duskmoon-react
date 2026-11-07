@@ -1,5 +1,17 @@
 # @duskmoon-dev/components
 
+## 0.6.2
+
+### Patch Changes
+
+- Scope React Radio wrapper styles to labels so Core native radio inputs retain
+  their border and checked indicator when both stylesheets are loaded.
+
+  Generate default Composer submission UUIDs with secure random bytes when
+  `crypto.randomUUID` is unavailable, including LAN HTTP origins. Preserve
+  immutable submission snapshots and reuse the original identity on retries in
+  both plain and rich composers.
+
 ## 0.6.1
 
 ### Patch Changes
