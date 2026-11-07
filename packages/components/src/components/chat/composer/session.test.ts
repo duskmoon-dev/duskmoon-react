@@ -39,7 +39,10 @@ function accepted(snapshot: ComposerSubmission): ComposerReceipt {
       };
 }
 
-function setup(overrides: Partial<ComposerSessionContext> = {}) {
+function setup(
+  overrides: Partial<ComposerSessionContext> = {},
+  identity?: Parameters<typeof createComposerSessionController>[1],
+) {
   const submissions: ComposerSubmission[] = [];
   const cleared: ComposerSubmission[] = [];
   const clearedAttachments: ComposerSubmission["attachments"][] = [];
@@ -79,10 +82,13 @@ function setup(overrides: Partial<ComposerSessionContext> = {}) {
     ...overrides,
   };
   let count = 0;
-  const controller = createComposerSessionController(context, {
-    instanceId: "editor-1",
-    nextSubmissionId: () => `submission-${++count}`,
-  });
+  const controller = createComposerSessionController(
+    context,
+    identity ?? {
+      instanceId: "editor-1",
+      nextSubmissionId: () => `submission-${++count}`,
+    },
+  );
   const host = context.host as {
     -readonly [
       K in keyof ComposerSessionContext["host"]
@@ -100,6 +106,71 @@ function setup(overrides: Partial<ComposerSessionContext> = {}) {
 }
 
 describe("Composer receipt and recovery lifecycle", () => {
+  test("default submission IDs prefer native randomUUID when available", async () => {
+    const id = "723168b1-6adf-42f0-8cb5-202ed3705f54";
+    const descriptor = Object.getOwnPropertyDescriptor(crypto, "randomUUID");
+    let calls = 0;
+    Object.defineProperty(crypto, "randomUUID", {
+      configurable: true,
+      value: () => {
+        calls++;
+        return id;
+      },
+    });
+    try {
+      const s = setup({}, { instanceId: "editor-1" });
+      await s.controller.submit();
+      expect(calls).toBe(1);
+      expect(s.submissions[0].clientSubmissionId).toBe(id);
+      expect(s.recovery.getSnapshot()[0].status).toBe("accepted");
+    } finally {
+      if (descriptor) Object.defineProperty(crypto, "randomUUID", descriptor);
+      else Reflect.deleteProperty(crypto, "randomUUID");
+    }
+  });
+
+  test("default IDs work without randomUUID and retries preserve the original identity", async () => {
+    const descriptor = Object.getOwnPropertyDescriptor(crypto, "randomUUID");
+    Object.defineProperty(crypto, "randomUUID", {
+      configurable: true,
+      value: undefined,
+    });
+    try {
+      const s = setup({}, { instanceId: "editor-1" });
+      const sent: ComposerSubmission[] = [];
+      s.host.submit = async (snapshot) => {
+        sent.push(snapshot);
+        if (sent.length === 1) throw new Error("Uncertain delivery");
+        return accepted(snapshot);
+      };
+      await s.controller.submit();
+      const original = sent[0];
+      expect(original.clientSubmissionId).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
+      );
+      expect(s.recovery.getSnapshot()[0].status).toBe("unknown");
+      expect(Object.isFrozen(original)).toBe(true);
+      s.host.authorizeRetry = async () => true;
+      await s.controller.retry(original.clientSubmissionId);
+      expect(sent).toHaveLength(2);
+      expect(sent[1]).toEqual(original);
+      expect(s.recovery.getSnapshot()[0].status).toBe("accepted");
+      expect(s.cleared).toHaveLength(1);
+
+      s.controller.update({ ...s.context, revision: 2 });
+      await s.controller.submit();
+      expect(sent).toHaveLength(3);
+      expect(sent[2].clientSubmissionId).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
+      );
+      expect(sent[2].clientSubmissionId).not.toBe(original.clientSubmissionId);
+      expect(s.cleared).toHaveLength(2);
+    } finally {
+      if (descriptor) Object.defineProperty(crypto, "randomUUID", descriptor);
+      else Reflect.deleteProperty(crypto, "randomUUID");
+    }
+  });
+
   test("captures a detached immutable snapshot and recovery owner before host invocation", async () => {
     const s = setup();
     s.host.submit = async (snapshot) => {

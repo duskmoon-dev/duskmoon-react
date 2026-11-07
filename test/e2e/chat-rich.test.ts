@@ -46,6 +46,36 @@ async function empty(root: Locator) {
 }
 
 for (const mode of ["plain", "rich"] as const) {
+  test(`default ${mode} submission succeeds without crypto.randomUUID`, async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(crypto, "randomUUID", {
+        configurable: true,
+        value: undefined,
+      });
+    });
+    const root = await demo(page, mode);
+    expect(
+      await page.evaluate(() => ({
+        randomUUID: typeof crypto.randomUUID,
+        getRandomValues: typeof crypto.getRandomValues,
+      })),
+    ).toEqual({ randomUUID: "undefined", getRandomValues: "function" });
+    const message = `${mode} default submission without randomUUID`;
+    await editor(root).fill(message);
+    await root.getByRole("button", { name: "Send", exact: true }).click();
+    await expect(root.getByRole("log", { includeHidden: true })).toContainText(
+      `Prompt admitted: ${message}`,
+    );
+    await expect
+      .poll(async () => (await document(root)).content)
+      .toEqual([{ type: "text", text: "" }]);
+    if (mode === "plain") await expect(editor(root)).toHaveValue("");
+    else await expect(editor(root)).toHaveText("");
+    await expect(root.getByRole("alert")).toHaveCount(0);
+  });
+
   test(`native mixed text/image paste preserves text and prepares the file in ${mode} mode`, async ({
     page,
     context,
