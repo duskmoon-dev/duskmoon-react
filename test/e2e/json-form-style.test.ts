@@ -54,7 +54,11 @@ test("generated form uses readable spacing in light and dark themes", async ({
   const lightSurface = await preview.evaluate(
     (element) => getComputedStyle(element).backgroundColor,
   );
-  await page.getByRole("button", { name: "Light" }).click();
+  await page.getByRole("button", { name: /^Theme preference:/ }).click();
+  await page
+    .locator("#docs-theme-preference")
+    .getByText("Dark", { exact: true })
+    .click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "moonlight");
   const darkSurface = await preview.evaluate(
     (element) => getComputedStyle(element).backgroundColor,
@@ -208,7 +212,11 @@ test("switch and choice groups keep theme styling and readable spacing on phones
   const lightSurface = await preview.evaluate(
     (element) => getComputedStyle(element).backgroundColor,
   );
-  await page.getByRole("button", { name: "Light" }).click();
+  await page.getByRole("button", { name: /^Theme preference:/ }).click();
+  await page
+    .locator("#docs-theme-preference")
+    .getByText("Dark", { exact: true })
+    .click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "moonlight");
   const darkSurface = await preview.evaluate(
     (element) => getComputedStyle(element).backgroundColor,

@@ -11,7 +11,10 @@ const sections = [
 ] as const;
 
 async function expectActivePrimaryLink(page: Page, name: string) {
-  const primary = page.getByRole("navigation", { name: "Primary" });
+  const primary = page.getByRole("navigation", {
+    name: "Primary",
+    includeHidden: true,
+  });
   const currentLinks = primary.locator('a[aria-current="page"]');
 
   await expect(currentLinks).toHaveCount(1);
@@ -324,7 +327,7 @@ test("search filters the Components sidebar and catalog, and Clear restores both
   await expect.poll(() => visibleCount(cards)).toBe(initialCardCount);
 });
 
-test("mobile primary links stay visible and section changes do not overflow", async ({
+test("mobile primary links open from the native menu and section changes do not overflow", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
@@ -332,6 +335,7 @@ test("mobile primary links stay visible and section changes do not overflow", as
 
   const primary = page.getByRole("navigation", { name: "Primary" });
   for (const section of sections) {
+    await page.getByRole("button", { name: "Navigation menu" }).click();
     const link = primary.getByRole("link", { name: section.name, exact: true });
     await expect(link).toBeVisible();
     const box = await link.boundingBox();

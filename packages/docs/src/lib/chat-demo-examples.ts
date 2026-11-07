@@ -4,9 +4,16 @@ import chatSessionSource from "../components/ChatSessionPreviews.tsx?raw";
 // Authored snippets mirror the live public React APIs.
 export const chatDemoExamples = [
   {
+    title: "Compact Composer and Model Menu",
+    description:
+      "Core 1.21.1 composition with an Add menu, approval choice, model/effort menus and ready-image thumbnails. The primary action sends a draft or stops a running turn. Choices wait for the in-memory host to acknowledge them; this demo changes no real permissions.",
+    code: chatSessionSource,
+    source: "authored",
+  },
+  {
     title: "Semantic Composer and Recovery",
     description:
-      "Controlled semantic plain editor with a typed in-memory host. Try rejected or lost responses, reconciliation, explicit draft save and editor remount, attachment preparation failure/retry, and independent Stop. No backend execution or durable persistence is claimed; the existing string-based Composer remains available below.",
+      "Controlled semantic plain editor with a typed in-memory host. Use the Add menu for explicit draft save, editor remount and demo controls. Try admission recovery, attachment preparation retry and follow-ups during a running turn. The existing string-based Composer remains available below.",
     code: chatSessionSource,
     source: "authored",
   },

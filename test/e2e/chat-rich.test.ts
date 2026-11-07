@@ -1,5 +1,11 @@
 import { test, expect, type Locator, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import {
+  openAdd,
+  openControls,
+  demoAction,
+  chooseModel,
+} from "./chat-demo.helpers";
 import type { ComposerDocument } from "../../packages/components/src/components/chat/Composer.types";
 
 const base = process.env.DOCS_TEST_URL ?? "http://127.0.0.1:4334";
@@ -15,7 +21,11 @@ async function demo(page: Page, mode: "plain" | "rich" = "rich") {
     }),
   ).toBeVisible();
   await expect(
-    root.getByRole("button", { name: "Save draft", exact: true }),
+    root.getByRole("button", {
+      name: "Save draft",
+      exact: true,
+      includeHidden: true,
+    }),
   ).toBeEnabled();
   return root;
 }
@@ -28,9 +38,7 @@ async function document(root: Locator): Promise<ComposerDocument> {
   );
 }
 async function empty(root: Locator) {
-  await root
-    .getByRole("button", { name: "Replace with empty document" })
-    .click();
+  await demoAction(root, "Replace with empty document");
   await expect
     .poll(async () => (await document(root)).content)
     .toEqual([{ type: "text", text: "" }]);
@@ -44,6 +52,7 @@ for (const mode of ["plain", "rich"] as const) {
   }) => {
     await context.grantPermissions(["clipboard-read", "clipboard-write"]);
     const root = await demo(page, mode);
+    await openControls(root);
     await root.getByLabel("Fail first preparation").uncheck();
     await empty(root);
     await page.evaluate(async () => {
@@ -85,10 +94,8 @@ test("rich reference and quote transactions preserve identity through caret dele
   const root = await demo(page);
   await empty(root);
   await editor(root).pressSequentially("Before ");
-  await root
-    .getByRole("button", { name: "Insert reference", exact: true })
-    .click();
-  await root.getByRole("button", { name: "Insert quote", exact: true }).click();
+  await demoAction(root, "Insert reference");
+  await demoAction(root, "Insert quote");
   const before = await document(root);
   expect(before.content.map((node) => node.type)).toEqual([
     "text",
@@ -124,10 +131,8 @@ test("native clipboard round trip keeps ordered semantic nodes and creates fresh
   const root = await demo(page);
   await empty(root);
   await editor(root).pressSequentially("Source ");
-  await root
-    .getByRole("button", { name: "Insert reference", exact: true })
-    .click();
-  await root.getByRole("button", { name: "Insert quote", exact: true }).click();
+  await demoAction(root, "Insert reference");
+  await demoAction(root, "Insert quote");
   const before = await document(root);
   await editor(root).focus();
   await editor(root).press("Control+a");
@@ -168,10 +173,8 @@ test("native partial-range cut and replacement across atomic nodes are lossless 
   const root = await demo(page);
   await empty(root);
   await editor(root).pressSequentially("Prefix ");
-  await root
-    .getByRole("button", { name: "Insert reference", exact: true })
-    .click();
-  await root.getByRole("button", { name: "Insert quote", exact: true }).click();
+  await demoAction(root, "Insert reference");
+  await demoAction(root, "Insert quote");
   const before = await document(root);
   async function selectTail() {
     await editor(root).focus();
@@ -197,7 +200,9 @@ test("native partial-range cut and replacement across atomic nodes are lossless 
     .toEqual([{ type: "text", text: "PreX" }, before.content[2]]);
   await editor(root).press("Control+z");
   await expect.poll(() => document(root)).toEqual(before);
-  await expect(root.getByRole("log")).not.toContainText("admitted");
+  await expect(
+    root.getByRole("log", { includeHidden: true }),
+  ).not.toContainText("admitted");
 });
 
 test("claimed command identity survives empty arguments, token deletion and undo; skills stay editable", async ({
@@ -205,7 +210,7 @@ test("claimed command identity survives empty arguments, token deletion and undo
 }) => {
   const root = await demo(page);
   await empty(root);
-  await root.getByRole("button", { name: "Claim /help command" }).click();
+  await demoAction(root, "Claim /help command");
   await editor(root).pressSequentially(" argument");
   await editor(root).press("Control+Backspace");
   expect((await document(root)).command).toEqual({
@@ -222,12 +227,14 @@ test("claimed command identity survives empty arguments, token deletion and undo
   await empty(root);
   await editor(root).pressSequentially("/summ");
   await expect(
-    root.getByRole("option", { name: /Editable skills: \/summarize/ }),
+    root.getByRole("option", { name: /Skills: \/summarize/ }),
   ).toBeVisible();
   await editor(root).press("Enter");
   expect((await document(root)).command).toBeUndefined();
   await expect(editor(root)).toContainText("Summarize the changes");
-  await expect(root.getByRole("log")).not.toContainText("admitted");
+  await expect(
+    root.getByRole("log", { includeHidden: true }),
+  ).not.toContainText("admitted");
 });
 
 test("reference completion consumes Enter and a non-prompt command returns only its action result", async ({
@@ -244,24 +251,31 @@ test("reference completion consumes Enter and a non-prompt command returns only 
   );
   await editor(root).press("Enter");
   await expect(root.locator('[data-composer-kind="reference"]')).toHaveCount(1);
-  await expect(root.getByRole("log")).not.toContainText("admitted");
+  await expect(
+    root.getByRole("log", { includeHidden: true }),
+  ).not.toContainText("admitted");
   await empty(root);
-  await root.getByRole("button", { name: "Claim /help command" }).click();
+  await demoAction(root, "Claim /help command");
   await editor(root).press("Control+Enter");
   await expect(
     root.getByText("Command completed", { exact: true }),
-  ).toBeVisible();
-  await expect(root.getByRole("log")).toContainText("Command result:");
-  await expect(root.getByRole("log")).not.toContainText("Prompt admitted");
+  ).toHaveClass("sr-only");
+  await expect(root.getByRole("log", { includeHidden: true })).toContainText(
+    "Command result:",
+  );
   await expect(
-    root.getByText(/Host: idle; model: standard; queue revision: 0/),
-  ).toBeVisible();
+    root.getByRole("log", { includeHidden: true }),
+  ).not.toContainText("Prompt admitted");
+  await expect(
+    root.getByRole("status").filter({ hasText: /^Host:/ }),
+  ).toHaveText("Host: idle; model: standard; queue revision: 0.");
 });
 
 test("unknown admission retains its snapshot and reconciliation preserves edits made while pending", async ({
   page,
 }) => {
   const root = await demo(page);
+  await openControls(root);
   await root.getByLabel("Admission outcome").selectOption("unknown");
   await empty(root);
   await editor(root).pressSequentially("Original prompt");
@@ -283,7 +297,9 @@ test("unknown admission retains its snapshot and reconciliation preserves edits 
     root.getByRole("region", { name: "Preserved draft" }),
   ).toContainText("Original prompt");
   await root.getByRole("button", { name: "Check submission status" }).click();
-  await expect(root.getByRole("log")).toContainText("Reconciled: accepted");
+  await expect(root.getByRole("log", { includeHidden: true })).toContainText(
+    "Reconciled: accepted",
+  );
   expect((await document(root)).content).toEqual([
     { type: "text", text: "Original prompt with later edits" },
   ]);
@@ -311,9 +327,12 @@ test("preparation failure/retry and explicit draft remount retain recoverable fi
   await expect(
     root.getByRole("button", { name: "Send", exact: true }),
   ).toBeEnabled();
+  await openAdd(root);
   await root.getByRole("button", { name: "Save draft", exact: true }).click();
-  await expect(root.getByText("Draft saved by host storage.")).toBeVisible();
-  await root.getByRole("button", { name: "Remount editor" }).click();
+  await expect(root.getByText("Draft saved by host storage.")).toHaveClass(
+    "sr-only",
+  );
+  await demoAction(root, "Remount editor");
   await expect(
     root.getByText("Select this file again to restore it", { exact: true }),
   ).toBeVisible();
@@ -329,8 +348,48 @@ test("queue actions and model choices display authoritative acknowledgments", as
   page,
 }) => {
   const root = await demo(page, "plain");
-  await root.getByRole("button", { name: "Start demo turn" }).click();
+  await demoAction(root, "Start demo turn");
   await editor(root).fill("Queue this follow-up");
+  await root
+    .getByRole("button", { name: "Send follow-up", exact: true })
+    .click();
+  await expect(root.locator(".chat-queue-item")).toHaveCount(1);
+  for (const label of ["Edit", "Steer", "Remove"]) {
+    const action = root.getByRole("button", {
+      name: `${label} waiting message 1`,
+      exact: true,
+    });
+    await expect(action).toHaveAttribute("title", `${label} waiting message 1`);
+    await expect(action.locator('svg[aria-hidden="true"]')).toHaveCount(1);
+    expect(await action.textContent()).toBe("");
+  }
+  const edit = root.getByRole("button", { name: "Edit waiting message 1" });
+  await edit.click();
+  await root
+    .getByRole("textbox", { name: "Queued message" })
+    .fill("Cancelled edit");
+  await root.getByRole("button", { name: "Cancel", exact: true }).click();
+  await expect(root.locator(".chat-queue-content")).toHaveText(
+    "Queue this follow-up",
+  );
+  await edit.click();
+  await root
+    .getByRole("textbox", { name: "Queued message" })
+    .fill("Revised follow-up");
+  await root.getByRole("button", { name: "Save queued message" }).click();
+  await expect(root.locator(".chat-queue-content")).toHaveText(
+    "Queue this follow-up",
+  );
+  await expect(root.locator(".chat-queue-content")).toHaveText(
+    "Revised follow-up",
+  );
+  await root.getByRole("button", { name: "Steer waiting message 1" }).click();
+  await expect(root.locator(".chat-queue-item")).toHaveCount(1);
+  await expect(root.locator(".chat-queue-item")).toHaveCount(0);
+  await expect(
+    root.getByRole("log", { name: "Demo host events", includeHidden: true }),
+  ).toContainText("Queue promote acknowledged");
+  await editor(root).fill("Remove this follow-up");
   await root
     .getByRole("button", { name: "Send follow-up", exact: true })
     .click();
@@ -340,29 +399,25 @@ test("queue actions and model choices display authoritative acknowledgments", as
     .click();
   await expect(root.locator(".chat-queue-item")).toHaveCount(1);
   await expect(root.locator(".chat-queue-item")).toHaveCount(0);
-  await root.getByRole("button", { name: "Model", exact: true }).click();
-  await root
-    .getByRole("option", { name: "Fast demo model", exact: true })
-    .click();
+  const trigger = root.getByRole("button", { name: /^Model settings:/ });
+  await chooseModel(root, "Fast demo model");
+  await expect(trigger).toHaveAccessibleName(
+    "Model settings: Standard demo model, Medium",
+  );
+  await expect(trigger).toHaveAccessibleName(
+    "Model settings: Fast demo model, Medium",
+  );
+  await chooseModel(root, "Restricted model (host rejects)");
   await expect(
-    root.getByRole("button", { name: "Model", exact: true }),
-  ).toContainText("Standard demo model");
-  await expect(
-    root.getByRole("button", { name: "Model", exact: true }),
-  ).toContainText("Fast demo model");
-  await root.getByRole("button", { name: "Model", exact: true }).click();
-  await root
-    .getByRole("option", { name: "Restricted model (host rejects)" })
-    .click();
-  await expect(
-    root.getByText(
-      "Demo host declined this model; the current selection is retained.",
-      { exact: true },
-    ),
-  ).toBeVisible();
-  await expect(
-    root.getByRole("button", { name: "Model", exact: true }),
-  ).toContainText("Fast demo model");
+    root
+      .getByRole("group", { name: "Composer model settings", exact: true })
+      .getByRole("status"),
+  ).toContainText(
+    "Demo host declined this model; the current selection is retained.",
+  );
+  await expect(trigger).toHaveAccessibleName(
+    "Model settings: Fast demo model, Medium",
+  );
 });
 
 test("external document replacement resets history while controlled echoes retain undo", async ({
@@ -388,9 +443,7 @@ test("rich shell preserves narrow layout, focus and accessibility in both themes
     (element as HTMLElement).style.width = "300px";
   });
   await empty(root);
-  await root
-    .getByRole("button", { name: "Insert reference", exact: true })
-    .click();
+  await demoAction(root, "Insert reference");
   await editor(root).pressSequentially(" word".repeat(30));
   expect(
     await root

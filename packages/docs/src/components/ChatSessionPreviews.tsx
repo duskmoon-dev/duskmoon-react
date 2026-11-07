@@ -1,8 +1,14 @@
-import React, { useRef, useState, useSyncExternalStore } from "react";
+import React, {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import {
   ChatAuthoritativeQueue,
   ChatSessionComposer,
-  ComposerSettings,
+  Button,
   createComposerRecoveryOwner,
   exportComposerText,
   type ChatSessionComposerHandle,
@@ -21,7 +27,6 @@ import {
   type ComposerReceipt,
   type ComposerRuntimeState,
   type ComposerSessionHost,
-  type ComposerSetting,
   type ComposerSettingRequest,
   type ComposerSettingResult,
   type ComposerSubmission,
@@ -44,6 +49,8 @@ interface DemoState {
   readonly queue: ComposerQueueProjection;
   readonly settingsRevision: number;
   readonly model: string;
+  readonly effort: string;
+  readonly approval: string;
   readonly events: readonly string[];
 }
 
@@ -66,6 +73,12 @@ function pause(signal: AbortSignal) {
   });
 }
 
+const settingsValues: Record<string, readonly string[]> = {
+  model: ["standard", "fast"],
+  effort: ["low", "medium", "high", "max"],
+  approval: ["ask", "auto", "full"],
+};
+
 /** Stable per-preview host: memory only, lost on page reload. */
 function createDemoHost() {
   const recovery = createComposerRecoveryOwner();
@@ -81,6 +94,8 @@ function createDemoHost() {
     queue: { protocolVersion: 1, scope, revision: 0, items: [] },
     settingsRevision: 0,
     model: "standard",
+    effort: "medium",
+    approval: "ask",
     events: [],
   };
   function publish(next: Partial<DemoState>, event?: string) {
@@ -347,7 +362,8 @@ function createDemoHost() {
       };
       if (
         request.expectedRevision !== state.settingsRevision ||
-        request.value === "restricted"
+        request.value === "restricted" ||
+        !(settingsValues[request.settingId] ?? []).includes(request.value)
       ) {
         return {
           ...identity,
@@ -362,9 +378,11 @@ function createDemoHost() {
       publish(
         {
           settingsRevision: result.revision,
-          ...(result.outcome === "accepted" ? { model: result.value } : {}),
+          ...(result.outcome === "accepted"
+            ? { [result.settingId]: result.value }
+            : {}),
         },
-        `Model change ${result.outcome}.`,
+        `${result.settingId} change ${result.outcome}.`,
       );
     },
   };
@@ -374,6 +392,8 @@ const providers: readonly ComposerCompletionProvider[] = [
   {
     providerId: "demo-files",
     label: "Repository references",
+    icon: <DemoIcon name="reference" />,
+    sourceLabel: "Demo",
     trigger: { text: "@", position: "word" },
     async query(request, signal) {
       await pause(signal);
@@ -415,6 +435,8 @@ const providers: readonly ComposerCompletionProvider[] = [
   {
     providerId: "demo-commands",
     label: "Commands",
+    icon: <DemoIcon name="command" />,
+    sourceLabel: "Demo",
     trigger: { text: "/", position: "leading" },
     async query(request, signal) {
       await pause(signal);
@@ -425,7 +447,7 @@ const providers: readonly ComposerCompletionProvider[] = [
             {
               id: "help",
               label: "/help",
-              description: "Command result, without prompt admission",
+              description: "Show available commands",
               action: {
                 type: "insert",
                 command: { providerId: "demo-commands", commandId: "help" },
@@ -435,7 +457,7 @@ const providers: readonly ComposerCompletionProvider[] = [
             {
               id: "review",
               label: "/review",
-              description: "Claimed prompt command",
+              description: "Review the current changes",
               action: {
                 type: "insert",
                 command: { providerId: "demo-commands", commandId: "review" },
@@ -445,7 +467,7 @@ const providers: readonly ComposerCompletionProvider[] = [
             {
               id: "inspect",
               label: "/inspect",
-              description: "Invoke a host action immediately",
+              description: "Inspect the current session",
               action: {
                 type: "invoke",
                 command: { providerId: "demo-commands", commandId: "inspect" },
@@ -458,7 +480,9 @@ const providers: readonly ComposerCompletionProvider[] = [
   },
   {
     providerId: "demo-skills",
-    label: "Editable skills",
+    label: "Skills",
+    icon: <DemoIcon name="skill" />,
+    sourceLabel: "Demo",
     trigger: { text: "/", position: "leading" },
     async query(request, signal) {
       await pause(signal);
@@ -469,8 +493,7 @@ const providers: readonly ComposerCompletionProvider[] = [
             {
               id: "summarize",
               label: "/summarize",
-              description:
-                "Insert editable instructions, without claiming a command",
+              description: "Summarize changes and completed checks",
               action: {
                 type: "insert",
                 content: [
@@ -488,6 +511,396 @@ const providers: readonly ComposerCompletionProvider[] = [
   },
 ];
 
+const demoIcons = {
+  start: "m8 5 11 7-11 7Z",
+  remount: "M3 11a9 9 0 1 1 2.6 7.4M3 4v7h7",
+  clear: "M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7",
+  reference: "M14 2H6v20h12V6ZM14 2v5h5M8 12h8M8 16h5",
+  quote: "M3 6h7v7H3ZM14 6h7v7h-7ZM10 13c0 4-2 6-5 6M21 13c0 4-2 6-5 6",
+  command: "m4 6 6 6-6 6M13 18h7",
+  skill: "m12 3 8 4v10l-8 4-8-4V7ZM4 7l8 4 8-4M12 11v10",
+  review: "m15 4 5 5-11 11H4v-5ZM13 6l5 5",
+  settings: "M4 7h16M4 17h16M8 4v6M16 14v6",
+  help: "M12 8h.01M12 12v5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z",
+  inspect: "M4 4h16v16H4ZM7 8l3 3-3 3M12 15h5",
+  save: "M5 3h12l4 4v14H3V3ZM7 3v6h10V3M7 21v-8h10v8",
+  cancel: "m6 6 12 12M6 18 18 6",
+};
+type DemoIconName = keyof typeof demoIcons;
+
+function DemoIcon({ name }: { name: DemoIconName }) {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path d={demoIcons[name]} />
+    </svg>
+  );
+}
+
+function DemoAction({
+  label,
+  icon,
+  ...props
+}: {
+  label: string;
+  icon: DemoIconName;
+} & React.ComponentProps<typeof Button>) {
+  return (
+    <Button
+      type="button"
+      appearance="ghost"
+      color="base"
+      size="sm"
+      shape="circle"
+      {...props}
+      aria-label={label}
+      title={label}
+    >
+      <DemoIcon name={icon} />
+    </Button>
+  );
+}
+
+/** Core owns menu sizing/placement; the native Popover owns dismissal and focus. */
+function DemoPopover({
+  label,
+  icon,
+  children,
+}: {
+  label: string;
+  icon: DemoIconName;
+  children: React.ReactNode;
+}) {
+  const id = useId();
+  const anchorName = `--demo-${id.replace(/[^a-zA-Z0-9_-]/g, "")}`;
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button
+        type="button"
+        className="popover-menu-item"
+        aria-label={label}
+        title={label}
+        popoverTarget={id}
+        aria-controls={id}
+        aria-expanded={open}
+        style={{ anchorName } as React.CSSProperties}
+      >
+        <DemoIcon name={icon} />
+        <span>{label}</span>
+      </button>
+      <div
+        id={id}
+        popover="auto"
+        className="popover popover-menu chat-composer-menu chat-demo-popover"
+        role="group"
+        aria-label={label}
+        style={{ positionAnchor: anchorName } as React.CSSProperties}
+        onToggle={(event) =>
+          setOpen(event.currentTarget.matches(":popover-open"))
+        }
+      >
+        {children}
+      </div>
+    </>
+  );
+}
+
+const models = [
+  ["standard", "Standard demo model", "Standard"],
+  ["fast", "Fast demo model", "Fast"],
+  ["restricted", "Restricted model (host rejects)", "Restricted"],
+] as const;
+const efforts = ["low", "medium", "high", "max"];
+const effortLabels = ["Low", "Medium", "High", "Max"];
+const approvals = [
+  ["ask", "Ask for approval", "Review each action before it runs."],
+  ["auto", "Approve for me", "Request review for sensitive actions."],
+  ["full", "Full access", "Allow actions without an approval prompt."],
+] as const;
+
+function Icon({
+  kind,
+}: {
+  kind: "shield" | "down" | "right" | "check" | "reset";
+}) {
+  const paths = {
+    shield: "m12 3 8 4v5c0 5-8 9-8 9s-8-4-8-9V7ZM12 8v5M12 16h.01",
+    down: "m6 9 6 6 6-6",
+    right: "m9 6 6 6-6 6",
+    check: "m5 12 4 4L19 6",
+    reset: "M3 11a9 9 0 1 1 2.6 7.4M3 4v7h7",
+  };
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path d={paths[kind]} />
+    </svg>
+  );
+}
+
+/** Core menu markup; all displayed settings remain controlled by host receipts. */
+function ChatComposerMenus(props: {
+  scopeKey: string;
+  revision: number;
+  model: string;
+  effort: string;
+  approval: string;
+  onRequest: (
+    request: ComposerSettingRequest,
+    signal: AbortSignal,
+  ) => Promise<ComposerSettingResult>;
+  onAcknowledged: (result: ComposerSettingResult) => void;
+}) {
+  const id = useId();
+  const base = id.replace(/[^a-zA-Z0-9_-]/g, "");
+  const permissionsId = `${id}-permissions`;
+  const settingsId = `${id}-settings`;
+  const modelsId = `${id}-models`;
+  const permissionAnchor = `--${base}-permissions`;
+  const settingsAnchor = `--${base}-settings`;
+  const active = useRef<AbortController | undefined>(undefined);
+  const settingsPanel = useRef<HTMLDivElement>(null);
+  const counter = useRef(0);
+  const [pending, setPending] = useState(false);
+  const [feedback, setFeedback] = useState("");
+  const [permissionOpen, setPermissionOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [modelsOpen, setModelsOpen] = useState(false);
+  useEffect(() => () => active.current?.abort(), []);
+
+  async function request(settingId: string, value: string) {
+    if (
+      active.current ||
+      value === props[settingId as "model" | "effort" | "approval"]
+    )
+      return;
+    const controller = new AbortController();
+    active.current = controller;
+    setPending(true);
+    setFeedback("");
+    const mutation: ComposerSettingRequest = {
+      requestId: `${id}-${++counter.current}`,
+      scopeKey: props.scopeKey,
+      expectedRevision: props.revision,
+      settingId,
+      value,
+    };
+    try {
+      const result = await props.onRequest(mutation, controller.signal);
+      if (controller.signal.aborted) return;
+      if (
+        result.requestId !== mutation.requestId ||
+        result.scopeKey !== mutation.scopeKey ||
+        result.settingId !== settingId ||
+        result.revision < mutation.expectedRevision
+      )
+        throw new Error("Invalid setting acknowledgment");
+      props.onAcknowledged(result);
+      setFeedback(result.outcome === "rejected" ? result.message : "");
+    } catch (error) {
+      if (!controller.signal.aborted)
+        setFeedback(error instanceof Error ? error.message : String(error));
+    } finally {
+      if (active.current === controller) {
+        active.current = undefined;
+        if (!controller.signal.aborted) setPending(false);
+      }
+    }
+  }
+  function choose(
+    event: React.MouseEvent<HTMLButtonElement>,
+    settingId: string,
+    value: string,
+  ) {
+    void request(settingId, value);
+    event.currentTarget.closest<HTMLElement>("[popover]")?.hidePopover();
+    if (settingId === "model")
+      settingsPanel.current?.focus({ preventScroll: true });
+  }
+  const model = models.find(([value]) => value === props.model) ?? models[0];
+  const approval =
+    approvals.find(([value]) => value === props.approval) ?? approvals[0];
+  const effort = Math.max(0, efforts.indexOf(props.effort));
+
+  return (
+    <>
+      <button
+        type="button"
+        className={`btn btn-ghost btn-sm chat-composer-config chat-demo-approval${props.approval === "full" ? " chat-demo-full-access" : ""}`}
+        aria-label={`Approval mode: ${approval[1]}`}
+        title={`Approval mode: ${approval[1]}`}
+        popoverTarget={permissionsId}
+        aria-expanded={permissionOpen}
+        aria-controls={permissionsId}
+        style={{ anchorName: permissionAnchor } as React.CSSProperties}
+      >
+        <Icon kind="shield" />
+        <span className="chat-composer-label">{approval[1]}</span>
+      </button>
+      <div
+        id={permissionsId}
+        popover="auto"
+        role="group"
+        aria-label="Approval mode"
+        className="popover popover-menu chat-composer-menu"
+        style={{ positionAnchor: permissionAnchor } as React.CSSProperties}
+        onToggle={(event) =>
+          setPermissionOpen(event.currentTarget.matches(":popover-open"))
+        }
+      >
+        <div className="chat-composer-group">Approval mode</div>
+        {approvals.map(([value, label, description]) => (
+          <button
+            key={value}
+            type="button"
+            className={`popover-menu-item chat-composer-menu-option${value === "full" ? " chat-composer-menu-option-warning" : ""}`}
+            aria-pressed={props.approval === value}
+            disabled={pending}
+            onClick={(event) => choose(event, "approval", value)}
+          >
+            <Icon kind="shield" />
+            <span className="chat-composer-label">
+              {label}
+              <span className="chat-composer-description">{description}</span>
+            </span>
+            {props.approval === value ? <Icon kind="check" /> : null}
+          </button>
+        ))}
+      </div>
+      <button
+        type="button"
+        className="btn btn-ghost btn-sm chat-composer-config chat-demo-model"
+        aria-label={`Model settings: ${model[1]}, ${effortLabels[effort]}`}
+        title="Select model and reasoning effort"
+        popoverTarget={settingsId}
+        aria-expanded={settingsOpen}
+        aria-controls={settingsId}
+        style={{ anchorName: settingsAnchor } as React.CSSProperties}
+      >
+        <span className="chat-composer-label">
+          {model[2]}{" "}
+          <span className="chat-demo-effort">{effortLabels[effort]}</span>
+        </span>
+        <Icon kind="down" />
+      </button>
+      <div
+        id={settingsId}
+        popover="auto"
+        role="group"
+        aria-label="Composer model settings"
+        ref={settingsPanel}
+        tabIndex={-1}
+        className="popover popover-menu chat-composer-menu chat-composer-menu-end"
+        style={{ positionAnchor: settingsAnchor } as React.CSSProperties}
+        onToggle={(event) =>
+          setSettingsOpen(event.currentTarget.matches(":popover-open"))
+        }
+      >
+        <div className="chat-composer-menu-row">
+          <strong>{effortLabels[effort]}</strong>
+          <button
+            type="button"
+            className="btn btn-ghost btn-xs btn-circle"
+            aria-label="Reset reasoning effort"
+            title="Reset reasoning effort"
+            disabled={pending || props.effort === "medium"}
+            onClick={() => void request("effort", "medium")}
+          >
+            <Icon kind="reset" />
+          </button>
+        </div>
+        <button
+          type="button"
+          className="popover-menu-item"
+          aria-label={`Choose a model: ${model[1]}`}
+          disabled={pending}
+          popoverTarget={modelsId}
+          aria-expanded={modelsOpen}
+          aria-controls={modelsId}
+        >
+          <span className="chat-composer-label">{model[1]}</span>
+          <Icon kind="right" />
+        </button>
+        <label className="chat-composer-menu-field">
+          <span className="sr-only">Reasoning effort</span>
+          <input
+            type="range"
+            className="range range-sm"
+            min="0"
+            max="3"
+            step="1"
+            value={effort}
+            aria-valuetext={effortLabels[effort]}
+            disabled={pending}
+            onChange={(event) =>
+              void request("effort", efforts[Number(event.currentTarget.value)])
+            }
+          />
+        </label>
+        <div className="chat-composer-menu-row chat-composer-description">
+          <span>Low</span>
+          <span>Max</span>
+        </div>
+        {feedback ? (
+          <p role="status" className="chat-composer-menu-field">
+            {feedback}
+          </p>
+        ) : null}
+        <div
+          id={modelsId}
+          popover="auto"
+          role="group"
+          aria-label="Choose a model"
+          className="popover popover-menu chat-composer-menu chat-composer-menu-end"
+          style={{ positionAnchor: settingsAnchor } as React.CSSProperties}
+          onToggle={(event) =>
+            setModelsOpen(event.currentTarget.matches(":popover-open"))
+          }
+        >
+          <div className="chat-composer-group">Select model</div>
+          {models.map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              className="popover-menu-item chat-composer-menu-option"
+              aria-pressed={props.model === value}
+              disabled={pending}
+              onClick={(event) => choose(event, "model", value)}
+            >
+              <span className="chat-composer-label">{label}</span>
+              {props.model === value ? <Icon kind="check" /> : null}
+            </button>
+          ))}
+        </div>
+      </div>
+      <span className="sr-only" role="status">
+        {pending ? "Change pending" : feedback}
+      </span>
+    </>
+  );
+}
+
 function QueueDocumentEditor({
   value,
   onChange,
@@ -497,10 +910,6 @@ function QueueDocumentEditor({
 }: ComposerQueueEditorProps) {
   return (
     <>
-      <p className="chat-composer-hint">
-        Edit text while retaining reference, quote, command and attachment
-        identities.
-      </p>
       {value.content.map((node, index) =>
         node.type === "text" ? (
           <textarea
@@ -526,22 +935,18 @@ function QueueDocumentEditor({
           </p>
         ),
       )}
-      <button
-        type="button"
-        className="btn btn-sm"
+      <DemoAction
+        label="Save queued document"
+        icon="save"
         disabled={pending}
         onClick={onSave}
-      >
-        Save queued document
-      </button>
-      <button
-        type="button"
-        className="btn btn-ghost btn-sm"
+      />
+      <DemoAction
+        label="Cancel"
+        icon="cancel"
         disabled={pending}
         onClick={onCancel}
-      >
-        Cancel
-      </button>
+      />
     </>
   );
 }
@@ -569,18 +974,6 @@ function SessionDemo({ rich }: { rich: boolean }) {
   const editor = useRef<ChatSessionComposerHandle>(null);
   const occurrence = useRef(0);
   const Composer = rich ? RichChatComposer : ChatSessionComposer;
-  const settings: readonly ComposerSetting[] = [
-    {
-      id: "model",
-      label: "Model",
-      value: state.model,
-      choices: [
-        { value: "standard", label: "Standard demo model" },
-        { value: "fast", label: "Fast demo model" },
-        { value: "restricted", label: "Restricted model (host rejects)" },
-      ],
-    },
-  ];
   function replace(document: ComposerDocument) {
     setValue((current) => ({
       document,
@@ -589,151 +982,181 @@ function SessionDemo({ rich }: { rich: boolean }) {
       originId: `demo-replace-${++occurrence.current}`,
     }));
   }
+  const addMenu = (
+    <>
+      <DemoPopover label="Demo controls" icon="settings">
+        <div className="chat-demo-controls">
+          <DemoAction
+            label="Start demo turn"
+            icon="start"
+            onClick={demo.start}
+          />
+        </div>
+        <div className="chat-demo-fields">
+          <label>
+            Admission outcome{" "}
+            <select
+              className="select select-sm"
+              value={admission}
+              onChange={(event) => {
+                const next = event.currentTarget.value as Admission;
+                setAdmission(next);
+                demo.setAdmission(next);
+              }}
+            >
+              <option value="accept">Accept</option>
+              <option value="reject">Reject</option>
+              <option value="unknown">Lose response after admission</option>
+            </select>
+          </label>
+          <label>
+            Running intent{" "}
+            <select
+              className="select select-sm"
+              value={intent}
+              onChange={(event) =>
+                setIntent(event.currentTarget.value as "follow_up" | "steer")
+              }
+            >
+              <option value="follow_up">Follow-up</option>
+              <option value="steer">Steer active turn</option>
+            </select>
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              className="checkbox checkbox-sm"
+              checked={failPreparation}
+              onChange={(event) => {
+                setFailPreparation(event.currentTarget.checked);
+                demo.setFailPreparation(event.currentTarget.checked);
+              }}
+            />{" "}
+            Fail first preparation
+          </label>
+        </div>
+        <div className="chat-demo-controls">
+          <DemoAction
+            label="Remount editor"
+            icon="remount"
+            onClick={() => setMount((current) => current + 1)}
+          />
+          <DemoAction
+            label="Replace with empty document"
+            icon="clear"
+            onClick={() =>
+              replace({
+                schemaVersion: 1,
+                content: [{ type: "text", text: "" }],
+              })
+            }
+          />
+          {rich ? (
+            <>
+              <DemoAction
+                label="Insert reference"
+                icon="reference"
+                onClick={() =>
+                  editor.current?.insertReference({
+                    type: "reference",
+                    nodeId: `demo-ref-${++occurrence.current}`,
+                    providerId: "demo-files",
+                    refId: "README.md",
+                    label: "README.md",
+                    plainText: "@README.md",
+                  })
+                }
+              />
+              <DemoAction
+                label="Insert quote"
+                icon="quote"
+                onClick={() =>
+                  editor.current?.insertQuote({
+                    type: "quote",
+                    nodeId: `demo-quote-${++occurrence.current}`,
+                    text: "Keep user edits while admission is pending.",
+                    source: {
+                      messageId: "demo-message",
+                      conversationId: scope.conversationId,
+                      label: "Earlier assistant reply",
+                    },
+                  })
+                }
+              />
+              <DemoAction
+                label="Claim /help command"
+                icon="command"
+                onClick={() =>
+                  editor.current?.claimCommand(
+                    { providerId: "demo-commands", commandId: "help" },
+                    "/help",
+                  )
+                }
+              />
+              <DemoAction
+                label="Claim /review prompt"
+                icon="review"
+                onClick={() =>
+                  editor.current?.claimCommand(
+                    { providerId: "demo-commands", commandId: "review" },
+                    "/review",
+                  )
+                }
+              />
+            </>
+          ) : null}
+        </div>
+      </DemoPopover>
+      <DemoPopover label="Composer help" icon="help">
+        <div className="popover-body">
+          <p>
+            Cmd/Ctrl+Enter sends; Enter adds a line. Type @ for references or /
+            for commands and editable skills.
+          </p>
+          <p>
+            Add up to three images, .txt, .md or .pdf files, each at most 2 MiB.
+            If preparation fails, use Retry.
+          </p>
+          <p>
+            Save a draft before remounting to try restoration; files then
+            require reattachment. Stop is independent of sending and
+            preparation.
+          </p>
+          <p>
+            This interactive demo keeps files, drafts and recovery in memory. It
+            has no backend; reloading the page discards its state.
+          </p>
+        </div>
+      </DemoPopover>
+      <DemoPopover label="Inspect demo state" icon="inspect">
+        <details>
+          <summary>Current portable document</summary>
+          <pre aria-label="Current portable document">
+            {JSON.stringify(value.document, null, 2)}
+          </pre>
+        </details>
+        <p>
+          Host: {state.runtime.status}; model: {state.model}; queue revision:{" "}
+          {state.queue.revision}.
+        </p>
+        <div aria-label="Demo host events" role="log" aria-live="off">
+          {state.events.length ? (
+            state.events.map((event, index) => (
+              <p key={`${index}-${event}`}>{event}</p>
+            ))
+          ) : (
+            <p>No events yet.</p>
+          )}
+        </div>
+      </DemoPopover>
+    </>
+  );
   return (
     <div
-      className="chat-demo"
+      className="chat-demo chat-session-demo"
       data-chat-session-demo={rich ? "rich" : "plain"}
-      style={{ width: "min(48rem, 100%)", display: "grid", gap: "1rem" }}
     >
-      <p>
-        Interactive fake host: no backend, model execution, upload or durable
-        storage. Drafts and recovery survive editor remounts in this preview;
-        page reload discards them.
-      </p>
-      <div className="chat-composer-toolbar">
-        <label>
-          Admission outcome{" "}
-          <select
-            className="select select-sm"
-            value={admission}
-            onChange={(event) => {
-              const next = event.currentTarget.value as Admission;
-              setAdmission(next);
-              demo.setAdmission(next);
-            }}
-          >
-            <option value="accept">Accept</option>
-            <option value="reject">Reject</option>
-            <option value="unknown">Lose response after admission</option>
-          </select>
-        </label>
-        <label>
-          Running intent{" "}
-          <select
-            className="select select-sm"
-            value={intent}
-            onChange={(event) =>
-              setIntent(event.currentTarget.value as "follow_up" | "steer")
-            }
-          >
-            <option value="follow_up">Follow-up</option>
-            <option value="steer">Steer active turn</option>
-          </select>
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            className="checkbox checkbox-sm"
-            checked={failPreparation}
-            onChange={(event) => {
-              setFailPreparation(event.currentTarget.checked);
-              demo.setFailPreparation(event.currentTarget.checked);
-            }}
-          />{" "}
-          Fail first preparation
-        </label>
-      </div>
-      <div className="chat-composer-toolbar">
-        <button className="btn btn-sm" type="button" onClick={demo.start}>
-          Start demo turn
-        </button>
-        <button
-          className="btn btn-ghost btn-sm"
-          type="button"
-          onClick={() => setMount((current) => current + 1)}
-        >
-          Remount editor
-        </button>
-        <button
-          className="btn btn-ghost btn-sm"
-          type="button"
-          onClick={() =>
-            replace({ schemaVersion: 1, content: [{ type: "text", text: "" }] })
-          }
-        >
-          Replace with empty document
-        </button>
-        {rich ? (
-          <>
-            <button
-              className="btn btn-ghost btn-sm"
-              type="button"
-              onClick={() =>
-                editor.current?.insertReference({
-                  type: "reference",
-                  nodeId: `demo-ref-${++occurrence.current}`,
-                  providerId: "demo-files",
-                  refId: "README.md",
-                  label: "README.md",
-                  plainText: "@README.md",
-                })
-              }
-            >
-              Insert reference
-            </button>
-            <button
-              className="btn btn-ghost btn-sm"
-              type="button"
-              onClick={() =>
-                editor.current?.insertQuote({
-                  type: "quote",
-                  nodeId: `demo-quote-${++occurrence.current}`,
-                  text: "Keep user edits while admission is pending.",
-                  source: {
-                    messageId: "demo-message",
-                    conversationId: scope.conversationId,
-                    label: "Earlier assistant reply",
-                  },
-                })
-              }
-            >
-              Insert quote
-            </button>
-            <button
-              className="btn btn-ghost btn-sm"
-              type="button"
-              onClick={() =>
-                editor.current?.claimCommand(
-                  { providerId: "demo-commands", commandId: "help" },
-                  "/help",
-                )
-              }
-            >
-              Claim /help command
-            </button>
-            <button
-              className="btn btn-ghost btn-sm"
-              type="button"
-              onClick={() =>
-                editor.current?.claimCommand(
-                  { providerId: "demo-commands", commandId: "review" },
-                  "/review",
-                )
-              }
-            >
-              Claim /review prompt
-            </button>
-          </>
-        ) : null}
-      </div>
-      <ComposerSettings
-        scopeKey={scope.conversationId}
-        revision={state.settingsRevision}
-        settings={settings}
-        onRequest={demo.requestSetting}
-        onAcknowledged={demo.acknowledgeSetting}
-      />
-      <p className="chat-composer-status" role="status">
+      <p className="sr-only" role="status">
         Host: {state.runtime.status}; model: {state.model}; queue revision:{" "}
         {state.queue.revision}.
       </p>
@@ -746,6 +1169,10 @@ function SessionDemo({ rich }: { rich: boolean }) {
         renderDocumentEditor={(props) => <QueueDocumentEditor {...props} />}
       />
       <Composer
+        compact
+        addMenu={addMenu}
+        attachLabel="Add files and more"
+        className="chat-composer-ghost"
         key={mount}
         ref={editor}
         value={value}
@@ -755,7 +1182,11 @@ function SessionDemo({ rich }: { rich: boolean }) {
         host={demo.host}
         runtime={state.runtime}
         policy={{ runningIntent: intent }}
-        options={{ model: state.model }}
+        options={{
+          model: state.model,
+          effort: state.effort,
+          approval: state.approval,
+        }}
         draftAdapter={demo.draftAdapter}
         attachmentOptions={demo.attachmentOptions}
         providers={providers}
@@ -763,30 +1194,17 @@ function SessionDemo({ rich }: { rich: boolean }) {
         onStop={demo.stop}
         allowAttachmentOnly
         label={rich ? "Rich demo message" : "Semantic demo message"}
-      />
-      <p className="chat-composer-hint">
-        Cmd/Ctrl+Enter submits; Enter inserts a line. Type @ for references or /
-        for commands and editable skills. Choose up to three images, .txt, .md
-        or .pdf files, each at most 2 MiB. Preparation fails once per occurrence
-        when enabled; use Retry. Save draft explicitly before remounting to try
-        restoration; files then require reattachment. Stop remains independent
-        of submission and preparation.
-      </p>
-      <details>
-        <summary>Current portable document</summary>
-        <pre aria-label="Current portable document">
-          {JSON.stringify(value.document, null, 2)}
-        </pre>
-      </details>
-      <div
-        aria-label="Demo host events"
-        role="log"
-        className="chat-composer-status"
       >
-        {state.events.map((event, index) => (
-          <p key={`${index}-${event}`}>{event}</p>
-        ))}
-      </div>
+        <ChatComposerMenus
+          scopeKey={scope.conversationId}
+          revision={state.settingsRevision}
+          model={state.model}
+          effort={state.effort}
+          approval={state.approval}
+          onRequest={demo.requestSetting}
+          onAcknowledged={demo.acknowledgeSetting}
+        />
+      </Composer>
     </div>
   );
 }
@@ -796,4 +1214,103 @@ export function SemanticComposerPreview() {
 }
 export function RichComposerPreview() {
   return <SessionDemo rich />;
+}
+
+/** Focused Core 1.21.1 composition; settings still require host acknowledgment. */
+export function CompactComposerPreview() {
+  const [demo] = useState(() => {
+    const host = createDemoHost();
+    host.setFailPreparation(false);
+    return host;
+  });
+  const state = useSyncExternalStore(
+    demo.subscribe,
+    demo.getSnapshot,
+    demo.getSnapshot,
+  );
+  const [rich, setRich] = useState(true);
+  const [value, setValue] = useState<ComposerDocumentUpdate>({
+    document: {
+      schemaVersion: 1,
+      content: [{ type: "text", text: "Review the latest changes." }],
+    },
+    revision: 0,
+    origin: "replace",
+    originId: "compact-initial",
+  });
+  const Composer = rich ? RichChatComposer : ChatSessionComposer;
+  return (
+    <div className="chat-demo chat-session-demo" data-chat-compact-demo>
+      <Composer
+        compact
+        attachLabel="Add files and more"
+        addMenu={
+          <>
+            <DemoPopover label="Composer help" icon="help">
+              <div className="popover-body">
+                <p>
+                  Cmd/Ctrl+Enter sends; Enter adds a line. Add files with +;
+                  images become thumbnails after preparation. Type / to choose
+                  skills or commands, or @ for repository references.
+                </p>
+                <p>
+                  Choose a model and reasoning effort from the model menu.
+                  Switch editors from Add. Stop and follow-up submission are
+                  independent.
+                </p>
+                <p>
+                  This in-memory demo applies model choices only after the host
+                  acknowledges them.
+                </p>
+              </div>
+            </DemoPopover>
+            <label className="chat-composer-menu-field">
+              <span>
+                <input
+                  type="checkbox"
+                  className="checkbox checkbox-sm"
+                  checked={rich}
+                  onChange={(event) => setRich(event.currentTarget.checked)}
+                />{" "}
+                Use rich editor
+              </span>
+            </label>
+          </>
+        }
+        className="chat-composer-ghost"
+        value={value}
+        onDocumentChange={setValue}
+        scope={scope}
+        draftKey="compact-demo"
+        host={demo.host}
+        runtime={state.runtime}
+        attachmentOptions={demo.attachmentOptions}
+        providers={providers}
+        onProviderInvoke={demo.invoke}
+        options={{
+          model: state.model,
+          effort: state.effort,
+          approval: state.approval,
+        }}
+        onStop={demo.stop}
+        allowAttachmentOnly
+        label="Compact demo message"
+      >
+        <ChatComposerMenus
+          scopeKey={scope.conversationId}
+          revision={state.settingsRevision}
+          model={state.model}
+          effort={state.effort}
+          approval={state.approval}
+          onRequest={demo.requestSetting}
+          onAcknowledged={demo.acknowledgeSetting}
+        />
+      </Composer>
+      <p className="sr-only" role="status" aria-label="Compact host state">
+        Host: {state.runtime.status}; model: {state.model}; waiting messages:{" "}
+        {state.queue.items.length}.
+        {state.events.at(-1) ? ` ${state.events.at(-1)}` : ""}
+      </p>
+    </div>
+  );
 }

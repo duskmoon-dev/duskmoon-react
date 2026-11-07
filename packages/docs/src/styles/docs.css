@@ -1,4 +1,5 @@
 :root {
+  --docs-appbar-height: 3rem;
   --dm-bg: var(--color-base-100);
   --dm-surface: var(--color-surface);
   --dm-surface-soft: var(--color-surface-container);
@@ -34,59 +35,60 @@ a {
   color: inherit;
 }
 
-.site-header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  display: grid;
-  grid-template-columns: 1fr auto auto;
-  gap: 20px;
-  align-items: center;
-  padding: 14px 28px;
-  border-bottom: 1px solid var(--dm-border);
-  background: var(--color-primary);
-  color: var(--color-primary-content);
-  box-shadow: var(--shadow-sm);
-}
-
-.brand,
-.top-nav {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
+.header-menu-trigger[hidden] {
+  display: none;
 }
 
 .brand {
-  flex-wrap: wrap;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-inline-size: 0;
   font-weight: 700;
   text-decoration: none;
-  color: var(--color-primary-content);
+  color: inherit;
+}
+
+.brand-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 1rem;
+  line-height: 1.5rem;
 }
 
 .brand-mark {
   display: inline-grid;
   flex: none;
-  width: 34px;
-  height: 34px;
+  width: 1.5rem;
+  height: 1.5rem;
   place-items: center;
-  border-radius: 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
   background: var(--color-primary-content);
   color: var(--color-primary);
 }
 
 .brand-version {
+  flex-shrink: 0;
   border-radius: 999px;
   background: var(--color-secondary);
   color: var(--color-on-secondary);
-  font-size: 12px;
+  font-size: 0.6875rem;
   font-weight: 600;
   line-height: 1.2;
-  padding: 4px 8px;
+  padding: 0.125rem 0.375rem;
   white-space: nowrap;
 }
 
-.top-nav a {
-  color: var(--color-primary-content);
+.top-nav:not([popover]) {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.top-nav:not([popover]) > a {
+  color: inherit;
   opacity: 0.85;
   font-size: 14px;
   text-decoration: none;
@@ -94,35 +96,110 @@ a {
   transition: opacity 0.2s;
 }
 
-.top-nav a:hover {
+.top-nav:not([popover]) > a:hover,
+.top-nav:not([popover]) > a:focus-visible {
   opacity: 1;
 }
 
-.top-nav a[aria-current="page"] {
+.top-nav:not([popover]) > a[aria-current="page"] {
   opacity: 1;
   font-weight: 700;
   text-decoration: underline;
   text-underline-offset: 5px;
 }
 
-.theme-toggle {
-  border: 1px solid var(--color-primary-content);
-  border-radius: 8px;
-  background: transparent;
-  color: var(--color-primary-content);
-  cursor: pointer;
-  font: inherit;
-  padding: 8px 12px;
-  text-decoration: none;
-  transition: background 0.2s;
+.top-nav[popover] {
+  inline-size: min(20rem, calc(100dvi - 1rem));
+  min-inline-size: 0;
 }
 
-.theme-toggle:hover {
-  background: color-mix(
-    in oklch,
-    var(--color-primary-content) 15%,
-    transparent
-  );
+.top-nav[popover]:popover-open {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.top-nav[popover] > a[aria-current="page"] {
+  background: var(--color-surface-container-high);
+  font-weight: 700;
+}
+
+.theme-current-icon {
+  display: none;
+}
+
+[data-theme-mode="auto"] .theme-current-icon[data-theme-icon="auto"],
+[data-theme-mode="sunshine"] .theme-current-icon[data-theme-icon="sunshine"],
+[data-theme-mode="moonlight"] .theme-current-icon[data-theme-icon="moonlight"] {
+  display: block;
+}
+
+.docs-theme-menu .theme-controller-label {
+  justify-content: flex-start;
+}
+
+.chat-session-demo {
+  display: grid;
+  gap: 0.5rem;
+  inline-size: min(48rem, 100%);
+  min-inline-size: 0;
+}
+
+.chat-demo-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.chat-demo-fields {
+  display: grid;
+  gap: 0.75rem;
+  margin-block-end: 0.75rem;
+}
+
+.chat-demo-fields > label {
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.chat-demo-fields .select {
+  inline-size: 100%;
+  max-inline-size: 100%;
+}
+
+.chat-demo-popover {
+  font-size: 0.875rem;
+}
+
+.chat-demo-popover p:first-child {
+  margin-block-start: 0;
+}
+
+.chat-demo-popover p:last-child {
+  margin-block-end: 0;
+}
+
+.chat-demo-popover pre {
+  max-inline-size: 100%;
+  overflow: auto;
+}
+
+.chat-composer-actions > .chat-demo-approval {
+  margin-inline-end: auto;
+}
+
+.chat-demo-model {
+  border-radius: 9999px;
+  background-color: var(--color-surface-container-highest);
+}
+
+.chat-demo-effort {
+  color: var(--color-on-surface-variant);
+}
+
+.chat-demo-full-access {
+  color: var(--color-warning);
 }
 
 .button-link {
@@ -186,7 +263,7 @@ main {
 
 .category {
   margin-top: 36px;
-  scroll-margin-top: 90px;
+  scroll-margin-top: calc(var(--docs-appbar-height) + 1rem);
 }
 
 .category h2,
@@ -292,8 +369,8 @@ main {
 .side-nav {
   align-self: start;
   position: sticky;
-  top: 88px;
-  max-height: calc(100vh - 120px);
+  top: calc(var(--docs-appbar-height) + 1rem);
+  max-height: calc(100dvh - var(--docs-appbar-height) - 2rem);
   overflow-y: auto;
   background: var(--color-secondary-container);
   color: var(--color-on-secondary-container);
@@ -636,12 +713,38 @@ main {
   content: "";
 }
 
-.demo-panel-source .demo-panel-label {
-  padding: 0;
+.docs-code-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-block-size: 2rem;
+  padding-block: 0.5rem;
+  color: var(--dm-muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
 }
 
-.demo-panel-source .demo-panel-label::before {
-  background: var(--color-tertiary);
+.docs-code-summary::-webkit-details-marker {
+  display: none;
+}
+
+.docs-code-summary:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.docs-code-chevron {
+  flex-shrink: 0;
+}
+
+.docs-code[open] > summary .docs-code-chevron {
+  transform: rotate(90deg);
+}
+
+.api-card > .docs-code > summary {
+  padding-inline: 1rem;
 }
 
 .demo-preview {
@@ -971,19 +1074,30 @@ code {
   overflow-wrap: anywhere;
 }
 
+@media (max-width: 1279px) {
+  /* Keep ordinary navigation links available without the responsive script. */
+  .site-header:has(.top-nav:not([popover])) {
+    flex-wrap: wrap;
+  }
+
+  .site-header .appbar-actions:has(.top-nav:not([popover])) {
+    flex-basis: 100%;
+  }
+
+  .header-navigation:has(.top-nav:not([popover])) {
+    flex: 1;
+    min-inline-size: 0;
+  }
+
+  .top-nav:not([popover]) {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+}
+
 @media (max-width: 800px) {
-  .site-header,
   .doc-shell {
     grid-template-columns: 1fr;
-  }
-
-  .site-header {
-    gap: 12px;
-    padding: 12px 16px;
-  }
-
-  .top-nav {
-    flex-wrap: wrap;
   }
 
   main {

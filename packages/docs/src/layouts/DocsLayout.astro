@@ -15,10 +15,15 @@ interface Props {
 
 const { title, description = "DuskMoon React component documentation", section = "components" } = Astro.props;
 const version = packageJson.version;
+const themeOptions = [
+  { value: "auto", label: "Auto (system)", icon: "M5 4h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2ZM8 21h8M12 17v4" },
+  { value: "sunshine", label: "Light", icon: "M12 8a4 4 0 1 0 0 8a4 4 0 1 0 0-8ZM12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5" },
+  { value: "moonlight", label: "Dark", icon: "M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13Z" },
+];
 ---
 
 <!doctype html>
-<html lang="en" data-theme="sunshine">
+<html lang="en" data-theme="sunshine" data-theme-mode="auto">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
@@ -27,33 +32,72 @@ const version = packageJson.version;
     <title>{title} | DuskMoon React</title>
     <script is:inline>
       (() => {
+        let mode = "auto";
         try {
           const stored = localStorage.getItem("duskmoon-docs-theme");
-          const theme = stored === "moonlight" ? "moonlight" : "sunshine";
-          document.documentElement.setAttribute("data-theme", theme);
-        } catch {
-          document.documentElement.setAttribute("data-theme", "sunshine");
-        }
+          if (["auto", "sunshine", "moonlight"].includes(stored)) mode = stored;
+        } catch {}
+        const root = document.documentElement;
+        root.dataset.themeMode = mode;
+        root.dataset.theme = mode === "auto"
+          ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "moonlight" : "sunshine")
+          : mode;
       })();
     </script>
   </head>
   <body>
-    <header class="site-header">
-      <a class="brand" href={docsPath("/")} aria-label={`DuskMoon React version ${version}`}>
+    <header class="site-header appbar appbar-compact appbar-primary appbar-sticky">
+      <a class="brand appbar-title-group" href={docsPath("/")} aria-label={`DuskMoon React version ${version}`}>
         <span class="brand-mark">Dm</span>
-        <span>DuskMoon React</span>
+        <span class="brand-name">DuskMoon React</span>
         <span class="brand-version" aria-hidden="true">v{version}</span>
       </a>
-      <nav class="top-nav" aria-label="Primary">
-        {DOC_SECTIONS.map((item) => (
-          <a href={docsPath(item.path)} aria-current={item.id === section ? "page" : undefined}>
-            {item.title}
-          </a>
-        ))}
-      </nav>
-      <button class="theme-toggle" type="button" data-theme-toggle>
-        <span data-theme-label>Light</span>
-      </button>
+      <div class="appbar-actions">
+        <div class="dropdown dropdown-block-end header-navigation">
+          <button
+            class="appbar-nav header-menu-trigger"
+            type="button"
+            aria-label="Navigation menu"
+            aria-controls="docs-primary-navigation"
+            aria-expanded="false"
+            popovertarget="docs-primary-navigation"
+            hidden
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false">
+              <path d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <nav class="top-nav dropdown-content" id="docs-primary-navigation" aria-label="Primary">
+            {DOC_SECTIONS.map((item) => (
+              <a href={docsPath(item.path)} aria-current={item.id === section ? "page" : undefined}>
+                {item.title}
+              </a>
+            ))}
+          </nav>
+        </div>
+        <div class="dropdown dropdown-block-end" data-theme-dropdown>
+          <button class="theme-toggle appbar-action" type="button" data-theme-toggle aria-label="Theme preference: Auto (system)" title="Theme preference: Auto (system)" aria-controls="docs-theme-preference" aria-expanded="false" popovertarget="docs-theme-preference" disabled>
+            {themeOptions.map((option) => (
+              <svg class="theme-current-icon" data-theme-icon={option.value} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                <path d={option.icon} />
+              </svg>
+            ))}
+          </button>
+          <div class="dropdown-content docs-theme-menu" id="docs-theme-preference" popover="auto" role="radiogroup" aria-label="Theme preference">
+            {themeOptions.map((option) => (
+              <div>
+                <input class="theme-controller-item" type="radio" name="docs-theme-mode" id={`docs-theme-${option.value}`} value={option.value} checked={option.value === "auto"} />
+                <label class="theme-controller-label popover-menu-item" for={`docs-theme-${option.value}`}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                    <path d={option.icon} />
+                  </svg>
+                  {option.label}
+                </label>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </header>
     <main>
       <slot />
@@ -62,21 +106,85 @@ const version = packageJson.version;
       (() => {
         const root = document.documentElement;
         const button = document.querySelector("[data-theme-toggle]");
-        const label = document.querySelector("[data-theme-label]");
+        const panel = document.getElementById("docs-theme-preference");
+        if (!button || !panel) return;
+        const radios = Array.from(panel.querySelectorAll('input[name="docs-theme-mode"]'));
+        const system = window.matchMedia("(prefers-color-scheme: dark)");
+        let mode = root.dataset.themeMode;
         const sync = () => {
-          const theme = root.getAttribute("data-theme") || "sunshine";
-          if (label) label.textContent = theme === "moonlight" ? "Dark" : "Light";
+          root.dataset.themeMode = mode;
+          root.dataset.theme = mode === "auto" ? (system.matches ? "moonlight" : "sunshine") : mode;
+          for (const radio of radios) radio.checked = radio.value === mode;
+          const label = radios.find((radio) => radio.checked)?.labels[0].textContent.trim();
+          button.setAttribute("aria-label", `Theme preference: ${label}`);
+          button.setAttribute("title", `Theme preference: ${label}`);
         };
-        sync();
-        button?.addEventListener("click", () => {
-          const next = root.getAttribute("data-theme") === "moonlight" ? "sunshine" : "moonlight";
-          root.setAttribute("data-theme", next);
-          try {
-            localStorage.setItem("duskmoon-docs-theme", next);
-          } catch {}
-          sync();
+        const close = () => {
+          if (panel.matches(":popover-open")) panel.hidePopover();
+          button.focus({ preventScroll: true });
+        };
+        panel.addEventListener("toggle", () => {
+          button.setAttribute("aria-expanded", String(panel.matches(":popover-open")));
         });
+        panel.addEventListener("change", (event) => {
+          if (!radios.includes(event.target)) return;
+          mode = event.target.value;
+          sync();
+          try {
+            localStorage.setItem("duskmoon-docs-theme", mode);
+          } catch {}
+          close();
+        });
+        panel.addEventListener("click", (event) => {
+          if (radios.includes(event.target)) close();
+        });
+        const updateSystemTheme = () => {
+          if (mode === "auto") sync();
+        };
+        system.addEventListener("change", updateSystemTheme);
+        document.addEventListener("astro:before-swap", () => {
+          system.removeEventListener("change", updateSystemTheme);
+        }, { once: true });
+        sync();
+        button.disabled = false;
       })();
+    </script>
+    <script>
+      const navigation = document.getElementById("docs-primary-navigation");
+      const trigger = document.querySelector<HTMLButtonElement>(".header-menu-trigger");
+      if (navigation && trigger) {
+        const compact = window.matchMedia("(max-width: 1279px)");
+        const links = Array.from(navigation.querySelectorAll<HTMLAnchorElement>("a[href]"));
+        const closeNavigation = () => {
+          if (navigation.matches(":popover-open")) navigation.hidePopover();
+        };
+        const updateNavigation = () => {
+          const focused = document.activeElement;
+          const focusInNavigation = focused instanceof HTMLElement && navigation.contains(focused);
+          closeNavigation();
+          if (compact.matches) navigation.setAttribute("popover", "auto");
+          else navigation.removeAttribute("popover");
+          for (const link of links) link.classList.toggle("popover-menu-item", compact.matches);
+          trigger.hidden = !compact.matches;
+          trigger.setAttribute("aria-expanded", "false");
+          if (compact.matches && focusInNavigation) trigger.focus();
+          else if (!compact.matches && (focused === trigger || focusInNavigation)) {
+            (focusInNavigation ? focused : links[0])?.focus();
+          }
+        };
+        navigation.addEventListener("toggle", () => {
+          trigger.setAttribute("aria-expanded", String(navigation.matches(":popover-open")));
+        });
+        navigation.addEventListener("click", (event) => {
+          if (event.target instanceof Element && event.target.closest("a[href]")) closeNavigation();
+        });
+        compact.addEventListener("change", updateNavigation);
+        document.addEventListener("astro:before-swap", () => {
+          closeNavigation();
+          compact.removeEventListener("change", updateNavigation);
+        }, { once: true });
+        updateNavigation();
+      }
     </script>
   </body>
 </html>

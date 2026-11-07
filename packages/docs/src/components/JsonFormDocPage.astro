@@ -1,6 +1,7 @@
 ---
 import DocsLayout from "../layouts/DocsLayout.astro";
 import DocsNavigation from "./DocsNavigation.astro";
+import DocsCode from "./DocsCode.astro";
 import { JsonSchemaFormDemo } from "./JsonSchemaFormDemo";
 import { categoriesForSection } from "../lib/docs-sections";
 import { getComponentDocs } from "../lib/component-docs";
@@ -172,7 +173,7 @@ const uploadExample = JSON.stringify(
           <section class="section" aria-labelledby="form-package">
             <h2 id="form-package">Use the published renderer</h2>
             <p>Import <code>JsonSchemaForm</code> and <code>compileForm</code> from <code>@duskmoon-dev/components/json-schema-form</code>, and import <code>@duskmoon-dev/components/styles.css</code> once. This demo uses the same published renderer.</p>
-            <pre><code>{`import { JsonSchemaForm, compileForm } from "@duskmoon-dev/components/json-schema-form";
+            <DocsCode label="React example" code={`import { JsonSchemaForm, compileForm } from "@duskmoon-dev/components/json-schema-form";
 
 const compiled = compileForm(schemaFromBackend);
 
@@ -184,7 +185,7 @@ const compiled = compileForm(schemaFromBackend);
   errors={backendErrors}
   onErrorsChange={setBackendErrors}
   onSubmit={sendToBackend}
-/>`}</code></pre>
+/>`} />
             <p>Alternatively, pass a typed <code>schema</code> directly. Omit <code>value</code> for internal state, optionally initialized by <code>defaultValue</code>. Errors use JSON Pointer keys such as <code>/address/email</code>; <code>onErrorsChange</code> reports validation errors and clears them on edits or reset. Submission runs only after validation and preserves JSON number and boolean types.</p>
             <p>The optional <code>className</code> prop adds classes to the generated native <code>&lt;form&gt;</code>, preserving <code>form form-vertical schema-form</code>. The outer wrapper retains its <code>schema-form-container</code> class.</p>
             <p>For a LiveView React island, mount inside an element with a stable <code>id</code> and <code>phx-update="ignore"</code>, then send the JSON from <code>onSubmit</code> through the LiveView hook. Catch schema compilation errors and validate values again on the backend. Use a new React <code>key</code> to start fresh when replacing the schema.</p>
@@ -246,13 +247,13 @@ const compiled = compileForm(schemaFromBackend);
             </table></div>
             <p>The existing <a href={docsPath("/utilities/form/radio-group/")}>Radio group</a> annotation selects one primitive enum value. <a href={docsPath("/utilities/form/checkbox-group/")}>Checkbox group</a> requires an array with <code>uniqueItems: true</code> and primitive <code>items.enum</code>. Place choice annotations on the array itself; its item schema must not contain widget annotations. All selections preserve the original enum types.</p>
             <p>Radio group and Checkbox group support <code>orientation</code> in <code>x-widget-options</code>: <code>"horizontal"</code> places options side by side and wraps them on narrow screens; <code>"vertical"</code> stacks them. Omitting orientation uses vertical. Both example pages show the two directions.</p>
-            <pre><code>{JSON.stringify({ type: "string", title: "Delivery", "x-widget": "radio-group", "x-widget-options": { orientation: "horizontal" }, enum: ["daily", "weekly", "monthly"], default: "weekly" }, null, 2)}</code></pre>
+            <DocsCode label="Horizontal radio group schema" code={JSON.stringify({ type: "string", title: "Delivery", "x-widget": "radio-group", "x-widget-options": { orientation: "horizontal" }, enum: ["daily", "weekly", "monthly"], default: "weekly" }, null, 2)} />
             <p>Widget contracts apply alongside Ajv validation. Color requires six hex digits; date pickers require real calendar dates; TimePicker requires a complete local 24-hour time; OTP requires exactly its configured number of digits; Cascader requires a complete enabled path to a leaf. An empty Cascader path is valid unless array constraints such as <code>minItems</code> prohibit it. Required fields, enums, numeric bounds, and array constraints remain enforced.</p>
           </section>
           <section class="section" aria-labelledby="form-options">
             <h2 id="form-options">Labels and control options</h2>
             <p>Use <code>x-options</code> with Radio, Radio group, Checkbox group, Segmented, Select, Transfer, TreeSelect, Cascader, or Mentions. Each option has <code>value</code>, a string <code>label</code>, and optional boolean <code>disabled</code>. Values must match the scalar or array item type and be globally unique; choice options must cover the corresponding enum exactly. Mentions instead accepts optional string suggestions on a string field without enum.</p>
-            <pre><code>{JSON.stringify({ type: "integer", title: "Priority", "x-widget": "radio", enum: [1, 2], "x-options": [{ value: 1, label: "Normal" }, { value: 2, label: "High" }], default: 1 }, null, 2)}</code></pre>
+            <DocsCode label="Radio options schema" code={JSON.stringify({ type: "integer", title: "Priority", "x-widget": "radio", enum: [1, 2], "x-options": [{ value: 1, label: "Normal" }, { value: 2, label: "High" }], default: 1 }, null, 2)} />
             <p>Only Cascader and TreeSelect accept <code>children</code> arrays, and both require <code>x-options</code> describing their hierarchy. Cascader submits one ordered path; TreeSelect submits a scalar node value or independent selected nodes in a unique array. Choosing a parent in multiple TreeSelect mode does not select its descendants.</p>
             <div class="api-card"><table class="api-table">
               <thead><tr><th>Widget options</th><th>Accepted settings</th></tr></thead>
@@ -279,7 +280,7 @@ const compiled = compileForm(schemaFromBackend);
           <section class="section" aria-labelledby="form-upload">
             <h2 id="form-upload">Upload metadata schema</h2>
             <p>Upload is a local chooser and submits file metadata. No file contents are serialized and no network upload is performed. Use a unique array of objects with exactly these four required property schemas: string <code>name</code>, integer <code>size</code>, string <code>type</code>, and integer <code>lastModified</code>. The lastModified value is the file's timestamp in milliseconds.</p>
-            <pre><code>{uploadExample}</code></pre>
+            <DocsCode label="Upload schema" code={uploadExample} />
             <p>Extra property schemas or widget annotations within the metadata item are unsupported. The demo rejects additional metadata properties with <code>additionalProperties: false</code>. Choose or remove files to edit the metadata array; reset restores its empty default.</p>
           </section>
           <section class="section" aria-labelledby="form-examples">

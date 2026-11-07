@@ -61,6 +61,37 @@ export function CollapsibleMessagePreview() {
   );
 }
 
+function QueueIcon({
+  action,
+}: {
+  action: "send" | "steer" | "complete" | "reject" | "reset";
+}) {
+  const paths = {
+    send: "m5 12 7-7 7 7M12 5v14",
+    steer: "m15 4 5 5-5 5M20 9h-9a6 6 0 0 0-6 6v4",
+    complete: "m5 12 4 4L19 6",
+    reject: "M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM6 6l12 12",
+    reset: "M3 11a9 9 0 1 1 2.6 7.4M3 4v7h7",
+  };
+  return (
+    <svg
+      width="18"
+      height="18"
+      style={{ flexShrink: 0 }}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path d={paths[action]} />
+    </svg>
+  );
+}
+
 /** Local simulation only. Applications await their transport before changing the queue. */
 export function WaitingQueuePreview() {
   const inputId = useId();
@@ -195,22 +226,25 @@ export function WaitingQueuePreview() {
           />
           <Chat.ComposerActions>
             <button
-              className="btn btn-ghost"
+              className="btn btn-primary btn-sm btn-circle btn-icon btn-icon-sm"
               type="submit"
               disabled={!draft.trim()}
+              aria-label={active ? "Queue message" : "Send message"}
+              title={active ? "Queue message (Enter)" : "Send message (Enter)"}
               aria-keyshortcuts="Enter"
             >
-              {active ? "Queue" : "Send"}{" "}
-              <Chat.ComposerHint>Enter</Chat.ComposerHint>
+              <QueueIcon action="send" />
             </button>
             <button
-              className="btn btn-ghost"
+              className="btn btn-ghost btn-sm btn-circle btn-icon btn-icon-sm"
               type="button"
               disabled={!active || !draft.trim()}
+              aria-label="Steer current message"
+              title="Steer current message (Ctrl/⌘+Enter)"
               aria-keyshortcuts="Control+Enter Meta+Enter"
               onClick={() => admit(true)}
             >
-              Steer <Chat.ComposerHint>Ctrl/⌘+Enter</Chat.ComposerHint>
+              <QueueIcon action="steer" />
             </button>
           </Chat.ComposerActions>
         </Chat.ComposerForm>
@@ -220,24 +254,30 @@ export function WaitingQueuePreview() {
       </p>
       <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
         <button
-          className="btn btn-sm"
+          className="btn btn-ghost btn-sm btn-circle btn-icon btn-icon-sm"
           type="button"
           disabled={!active}
+          aria-label="Complete response"
+          title="Complete response"
           onClick={complete}
         >
-          Complete response
+          <QueueIcon action="complete" />
         </button>
         <button
-          className="btn btn-sm"
+          className="btn btn-ghost btn-sm btn-circle btn-icon btn-icon-sm"
           type="button"
+          aria-label="Reject next admission"
+          title="Reject next admission"
           aria-pressed={rejectNext}
           onClick={() => setRejectNext(!rejectNext)}
         >
-          Reject next admission
+          <QueueIcon action="reject" />
         </button>
         <button
-          className="btn btn-sm"
+          className="btn btn-ghost btn-sm btn-circle btn-icon btn-icon-sm"
           type="button"
+          aria-label="Start fresh"
+          title="Start fresh"
           onClick={() => {
             setActive(false);
             setQueue([]);
@@ -249,7 +289,7 @@ export function WaitingQueuePreview() {
             inputRef.current?.focus();
           }}
         >
-          Start fresh
+          <QueueIcon action="reset" />
         </button>
       </div>
     </div>

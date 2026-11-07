@@ -15,6 +15,11 @@ const component = {
     usageNotes: [
       ...existing.pageContent.usageNotes,
       {
+        title: "Optional compact presentation",
+        description:
+          "Both Composer layouts use icon buttons with accessible names and title hints. Set compact on Chat.Composer, ChatSessionComposer or RichChatComposer for Core 1.21.1's Add menu and simple ready-image thumbnails. The default layout keeps independent Stop and Send actions. Files, mixed attachments, preparation and errors retain their complete rows. Compose native popovers through children; model choices and acknowledgments remain application-owned.",
+      },
+      {
         title: "Choose the editor contract",
         description:
           "Keep Chat.Composer for controlled string/File inputs. ChatSessionComposer adds portable documents and host receipts. RichChatComposer is available only from @duskmoon-dev/components/chat/rich; root and /chat imports do not load the editor runtime.",

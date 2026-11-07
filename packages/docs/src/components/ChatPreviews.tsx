@@ -6,6 +6,7 @@ import {
 } from "./ChatContractPreviews";
 import * as DmComponents from "@duskmoon-dev/components";
 import {
+  CompactComposerPreview,
   RichComposerPreview,
   SemanticComposerPreview,
 } from "./ChatSessionPreviews";
@@ -645,6 +646,7 @@ export function ComposerChatPreview() {
 }
 
 export const chatShowcasePreviews = {
+  "Compact Composer and Model Menu": CompactComposerPreview,
   "Semantic Composer and Recovery": SemanticComposerPreview,
   "Rich Composer and Authoritative Queue": RichComposerPreview,
   "Agent Answers and Activity": AgentActivityPreview,

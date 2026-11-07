@@ -2,6 +2,7 @@
 import DemoRenderer from "./DemoRenderer";
 import DocsNavigation from "./DocsNavigation.astro";
 import DocsLayout from "../layouts/DocsLayout.astro";
+import DocsCode from "./DocsCode.astro";
 import { getComponentDocs, type ComponentDoc } from "../lib/component-docs";
 import { categoriesForSection, sectionForCategory } from "../lib/docs-sections";
 
@@ -134,10 +135,11 @@ const apiTypeCount = component.api.length;
                     </span>
                   </div>
                   <p>{demo.description}</p>
-                  <div class="demo-panel demo-panel-source">
-                    <div class="demo-panel-label">Source</div>
-                    <pre><code>{demo.code}</code></pre>
-                  </div>
+                  <DocsCode
+                    class="demo-panel-source"
+                    code={demo.code}
+                    accessibleLabel={`${demo.title} source code`}
+                  />
                 </div>
               </div>
             ))
@@ -180,7 +182,11 @@ const apiTypeCount = component.api.length;
                   </span>
                 </header>
                 {section.definition ? (
-                  <pre><code>{section.definition}</code></pre>
+                  <DocsCode
+                    code={section.definition}
+                    label="Type definition"
+                    accessibleLabel={`${section.name} type definition`}
+                  />
                 ) : section.props.length > 0 ? (
                   <table class="api-table">
                     <thead>

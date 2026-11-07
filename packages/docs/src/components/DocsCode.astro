@@ -1,0 +1,35 @@
+---
+interface Props {
+  code: string;
+  label?: string;
+  accessibleLabel?: string;
+  class?: string;
+}
+
+const {
+  code,
+  label = "Source",
+  accessibleLabel = label,
+  class: className,
+} = Astro.props;
+---
+
+<details class:list={["docs-code", className]}>
+  <summary class="docs-code-summary" aria-label={accessibleLabel}>
+    <svg
+      class="docs-code-chevron"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path d="m9 5 7 7-7 7" />
+    </svg>
+    <span>{label}</span>
+  </summary>
+  <pre tabindex="0" aria-label={`${accessibleLabel} content`}><code>{code}</code></pre>
+</details>

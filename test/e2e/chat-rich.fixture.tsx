@@ -8,7 +8,10 @@ import { RichChatComposer } from "../../packages/components/src/components/chat/
 
 let root: Root | undefined;
 /** Failure fixture begins with semantic data, before the optional editor is loaded. */
-export function mountRichFailureFixture() {
+export function mountRichFailureFixture(rows?: {
+  minRows: number;
+  maxRows: number;
+}) {
   root?.unmount();
   let element = document.getElementById("rich-failure-fixture");
   if (!element) {
@@ -18,9 +21,9 @@ export function mountRichFailureFixture() {
     document.body.append(element);
   }
   root = createRoot(element);
-  root.render(<Fixture />);
+  root.render(<Fixture {...rows} />);
 }
-function Fixture() {
+function Fixture(rows: { minRows?: number; maxRows?: number }) {
   const [recovery] = useState(createComposerRecoveryOwner);
   const [value, setValue] = useState<ComposerDocumentUpdate>({
     revision: 4,
@@ -49,6 +52,7 @@ function Fixture() {
   });
   return (
     <RichChatComposer
+      {...rows}
       value={value}
       onDocumentChange={setValue}
       scope={{ contextKey: "fixture", conversationId: "failure" }}

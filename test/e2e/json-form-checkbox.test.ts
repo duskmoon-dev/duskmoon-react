@@ -69,8 +69,17 @@ for (const [preset, name, property] of [
       await expect
         .poll(() => page.evaluate(() => document.documentElement.scrollWidth))
         .toBeLessThanOrEqual(390);
-      if (theme === "light")
-        await page.getByRole("button", { name: "Light", exact: true }).click();
+      if (theme === "light") {
+        await page.getByRole("button", { name: /^Theme preference:/ }).click();
+        await page
+          .locator("#docs-theme-preference")
+          .getByText("Dark", { exact: true })
+          .click();
+        await expect(page.locator("html")).toHaveAttribute(
+          "data-theme",
+          "moonlight",
+        );
+      }
     }
   });
 }
