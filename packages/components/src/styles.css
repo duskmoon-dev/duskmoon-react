@@ -3239,7 +3239,8 @@
     cursor: pointer;
   }
 
-  .radio {
+  /* React wraps its input in a label; Core styles input.radio directly. */
+  label.radio {
     position: relative;
     display: inline-flex;
     width: auto;
@@ -3255,8 +3256,8 @@
     cursor: pointer;
   }
 
-  .radio::before,
-  .radio::after {
+  label.radio::before,
+  label.radio::after {
     display: none;
     content: none;
   }

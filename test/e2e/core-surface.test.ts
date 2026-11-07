@@ -5,6 +5,86 @@ const fixturePath = new URL("./core-surface.fixture.tsx", import.meta.url)
   .pathname;
 
 for (const theme of ["sunshine", "moonlight"]) {
+  test(`${theme}: React Radio styles preserve Core native radios`, async ({
+    page,
+  }) => {
+    await page.goto(`${baseUrl}/components/chat/`);
+    await page.evaluate(
+      async ({ path, theme }) => {
+        document.documentElement.dataset.theme = theme;
+        const fixture = await import(/* @vite-ignore */ path);
+        fixture.mountRadioFixture();
+      },
+      { path: `/@fs${fixturePath}`, theme },
+    );
+    const root = page.getByRole("region", {
+      name: "Radio compatibility fixture",
+    });
+    const native = root.getByRole("radio", {
+      name: "Native primary",
+      exact: true,
+    });
+    const nativeSecond = root.getByRole("radio", {
+      name: "Native secondary",
+      exact: true,
+    });
+    const react = root.getByRole("radio", {
+      name: "React primary",
+      exact: true,
+    });
+    const reactSecond = root.getByRole("radio", {
+      name: "React secondary",
+      exact: true,
+    });
+    await expect(native).toHaveCSS("border-top-width", "2px");
+    await expect(native).toHaveCSS("width", "16px");
+    await expect(nativeSecond).toHaveCSS("width", "24px");
+    expect(
+      await native.evaluate(
+        (element) => getComputedStyle(element, "::before").content,
+      ),
+    ).not.toBe("none");
+    await expect
+      .poll(() =>
+        native.evaluate(
+          (element) => getComputedStyle(element, "::before").transform,
+        ),
+      )
+      .toBe("matrix(1, 0, 0, 1, 0, 0)");
+    const wrapper = react.locator("..");
+    await expect(wrapper).toHaveCSS("border-top-width", "0px");
+    await expect(wrapper.locator(".radio-circle")).toHaveCSS("width", "16px");
+    await expect(wrapper.locator(".radio-dot")).toHaveCSS("opacity", "1");
+    await nativeSecond.check();
+    await root.getByText("React secondary", { exact: true }).click();
+    await expect(native).not.toBeChecked();
+    await expect(nativeSecond).toBeChecked();
+    await expect(reactSecond).toBeChecked();
+    await expect
+      .poll(() =>
+        nativeSecond.evaluate(
+          (element) => getComputedStyle(element, "::before").transform,
+        ),
+      )
+      .toBe("matrix(1, 0, 0, 1, 0, 0)");
+    await expect(
+      root.getByRole("radio", { name: "Native disabled" }),
+    ).toBeDisabled();
+    await expect(
+      root.getByRole("radio", { name: "React disabled" }),
+    ).toBeDisabled();
+    expect(
+      await root
+        .getByRole("form", { name: "Radio values" })
+        .evaluate((form) =>
+          Object.fromEntries(new FormData(form as HTMLFormElement)),
+        ),
+    ).toEqual({ native: "second", react: "second" });
+    await root.getByRole("button", { name: "Reset radios" }).click();
+    await expect(native).toBeChecked();
+    await expect(react).toBeChecked();
+  });
+
   test(`${theme}: repaired semantic, accent and base surface labels meet AA`, async ({
     page,
   }) => {

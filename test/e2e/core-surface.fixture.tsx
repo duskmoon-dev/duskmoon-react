@@ -1,5 +1,12 @@
 import { createRoot } from "react-dom/client";
-import { Alert, Badge, Button, Tag, Tabs } from "@duskmoon-dev/components";
+import {
+  Alert,
+  Badge,
+  Button,
+  Radio,
+  Tag,
+  Tabs,
+} from "@duskmoon-dev/components";
 import type { ButtonColor } from "@duskmoon-dev/components";
 
 const roles: readonly ButtonColor[] = [
@@ -109,4 +116,60 @@ export function mountSurfaceFixture() {
   const container = document.createElement("div");
   document.body.replaceChildren(container);
   createRoot(container).render(<SurfaceFixture />);
+}
+
+export function mountRadioFixture() {
+  const container = document.createElement("div");
+  document.body.replaceChildren(container);
+  createRoot(container).render(
+    <section aria-label="Radio compatibility fixture" style={{ padding: 24 }}>
+      <form aria-label="Radio values">
+        <fieldset>
+          <legend>Core native radios</legend>
+          <label>
+            <input
+              type="radio"
+              className="radio radio-primary radio-sm"
+              name="native"
+              value="first"
+              defaultChecked
+            />
+            Native primary
+          </label>
+          <label>
+            <input
+              type="radio"
+              className="radio radio-secondary radio-lg"
+              name="native"
+              value="second"
+            />
+            Native secondary
+          </label>
+          <label>
+            <input
+              type="radio"
+              className="radio radio-primary"
+              name="native"
+              value="disabled"
+              disabled
+            />
+            Native disabled
+          </label>
+        </fieldset>
+        <fieldset>
+          <legend>React radios</legend>
+          <Radio name="react" value="first" size="sm" defaultChecked>
+            React primary
+          </Radio>
+          <Radio name="react" value="second" color="secondary" size="lg">
+            React secondary
+          </Radio>
+          <Radio name="react" value="disabled" disabled>
+            React disabled
+          </Radio>
+        </fieldset>
+        <button type="reset">Reset radios</button>
+      </form>
+    </section>,
+  );
 }
