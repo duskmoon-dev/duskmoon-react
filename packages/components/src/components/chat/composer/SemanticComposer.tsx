@@ -63,6 +63,8 @@ export const SemanticComposer = forwardRef<ComposerEditorHandle, Props>(
       busy = false,
       canSubmit = true,
       allowAttachmentOnly = false,
+      compact = false,
+      addMenu,
       onStop,
       label = "Message",
       attachLabel = "Attach files",
@@ -226,12 +228,17 @@ export const SemanticComposer = forwardRef<ComposerEditorHandle, Props>(
     const popup = completion.snapshot.status !== "idle";
     const candidates: ChatComposerCompletion[] = completion.snapshot.items.map(
       (item) => {
+        const provider = providers.find(
+          (entry) => entry.providerId === item.providerId,
+        );
         const reason =
           item.candidate.disabledReason ??
           candidateDisabledReason(item.candidate);
         return {
           id: item.id,
           label: item.candidate.label,
+          icon: provider?.icon,
+          sourceLabel: provider?.sourceLabel,
           description: reason ?? item.candidate.description,
           disabled: reason !== undefined,
           group:
@@ -321,11 +328,23 @@ export const SemanticComposer = forwardRef<ComposerEditorHandle, Props>(
       }
       editor.current?.focus();
     }
+    const compactImages =
+      compact &&
+      attachmentsCurrent &&
+      attachments.entries.length > 0 &&
+      attachments.entries.every(
+        (entry) =>
+          entry.state.status === "ready" &&
+          entry.metadata.mediaType.startsWith("image/") &&
+          !!attachments.controller.previewUrl(entry.entryId),
+      );
     return (
       <ComposerShell
         {...rootProps}
         className={className}
         composerId={id}
+        compact={compact}
+        addMenu={addMenu}
         entries={(attachmentsCurrent ? attachments.entries : []).map(
           (entry) => ({
             id: entry.entryId,
@@ -341,7 +360,9 @@ export const SemanticComposer = forwardRef<ComposerEditorHandle, Props>(
                 : entry.state.status === "reattach"
                   ? "Select this file again to restore it"
                   : entry.state.status === "ready"
-                    ? "Ready"
+                    ? compactImages
+                      ? undefined
+                      : "Ready"
                     : entry.state.status,
             ...(entry.state.status === "preparing" ||
             entry.state.status === "uploading"
@@ -410,6 +431,7 @@ export const SemanticComposer = forwardRef<ComposerEditorHandle, Props>(
         active={active}
         showCompletion={showCompletion}
         selectCompletion={selectCandidate}
+        dismissCompletion={() => completion.controller.dismiss()}
         completionHeader={
           completion.snapshot.breadcrumbs.length ? (
             <nav
@@ -463,21 +485,6 @@ export const SemanticComposer = forwardRef<ComposerEditorHandle, Props>(
         hasError={hasError}
         statusContent={
           <>
-            {draftAdapter &&
-            attachmentsCurrent &&
-            read.status === "compatible" ? (
-              <DraftLifecycle
-                key={generation}
-                adapter={draftAdapter}
-                scope={scope}
-                draftKey={draftKey}
-                generation={generation}
-                value={value}
-                attachments={attachments.controller}
-                onDocumentChange={onDocumentChange}
-                disabled={disabled || runtime.status === "read_only"}
-              />
-            ) : null}
             {attachmentsCurrent && attachments.rejections.length ? (
               <div
                 role="alert"
@@ -504,56 +511,69 @@ export const SemanticComposer = forwardRef<ComposerEditorHandle, Props>(
                   (attempt.status === "unknown" ||
                     attempt.status === "pending"),
               )
-              .map((attempt) => (
-                <details
-                  key={attempt.snapshot.clientSubmissionId}
-                  className="chat-composer-status"
-                  data-state={attempt.status}
-                >
-                  <summary>
-                    {attempt.status === "unknown"
-                      ? "Submission outcome unknown — draft retained"
-                      : "Awaiting admission"}
-                  </summary>
-                  <p>{attempt.snapshot.clientSubmissionId}</p>
-                  {attempt.receipt?.outcome === "unknown" ? (
-                    <p>{attempt.receipt.error.message}</p>
-                  ) : null}
-                  {host.reconcile ? (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        void session.controller
-                          .reconcile(attempt.snapshot.clientSubmissionId)
-                          .catch((cause) =>
-                            setLocalError(String(cause), generation),
-                          );
-                      }}
-                    >
-                      Check submission status
-                    </button>
-                  ) : null}
-                  {attempt.status === "unknown" && host.authorizeRetry ? (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        void session.controller
-                          .retry(attempt.snapshot.clientSubmissionId)
-                          .catch((cause) =>
-                            setLocalError(String(cause), generation),
-                          );
-                      }}
-                    >
-                      Request authorized retry
-                    </button>
-                  ) : null}
-                  <PreservedDraft
-                    input={attempt.snapshot.document}
-                    reason="Submitted snapshot"
-                    state={attempt.status === "unknown" ? "unknown" : "pending"}
-                  />
-                </details>
-              ))}
+              .map((attempt) =>
+                compact && attempt.status === "pending" ? (
+                  <p
+                    key={attempt.snapshot.clientSubmissionId}
+                    role="status"
+                    className="sr-only"
+                    data-state="pending"
+                  >
+                    Awaiting admission
+                  </p>
+                ) : (
+                  <details
+                    key={attempt.snapshot.clientSubmissionId}
+                    className="chat-composer-status"
+                    data-state={attempt.status}
+                  >
+                    <summary>
+                      {attempt.status === "unknown"
+                        ? "Submission outcome unknown — draft retained"
+                        : "Awaiting admission"}
+                    </summary>
+                    <p>{attempt.snapshot.clientSubmissionId}</p>
+                    {attempt.receipt?.outcome === "unknown" ? (
+                      <p>{attempt.receipt.error.message}</p>
+                    ) : null}
+                    {host.reconcile ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          void session.controller
+                            .reconcile(attempt.snapshot.clientSubmissionId)
+                            .catch((cause) =>
+                              setLocalError(String(cause), generation),
+                            );
+                        }}
+                      >
+                        Check submission status
+                      </button>
+                    ) : null}
+                    {attempt.status === "unknown" && host.authorizeRetry ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          void session.controller
+                            .retry(attempt.snapshot.clientSubmissionId)
+                            .catch((cause) =>
+                              setLocalError(String(cause), generation),
+                            );
+                        }}
+                      >
+                        Request authorized retry
+                      </button>
+                    ) : null}
+                    <PreservedDraft
+                      input={attempt.snapshot.document}
+                      reason="Submitted snapshot"
+                      state={
+                        attempt.status === "unknown" ? "unknown" : "pending"
+                      }
+                    />
+                  </details>
+                ),
+              )}
             {session.snapshot.recoveryFailures?.map((attempt) => (
               <PreservedDraft
                 key={attempt.snapshot.clientSubmissionId}
@@ -562,13 +582,41 @@ export const SemanticComposer = forwardRef<ComposerEditorHandle, Props>(
               />
             ))}
             {session.snapshot.lastReceipt?.outcome === "accepted" ? (
-              <div role="status" className="chat-composer-status">
+              <div
+                role="status"
+                className={compact ? "sr-only" : "chat-composer-status"}
+              >
                 {session.snapshot.lastReceipt.operation === "command"
                   ? "Command completed"
                   : `Admitted: ${session.snapshot.lastReceipt.delivery} (${session.snapshot.lastReceipt.persistence})`}
               </div>
             ) : null}
           </>
+        }
+        renderFooter={(renderToolbar) =>
+          draftAdapter && attachmentsCurrent && read.status === "compatible" ? (
+            <DraftLifecycle
+              key={`draft-${generation}`}
+              compact={compact}
+              adapter={draftAdapter}
+              scope={scope}
+              draftKey={draftKey}
+              generation={generation}
+              value={value}
+              attachments={attachments.controller}
+              onDocumentChange={onDocumentChange}
+              disabled={disabled || runtime.status === "read_only"}
+            >
+              {(feedback, actions) => (
+                <>
+                  {feedback}
+                  {renderToolbar(actions)}
+                </>
+              )}
+            </DraftLifecycle>
+          ) : (
+            renderToolbar()
+          )
         }
         attachLabel={attachLabel}
         sendLabel={action.label}

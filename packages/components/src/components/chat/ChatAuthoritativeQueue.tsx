@@ -22,6 +22,36 @@ function scopeKey(projection: ComposerQueueProjection) {
     projection.scope.conversationId,
   ]);
 }
+
+function QueueActionIcon({
+  action,
+}: {
+  action: "edit" | "steer" | "remove" | "save" | "cancel";
+}) {
+  const paths = {
+    edit: "m15 4 5 5-11 11H4v-5ZM13 6l5 5",
+    steer: "m15 4 5 5-5 5M20 9h-9a6 6 0 0 0-6 6v4",
+    remove: "M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7",
+    save: "m5 12 4 4L19 6",
+    cancel: "m6 6 12 12M6 18 18 6",
+  };
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path d={paths[action]} />
+    </svg>
+  );
+}
 function safeText(item: ComposerQueueItem) {
   return (
     !item.document.command &&
@@ -190,9 +220,10 @@ function QueueSession(props: ChatAuthoritativeQueueProps) {
               {editable ? (
                 <button
                   type="button"
-                  className="btn btn-ghost btn-sm"
+                  className="btn btn-ghost btn-sm btn-square"
                   disabled={busy}
                   aria-label={`Edit waiting message ${index + 1}`}
+                  title={`Edit waiting message ${index + 1}`}
                   onClick={() =>
                     setEdit({
                       item,
@@ -202,15 +233,16 @@ function QueueSession(props: ChatAuthoritativeQueueProps) {
                     })
                   }
                 >
-                  Edit
+                  <QueueActionIcon action="edit" />
                 </button>
               ) : null}
               {props.capabilities.promote && item.capabilities.promote ? (
                 <button
                   type="button"
-                  className="btn btn-ghost btn-sm chat-queue-steer"
+                  className="btn btn-ghost btn-sm btn-square chat-queue-steer"
                   disabled={busy || !props.targetTurnId}
                   aria-label={`Steer waiting message ${index + 1}`}
+                  title={`Steer waiting message ${index + 1}`}
                   onClick={() => {
                     if (props.targetTurnId)
                       void mutate(
@@ -222,18 +254,19 @@ function QueueSession(props: ChatAuthoritativeQueueProps) {
                       );
                   }}
                 >
-                  Steer
+                  <QueueActionIcon action="steer" />
                 </button>
               ) : null}
               {props.capabilities.remove && item.capabilities.remove ? (
                 <button
                   type="button"
-                  className="btn btn-ghost btn-sm chat-queue-remove"
+                  className="btn btn-ghost btn-sm btn-square chat-queue-remove"
                   disabled={busy}
                   aria-label={`Remove waiting message ${index + 1}`}
+                  title={`Remove waiting message ${index + 1}`}
                   onClick={() => void mutate({ operation: "remove" }, row.id)}
                 >
-                  Remove
+                  <QueueActionIcon action="remove" />
                 </button>
               ) : null}
             </>
@@ -267,8 +300,10 @@ function QueueSession(props: ChatAuthoritativeQueueProps) {
               />
               <div className="chat-composer-actions">
                 <button
-                  className="btn btn-sm"
+                  className="btn btn-sm btn-square"
                   type="button"
+                  aria-label="Save queued message"
+                  title="Save queued message"
                   disabled={pending.includes(edit.item.id) || !editAllowed}
                   onClick={() =>
                     void mutate(
@@ -278,15 +313,17 @@ function QueueSession(props: ChatAuthoritativeQueueProps) {
                     )
                   }
                 >
-                  Save queued message
+                  <QueueActionIcon action="save" />
                 </button>
                 <button
-                  className="btn btn-ghost btn-sm"
+                  className="btn btn-ghost btn-sm btn-square"
                   type="button"
+                  aria-label="Cancel"
+                  title="Cancel"
                   disabled={pending.includes(edit.item.id)}
                   onClick={() => setEdit(undefined)}
                 >
-                  Cancel
+                  <QueueActionIcon action="cancel" />
                 </button>
               </div>
             </>

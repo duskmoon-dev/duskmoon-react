@@ -4,7 +4,10 @@ import React, {
   useLayoutEffect,
   useRef,
 } from "react";
-import { Input } from "../../input";
+import {
+  getTextAreaCountClasses,
+  textAreaWrapperClass,
+} from "../../../classes/input";
 import { cn } from "../../../utils";
 import type {
   ChatComposerCompletionContext,
@@ -59,6 +62,12 @@ export const PlainEditor = forwardRef<PlainEditorHandle, PlainEditorProps>(
     const composingRef = useRef(false);
     const minimumRows = Math.max(1, Math.floor(minRows));
     const maximumRows = Math.max(minimumRows, Math.floor(maxRows));
+    const { showCount, ...nativeProps } = textareaProps ?? {};
+    // The integrated editor uses Core's composer surface, not a standalone input.
+    delete nativeProps.size;
+    delete nativeProps.status;
+    delete nativeProps.variant;
+    delete nativeProps.resize;
 
     useImperativeHandle(
       ref,
@@ -115,15 +124,14 @@ export const PlainEditor = forwardRef<PlainEditorHandle, PlainEditorProps>(
       };
     }, [value, minimumRows, maximumRows, textareaProps?.style]);
 
-    return (
-      <Input.TextArea
-        {...textareaProps}
+    const control = (
+      <textarea
+        {...nativeProps}
         ref={editorRef}
         className={cn("chat-composer-editor", textareaProps?.className)}
         value={value}
         disabled={disabled}
         rows={minimumRows}
-        resize="none"
         aria-label={
           textareaProps?.["aria-label"] ??
           (textareaProps?.["aria-labelledby"] ? undefined : "Message")
@@ -134,7 +142,11 @@ export const PlainEditor = forwardRef<PlainEditorHandle, PlainEditorProps>(
             hasError && `${composerId}-error`,
           ) || undefined
         }
-        aria-invalid={hasError ? true : textareaProps?.["aria-invalid"]}
+        aria-invalid={
+          hasError || textareaProps?.status === "error"
+            ? true
+            : textareaProps?.["aria-invalid"]
+        }
         aria-controls={showCompletion ? `${composerId}-completions` : undefined}
         aria-autocomplete={hasCompletion ? "list" : undefined}
         aria-haspopup={hasCompletion ? "listbox" : undefined}
@@ -165,6 +177,25 @@ export const PlainEditor = forwardRef<PlainEditorHandle, PlainEditorProps>(
           onKeyDown(event);
         }}
       />
+    );
+    return showCount ? (
+      <span className={textAreaWrapperClass}>
+        {control}
+        <span
+          className={getTextAreaCountClasses({
+            exceeded:
+              textareaProps?.maxLength !== undefined &&
+              value.length > textareaProps.maxLength,
+          })}
+        >
+          {value.length}
+          {textareaProps?.maxLength !== undefined
+            ? ` / ${textareaProps.maxLength}`
+            : null}
+        </span>
+      </span>
+    ) : (
+      control
     );
   },
 );

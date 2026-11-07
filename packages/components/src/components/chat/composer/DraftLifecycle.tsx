@@ -18,6 +18,11 @@ interface Props {
   attachments: ComposerAttachmentController;
   onDocumentChange: (value: ComposerDocumentUpdate) => void;
   disabled: boolean;
+  compact?: boolean;
+  children: (
+    feedback: React.ReactNode,
+    menuActions?: React.ReactNode,
+  ) => React.ReactNode;
 }
 
 /** Host storage is optional; no autosave cadence or browser storage is assumed. */
@@ -30,6 +35,8 @@ export function DraftLifecycle({
   attachments,
   onDocumentChange,
   disabled,
+  compact = false,
+  children,
 }: Props) {
   const originId = `${useId()}-draft`;
   function restore(draft: ComposerDraft) {
@@ -60,18 +67,20 @@ export function DraftLifecycle({
     snapshot.restorePending ||
     (snapshot.status === "incompatible" && !snapshot.overwriteAllowed) ||
     (snapshot.status === "error" && snapshot.errorOperation !== "save");
-  return (
-    <div className="chat-composer-status" aria-label="Draft storage">
-      <div role="status">
-        {snapshot.status === "loading"
-          ? "Loading stored draft…"
-          : snapshot.saving
-            ? "Saving draft…"
-            : snapshot.lastSavedRevision === value.revision
-              ? "Draft saved by host storage."
-              : snapshot.loaded?.applied
-                ? "Stored draft restored."
-                : "Draft storage is provided by the host."}
+  const status =
+    snapshot.status === "loading"
+      ? "Loading stored draft…"
+      : snapshot.saving
+        ? "Saving draft…"
+        : snapshot.lastSavedRevision === value.revision
+          ? "Draft saved by host storage."
+          : snapshot.loaded?.applied
+            ? "Stored draft restored."
+            : "Draft storage is provided by the host.";
+  const feedback = (
+    <>
+      <div role="status" className={compact ? "sr-only" : undefined}>
+        {status}
       </div>
       {snapshot.error ? <p role="alert">{snapshot.error.message}</p> : null}
       {snapshot.incompatible ? (
@@ -112,6 +121,69 @@ export function DraftLifecycle({
           </button>
         </>
       ) : null}
+    </>
+  );
+  const actions = compact ? (
+    <>
+      <button
+        type="button"
+        className="popover-menu-item"
+        title={status}
+        disabled={blocked}
+        onClick={(event) => {
+          void controller.save();
+          event.currentTarget
+            .closest<HTMLElement>("[popover]")
+            ?.hidePopover?.();
+        }}
+      >
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h12l4 4v12a2 2 0 0 1-2 2ZM7 3v6h10V3M7 21v-8h10v8" />
+        </svg>
+        <span>Save draft</span>
+      </button>
+      <button
+        type="button"
+        className="popover-menu-item"
+        title="Reload stored draft"
+        disabled={disabled || snapshot.status === "loading" || snapshot.saving}
+        onClick={(event) => {
+          void controller.reload();
+          event.currentTarget
+            .closest<HTMLElement>("[popover]")
+            ?.hidePopover?.();
+        }}
+      >
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path d="M3 11a9 9 0 1 1 2.6 7.4M3 4v7h7" />
+        </svg>
+        <span>Reload stored draft</span>
+      </button>
+    </>
+  ) : (
+    <>
       <button
         type="button"
         disabled={blocked}
@@ -126,6 +198,14 @@ export function DraftLifecycle({
       >
         Reload stored draft
       </button>
-    </div>
+    </>
   );
+  return compact
+    ? children(feedback, actions)
+    : children(
+        <div className="chat-composer-status" aria-label="Draft storage">
+          {feedback}
+          {actions}
+        </div>,
+      );
 }

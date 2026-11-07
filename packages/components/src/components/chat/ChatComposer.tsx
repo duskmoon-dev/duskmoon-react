@@ -40,6 +40,8 @@ export const ChatComposer = forwardRef<HTMLDivElement, ChatComposerProps>(
       onAttachmentRejected,
       multiple = true,
       allowAttachmentOnly = false,
+      compact = false,
+      addMenu,
       disabled = false,
       busy = false,
       generating = false,
@@ -283,6 +285,8 @@ export const ChatComposer = forwardRef<HTMLDivElement, ChatComposerProps>(
         ref={ref}
         className={className}
         composerId={id}
+        compact={compact}
+        addMenu={addMenu}
         entries={occurrences.entries}
         renderAttachment={renderAttachment}
         removeAttachment={(entryId) => {
@@ -303,6 +307,7 @@ export const ChatComposer = forwardRef<HTMLDivElement, ChatComposerProps>(
         active={active}
         showCompletion={showCompletion}
         selectCompletion={selectCompletion}
+        dismissCompletion={() => setDismissed(true)}
         visibleError={visibleError}
         hasError={hasError}
         attachLabel={attachLabel}

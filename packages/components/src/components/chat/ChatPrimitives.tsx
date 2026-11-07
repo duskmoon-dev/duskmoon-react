@@ -202,15 +202,17 @@ export const ChatQueue = forwardRef<HTMLElement, ChatQueueProps>(
                   ) : (
                     <>
                       <button
-                        className="btn btn-ghost btn-sm chat-queue-steer"
+                        className="btn btn-ghost btn-sm btn-circle btn-icon btn-icon-sm chat-queue-steer"
                         type="button"
                         disabled={pending || steerDisabled}
                         aria-label={`Steer waiting message ${index + 1}`}
+                        title={`Steer waiting message ${index + 1}`}
                         onClick={() => onSteer(item.id)}
                       >
                         <svg
                           width="16"
                           height="16"
+                          style={{ flexShrink: 0 }}
                           viewBox="0 0 24 24"
                           fill="none"
                           stroke="currentColor"
@@ -219,18 +221,19 @@ export const ChatQueue = forwardRef<HTMLElement, ChatQueueProps>(
                         >
                           <path d="m15 4 5 5-5 5M20 9h-9a6 6 0 0 0-6 6v4" />
                         </svg>
-                        Steer
                       </button>
                       <button
-                        className="btn btn-ghost btn-sm btn-square chat-queue-remove"
+                        className="btn btn-ghost btn-sm btn-circle btn-icon btn-icon-sm chat-queue-remove"
                         type="button"
                         disabled={pending}
                         aria-label={`Remove waiting message ${index + 1}`}
+                        title={`Remove waiting message ${index + 1}`}
                         onClick={() => onRemove(item.id)}
                       >
                         <svg
                           width="16"
                           height="16"
+                          style={{ flexShrink: 0 }}
                           viewBox="0 0 24 24"
                           fill="none"
                           stroke="currentColor"

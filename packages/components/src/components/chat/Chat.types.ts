@@ -173,6 +173,9 @@ export interface ChatComposerSubmission {
 export interface ChatComposerCompletion {
   id: string;
   label: string;
+  /** Optional presentation; never part of the submitted document. */
+  icon?: ReactNode;
+  sourceLabel?: string;
   description?: ReactNode;
   disabled?: boolean;
   group?: string;
@@ -233,6 +236,10 @@ export interface ChatComposerProps extends Omit<
   multiple?: boolean;
   /** Permit a draft containing only files. @default false */
   allowAttachmentOnly?: boolean;
+  /** Compact Add menu, one send/stop action and ready-image strip. @default false */
+  compact?: boolean;
+  /** Additional actions in the compact Add menu. */
+  addMenu?: ReactNode;
   disabled?: boolean;
   /** Gates submission while keeping the draft editable. */
   busy?: boolean;

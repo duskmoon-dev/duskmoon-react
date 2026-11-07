@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { afterEach, describe, expect, test } from "bun:test";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import React, { createRef, useState } from "react";
 import { Chat, ChatComposer } from "./index";
@@ -54,7 +54,202 @@ function selectFiles(container: HTMLElement, files: File[]) {
   fireEvent.change(input!, { target: { files } });
 }
 
+const originalCreateObjectURL = URL.createObjectURL;
+const originalRevokeObjectURL = URL.revokeObjectURL;
+afterEach(() => {
+  URL.createObjectURL = originalCreateObjectURL;
+  URL.revokeObjectURL = originalRevokeObjectURL;
+});
+
+function imagePreviews() {
+  let nextId = 0;
+  const revoked: string[] = [];
+  URL.createObjectURL = () => `blob:composer-image-${++nextId}`;
+  URL.revokeObjectURL = (url) => revoked.push(url);
+  return revoked;
+}
+
 describe("Chat.Composer", () => {
+  test("compact controls keep custom labels and native menu intake with a state-dependent primary action", async () => {
+    const pending = deferred<boolean>();
+    let submissions = 0;
+    let stops = 0;
+    const { container } = render(
+      <Harness
+        compact
+        generating
+        attachLabel="Choose files"
+        sendLabel="Send follow-up"
+        stopLabel="Stop current turn"
+        onStop={() => stops++}
+        onSubmit={() => {
+          submissions++;
+          return pending.promise;
+        }}
+      >
+        {({ submit, submitting, canSubmit, generating }) => (
+          <button type="button" disabled={!canSubmit} onClick={submit}>
+            {submitting
+              ? "Admitting"
+              : generating
+                ? "Queue follow-up"
+                : "Queue"}
+          </button>
+        )}
+      </Harness>,
+    );
+    const toolbar = container.querySelector<HTMLDivElement>(
+      ".chat-composer-toolbar-compact",
+    )!;
+    const attach = screen.getByRole("button", { name: "Choose files" });
+    const send = screen.getByRole("button", { name: "Send follow-up" });
+    expect(
+      screen.queryByRole("button", { name: "Stop current turn" }),
+    ).toBeNull();
+    expect(attach.parentElement).toBe(toolbar);
+    expect(send.parentElement?.className).toBe("chat-composer-actions");
+    expect(send.parentElement?.parentElement).toBe(toolbar);
+    for (const button of [attach, send]) {
+      expect(button.getAttribute("type")).toBe("button");
+      expect(button.className).toContain("btn-circle");
+      expect(button.textContent).toBe("");
+      expect(button.querySelector("svg")?.getAttribute("aria-hidden")).toBe(
+        "true",
+      );
+    }
+    const picker = container.querySelector("input[type=file]")!;
+    let pickerClicks = 0;
+    picker.addEventListener("click", () => pickerClicks++);
+    expect(attach.getAttribute("popovertarget")).toBe(
+      picker.closest("[popover]")!.id,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Files" }));
+    expect(pickerClicks).toBe(1);
+    await act(async () =>
+      fireEvent.click(screen.getByRole("button", { name: "Queue follow-up" })),
+    );
+    expect(submissions).toBe(1);
+    expect(screen.queryByRole("button", { name: "Send follow-up" })).toBeNull();
+    expect(screen.getByRole("button", { name: "Admitting" })).toBeTruthy();
+    expect(editor().disabled).toBe(false);
+    fireEvent.click(screen.getByRole("button", { name: "Stop current turn" }));
+    expect(stops).toBe(1);
+    await act(async () => pending.resolve(false));
+    const nextSend = screen.getByRole("button", { name: "Send follow-up" });
+    expect((nextSend as HTMLButtonElement).disabled).toBe(false);
+    expect(nextSend.getAttribute("aria-busy")).toBeNull();
+    await act(async () => fireEvent.click(nextSend));
+    expect(submissions).toBe(2);
+  });
+
+  test("default icon controls preserve caller labels, independent Stop and image metadata rows", () => {
+    imagePreviews();
+    const selected = new File(["image"], "default.png", { type: "image/png" });
+    const { container } = render(
+      <Harness
+        initialFiles={[selected]}
+        onSubmit={() => false}
+        generating
+        onStop={() => {}}
+        attachLabel="Upload files"
+        sendLabel="Deliver draft"
+        stopLabel="Stop answer"
+      />,
+    );
+    expect(container.querySelector(".chat-composer-toolbar")).toBeNull();
+    expect(container.querySelector(".chat-composer-thumbnails")).toBeNull();
+    for (const label of [
+      "Upload files",
+      "Deliver draft",
+      "Stop answer",
+      "Remove default.png",
+    ]) {
+      const button = screen.getByRole("button", { name: label });
+      expect(button.textContent).toBe("");
+      expect(button.title).toBe(label);
+      expect(button.querySelector("svg")?.getAttribute("aria-hidden")).toBe(
+        "true",
+      );
+    }
+    const attach = screen.getByRole("button", { name: "Upload files" });
+    expect(attach.parentElement?.className).toBe("chat-composer-actions");
+    expect(screen.getByText("default.png").getAttribute("title")).toBe(
+      "default.png",
+    );
+    expect(screen.getByRole("img", { name: "default.png" }).className).toBe(
+      "chat-composer-preview",
+    );
+  });
+
+  test("compact ready images use named removable tiles and release their preview URLs", () => {
+    const revoked = imagePreviews();
+    const images = ["first.png", "second.png"].map(
+      (name) => new File(["image"], name, { type: "image/png" }),
+    );
+    const { container, unmount } = render(
+      <Harness compact initialFiles={images} onSubmit={() => false} />,
+    );
+    const strip = screen.getByRole("list", { name: "Attachments" });
+    expect(strip.className).toContain("chat-composer-thumbnails");
+    expect(strip.nextElementSibling).toBe(editor());
+    expect(
+      container.querySelectorAll(".chat-composer-attachment-tile"),
+    ).toHaveLength(2);
+    expect(
+      container.querySelector(".chat-composer-attachment-info"),
+    ).toBeNull();
+    const firstImage = screen.getByRole("img", { name: "first.png" });
+    const firstUrl = firstImage.getAttribute("src")!;
+    expect(firstImage.className).toBe("chat-composer-preview");
+    const remove = screen.getByRole("button", { name: "Remove first.png" });
+    expect(remove.className).toContain("chat-composer-attachment-remove");
+    expect(remove.getAttribute("title")).toBe("Remove first.png");
+    fireEvent.click(remove);
+    expect(screen.queryByRole("img", { name: "first.png" })).toBeNull();
+    expect(revoked).toEqual([firstUrl]);
+    fireEvent.click(screen.getByRole("button", { name: "Remove second.png" }));
+    expect(screen.queryByRole("list", { name: "Attachments" })).toBeNull();
+    expect(revoked).toHaveLength(2);
+    unmount();
+  });
+
+  test("compact mixed files and custom image renderers retain complete metadata rows", () => {
+    imagePreviews();
+    const image = new File(["image"], "photo.png", { type: "image/png" });
+    const { container, rerender } = render(
+      <Harness
+        compact
+        initialFiles={[image, file("notes.txt")]}
+        onSubmit={() => false}
+      />,
+    );
+    expect(container.querySelector(".chat-composer-thumbnails")).toBeNull();
+    expect(
+      container.querySelectorAll(".chat-composer-attachment-info"),
+    ).toHaveLength(2);
+    expect(screen.getByText("photo.png")).toBeTruthy();
+    expect(screen.getByText("notes.txt")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Remove notes.txt" }));
+    expect(container.querySelector(".chat-composer-thumbnails")).toBeTruthy();
+    rerender(
+      <Harness
+        compact
+        onSubmit={() => false}
+        renderAttachment={(attachment, { remove }) => (
+          <button type="button" onClick={remove}>
+            Custom {attachment.name}
+          </button>
+        )}
+      />,
+    );
+    expect(container.querySelector(".chat-composer-thumbnails")).toBeNull();
+    expect(
+      container.querySelector(".chat-composer-attachment-tile"),
+    ).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Custom photo.png" }));
+    expect(screen.queryByRole("list", { name: "Attachments" })).toBeNull();
+  });
+
   test("exports the composer, forwards its ref, and composes extra actions", async () => {
     const ref = createRef<HTMLDivElement>();
     const submitted: ChatComposerSubmission[] = [];
@@ -88,6 +283,33 @@ describe("Chat.Composer", () => {
     fireEvent.click(screen.getByRole("button", { name: "Queue follow-up" }));
     expect(submitted).toEqual([{ value: "Public API", files: [] }]);
     await act(async () => {});
+  });
+
+  test("the native editor retains counts and native props without standalone textarea styling", () => {
+    render(
+      <Chat.Composer
+        value="Draft"
+        onValueChange={() => {}}
+        onSubmit={() => false}
+        textareaProps={{
+          "aria-label": "Counted draft",
+          name: "message",
+          maxLength: 40,
+          showCount: true,
+          status: "error",
+          variant: "filled",
+          className: "consumer-editor",
+        }}
+      />,
+    );
+    const input = screen.getByRole("textbox", { name: "Counted draft" });
+    expect(input.className).toBe("chat-composer-editor consumer-editor");
+    expect(input.getAttribute("name")).toBe("message");
+    expect(input.getAttribute("maxlength")).toBe("40");
+    expect(input.getAttribute("aria-invalid")).toBe("true");
+    expect(input.hasAttribute("showCount")).toBe(false);
+    expect(input.hasAttribute("variant")).toBe(false);
+    expect(screen.getByText("5 / 40")).toBeTruthy();
   });
 
   test("submits multiline text with Ctrl or Cmd+Enter and clears accepted text", async () => {

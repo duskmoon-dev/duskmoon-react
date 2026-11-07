@@ -126,6 +126,14 @@
     display: none;
   }
 
+  /* React's content span must not give a circular icon a text baseline. */
+  .btn-circle > .btn-content {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
   .card {
     box-sizing: border-box;
     max-width: 100%;
@@ -6566,4 +6574,63 @@
   max-height: none;
   resize: none;
   line-height: 1.5rem;
+}
+
+/* Lexical paragraph blocks represent editor lines, without prose margins. */
+.chat-composer-editor[data-lexical-editor] > p {
+  margin: 0;
+}
+
+@layer components {
+  /* Keep the shared composer inset at half Core's default 1rem. */
+  .chat-composer {
+    padding: 0.5rem;
+  }
+
+  /* The compact composition uses equal, smaller corner actions. */
+  .chat-composer-toolbar-compact > .btn-circle,
+  .chat-composer-toolbar-compact > .chat-composer-actions > .btn-circle {
+    inline-size: 1.75rem;
+    block-size: 1.75rem;
+    padding: 0;
+  }
+
+  /* Native anchoring keeps completion outside the scrolling editor. */
+  .chat-composer-completions-compact[popover] {
+    inline-size: anchor-size(inline);
+    margin-inline: 0;
+  }
+
+  .chat-composer-completion-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .chat-composer-option-compact {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .chat-composer-option-icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+  }
+
+  .chat-composer-option-icon > svg {
+    flex-shrink: 0;
+  }
+
+  .chat-composer-option-compact > .chat-composer-option-description {
+    flex: 1 1 40%;
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .chat-composer-option-source {
+    flex-shrink: 0;
+  }
 }

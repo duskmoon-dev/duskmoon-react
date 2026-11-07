@@ -70,7 +70,7 @@ Chat docs include RTL, live states, tool statuses, message actions and the Core
 `Chat.Work`, `Chat.WorkSummary` and `Chat.WorkBody` disclosures, keeping the final
 answer outside them. User messages use `Chat placement="end"` and `Chat.Bubble`;
 opt into `collapsible` for automatic six-line measurement, resize/text updates,
-accessible expansion and focus cleanup. The package now requires Core 1.21.0,
+accessible expansion and focus cleanup. The package now requires Core 1.21.1,
 which supplies the shared Composer editor, attachment, suggestion and status parts.
 
 `Chat.InputArea` attaches a controlled `Chat.Queue` to native
@@ -91,6 +91,22 @@ Supply `scope={{ contextKey, conversationId }}` when reusing a Composer between
 repositories or conversations: a late acceptance or error from the previous
 scope cannot clear the current draft or call its error handler. Pending admission
 leaves editing available. The host still owns the controlled draft and files.
+
+Composer actions use icon buttons with accessible names and `title` hints in both
+layouts. `attachLabel`, `sendLabel` and `stopLabel` customize those names and hints.
+Attachment retry/cancel/remove and default queue actions follow the same pattern.
+The shared composer padding is 0.5rem.
+
+Set `compact` on `Chat.Composer`, `ChatSessionComposer` or `RichChatComposer`
+for a compact toolbar with accessible icon buttons and a horizontal strip of
+simple ready-image thumbnails. Mixed files, preparation, errors and custom
+attachment renderers retain full rows. The default wrapping layout remains
+available. Compose host-owned settings through `children`, using Core's native
+`popover chat-composer-menu` classes when a configuration menu is needed.
+The compact `+` opens a native Add menu for files, explicit draft save/reload
+and optional `addMenu` content. Routine save/admission status is announced without
+adding rows. Its primary button sends an eligible draft or stops the running turn
+when submission is unavailable; the default layout retains separate controls.
 
 Root and `/chat` exports also provide editor-independent `ComposerDocument`,
 `ComposerDraft`, submission/receipt, provider, attachment and queue types.
@@ -175,7 +191,15 @@ belong to the application. The UI never automatically overwrites incompatible
 stored content.
 
 `providers` supply scoped asynchronous candidates, disabled reasons, directory
-drill-down and insert/invoke actions. The host resolves and authorizes references,
+drill-down and insert/invoke actions. In compact mode, results open in a native
+popover above the composer, with grouped rows, keyboard navigation, filtering and
+native dismissal. Optional provider `icon` and `sourceLabel` decorate the rows;
+they never enter portable documents or submissions. Use a leading `/` provider
+for skills and commands: skills insert editable instructions, rich claimed
+commands retain their identity until submission, and `invoke` actions call
+`onProviderInvoke` independently. The plain editor supports text skills and host
+invocation; claimed commands require the rich editor.
+The host resolves and authorizes references,
 quote provenance, commands and attachment handles; portable validity is not
 authorization. `ChatAuthoritativeQueue` renders confirmed projections and requests
 revision-checked edit/remove/promote mutations. Apply canonical projections through
@@ -186,7 +210,7 @@ idempotency, persistence and execution policy. The Chat documentation includes
 interactive fake-host examples with real local state transitions; their memory
 storage survives editor remounts only and makes no durable delivery claim.
 
-Core 1.21.0 still has a known Moonlight contrast gap for neutral outlined/ghost
+Core 1.21.1 still has a known Moonlight contrast gap for neutral outlined/ghost
 labels ([duskmoonui#78](https://github.com/duskmoon-dev/duskmoonui/issues/78)).
 The upstream fix is required before claiming complete palette accessibility.
 

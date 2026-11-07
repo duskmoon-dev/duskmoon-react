@@ -43,6 +43,10 @@ export interface ChatSessionComposerProps extends Omit<
   readonly busy?: boolean;
   readonly canSubmit?: boolean;
   readonly allowAttachmentOnly?: boolean;
+  /** Compact Add menu, one send/stop action and ready-image strip. @default false */
+  readonly compact?: boolean;
+  /** Additional actions in the compact Add menu. */
+  readonly addMenu?: ReactNode;
   readonly onStop?: () => void;
   readonly label?: string;
   readonly attachLabel?: string;

@@ -47,6 +47,17 @@ describe("Chat 1.20.6 composition", () => {
       screen.getByRole("list", { name: "Waiting messages" }).tabIndex,
     ).toBe(0);
     expect(screen.getByText("First message").title).toBe("First message");
+    for (const label of [
+      "Steer waiting message 1",
+      "Remove waiting message 1",
+    ]) {
+      const button = screen.getByRole("button", { name: label });
+      expect(button.textContent).toBe("");
+      expect(button.title).toBe(label);
+      expect(button.querySelector("svg")?.getAttribute("aria-hidden")).toBe(
+        "true",
+      );
+    }
     fireEvent.click(
       screen.getByRole("button", { name: "Steer waiting message 1" }),
     );

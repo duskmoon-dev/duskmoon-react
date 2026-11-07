@@ -69,7 +69,7 @@
         "remark-gfm": "^4.0.1",
       },
       "devDependencies": {
-        "@duskmoon-dev/core": "1.21.0",
+        "@duskmoon-dev/core": "1.21.1",
         "@lexical/history": "0.53.0",
         "@lexical/plain-text": "0.53.0",
         "@testing-library/react": "16.3.2",
@@ -79,7 +79,7 @@
         "lexical": "0.53.0",
       },
       "peerDependencies": {
-        "@duskmoon-dev/core": ">=1.21.0",
+        "@duskmoon-dev/core": ">=1.21.1",
         "@lexical/history": "0.53.0",
         "@lexical/plain-text": "0.53.0",
         "lexical": "0.53.0",
@@ -99,7 +99,7 @@
         "@astrojs/react": "6.0.2",
         "@duskmoon-dev/art-components": "workspace:*",
         "@duskmoon-dev/components": "workspace:*",
-        "@duskmoon-dev/core": "1.21.0",
+        "@duskmoon-dev/core": "1.21.1",
         "@types/react": "19.2.18",
         "@types/react-dom": "19.2.4",
         "astro": "7.1.6",
@@ -245,7 +245,7 @@
 
     "@duskmoon-dev/components": ["@duskmoon-dev/components@workspace:packages/components"],
 
-    "@duskmoon-dev/core": ["@duskmoon-dev/core@1.21.0", "", { "peerDependencies": { "tailwindcss": "^4.0.0" } }, "sha512-jHjcfxHWK71hNY/LZuY5QzZl7lbFHhy6i7uLOC6cej2AZYDZ8TpxkjJCUpVN9R4lIiAMpdD5U4wtP52Srig+rQ=="],
+    "@duskmoon-dev/core": ["@duskmoon-dev/core@1.21.1", "", { "peerDependencies": { "tailwindcss": "^4.0.0" } }, "sha512-KqS0QRRvrxmSDlmQ1+YP3Z0fM5BQyoufFsDucdVuBOA/HJSkxgXxyAS/ZK0P5WAnkfkzfyr88woAlKIZE2Li1w=="],
 
     "@duskmoon-dev/css-art": ["@duskmoon-dev/css-art@1.21.0", "", {}, "sha512-Visdm4sozaa7IYKDzfe47WxJdGcvmEgDd/nqb1xW56JElbqgMRuK2puv2jcKMNCm2FWnaliopVTyFQAl6piSNg=="],
 

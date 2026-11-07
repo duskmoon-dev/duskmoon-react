@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type {
   ComposerDocument,
   ComposerError,
@@ -22,6 +23,9 @@ export interface ComposerProviderNavigation {
 
 export interface ComposerCompletionProvider extends ComposerProvider {
   readonly label?: string;
+  /** Presentation only; these values do not enter the portable protocol. */
+  readonly icon?: ReactNode;
+  readonly sourceLabel?: string;
   /** Commands and editable skills can share a marker with distinct providers. */
   readonly trigger: {
     readonly text: string;

@@ -82,6 +82,8 @@ const LexicalEditor = forwardRef<
   const emitted = useRef<ComposerDocumentUpdate | undefined>(undefined);
   const documentSignature = useRef("");
   const selectionSignature = useRef("");
+  const minimumRows = Math.max(1, Math.floor(props.minRows ?? 1));
+  const maximumRows = Math.max(minimumRows, Math.floor(props.maxRows ?? 6));
 
   useLayoutEffect(() => {
     latest.current = props;
@@ -394,6 +396,10 @@ const LexicalEditor = forwardRef<
       ref={rootRef}
       id={props.id}
       className="chat-composer-editor"
+      style={{
+        minBlockSize: `${minimumRows}lh`,
+        maxBlockSize: `${maximumRows}lh`,
+      }}
       role="textbox"
       tabIndex={0}
       aria-multiline="true"

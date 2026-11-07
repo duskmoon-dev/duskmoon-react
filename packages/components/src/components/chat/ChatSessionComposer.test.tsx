@@ -1,4 +1,4 @@
-import { expect, test } from "bun:test";
+import { afterEach, expect, test } from "bun:test";
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import React, {
   forwardRef,
@@ -14,6 +14,7 @@ import type {
 } from "./Composer.types";
 import type { ComposerSessionHost } from "./ComposerSession.types";
 import type { ChatSessionComposerProps } from "./ChatSessionComposer.types";
+import type { ComposerAttachmentPreparationContext } from "./ComposerAttachment.types";
 import { ChatSessionComposer } from "./ChatSessionComposer";
 import { createComposerRecoveryOwner } from "./composer/session";
 import { SemanticComposer } from "./composer/SemanticComposer";
@@ -78,6 +79,213 @@ function Fixture({
   );
 }
 
+const originalCreateObjectURL = URL.createObjectURL;
+const originalRevokeObjectURL = URL.revokeObjectURL;
+afterEach(() => {
+  URL.createObjectURL = originalCreateObjectURL;
+  URL.revokeObjectURL = originalRevokeObjectURL;
+});
+
+function imagePreviews() {
+  let nextId = 0;
+  const revoked: string[] = [];
+  URL.createObjectURL = () => `blob:session-image-${++nextId}`;
+  URL.revokeObjectURL = (url) => revoked.push(url);
+  return revoked;
+}
+
+test("compact sessions retain host intent labels and switch the primary action after admission", async () => {
+  const submissions: ComposerSubmission[] = [];
+  let stops = 0;
+  const { container } = render(
+    <Fixture
+      compact
+      runtime={{ status: "running", activeTurnId: "turn" }}
+      attachLabel="Add a file"
+      stopLabel="Stop demo turn"
+      attachmentOptions={{
+        prepare: () => ({ providerId: "host", reference: "ready" }),
+      }}
+      onStop={() => stops++}
+      host={host(async (snapshot) => {
+        submissions.push(snapshot);
+        return accept(snapshot);
+      })}
+    >
+      <button type="button">Host settings</button>
+    </Fixture>,
+  );
+  const send = screen.getByRole("button", { name: "Send follow-up" });
+  expect(screen.queryByRole("button", { name: "Stop demo turn" })).toBeNull();
+  const attach = screen.getByRole("button", { name: "Add a file" });
+  expect(send.textContent).toBe("");
+  expect(attach.parentElement?.className).toContain(
+    "chat-composer-toolbar-compact",
+  );
+  expect(
+    screen.getByRole("button", { name: "Host settings" }).parentElement,
+  ).toBe(send.parentElement);
+  expect(
+    container.querySelector(".chat-composer")?.hasAttribute("compact"),
+  ).toBe(false);
+  await act(async () => fireEvent.click(send));
+  const stop = screen.getByRole("button", { name: "Stop demo turn" });
+  expect(stop.querySelector("svg")).toBeTruthy();
+  expect(screen.queryByRole("button", { name: "Send follow-up" })).toBeNull();
+  fireEvent.click(stop);
+  expect(submissions).toHaveLength(1);
+  expect(submissions[0]).toMatchObject({
+    operation: "prompt",
+    intent: "follow_up",
+  });
+  expect(submissions[0]).not.toHaveProperty("targetTurnId");
+  expect(stops).toBe(1);
+});
+
+test("compact sessions tile only actual ready image previews and preserve default Ready rows", async () => {
+  const revoked = imagePreviews();
+  const attachmentOptions = {
+    prepare: () => ({ providerId: "host", reference: "ready" }),
+  };
+  const { container, rerender } = render(
+    <Fixture compact attachmentOptions={attachmentOptions} />,
+  );
+  const picker = container.querySelector('input[type="file"]')!;
+  const image = new File(["image"], "ready.png", { type: "image/png" });
+  await act(async () =>
+    fireEvent.change(picker, { target: { files: [image] } }),
+  );
+  expect(screen.getByRole("list", { name: "Attachments" }).className).toContain(
+    "chat-composer-thumbnails",
+  );
+  const preview = screen.getByRole("img", { name: "ready.png" });
+  expect(preview.className).toBe("chat-composer-preview");
+  const previewUrl = preview.getAttribute("src")!;
+  expect(screen.queryByText("Ready")).toBeNull();
+  await act(async () =>
+    fireEvent.change(picker, {
+      target: {
+        files: [new File(["notes"], "notes.txt", { type: "text/plain" })],
+      },
+    }),
+  );
+  expect(container.querySelector(".chat-composer-thumbnails")).toBeNull();
+  expect(
+    container.querySelectorAll(".chat-composer-attachment-info"),
+  ).toHaveLength(2);
+  expect(screen.getAllByText("Ready")).toHaveLength(2);
+  fireEvent.click(screen.getByRole("button", { name: "Remove notes.txt" }));
+  expect(
+    container.querySelector(".chat-composer-attachment-tile"),
+  ).toBeTruthy();
+  rerender(<Fixture attachmentOptions={attachmentOptions} />);
+  expect(container.querySelector(".chat-composer-thumbnails")).toBeNull();
+  expect(screen.getByText("Ready")).toBeTruthy();
+  expect(screen.getByText("ready.png")).toBeTruthy();
+  fireEvent.click(screen.getByRole("button", { name: "Remove ready.png" }));
+  expect(revoked).toContain(previewUrl);
+});
+
+test("compact lifecycle rows expose Core progress, preparation errors, Retry and Cancel", async () => {
+  imagePreviews();
+  let context!: ComposerAttachmentPreparationContext;
+  let fail!: (cause: Error) => void;
+  const { container } = render(
+    <Fixture
+      compact
+      attachmentOptions={{
+        prepare: (_file, nextContext) => {
+          context = nextContext;
+          return new Promise((_resolve, reject) => {
+            fail = reject;
+          });
+        },
+      }}
+    />,
+  );
+  const picker = container.querySelector('input[type="file"]')!;
+  await act(async () =>
+    fireEvent.change(picker, {
+      target: {
+        files: [new File(["image"], "upload.png", { type: "image/png" })],
+      },
+    }),
+  );
+  expect(screen.getByText("preparing")).toBeTruthy();
+  act(() => context.reportProgress(0.4));
+  const progress = screen.getByRole("progressbar", {
+    name: "Preparing upload.png",
+  }) as HTMLProgressElement;
+  expect(progress.className).toBe("progress");
+  expect(progress.value).toBe(0.4);
+  expect(progress.max).toBe(1);
+  expect(container.querySelector(".chat-composer-attachment-tile")).toBeNull();
+  expect(screen.getByText("uploading")).toBeTruthy();
+  expect(
+    screen.getByRole("button", { name: "Cancel upload.png" }),
+  ).toBeTruthy();
+  await act(async () => fail(new Error("Host rejected upload")));
+  expect(screen.getByText("Host rejected upload")).toBeTruthy();
+  expect(screen.getByText("upload.png")).toBeTruthy();
+  expect(screen.queryByRole("progressbar")).toBeNull();
+  await act(async () =>
+    fireEvent.click(screen.getByRole("button", { name: "Retry upload.png" })),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Cancel upload.png" }));
+  expect(context.signal.aborted).toBe(true);
+  expect(screen.getByText("cancelled")).toBeTruthy();
+  expect(screen.getByRole("button", { name: "Retry upload.png" })).toBeTruthy();
+  expect(
+    screen.getByRole("button", { name: "Remove upload.png" }),
+  ).toBeTruthy();
+  expect(container.querySelector(".chat-composer-thumbnails")).toBeNull();
+});
+
+test("compact draft menu keeps explicit save/reload without changing editor identity or adding status rows", async () => {
+  const saved: ComposerDraft[] = [];
+  let loads = 0;
+  render(
+    <Fixture
+      compact
+      draftAdapter={{
+        load: async () => {
+          loads++;
+          return undefined;
+        },
+        save: async (draft) => {
+          saved.push(draft);
+        },
+      }}
+    />,
+  );
+  await act(async () => {});
+  const save = screen.getByRole("button", { name: "Save draft" });
+  const reload = screen.getByRole("button", {
+    name: "Reload stored draft",
+  });
+  const editor = screen.getByRole("textbox");
+  expect(save.textContent).toBe("Save draft");
+  expect(reload.textContent).toBe("Reload stored draft");
+  expect(save.querySelector('svg[aria-hidden="true"]')).toBeTruthy();
+  expect(save.closest("[popover]")?.getAttribute("aria-label")).toBe(
+    "Add files and more",
+  );
+  expect(saved).toHaveLength(0);
+  await act(async () => fireEvent.click(save));
+  expect(saved).toHaveLength(1);
+  expect(saved[0].document.content).toEqual([
+    { type: "text", text: "Initial draft" },
+  ]);
+  expect(screen.getByText("Draft saved by host storage.")).toBeTruthy();
+  expect(screen.getByText("Draft saved by host storage.").className).toBe(
+    "sr-only",
+  );
+  expect(screen.getByRole("textbox")).toBe(editor);
+  const beforeReload = loads;
+  await act(async () => fireEvent.click(reload));
+  expect(loads).toBe(beforeReload + 1);
+});
+
 test("typed prompt admission uses the shared plain shell and clears only its current revision", async () => {
   const submissions: ComposerSubmission[] = [];
   render(
@@ -136,6 +344,58 @@ test("editing remains available during pending admission and newer text survives
     resolve(accept(submitted));
   });
   expect(message.value).toBe("A newer draft");
+});
+
+test("compact pending admission has no hidden interactive controls and reveals unknown recovery", async () => {
+  let resolve!: (receipt: ComposerReceipt) => void;
+  let submitted!: ComposerSubmission;
+  const pending = new Promise<ComposerReceipt>((yes) => {
+    resolve = yes;
+  });
+  const owner: ComposerSessionHost = {
+    ...host(async (snapshot) => {
+      submitted = snapshot;
+      return pending;
+    }),
+    reconcile: async (snapshot) => accept(snapshot),
+  };
+  render(<Fixture compact host={owner} />);
+  await act(async () => {
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
+  });
+  const status = screen.getByText("Awaiting admission");
+  expect(status.getAttribute("role")).toBe("status");
+  expect(status.className).toBe("sr-only");
+  expect(status.closest("details")).toBeNull();
+  expect(
+    screen.queryByRole("button", {
+      name: "Check submission status",
+      hidden: true,
+    }),
+  ).toBeNull();
+  await act(async () => {
+    resolve({
+      protocolVersion: 1,
+      scope: submitted.scope,
+      clientSubmissionId: submitted.clientSubmissionId,
+      operation: "prompt",
+      outcome: "unknown",
+      error: { code: "lost", message: "Admission response lost" },
+    });
+  });
+  const summary = screen.getByText(
+    "Submission outcome unknown — draft retained",
+  );
+  expect(summary.closest("details")?.className).toBe("chat-composer-status");
+  fireEvent.click(summary);
+  expect(
+    screen
+      .getByRole("button", { name: "Check submission status", hidden: true })
+      .closest(".sr-only"),
+  ).toBeNull();
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe(
+    "Initial draft",
+  );
 });
 
 test("unknown outcomes retain a submitted snapshot separately from the live draft", async () => {
