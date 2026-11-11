@@ -38,3 +38,6 @@ export {
   exportComposerMarkdown,
 } from "./composer/document";
 export type { ComposerReadResult } from "./composer/document";
+
+export * from "./ChatComposerContext";
+export * from "./ChatRequest";

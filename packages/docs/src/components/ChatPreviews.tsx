@@ -1,3 +1,4 @@
+import { ChatRequestsPreview } from "./ChatRequestsPreview";
 import React, { useId, useState } from "react";
 import {
   AgentActivityPreview,
@@ -646,6 +647,7 @@ export function ComposerChatPreview() {
 }
 
 export const chatShowcasePreviews = {
+  "Timeline Approvals and Composer Context": ChatRequestsPreview,
   "Compact Composer and Model Menu": CompactComposerPreview,
   "Semantic Composer and Recovery": SemanticComposerPreview,
   "Rich Composer and Authoritative Queue": RichComposerPreview,

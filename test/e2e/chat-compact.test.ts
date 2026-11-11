@@ -4,6 +4,8 @@ import {
   openAdd,
   closeMenus,
   chooseModel as requestModel,
+  settingsStatus,
+  openModel,
 } from "./chat-demo.helpers";
 
 const base = process.env.DOCS_TEST_URL ?? "http://127.0.0.1:4334";
@@ -42,6 +44,7 @@ async function chooseModel(page: Page, root: Locator, label: string) {
   const menu = root.getByRole("group", {
     name: "Composer model settings",
     exact: true,
+    includeHidden: true,
   });
   return { trigger, menu };
 }
@@ -140,18 +143,25 @@ test("compact native settings waits for host acknowledgment and keeps rejected c
   await expect(root.getByLabel("Compact host state")).toContainText(
     "model: standard",
   );
+  await expect(controls.menu).toBeHidden();
+  await expect(controls.trigger).toHaveAttribute("aria-busy", "true");
+  await expect(settingsStatus(root)).toContainText("Change pending");
+  await openModel(root);
   await expect(
     controls.menu.getByRole("button", { name: /^Choose a model:/ }),
   ).toBeDisabled();
+  await expect(controls.menu.getByRole("slider")).toBeDisabled();
+  await closeMenus(root);
   await expect(controls.trigger).toHaveAccessibleName(
     "Model settings: Fast demo model, Medium",
   );
+  await openModel(root);
   await controls.menu.getByRole("button", { name: /^Choose a model:/ }).focus();
   await page.keyboard.press("Escape");
   await expect(controls.menu).toBeHidden();
   await expect(controls.trigger).toBeFocused();
   controls = await chooseModel(page, root, "Restricted model (host rejects)");
-  await expect(controls.menu.getByRole("status")).toContainText(
+  await expect(settingsStatus(root)).toContainText(
     "Demo host declined this model",
   );
   await expect(controls.trigger).toHaveAccessibleName(
@@ -160,6 +170,9 @@ test("compact native settings waits for host acknowledgment and keeps rejected c
   await expect(root.getByLabel("Compact host state")).toContainText(
     "model: fast",
   );
+  await expect(controls.menu).toBeHidden();
+  await expect(controls.trigger).toBeFocused();
+  await openModel(root);
   // The anchored menu covers the editor's right side; click exposed text space.
   await root.getByRole("textbox").click({ position: { x: 8, y: 8 } });
   await expect(controls.menu).toBeHidden();

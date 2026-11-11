@@ -1,12 +1,20 @@
+import chatRequestsSource from "../components/ChatRequestsPreview.tsx?raw";
 import chatContractSource from "../components/ChatContractPreviews.tsx?raw";
 import chatSessionSource from "../components/ChatSessionPreviews.tsx?raw";
 
 // Authored snippets mirror the live public React APIs.
 export const chatDemoExamples = [
   {
+    title: "Timeline Approvals and Composer Context",
+    description:
+      "Host-owned approval requests stay next to tool calls in the agent timeline. Decisions remain pending until the demo host confirms them; expired requests and requests answered elsewhere keep their details without actions. The composer context shares the surface across compact and ghost variants and exposes a named goal action.",
+    code: chatRequestsSource,
+    source: "authored",
+  },
+  {
     title: "Compact Composer and Model Menu",
     description:
-      "Core 1.21.1 composition with an Add menu, approval choice, model/effort menus and ready-image thumbnails. The primary action sends a draft or stops a running turn. Choices wait for the in-memory host to acknowledge them; this demo changes no real permissions.",
+      "Core 1.21.5 composition using public ComposerSettings menus and an attached context bar with an Add menu, approval choice, model/effort menus and ready-image thumbnails. The primary action sends a draft or stops a running turn. Choices wait for the in-memory host to acknowledge them; this demo changes no real permissions.",
     code: chatSessionSource,
     source: "authored",
   },

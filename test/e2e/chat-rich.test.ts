@@ -5,6 +5,7 @@ import {
   openControls,
   demoAction,
   chooseModel,
+  settingsStatus,
 } from "./chat-demo.helpers";
 import type { ComposerDocument } from "../../packages/components/src/components/chat/Composer.types";
 
@@ -438,11 +439,7 @@ test("queue actions and model choices display authoritative acknowledgments", as
     "Model settings: Fast demo model, Medium",
   );
   await chooseModel(root, "Restricted model (host rejects)");
-  await expect(
-    root
-      .getByRole("group", { name: "Composer model settings", exact: true })
-      .getByRole("status"),
-  ).toContainText(
+  await expect(settingsStatus(root)).toContainText(
     "Demo host declined this model; the current selection is retained.",
   );
   await expect(trigger).toHaveAccessibleName(

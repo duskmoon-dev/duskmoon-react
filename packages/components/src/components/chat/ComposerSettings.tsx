@@ -1,4 +1,5 @@
 import React, { useId, useLayoutEffect, useRef, useState } from "react";
+import { ComposerSettingsMenus } from "./ComposerSettingsMenus";
 import { Select } from "../select/Select";
 import { cn } from "../../utils";
 import type {
@@ -107,6 +108,15 @@ function SettingsSession(props: ComposerSettingsProps) {
       }
     }
   }
+  if (props.variant === "menu")
+    return (
+      <ComposerSettingsMenus
+        {...props}
+        busy={pending.length > 0}
+        feedback={feedback}
+        request={request}
+      />
+    );
   return (
     <div
       className={cn("chat-composer-toolbar", props.className)}

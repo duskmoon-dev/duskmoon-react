@@ -38,6 +38,9 @@ export interface ChatAuthoritativeQueueProps {
 export interface ComposerSettingChoice {
   readonly value: string;
   readonly label: string;
+  readonly description?: string;
+  readonly tone?: "warning";
+  readonly icon?: React.ReactNode;
   readonly unavailableReason?: string;
 }
 export interface ComposerSetting {
@@ -45,7 +48,19 @@ export interface ComposerSetting {
   readonly label: string;
   readonly value: string;
   readonly choices: readonly ComposerSettingChoice[];
+  /** Ordered choices render as a slider in the menu presentation. */
+  readonly ordered?: boolean;
+  readonly defaultValue?: string;
   readonly unavailableReason?: string;
+}
+/** Settings grouped under one trigger, in host-supplied order. */
+export interface ComposerSettingsGroup {
+  readonly id: string;
+  readonly label: string;
+  readonly settingIds: readonly string[];
+  readonly nestedSettingIds?: readonly string[];
+  readonly appearance?: "access" | "model";
+  readonly icon?: React.ReactNode;
 }
 export interface ComposerSettingRequest {
   readonly requestId: string;
@@ -64,6 +79,8 @@ export type ComposerSettingResult = {
   | { readonly outcome: "rejected"; readonly message: string }
 );
 export interface ComposerSettingsProps {
+  readonly variant?: "select" | "menu";
+  readonly groups?: readonly ComposerSettingsGroup[];
   readonly scopeKey: string;
   readonly revision: number;
   readonly settings: readonly ComposerSetting[];

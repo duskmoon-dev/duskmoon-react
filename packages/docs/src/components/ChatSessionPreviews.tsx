@@ -1,12 +1,8 @@
-import React, {
-  useEffect,
-  useId,
-  useRef,
-  useState,
-  useSyncExternalStore,
-} from "react";
+import React, { useId, useRef, useState, useSyncExternalStore } from "react";
 import {
   ChatAuthoritativeQueue,
+  Chat,
+  ComposerSettings,
   ChatSessionComposer,
   Button,
   createComposerRecoveryOwner,
@@ -629,277 +625,21 @@ const approvals = [
   ["full", "Full access", "Allow actions without an approval prompt."],
 ] as const;
 
-function Icon({
-  kind,
-}: {
-  kind: "shield" | "down" | "right" | "check" | "reset";
-}) {
-  const paths = {
-    shield: "m12 3 8 4v5c0 5-8 9-8 9s-8-4-8-9V7ZM12 8v5M12 16h.01",
-    down: "m6 9 6 6 6-6",
-    right: "m9 6 6 6-6 6",
-    check: "m5 12 4 4L19 6",
-    reset: "M3 11a9 9 0 1 1 2.6 7.4M3 4v7h7",
-  };
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.75"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <path d={paths[kind]} />
-    </svg>
-  );
-}
-
-/** Core menu markup; all displayed settings remain controlled by host receipts. */
-function ChatComposerMenus(props: {
-  scopeKey: string;
-  revision: number;
-  model: string;
-  effort: string;
-  approval: string;
-  onRequest: (
-    request: ComposerSettingRequest,
-    signal: AbortSignal,
-  ) => Promise<ComposerSettingResult>;
-  onAcknowledged: (result: ComposerSettingResult) => void;
-}) {
-  const id = useId();
-  const base = id.replace(/[^a-zA-Z0-9_-]/g, "");
-  const permissionsId = `${id}-permissions`;
-  const settingsId = `${id}-settings`;
-  const modelsId = `${id}-models`;
-  const permissionAnchor = `--${base}-permissions`;
-  const settingsAnchor = `--${base}-settings`;
-  const active = useRef<AbortController | undefined>(undefined);
-  const settingsPanel = useRef<HTMLDivElement>(null);
-  const counter = useRef(0);
-  const [pending, setPending] = useState(false);
-  const [feedback, setFeedback] = useState("");
-  const [permissionOpen, setPermissionOpen] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [modelsOpen, setModelsOpen] = useState(false);
-  useEffect(() => () => active.current?.abort(), []);
-
-  async function request(settingId: string, value: string) {
-    if (
-      active.current ||
-      value === props[settingId as "model" | "effort" | "approval"]
-    )
-      return;
-    const controller = new AbortController();
-    active.current = controller;
-    setPending(true);
-    setFeedback("");
-    const mutation: ComposerSettingRequest = {
-      requestId: `${id}-${++counter.current}`,
-      scopeKey: props.scopeKey,
-      expectedRevision: props.revision,
-      settingId,
-      value,
-    };
-    try {
-      const result = await props.onRequest(mutation, controller.signal);
-      if (controller.signal.aborted) return;
-      if (
-        result.requestId !== mutation.requestId ||
-        result.scopeKey !== mutation.scopeKey ||
-        result.settingId !== settingId ||
-        result.revision < mutation.expectedRevision
-      )
-        throw new Error("Invalid setting acknowledgment");
-      props.onAcknowledged(result);
-      setFeedback(result.outcome === "rejected" ? result.message : "");
-    } catch (error) {
-      if (!controller.signal.aborted)
-        setFeedback(error instanceof Error ? error.message : String(error));
-    } finally {
-      if (active.current === controller) {
-        active.current = undefined;
-        if (!controller.signal.aborted) setPending(false);
-      }
-    }
-  }
-  function choose(
-    event: React.MouseEvent<HTMLButtonElement>,
-    settingId: string,
-    value: string,
-  ) {
-    void request(settingId, value);
-    event.currentTarget.closest<HTMLElement>("[popover]")?.hidePopover();
-    if (settingId === "model")
-      settingsPanel.current?.focus({ preventScroll: true });
-  }
-  const model = models.find(([value]) => value === props.model) ?? models[0];
-  const approval =
-    approvals.find(([value]) => value === props.approval) ?? approvals[0];
-  const effort = Math.max(0, efforts.indexOf(props.effort));
-
-  return (
-    <>
-      <button
-        type="button"
-        className={`btn btn-ghost btn-sm chat-composer-config chat-demo-approval${props.approval === "full" ? " chat-demo-full-access" : ""}`}
-        aria-label={`Approval mode: ${approval[1]}`}
-        title={`Approval mode: ${approval[1]}`}
-        popoverTarget={permissionsId}
-        aria-expanded={permissionOpen}
-        aria-controls={permissionsId}
-        style={{ anchorName: permissionAnchor } as React.CSSProperties}
-      >
-        <Icon kind="shield" />
-        <span className="chat-composer-label">{approval[1]}</span>
-      </button>
-      <div
-        id={permissionsId}
-        popover="auto"
-        role="group"
-        aria-label="Approval mode"
-        className="popover popover-menu chat-composer-menu"
-        style={{ positionAnchor: permissionAnchor } as React.CSSProperties}
-        onToggle={(event) =>
-          setPermissionOpen(event.currentTarget.matches(":popover-open"))
-        }
-      >
-        <div className="chat-composer-group">Approval mode</div>
-        {approvals.map(([value, label, description]) => (
-          <button
-            key={value}
-            type="button"
-            className={`popover-menu-item chat-composer-menu-option${value === "full" ? " chat-composer-menu-option-warning" : ""}`}
-            aria-pressed={props.approval === value}
-            disabled={pending}
-            onClick={(event) => choose(event, "approval", value)}
-          >
-            <Icon kind="shield" />
-            <span className="chat-composer-label">
-              {label}
-              <span className="chat-composer-description">{description}</span>
-            </span>
-            {props.approval === value ? <Icon kind="check" /> : null}
-          </button>
-        ))}
-      </div>
-      <button
-        type="button"
-        className="btn btn-ghost btn-sm chat-composer-config chat-demo-model"
-        aria-label={`Model settings: ${model[1]}, ${effortLabels[effort]}`}
-        title="Select model and reasoning effort"
-        popoverTarget={settingsId}
-        aria-expanded={settingsOpen}
-        aria-controls={settingsId}
-        style={{ anchorName: settingsAnchor } as React.CSSProperties}
-      >
-        <span className="chat-composer-label">
-          {model[2]}{" "}
-          <span className="chat-demo-effort">{effortLabels[effort]}</span>
-        </span>
-        <Icon kind="down" />
-      </button>
-      <div
-        id={settingsId}
-        popover="auto"
-        role="group"
-        aria-label="Composer model settings"
-        ref={settingsPanel}
-        tabIndex={-1}
-        className="popover popover-menu chat-composer-menu chat-composer-menu-end"
-        style={{ positionAnchor: settingsAnchor } as React.CSSProperties}
-        onToggle={(event) =>
-          setSettingsOpen(event.currentTarget.matches(":popover-open"))
-        }
-      >
-        <div className="chat-composer-menu-row">
-          <strong>{effortLabels[effort]}</strong>
-          <button
-            type="button"
-            className="btn btn-ghost btn-xs btn-circle"
-            aria-label="Reset reasoning effort"
-            title="Reset reasoning effort"
-            disabled={pending || props.effort === "medium"}
-            onClick={() => void request("effort", "medium")}
-          >
-            <Icon kind="reset" />
-          </button>
-        </div>
-        <button
-          type="button"
-          className="popover-menu-item"
-          aria-label={`Choose a model: ${model[1]}`}
-          disabled={pending}
-          popoverTarget={modelsId}
-          aria-expanded={modelsOpen}
-          aria-controls={modelsId}
-        >
-          <span className="chat-composer-label">{model[1]}</span>
-          <Icon kind="right" />
-        </button>
-        <label className="chat-composer-menu-field">
-          <span className="sr-only">Reasoning effort</span>
-          <input
-            type="range"
-            className="range range-sm"
-            min="0"
-            max="3"
-            step="1"
-            value={effort}
-            aria-valuetext={effortLabels[effort]}
-            disabled={pending}
-            onChange={(event) =>
-              void request("effort", efforts[Number(event.currentTarget.value)])
-            }
-          />
-        </label>
-        <div className="chat-composer-menu-row chat-composer-description">
-          <span>Low</span>
-          <span>Max</span>
-        </div>
-        {feedback ? (
-          <p role="status" className="chat-composer-menu-field">
-            {feedback}
-          </p>
-        ) : null}
-        <div
-          id={modelsId}
-          popover="auto"
-          role="group"
-          aria-label="Choose a model"
-          className="popover popover-menu chat-composer-menu chat-composer-menu-end"
-          style={{ positionAnchor: settingsAnchor } as React.CSSProperties}
-          onToggle={(event) =>
-            setModelsOpen(event.currentTarget.matches(":popover-open"))
-          }
-        >
-          <div className="chat-composer-group">Select model</div>
-          {models.map(([value, label]) => (
-            <button
-              key={value}
-              type="button"
-              className="popover-menu-item chat-composer-menu-option"
-              aria-pressed={props.model === value}
-              disabled={pending}
-              onClick={(event) => choose(event, "model", value)}
-            >
-              <span className="chat-composer-label">{label}</span>
-              {props.model === value ? <Icon kind="check" /> : null}
-            </button>
-          ))}
-        </div>
-      </div>
-      <span className="sr-only" role="status">
-        {pending ? "Change pending" : feedback}
-      </span>
-    </>
-  );
-}
+const menuGroups = [
+  {
+    id: "approval",
+    label: "Approval mode",
+    settingIds: ["approval"],
+    appearance: "access" as const,
+  },
+  {
+    id: "model",
+    label: "Model settings",
+    settingIds: ["model", "effort"],
+    nestedSettingIds: ["model"],
+    appearance: "model" as const,
+  },
+];
 
 function QueueDocumentEditor({
   value,
@@ -1192,15 +932,54 @@ function SessionDemo({ rich }: { rich: boolean }) {
         providers={providers}
         onProviderInvoke={demo.invoke}
         onStop={demo.stop}
+        context={
+          <Chat.ComposerContext>
+            <Chat.ComposerContextItem icon={<DemoIcon name="reference" />}>
+              demo-repository
+            </Chat.ComposerContextItem>
+            <Chat.ComposerContextEnd>
+              <Chat.ComposerConnection state="connected" />
+            </Chat.ComposerContextEnd>
+          </Chat.ComposerContext>
+        }
         allowAttachmentOnly
         label={rich ? "Rich demo message" : "Semantic demo message"}
       >
-        <ChatComposerMenus
+        <ComposerSettings
+          variant="menu"
+          groups={menuGroups}
           scopeKey={scope.conversationId}
           revision={state.settingsRevision}
-          model={state.model}
-          effort={state.effort}
-          approval={state.approval}
+          settings={[
+            {
+              id: "approval",
+              label: "Approval mode",
+              value: state.approval,
+              choices: approvals.map(([value, label, description]) => ({
+                value,
+                label,
+                description,
+                tone: value === "full" ? ("warning" as const) : undefined,
+              })),
+            },
+            {
+              id: "model",
+              label: "Model",
+              value: state.model,
+              choices: models.map(([value, label]) => ({ value, label })),
+            },
+            {
+              id: "effort",
+              label: "Reasoning effort",
+              value: state.effort,
+              ordered: true,
+              defaultValue: "medium",
+              choices: efforts.map((value, index) => ({
+                value,
+                label: effortLabels[index],
+              })),
+            },
+          ]}
           onRequest={demo.requestSetting}
           onAcknowledged={demo.acknowledgeSetting}
         />
@@ -1293,15 +1072,54 @@ export function CompactComposerPreview() {
           approval: state.approval,
         }}
         onStop={demo.stop}
+        context={
+          <Chat.ComposerContext>
+            <Chat.ComposerContextItem icon={<DemoIcon name="reference" />}>
+              demo-repository
+            </Chat.ComposerContextItem>
+            <Chat.ComposerContextEnd>
+              <Chat.ComposerConnection state="connected" />
+            </Chat.ComposerContextEnd>
+          </Chat.ComposerContext>
+        }
         allowAttachmentOnly
         label="Compact demo message"
       >
-        <ChatComposerMenus
+        <ComposerSettings
+          variant="menu"
+          groups={menuGroups}
           scopeKey={scope.conversationId}
           revision={state.settingsRevision}
-          model={state.model}
-          effort={state.effort}
-          approval={state.approval}
+          settings={[
+            {
+              id: "approval",
+              label: "Approval mode",
+              value: state.approval,
+              choices: approvals.map(([value, label, description]) => ({
+                value,
+                label,
+                description,
+                tone: value === "full" ? ("warning" as const) : undefined,
+              })),
+            },
+            {
+              id: "model",
+              label: "Model",
+              value: state.model,
+              choices: models.map(([value, label]) => ({ value, label })),
+            },
+            {
+              id: "effort",
+              label: "Reasoning effort",
+              value: state.effort,
+              ordered: true,
+              defaultValue: "medium",
+              choices: efforts.map((value, index) => ({
+                value,
+                label: effortLabels[index],
+              })),
+            },
+          ]}
           onRequest={demo.requestSetting}
           onAcknowledged={demo.acknowledgeSetting}
         />

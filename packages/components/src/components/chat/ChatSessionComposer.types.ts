@@ -47,6 +47,8 @@ export interface ChatSessionComposerProps extends Omit<
   readonly compact?: boolean;
   /** Additional actions in the compact Add menu. */
   readonly addMenu?: ReactNode;
+  /** Attached context bar, rendered first inside the composer. */
+  readonly context?: ReactNode;
   readonly onStop?: () => void;
   readonly label?: string;
   readonly attachLabel?: string;

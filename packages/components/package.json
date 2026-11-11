@@ -1,6 +1,6 @@
 {
   "name": "@duskmoon-dev/components",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -477,7 +477,7 @@
     }
   ],
   "peerDependencies": {
-    "@duskmoon-dev/core": ">=1.21.1",
+    "@duskmoon-dev/core": ">=1.21.5",
     "react": ">=19.0.0",
     "react-dom": ">=19.0.0",
     "lexical": "0.53.0",
@@ -493,7 +493,7 @@
     "ajv-formats": "^3.0.1"
   },
   "devDependencies": {
-    "@duskmoon-dev/core": "1.21.1",
+    "@duskmoon-dev/core": "1.21.5",
     "@lexical/history": "0.53.0",
     "@lexical/plain-text": "0.53.0",
     "@testing-library/react": "16.3.2",

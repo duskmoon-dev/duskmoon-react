@@ -6583,9 +6583,9 @@
 }
 
 @layer components {
-  /* Keep the shared composer inset at half Core's default 1rem. */
+  /* Share the React inset with Core context bars and composer padding. */
   .chat-composer {
-    padding: 0.5rem;
+    --chat-composer-inset: 0.5rem;
   }
 
   /* The compact composition uses equal, smaller corner actions. */

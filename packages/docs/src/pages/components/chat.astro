@@ -20,6 +20,11 @@ const component = {
           "Both Composer layouts use icon buttons with accessible names and title hints. Set compact on Chat.Composer, ChatSessionComposer or RichChatComposer for Core 1.21.1's Add menu and simple ready-image thumbnails. The default layout keeps independent Stop and Send actions. Files, mixed attachments, preparation and errors retain their complete rows. Compose native popovers through children; model choices and acknowledgments remain application-owned.",
       },
       {
+        title: "Public settings menus, context and approvals",
+        description:
+          "Core 1.21.5 supplies all styles for ComposerSettings variant=menu, Chat.ComposerContext and Chat.Request. Pass a context node to either composer; it renders first inside the composer and inherits the compact or ghost surface. Context items accept decorative icons and named actions; ComposerConnection announces its connection state. Put Chat.Request next to Chat.Tool inside Chat.Agent. The host controls request state and pending decisions; resolved and answer-elsewhere requests have no actions.",
+      },
+      {
         title: "Choose the editor contract",
         description:
           "Keep Chat.Composer for controlled string/File inputs. ChatSessionComposer adds portable documents and host receipts. RichChatComposer is available only from @duskmoon-dev/components/chat/rich; root and /chat imports do not load the editor runtime.",

@@ -42,6 +42,7 @@ export const ChatComposer = forwardRef<HTMLDivElement, ChatComposerProps>(
       allowAttachmentOnly = false,
       compact = false,
       addMenu,
+      context,
       disabled = false,
       busy = false,
       generating = false,
@@ -287,6 +288,7 @@ export const ChatComposer = forwardRef<HTMLDivElement, ChatComposerProps>(
         composerId={id}
         compact={compact}
         addMenu={addMenu}
+        context={context}
         entries={occurrences.entries}
         renderAttachment={renderAttachment}
         removeAttachment={(entryId) => {

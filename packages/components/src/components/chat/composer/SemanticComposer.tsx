@@ -65,6 +65,7 @@ export const SemanticComposer = forwardRef<ComposerEditorHandle, Props>(
       allowAttachmentOnly = false,
       compact = false,
       addMenu,
+      context: composerContext,
       onStop,
       label = "Message",
       attachLabel = "Attach files",
@@ -345,6 +346,7 @@ export const SemanticComposer = forwardRef<ComposerEditorHandle, Props>(
         composerId={id}
         compact={compact}
         addMenu={addMenu}
+        context={composerContext}
         entries={(attachmentsCurrent ? attachments.entries : []).map(
           (entry) => ({
             id: entry.entryId,

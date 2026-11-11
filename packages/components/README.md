@@ -210,6 +210,39 @@ idempotency, persistence and execution policy. The Chat documentation includes
 interactive fake-host examples with real local state transitions; their memory
 storage survives editor remounts only and makes no durable delivery claim.
 
+### Settings menus, context and timeline approvals
+
+Core **1.21.5 or newer** is required. Import these APIs from the package root or
+`@duskmoon-dev/components/chat`; import `@duskmoon-dev/components/styles.css`
+for the complete Core and React stylesheet.
+
+`ComposerSettings variant="menu"` uses the same serialized request, revision,
+abort and acknowledgment protocol as the default select presentation. Choice
+metadata accepts `description`, `tone="warning"` and `icon`. An `ordered` setting
+renders its choices as a range and requests a change on pointer/key release;
+`defaultValue` enables reset. `groups` combines `settingIds` under a trigger,
+with optional `nestedSettingIds` and `appearance="access" | "model"`. Values
+remain controlled by the host, including rejected or stale acknowledgments.
+The menus close after choosing; status feedback remains announced outside them.
+
+Both `Chat.Composer` and `ChatSessionComposer` accept `context`, rendered first
+inside the composer. Compose `Chat.ComposerContext`, `Chat.ComposerContextItem`,
+`Chat.ComposerContextEnd` and `Chat.ComposerConnection` there. Items accept an
+`icon` and an optional `action` with a required accessible `label` and `onClick`.
+Connection `state` is `connected`, `connecting` or `disconnected`; `label`
+customizes its visible status. Core joins the bar to default, compact and ghost
+composer surfaces using the shared inset; no additional consumer CSS is needed.
+
+Place `Chat.Request` next to `Chat.Tool` inside `Chat.Agent`. Supply a `title`,
+detail children and ordered `actions` (`id`, `label`, `onSelect`, optional
+`tone="primary" | "danger"`). The host owns `pending` while deciding and `state`:
+`pending`, `approved`, `approved-for-session`, `declined`, `expired` or
+`answer-elsewhere`. Only the pending state renders actions; `pending` disables
+them while a decision is in flight. `explanation` and `statusLabel` provide host
+context and localized status. Status updates are polite; incoming updates never
+move focus out of the composer. If resolution removes a focused decision, focus
+stays on that request without scrolling.
+
 Core 1.21.1 still has a known Moonlight contrast gap for neutral outlined/ghost
 labels ([duskmoonui#78](https://github.com/duskmoon-dev/duskmoonui/issues/78)).
 The upstream fix is required before claiming complete palette accessibility.

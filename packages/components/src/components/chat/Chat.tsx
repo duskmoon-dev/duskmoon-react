@@ -1,3 +1,10 @@
+import { ChatRequest } from "./ChatRequest";
+import {
+  ChatComposerContext,
+  ChatComposerContextItem,
+  ChatComposerContextEnd,
+  ChatComposerConnection,
+} from "./ChatComposerContext";
 import React, {
   forwardRef,
   useId,
@@ -426,6 +433,11 @@ ChatRoot.displayName = "Chat";
 
 export const Chat = Object.assign(ChatRoot, {
   Composer: ChatComposer,
+  ComposerContext: ChatComposerContext,
+  ComposerContextItem: ChatComposerContextItem,
+  ComposerContextEnd: ChatComposerContextEnd,
+  ComposerConnection: ChatComposerConnection,
+  Request: ChatRequest,
   Agent: ChatAgent,
   Content: ChatContent,
   Work: ChatWork,

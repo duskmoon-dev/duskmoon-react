@@ -185,23 +185,6 @@ a {
   overflow: auto;
 }
 
-.chat-composer-actions > .chat-demo-approval {
-  margin-inline-end: auto;
-}
-
-.chat-demo-model {
-  border-radius: 9999px;
-  background-color: var(--color-surface-container-highest);
-}
-
-.chat-demo-effort {
-  color: var(--color-on-surface-variant);
-}
-
-.chat-demo-full-access {
-  color: var(--color-warning);
-}
-
 .button-link {
   border: 1px solid var(--dm-border);
   border-radius: 8px;

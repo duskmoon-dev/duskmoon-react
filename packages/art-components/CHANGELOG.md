@@ -1,5 +1,11 @@
 # @duskmoon-dev/art-components
 
+## 0.6.3
+
+### Patch Changes
+
+- Publish host-owned Chat composer settings menus, an attached context bar, and timeline approval requests using Core 1.21.5 styles. Preserve serialized settings acknowledgments, accessible pending/resolved states, and keyboard focus.
+
 ## 0.6.2
 
 ### Patch Changes

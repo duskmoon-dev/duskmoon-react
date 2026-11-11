@@ -62,7 +62,14 @@ export async function openModel(root: Locator) {
 }
 
 export async function chooseModel(root: Locator, name: string) {
+  const trigger = root.getByRole("button", { name: /^Model settings:/ });
   await openModel(root);
   await root.getByRole("button", { name: /^Choose a model:/ }).click();
   await root.getByRole("button", { name, exact: true }).click();
+  await expect(root.locator(".chat-composer-menu:popover-open")).toHaveCount(0);
+  await expect(trigger).toBeFocused();
+}
+
+export function settingsStatus(root: Locator) {
+  return root.locator('.chat-composer-actions > span.sr-only[role="status"]');
 }

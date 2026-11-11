@@ -7,6 +7,7 @@ import {
   demoAction,
   openModel,
   chooseModel,
+  settingsStatus,
 } from "./chat-demo.helpers";
 
 const base = process.env.DOCS_TEST_URL ?? "http://127.0.0.1:4334";
@@ -119,6 +120,8 @@ test("reference permission, effort and model menus apply only acknowledged host 
   const root = await demo(page);
   await root.getByRole("button", { name: /^Approval mode:/ }).click();
   await root.getByRole("button", { name: /^Full access/ }).click();
+  await expect(root.locator(".chat-composer-menu:popover-open")).toHaveCount(0);
+  await expect(settingsStatus(root)).toContainText("Change pending");
   await expect(
     root.getByRole("button", { name: /^Approval mode:/ }),
   ).toHaveAccessibleName("Approval mode: Ask for approval");
@@ -134,17 +137,24 @@ test("reference permission, effort and model menus apply only acknowledged host 
   const settings = await openModel(root);
   const effort = settings.getByRole("slider", { name: "Reasoning effort" });
   await effort.focus();
-  await effort.press("End");
+  await page.keyboard.down("End");
+  await expect(effort).toHaveAttribute("aria-valuetext", "Max");
   await expect(model).toHaveAccessibleName(
     "Model settings: Standard demo model, Medium",
   );
+  await page.keyboard.up("End");
+  await expect(settings).toBeHidden();
+  await expect(settingsStatus(root)).toContainText("Change pending");
   await expect(model).toHaveAccessibleName(
     "Model settings: Standard demo model, Max",
   );
+  await expect(model).toBeFocused();
+  await openModel(root);
   await expect(effort).toHaveAttribute("aria-valuetext", "Max");
   await settings
     .getByRole("button", { name: "Reset reasoning effort" })
     .click();
+  await expect(settings).toBeHidden();
   await expect(model).toHaveAccessibleName(
     "Model settings: Standard demo model, Medium",
   );
@@ -156,7 +166,7 @@ test("reference permission, effort and model menus apply only acknowledged host 
     "Model settings: Fast demo model, Medium",
   );
   await chooseModel(root, "Restricted model (host rejects)");
-  await expect(settings.getByRole("status")).toContainText(
+  await expect(settingsStatus(root)).toContainText(
     "Demo host declined this model",
   );
   await expect(model).toHaveAccessibleName(
@@ -233,7 +243,13 @@ test("reference footer and menus fit mobile, desktop, both directions and themes
         expect(
           Math.max(...positions) - Math.min(...positions),
         ).toBeLessThanOrEqual(8);
-        expect(await height(root)).toBeLessThan(150);
+        // Keep the original editor/footer height budget independent of the
+        // newly attached composer context bar.
+        const context = root.locator(".chat-composer-context");
+        await expect(context).toBeVisible();
+        expect(
+          (await height(root)) - (await context.boundingBox())!.height,
+        ).toBeLessThan(150);
         for (const name of [
           "Add files and more",
           "Approval mode",

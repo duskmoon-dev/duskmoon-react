@@ -118,6 +118,7 @@ interface ComposerShellProps extends Omit<
   composerId: string;
   compact?: boolean;
   addMenu?: React.ReactNode;
+  context?: React.ReactNode;
   entries: readonly ComposerShellAttachment[];
   renderAttachment?: ChatComposerProps["renderAttachment"];
   removeAttachment: (id: number | string) => void;
@@ -163,6 +164,7 @@ export const ComposerShell = forwardRef<HTMLDivElement, ComposerShellProps>(
       composerId,
       compact = false,
       addMenu,
+      context,
       entries,
       renderAttachment,
       removeAttachment,
@@ -385,7 +387,11 @@ export const ComposerShell = forwardRef<HTMLDivElement, ComposerShellProps>(
       <div
         {...props}
         ref={ref}
-        className={cn("chat-composer", className)}
+        className={cn(
+          "chat-composer",
+          compact && "chat-composer-compact",
+          className,
+        )}
         style={
           compact
             ? ({
@@ -437,6 +443,7 @@ export const ComposerShell = forwardRef<HTMLDivElement, ComposerShellProps>(
           }
         }}
       >
+        {context}
         {entries.length > 0 ? (
           // Preserve list semantics when Core removes list markers.
           // eslint-disable-next-line jsx-a11y/no-redundant-roles

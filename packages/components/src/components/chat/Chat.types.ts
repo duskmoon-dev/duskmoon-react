@@ -1,3 +1,10 @@
+import type { ChatRequestProps } from "./ChatRequest";
+import type {
+  ChatComposerContextProps,
+  ChatComposerContextItemProps,
+  ChatComposerContextEndProps,
+  ChatComposerConnectionProps,
+} from "./ChatComposerContext";
 import type {
   ComponentProps,
   ForwardRefExoticComponent,
@@ -240,6 +247,8 @@ export interface ChatComposerProps extends Omit<
   compact?: boolean;
   /** Additional actions in the compact Add menu. */
   addMenu?: ReactNode;
+  /** Attached context bar, rendered first inside the composer. */
+  context?: ReactNode;
   disabled?: boolean;
   /** Gates submission while keeping the draft editable. */
   busy?: boolean;
@@ -284,6 +293,20 @@ type ChatPartComponent<T extends HTMLElement, P> = ForwardRefExoticComponent<
 
 export type ChatComponent = ChatPartComponent<HTMLDivElement, ChatProps> & {
   Composer: ChatPartComponent<HTMLDivElement, ChatComposerProps>;
+  ComposerContext: ChatPartComponent<HTMLDivElement, ChatComposerContextProps>;
+  ComposerContextItem: ChatPartComponent<
+    HTMLSpanElement,
+    ChatComposerContextItemProps
+  >;
+  ComposerContextEnd: ChatPartComponent<
+    HTMLSpanElement,
+    ChatComposerContextEndProps
+  >;
+  ComposerConnection: ChatPartComponent<
+    HTMLSpanElement,
+    ChatComposerConnectionProps
+  >;
+  Request: ChatPartComponent<HTMLDivElement, ChatRequestProps>;
   Agent: ChatPartComponent<HTMLDivElement, ChatAgentProps>;
   Content: ChatPartComponent<HTMLDivElement, ChatContentProps>;
   Work: ChatPartComponent<HTMLDetailsElement, ChatWorkProps>;
