@@ -2,6 +2,7 @@ import React, { forwardRef } from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
+import { remarkCjkAutolink } from "./remarkCjkAutolink";
 import {
   getMarkdownClasses,
   markdownColorChipClass,
@@ -149,7 +150,11 @@ export const Markdown = forwardRef<HTMLDivElement, MarkdownProps>(
           </div>
         ) : null}
         <ReactMarkdown
-          remarkPlugins={breaks ? [remarkGfm, remarkBreaks] : [remarkGfm]}
+          remarkPlugins={
+            breaks
+              ? [remarkGfm, remarkCjkAutolink, remarkBreaks]
+              : [remarkGfm, remarkCjkAutolink]
+          }
           components={components}
         >
           {source.body}

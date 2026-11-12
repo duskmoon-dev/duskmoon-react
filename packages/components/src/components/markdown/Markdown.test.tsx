@@ -79,4 +79,68 @@ describe("Markdown", () => {
     expect(root.className).toContain("markdown-body-primary");
     expect(root.className).toContain("custom-markdown");
   });
+
+  describe("CJK-aware autolinks", () => {
+    const links = (markdown: string) => {
+      const { container } = render(<Markdown markdown={markdown} />);
+      return Array.from(container.querySelectorAll("a")).map((a) => ({
+        href: a.getAttribute("href"),
+        text: a.textContent,
+      }));
+    };
+
+    test("ends a bare URL at full-width punctuation", () => {
+      const { container } = render(
+        <Markdown markdown="运行 curl -sI https://example.com，告诉我状态码" />,
+      );
+      expect(container.querySelector("a")?.getAttribute("href")).toBe(
+        "https://example.com",
+      );
+      expect(container.querySelector("p")?.textContent).toBe(
+        "运行 curl -sI https://example.com，告诉我状态码",
+      );
+    });
+
+    test("ends a bare URL at CJK ideographs and kana", () => {
+      expect(links("见 www.example.com好的 https://a.co/x カタカナ")).toEqual([
+        { href: "http://www.example.com", text: "www.example.com" },
+        { href: "https://a.co/x", text: "https://a.co/x" },
+      ]);
+      expect(links("https://a.co/docsです")).toEqual([
+        { href: "https://a.co/docs", text: "https://a.co/docs" },
+      ]);
+    });
+
+    test("drops non-ASCII path text and trailing ASCII punctuation before CJK", () => {
+      expect(links("访问https://example.com/路径。")).toEqual([
+        { href: "https://example.com/", text: "https://example.com/" },
+      ]);
+      expect(links("https://example.com/a.，下一句")).toEqual([
+        { href: "https://example.com/a", text: "https://example.com/a" },
+      ]);
+    });
+
+    test("links a second bare URL that follows CJK text", () => {
+      expect(links("https://a.com，和https://b.com。")).toEqual([
+        { href: "https://a.com", text: "https://a.com" },
+        { href: "https://b.com", text: "https://b.com" },
+      ]);
+    });
+
+    test("leaves explicit, percent-encoded and ASCII autolinks unchanged", () => {
+      expect(
+        links(
+          "<https://a.com/路径> [链接](https://b.com/路径) https://c.com/%E8%B7%AF https://d.com/x, ok",
+        ),
+      ).toEqual([
+        {
+          href: "https://a.com/%E8%B7%AF%E5%BE%84",
+          text: "https://a.com/路径",
+        },
+        { href: "https://b.com/%E8%B7%AF%E5%BE%84", text: "链接" },
+        { href: "https://c.com/%E8%B7%AF", text: "https://c.com/%E8%B7%AF" },
+        { href: "https://d.com/x", text: "https://d.com/x" },
+      ]);
+    });
+  });
 });

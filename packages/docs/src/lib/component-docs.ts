@@ -1744,7 +1744,7 @@ function demosFor(
       {
         title: "Front matter, color chips, and line breaks",
         description:
-          "Render YAML front matter, preview inline CSS colors, and explicitly enable soft line breaks.",
+          "Render YAML front matter, preview inline CSS colors, and explicitly enable soft line breaks. Bare URLs end before CJK text and full-width punctuation, so `https://example.com，告诉我` links only `https://example.com`; non-ASCII path text after a bare URL is not linked (use `<url>`, `[text](url)` or percent-encoding to keep it).",
         code: `import "@duskmoon-dev/components/styles.css";
 import { Markdown } from "${importPath}";
 
