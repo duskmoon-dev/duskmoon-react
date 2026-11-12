@@ -1,5 +1,12 @@
 # @duskmoon-dev/components
 
+## 0.6.4
+
+### Patch Changes
+
+- 771a0b4: Render untoned `Chat.Request` actions as outlined secondary buttons so they stay visible between primary and danger actions in both themes.
+- e562ef9: End bare autolinked URLs in `Markdown` before CJK text and full-width punctuation, so `https://example.com，告诉我` links only `https://example.com`. Explicit `<url>` and `[text](url)` links and percent-encoded paths are unchanged.
+
 ## 0.6.3
 
 ### Patch Changes
