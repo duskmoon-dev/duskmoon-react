@@ -37,7 +37,9 @@ test("requests preserve host action order and stay unresolved after a choice", (
     "Approve",
     "Decline",
   ]);
+  expect(buttons[0].classList.contains("btn-outline")).toBe(true);
   expect(buttons[1].classList.contains("btn-primary")).toBe(true);
+  expect(buttons[1].classList.contains("btn-outline")).toBe(false);
   expect(buttons[2].classList.contains("btn-error")).toBe(true);
   fireEvent.click(buttons[1]);
   expect(decisions).toEqual(["approve"]);

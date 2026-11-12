@@ -138,6 +138,7 @@ export const ChatRequest = forwardRef<HTMLDivElement, ChatRequestProps>(
                   "btn btn-sm",
                   action.tone === "primary" && "btn-primary",
                   action.tone === "danger" && "btn-error",
+                  action.tone === undefined && "btn-outline",
                 )}
                 aria-label={action.ariaLabel}
                 disabled={pending || action.disabled}
